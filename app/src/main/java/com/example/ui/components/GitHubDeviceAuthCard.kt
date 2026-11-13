@@ -70,6 +70,7 @@ fun GitHubDeviceAuthCard(
   modifier: Modifier = Modifier,
   tagPrefix: String = "github",
   compact: Boolean = false,
+  animateTransitions: Boolean = true,
   onSignOut: (() -> Unit)? = null,
 ) {
   val effectiveAuthState: DeviceAuthState =
@@ -79,11 +80,17 @@ fun GitHubDeviceAuthCard(
       deviceAuthState
     }
 
-  Surface(
-    modifier =
+  val cardModifier =
+    if (animateTransitions) {
       modifier
         .fillMaxWidth()
-        .animateContentSize(animationSpec = ExpressiveMotion.spatialSpring()),
+        .animateContentSize(animationSpec = ExpressiveMotion.spatialSpring())
+    } else {
+      modifier.fillMaxWidth()
+    }
+
+  Surface(
+    modifier = cardModifier,
     shape = RoundedCornerShape(24.dp),
     color =
       when (effectiveAuthState) {
@@ -104,8 +111,8 @@ fun GitHubDeviceAuthCard(
       ),
   ) {
     Column(
-      modifier = Modifier.padding(if (compact) 16.dp else 18.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+      modifier = Modifier.padding(if (compact) 14.dp else 16.dp),
+      verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
       Row(
         modifier = Modifier.fillMaxWidth(),
@@ -163,23 +170,66 @@ fun GitHubDeviceAuthCard(
         )
       }
 
-      AnimatedContent(
-        targetState = effectiveAuthState,
-        label = "github_device_auth_state",
-      ) { state ->
-        when (state) {
-          is DeviceAuthState.Idle -> {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-              Text(
-                text =
-                  if (compact) {
-                    "Sign in using the official gh CLI Device Flow (github.com/login/device). Get an 8-digit code with a 15-minute expiry and authorize in your browser."
-                  } else {
-                    "Connect via OAuth Device Flow (scopes: repo, workflow) — identical to gh auth login. Displays your 8-digit verification code and 15:00 timer, then opens github.com/login/device."
-                  },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
+      if (animateTransitions) {
+        AnimatedContent(
+          targetState = effectiveAuthState,
+          label = "github_device_auth_state",
+        ) { state ->
+          DeviceAuthStateBody(
+            state = state,
+            cloudSettings = cloudSettings,
+            compact = compact,
+            tagPrefix = tagPrefix,
+            onStartDeviceLogin = onStartDeviceLogin,
+            onCancelDeviceLogin = onCancelDeviceLogin,
+            onCopyCode = onCopyCode,
+            onOpenBrowserUrl = onOpenBrowserUrl,
+            onSignOut = onSignOut,
+          )
+        }
+      } else {
+        DeviceAuthStateBody(
+          state = effectiveAuthState,
+          cloudSettings = cloudSettings,
+          compact = compact,
+          tagPrefix = tagPrefix,
+          onStartDeviceLogin = onStartDeviceLogin,
+          onCancelDeviceLogin = onCancelDeviceLogin,
+          onCopyCode = onCopyCode,
+          onOpenBrowserUrl = onOpenBrowserUrl,
+          onSignOut = onSignOut,
+        )
+      }
+    }
+  }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun DeviceAuthStateBody(
+  state: DeviceAuthState,
+  cloudSettings: CloudSettings,
+  compact: Boolean,
+  tagPrefix: String,
+  onStartDeviceLogin: () -> Unit,
+  onCancelDeviceLogin: () -> Unit,
+  onCopyCode: (String) -> Unit,
+  onOpenBrowserUrl: (String) -> Unit,
+  onSignOut: (() -> Unit)?,
+) {
+  when (state) {
+    is DeviceAuthState.Idle -> {
+      Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+          text =
+            if (compact) {
+              "Sign in via gh CLI Device Flow (github.com/login/device) with an 8-digit code."
+            } else {
+              "Connect via OAuth Device Flow (repo, workflow) — identical to gh auth login."
+            },
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
               val btnInteraction = remember { MutableInteractionSource() }
               Button(
                 onClick = onStartDeviceLogin,
@@ -470,6 +520,3 @@ fun GitHubDeviceAuthCard(
           }
         }
       }
-    }
-  }
-}

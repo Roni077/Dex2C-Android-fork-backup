@@ -172,12 +172,12 @@ object M3TonalColorEngine {
       val tertiaryContainer = fromHsl(tertiaryHue, (sat * 0.60f).coerceIn(0.32f, 0.75f), 0.90f)
       val onTertiaryContainer = fromHsl(tertiaryHue, (sat * 0.70f).coerceIn(0.40f, 0.80f), 0.14f)
 
-      val neutralTintBg = fromHsl(hue, 0.18f, 0.97f)
+      val neutralTintBg = fromHsl(hue, 0.04f, 0.975f)
       val surface = Color(0xFFFFFFFF)
-      val surfaceLow = fromHsl(hue, 0.22f, 0.955f)
-      val surfaceContainer = fromHsl(hue, 0.22f, 0.925f)
-      val surfaceHigh = fromHsl(hue, 0.22f, 0.885f)
-      val surfaceHighest = fromHsl(hue, 0.22f, 0.845f)
+      val surfaceLow = fromHsl(hue, 0.04f, 0.955f)
+      val surfaceContainer = fromHsl(hue, 0.04f, 0.925f)
+      val surfaceHigh = fromHsl(hue, 0.05f, 0.89f)
+      val surfaceHighest = fromHsl(hue, 0.05f, 0.85f)
 
       return lightColorScheme(
         primary = primary,
@@ -216,7 +216,7 @@ object M3TonalColorEngine {
       )
     }
 
-    // Dark or AMOLED Black
+    // Dark or AMOLED Black (neutral obsidian slate surfaces so vivid accent seeds don't muddy backgrounds)
     val primary = fromHsl(hue, sat.coerceIn(0.55f, 0.92f), 0.70f)
     val onPrimary = fromHsl(hue, sat.coerceIn(0.55f, 0.90f), 0.13f)
     val primaryContainer = fromHsl(hue, sat.coerceIn(0.45f, 0.82f), 0.22f)
@@ -247,22 +247,22 @@ object M3TonalColorEngine {
         onTertiary = onTertiary,
         tertiaryContainer = tertiaryContainer,
         onTertiaryContainer = onTertiaryContainer,
-        background = fromHsl(hue, 0.24f, 0.055f),
+        background = fromHsl(hue, 0.04f, 0.055f),
         onBackground = Color(0xFFEAF1FA),
-        surface = fromHsl(hue, 0.24f, 0.075f),
+        surface = fromHsl(hue, 0.04f, 0.075f),
         onSurface = Color(0xFFEAF1FA),
-        surfaceVariant = fromHsl(hue, 0.22f, 0.135f),
-        onSurfaceVariant = Color(0xFF9FB0C8),
-        surfaceTint = primary,
-        surfaceContainerLowest = fromHsl(hue, 0.24f, 0.045f),
-        surfaceContainerLow = fromHsl(hue, 0.22f, 0.095f),
-        surfaceContainer = fromHsl(hue, 0.22f, 0.13f),
-        surfaceContainerHigh = fromHsl(hue, 0.22f, 0.175f),
-        surfaceContainerHighest = fromHsl(hue, 0.22f, 0.22f),
-        outline = Color(0xFF637691),
-        outlineVariant = Color(0xFF2A3B54),
+        surfaceVariant = fromHsl(hue, 0.05f, 0.135f),
+        onSurfaceVariant = Color(0xFFA2AFBF),
+        surfaceTint = Color.Transparent,
+        surfaceContainerLowest = fromHsl(hue, 0.04f, 0.045f),
+        surfaceContainerLow = fromHsl(hue, 0.05f, 0.09f),
+        surfaceContainer = fromHsl(hue, 0.05f, 0.125f),
+        surfaceContainerHigh = fromHsl(hue, 0.05f, 0.165f),
+        surfaceContainerHighest = fromHsl(hue, 0.05f, 0.21f),
+        outline = Color(0xFF6B7785),
+        outlineVariant = Color(0xFF2B323B),
         inverseSurface = Color(0xFFEAF1FA),
-        inverseOnSurface = Color(0xFF141E2B),
+        inverseOnSurface = Color(0xFF14181F),
         error = CrimsonSignal,
         onError = Color(0xFF4A0710),
         errorContainer = CrimsonContainer,

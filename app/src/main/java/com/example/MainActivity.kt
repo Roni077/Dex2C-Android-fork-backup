@@ -14,6 +14,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -459,24 +461,40 @@ fun Dex2cApp(
               navController = navController,
               startDestination = startDestination,
               enterTransition = {
-                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
-                ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
+                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                  EnterTransition.None
+                } else {
+                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
+                }
               },
               exitTransition = {
-                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
-                ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
+                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                  ExitTransition.None
+                } else {
+                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
+                }
               },
               popEnterTransition = {
-                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
-                ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
+                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                  EnterTransition.None
+                } else {
+                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
+                }
               },
               popExitTransition = {
-                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
-                ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
+                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                  ExitTransition.None
+                } else {
+                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
+                }
               },
             ) {
             composable(ROUTE_WORKBENCH) {
