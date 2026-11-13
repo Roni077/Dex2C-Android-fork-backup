@@ -1,0 +1,6 @@
+{
+  "name": "Dex2C Studio",
+  "description": "Android Dalvik bytecode inspector and DEX-to-C JNI transpiler workbench.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

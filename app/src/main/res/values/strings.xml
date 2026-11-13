@@ -1,0 +1,113 @@
+<resources>
+    <string name="app_name">Dex2C Studio</string>
+    <string name="nav_workbench">Workbench</string>
+    <string name="nav_classes">Classes</string>
+    <string name="nav_config">Pipeline</string>
+    <string name="nav_cloud">Cloud</string>
+    <string name="nav_export">Output</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="cloud_title">GitHub Cloud Dex2C</string>
+    <string name="cloud_subtitle">Authenticate via Device Flow, setup a private repo &amp; dex2c.yml, and build signed APKs on GitHub Actions</string>
+    <string name="cloud_step_auth">1. GitHub Device Flow Login</string>
+    <string name="cloud_step_repo">2. Private Repo &amp; dex2c.yml Setup</string>
+    <string name="cloud_step_build">3. Dispatch Cloud Dex2C Build</string>
+    <string name="cloud_open_device_url">Open github.com/login/device</string>
+    <string name="cloud_sign_in_device">Sign in via Device Flow</string>
+    <string name="cloud_init_repo_btn">Setup Private Repo &amp; Init dex2c.yml</string>
+    <string name="cloud_run_build_btn">Run Cloud Dex2C Build</string>
+    <string name="cloud_save_signed_apk">Save Signed APK</string>
+
+    <string name="settings_title">Detailed Settings</string>
+    <string name="settings_subtitle">Configure GitHub OAuth Device Flow, private repo defaults, cloud NDK toolchain, and signing</string>
+
+    <string name="hero_title">Dex2C Native Workbench</string>
+    <string name="hero_subtitle">Parse Dalvik DEX binaries, inspect bytecode, and transpile protected methods to JNI C/C++</string>
+    <string name="hero_banner_desc">Dex2C bytecode to C silicon workbench banner</string>
+
+    <string name="action_open_file">Pick APK / DEX</string>
+    <string name="action_browse_storage">Browse Device Storage</string>
+    <string name="action_inspect_self_apk">Inspect Live APK</string>
+    <string name="action_select_app_classes">Auto-Select App Classes</string>
+    <string name="action_clear_selection">Clear Selection</string>
+    <string name="action_view_output">Build C Output</string>
+    <string name="action_export_zip">Export NDK .ZIP</string>
+    <string name="action_copy_code">Copy Code</string>
+    <string name="action_back">Back</string>
+
+    <string name="picker_title">Select APK or DEX Binary</string>
+    <string name="picker_tab_storage">Storage</string>
+    <string name="picker_tab_apps">Installed Apps</string>
+    <string name="picker_tab_recent">Recent</string>
+    <string name="picker_storage_title">Open from Files &amp; Downloads</string>
+    <string name="picker_storage_desc">Choose any .apk or .dex file via the Android system file picker. No broad storage permissions required.</string>
+    <string name="picker_search_apps">Filter installed apps by name or package…</string>
+    <string name="picker_recent_empty">No recently opened APK or DEX files yet.</string>
+    <string name="picker_apps_empty">No launchable apps matched your filter.</string>
+    <string name="picker_clear_recent">Clear History</string>
+
+    <string name="preview_title">APK &amp; DEX Container Preview</string>
+    <string name="preview_dex_section">Select DEX Container to Parse</string>
+    <string name="preview_abis_section">Bundled Native ABIs</string>
+    <string name="preview_load_dex">Load Selected DEX</string>
+    <string name="preview_staging_loading">Inspecting APK archive &amp; manifest…</string>
+
+    <string name="empty_workspace_title">No DEX Binary Loaded</string>
+    <string name="empty_workspace_body">Select an APK or classes.dex file from storage, or inspect this device\'s live compiled APK to explore real Dalvik methods and transpile them to JNI C/C++.</string>
+
+    <string name="label_dex_header">DEX Binary Header</string>
+    <string name="label_dex_entries">DEX Containers</string>
+    <string name="label_selected_methods">Selected for C</string>
+    <string name="label_search_classes">Search classes, packages, or methods…</string>
+    <string name="chip_hide_framework">App Only</string>
+    <string name="chip_has_bytecode">Has Bytecode</string>
+    <string name="chip_selected_only">Selected</string>
+
+    <string name="tab_dalvik">Dalvik IR</string>
+    <string name="tab_transpiled_c">JNI C/C++</string>
+    <string name="tab_dex_meta">DEX Meta</string>
+
+    <string name="label_map_list">DEX Structural Map (map_list)</string>
+    <string name="label_rust_jni_bridge">Rust JNI Bridge</string>
+    <string name="rust_bridge_title">androguard/dex-parser Rust JNI Bridge</string>
+    <string name="rust_bridge_subtitle">Cross-compile dexparser-rs to libdexparser_jni.so via cargo-ndk to enable native acceleration automatically</string>
+
+    <string name="config_title">Transpiler Pipeline</string>
+    <string name="config_subtitle">Configure JNI symbol binding, obfuscation passes, and NDK build output</string>
+    <string name="config_jni_binding">JNI Symbol Binding</string>
+    <string name="config_target_lang">Target C/C++ Standard</string>
+    <string name="config_protection_passes">Obfuscation &amp; Safety Passes</string>
+    <string name="config_string_xor">XOR String Encryption</string>
+    <string name="config_string_xor_desc">Encode const-string literals as XOR-masked byte arrays decoded on stack</string>
+    <string name="config_cf_flattening">Control-Flow Flattening</string>
+    <string name="config_cf_flattening_desc">Transform branches into a switch(pc_state) dispatcher loop</string>
+    <string name="config_null_guards">JNI Null-Pointer Guards</string>
+    <string name="config_null_guards_desc">Emit explicit null checks before field and method invocations</string>
+    <string name="config_filter_rules">Class Filter Rules (dcc format)</string>
+    <string name="config_module_name">NDK Library Name</string>
+    <string name="config_include_regex">Include Prefix / Regex</string>
+    <string name="config_exclude_regex">Exclude Prefix / Regex</string>
+    <string name="config_apply_filters">Apply Filter Rules to Loaded DEX</string>
+    <string name="config_d2c_flags">Kirlif/d2c &amp; Loader Flags</string>
+    <string name="config_allow_init">Allow &lt;init&gt; Constructors (--allow-init)</string>
+    <string name="config_allow_init_desc">Skip &lt;init&gt; constructors by default for ART safety; enable to transpile constructors too</string>
+    <string name="config_loader_mode">Application Loader Strategy</string>
+    <string name="config_custom_loader">Custom Loader Class (--custom-loader)</string>
+    <string name="config_target_abis">Target NDK ABIs (Application.mk)</string>
+    <string name="config_filter_txt_label">filter.txt Rules (! prefix = exclude)</string>
+    <string name="config_import_filter">Import filter.txt</string>
+    <string name="config_import_dcc_cfg">Import dcc.cfg</string>
+
+    <string name="export_empty_title">No Methods Selected</string>
+    <string name="export_empty_body">Select one or more classes or methods in the Classes tab (or use Auto-Select on the Workbench) to generate C/C++ JNI source and CMake build scripts.</string>
+    <string name="msg_copied_clipboard">Copied to clipboard</string>
+    <string name="msg_zip_exported">Exported NDK bundle successfully</string>
+    <string name="msg_loading_dex">Parsing DEX binary tables…</string>
+
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_done">Done</string>
+    <string name="onboarding_tour_desc">Dex2C Studio pipeline illustration</string>
+    <string name="settings_replay_onboarding">Replay Onboarding &amp; Setup</string>
+</resources>

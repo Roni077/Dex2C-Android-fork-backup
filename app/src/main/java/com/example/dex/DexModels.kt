@@ -1,0 +1,322 @@
+package com.example.dex
+
+enum class OpCategory {
+  NOP,
+  MOVE,
+  RETURN,
+  CONST,
+  MONITOR,
+  CHECK,
+  NEW,
+  ARRAY,
+  THROW,
+  BRANCH,
+  COMPARE,
+  FIELD,
+  INVOKE,
+  MATH,
+  CONVERT,
+  PAYLOAD,
+  UNKNOWN,
+}
+
+data class DexHeaderInfo(
+  val magic: String,
+  val version: String,
+  val checksum: Long,
+  val sha1Hex: String,
+  val fileSize: Int,
+  val endianTag: Long,
+  val stringIdsSize: Int,
+  val typeIdsSize: Int,
+  val protoIdsSize: Int,
+  val fieldIdsSize: Int,
+  val methodIdsSize: Int,
+  val classDefsSize: Int,
+  val linkSize: Int = 0,
+  val linkOff: Int = 0,
+  val mapOff: Int = 0,
+  val dataSize: Int = 0,
+  val dataOff: Int = 0,
+)
+
+data class DexMapItem(
+  val typeCode: Int,
+  val typeName: String,
+  val count: Int,
+  val offset: Int,
+) {
+  val typeHex: String get() = "0x%04X".format(typeCode)
+  val offsetHex: String get() = "0x%08X".format(offset)
+}
+
+data class DexMethodHandleInfo(
+  val index: Int,
+  val kindCode: Int,
+  val kindLabel: String,
+  val memberIndex: Int,
+  val memberSummary: String,
+)
+
+data class DexCallSiteInfo(
+  val index: Int,
+  val encodedArrayOffset: Int,
+  val bootstrapHandleIndex: Int?,
+  val methodName: String?,
+  val methodDescriptor: String?,
+  val extraArgsCount: Int,
+)
+
+data class DexHiddenApiSummary(
+  val sectionOffset: Int,
+  val totalByteSize: Int,
+  val classEntryCount: Int,
+)
+
+data class DexAnnotationEntry(
+  val visibilityLabel: String,
+  val typeDescriptor: String,
+  val elementsPreview: List<String>,
+)
+
+data class DexDebugLineEntry(
+  val addressWord: Int,
+  val lineNumber: Int,
+)
+
+data class DexMethodStructuralMeta(
+  val methodIndex: Int,
+  val codeItemOffset: Int,
+  val debugInfoOffset: Int,
+  val classAnnotationsOffset: Int,
+  val staticValuesOffset: Int,
+  val parameterNames: List<String>,
+  val debugLines: List<DexDebugLineEntry>,
+  val classAnnotations: List<DexAnnotationEntry>,
+  val methodAnnotations: List<DexAnnotationEntry>,
+  val staticValuesPreview: List<String>,
+  val sourceFile: String?,
+)
+
+data class DexProto(
+  val shorty: String,
+  val returnType: String,
+  val parameterTypes: List<String>,
+)
+
+data class DexFieldRef(
+  val definingClass: String,
+  val type: String,
+  val name: String,
+)
+
+data class DexMethodRef(
+  val definingClass: String,
+  val proto: DexProto,
+  val name: String,
+) {
+  fun prettySignature(): String {
+    val params = proto.parameterTypes.joinToString(", ") { descriptorToSimpleName(it) }
+    val ret = descriptorToSimpleName(proto.returnType)
+    return "$name($params): $ret"
+  }
+
+  fun jniSignature(): String {
+    return "(${proto.parameterTypes.joinToString("")})${proto.returnType}"
+  }
+
+  fun dalvikSignature(): String {
+    return "${definingClass}->$name${jniSignature()}"
+  }
+}
+
+data class DexCatchHandler(
+  val typeDescriptor: String?, // null = catch-all (<all>)
+  val handlerOffsetWord: Int,
+)
+
+data class DexTryBlock(
+  val startOffsetWord: Int,
+  val insnCount: Int,
+  val handlers: List<DexCatchHandler>,
+) {
+  val endOffsetWord: Int get() = startOffsetWord + insnCount
+}
+
+data class DalvikInstruction(
+  val offsetWords: Int,
+  val widthWords: Int,
+  val opcode: Int,
+  val mnemonic: String,
+  val format: String,
+  val operandsText: String,
+  val rawWords: List<Int>,
+  val category: OpCategory,
+  val regA: Int? = null,
+  val regB: Int? = null,
+  val regC: Int? = null,
+  val regList: List<Int> = emptyList(),
+  val isRangeInvoke: Boolean = false,
+  val literal: Long? = null,
+  val targetOffset: Int? = null,
+  val stringRef: String? = null,
+  val typeRef: String? = null,
+  val fieldRef: DexFieldRef? = null,
+  val methodRef: DexMethodRef? = null,
+) {
+  fun formatHexWords(): String = rawWords.joinToString(" ") { "%04X".format(it and 0xFFFF) }
+}
+
+data class DexCodeMeta(
+  val registersSize: Int,
+  val insSize: Int,
+  val outsSize: Int,
+  val triesSize: Int,
+  val insnsCount: Int,
+  val insnsOffsetBytes: Int,
+  val codeItemOffset: Int = 0,
+  val debugInfoOffset: Int = 0,
+)
+
+data class DexEncodedField(
+  val fieldIndex: Int,
+  val fieldRef: DexFieldRef,
+  val accessFlags: Int,
+  val isStatic: Boolean,
+)
+
+data class DexEncodedMethod(
+  val id: String,
+  val methodIndex: Int,
+  val methodRef: DexMethodRef,
+  val accessFlags: Int,
+  val isDirect: Boolean,
+  val codeMeta: DexCodeMeta?,
+) {
+  val isStatic: Boolean get() = (accessFlags and 0x0008) != 0
+  val isNative: Boolean get() = (accessFlags and 0x0100) != 0
+  val isAbstract: Boolean get() = (accessFlags and 0x0400) != 0
+  val isConstructor: Boolean get() = methodRef.name == "<init>" || (accessFlags and 0x10000) != 0
+  val isInitConstructor: Boolean get() = methodRef.name == "<init>"
+  val hasBytecode: Boolean get() = codeMeta != null && codeMeta.insnsCount > 0
+}
+
+data class DexClassInfo(
+  val classIndex: Int,
+  val descriptor: String,
+  val fullName: String,
+  val simpleName: String,
+  val packageName: String,
+  val superclass: String?,
+  val interfaces: List<String>,
+  val sourceFile: String?,
+  val accessFlags: Int,
+  val staticFields: List<DexEncodedField>,
+  val instanceFields: List<DexEncodedField>,
+  val directMethods: List<DexEncodedMethod>,
+  val virtualMethods: List<DexEncodedMethod>,
+  val annotationsOffset: Int = 0,
+  val staticValuesOffset: Int = 0,
+  val classDataOffset: Int = 0,
+) {
+  val allMethods: List<DexEncodedMethod>
+    get() = directMethods + virtualMethods
+
+  val bytecodeMethodCount: Int
+    get() = allMethods.count { it.hasBytecode }
+
+  val isFrameworkClass: Boolean
+    get() =
+      packageName.startsWith("androidx.") ||
+        packageName.startsWith("android.") ||
+        packageName.startsWith("kotlin.") ||
+        packageName.startsWith("kotlinx.") ||
+        packageName.startsWith("java.") ||
+        packageName.startsWith("javax.") ||
+        packageName.startsWith("com.google.") ||
+        packageName.startsWith("org.intellij.") ||
+        packageName.startsWith("org.jetbrains.")
+}
+
+data class ApkDexEntry(
+  val entryName: String,
+  val byteSize: Int,
+)
+
+data class DexParsedFile(
+  val sourceLabel: String,
+  val entryName: String,
+  val rawBytes: ByteArray,
+  val header: DexHeaderInfo,
+  val strings: List<String>,
+  val types: List<String>,
+  val protos: List<DexProto>,
+  val fields: List<DexFieldRef>,
+  val methods: List<DexMethodRef>,
+  val classes: List<DexClassInfo>,
+  val mapItems: List<DexMapItem> = emptyList(),
+  val methodHandles: List<DexMethodHandleInfo> = emptyList(),
+  val callSites: List<DexCallSiteInfo> = emptyList(),
+  val hiddenApiSummary: DexHiddenApiSummary? = null,
+  val parseDurationMs: Long = 0L,
+  val parserEngine: String = "Kotlin DexFile/DexHelper",
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is DexParsedFile) return false
+    return sourceLabel == other.sourceLabel &&
+      entryName == other.entryName &&
+      header == other.header
+  }
+
+  override fun hashCode(): Int {
+    var result = sourceLabel.hashCode()
+    result = 31 * result + entryName.hashCode()
+    result = 31 * result + header.hashCode()
+    return result
+  }
+}
+
+fun descriptorToJavaName(descriptor: String): String {
+  if (descriptor.startsWith("[")) {
+    return "${descriptorToJavaName(descriptor.substring(1))}[]"
+  }
+  return when (descriptor) {
+    "V" -> "void"
+    "Z" -> "boolean"
+    "B" -> "byte"
+    "S" -> "short"
+    "C" -> "char"
+    "I" -> "int"
+    "J" -> "long"
+    "F" -> "float"
+    "D" -> "double"
+    else ->
+      if (descriptor.startsWith("L") && descriptor.endsWith(";")) {
+        descriptor.substring(1, descriptor.length - 1).replace('/', '.')
+      } else {
+        descriptor
+      }
+  }
+}
+
+fun descriptorToSimpleName(descriptor: String): String {
+  val full = descriptorToJavaName(descriptor)
+  val dot = full.lastIndexOf('.')
+  return if (dot >= 0) full.substring(dot + 1) else full
+}
+
+fun formatAccessFlags(flags: Int, isMethod: Boolean = false): String {
+  val parts = mutableListOf<String>()
+  if ((flags and 0x0001) != 0) parts += "public"
+  if ((flags and 0x0002) != 0) parts += "private"
+  if ((flags and 0x0004) != 0) parts += "protected"
+  if ((flags and 0x0008) != 0) parts += "static"
+  if ((flags and 0x0010) != 0) parts += "final"
+  if ((flags and 0x0020) != 0) parts += if (isMethod) "synchronized" else ""
+  if (isMethod && (flags and 0x0100) != 0) parts += "native"
+  if (!isMethod && (flags and 0x0200) != 0) parts += "interface"
+  if ((flags and 0x0400) != 0) parts += "abstract"
+  if (isMethod && (flags and 0x10000) != 0) parts += "constructor"
+  return parts.filter { it.isNotEmpty() }.joinToString(" ")
+}
