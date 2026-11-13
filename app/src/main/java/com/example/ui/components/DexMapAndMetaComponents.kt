@@ -1,6 +1,7 @@
 package com.example.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,13 +25,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Schema
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.Schema
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -76,12 +77,12 @@ fun DexMapListCard(
   var showDex038Details by remember { mutableStateOf(false) }
 
   Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(18.dp),
+    modifier = modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -93,7 +94,7 @@ fun DexMapListCard(
           horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           Icon(
-            imageVector = Icons.Default.Schema,
+            imageVector = Icons.Rounded.Schema,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp),
@@ -112,10 +113,11 @@ fun DexMapListCard(
         }
         OutlinedButton(
           onClick = onOpenRustBridge,
-          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+          shape = RoundedCornerShape(20.dp),
+          contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
           modifier = Modifier.testTag("open_rust_jni_bridge_btn"),
         ) {
-          Icon(Icons.Default.Memory, contentDescription = null, modifier = Modifier.size(15.dp))
+          Icon(Icons.Rounded.Memory, contentDescription = null, modifier = Modifier.size(15.dp))
           Spacer(Modifier.width(5.dp))
           Text(stringResource(R.string.label_rust_jni_bridge), style = MaterialTheme.typography.labelMedium)
         }
@@ -218,7 +220,7 @@ fun DexMapListCard(
             verticalAlignment = Alignment.CenterVertically,
           ) {
             Icon(
-              imageVector = if (showAllMapItems) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+              imageVector = if (showAllMapItems) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.primary,
               modifier = Modifier.size(18.dp),
@@ -251,7 +253,7 @@ fun DexMapListCard(
             color = MaterialTheme.colorScheme.tertiary,
           )
           Icon(
-            imageVector = if (showDex038Details) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+            imageVector = if (showDex038Details) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.tertiary,
           )
@@ -296,11 +298,11 @@ fun DexMethodMetaViewer(
     item {
       Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
       ) {
-        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
           Text(
             text = "DexHelper Offsets & Structure",
             style = MaterialTheme.typography.titleMedium,
@@ -327,11 +329,11 @@ fun DexMethodMetaViewer(
     item {
       Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
       ) {
-        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
             text = "Annotations (${meta.methodAnnotations.size} method • ${meta.classAnnotations.size} class)",
             style = MaterialTheme.typography.titleMedium,
@@ -358,11 +360,11 @@ fun DexMethodMetaViewer(
     item {
       Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
       ) {
-        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
             text = "debug_info_item Line Mapping (${meta.debugLines.size} entries)",
             style = MaterialTheme.typography.titleMedium,
@@ -403,9 +405,9 @@ fun DexMethodMetaViewer(
       item {
         Surface(
           modifier = Modifier.fillMaxWidth(),
-          shape = RoundedCornerShape(14.dp),
+          shape = RoundedCornerShape(24.dp),
           color = MaterialTheme.colorScheme.surfaceContainer,
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
         ) {
           Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
@@ -487,6 +489,7 @@ fun RustJniBridgeSheet(
   ModalBottomSheet(
     onDismissRequest = onDismiss,
     sheetState = sheetState,
+    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
   ) {
     Column(
@@ -530,7 +533,7 @@ fun RustJniBridgeSheet(
           FilterChip(
             selected = idx == selectedIdx,
             onClick = { selectedIdx = idx },
-            leadingIcon = { Icon(Icons.Default.Code, contentDescription = null, modifier = Modifier.size(15.dp)) },
+            leadingIcon = { Icon(Icons.Rounded.Code, contentDescription = null, modifier = Modifier.size(15.dp)) },
             label = { Text(file.fileName, fontFamily = JetBrainsMonoFontFamily) },
           )
         }
@@ -553,17 +556,19 @@ fun RustJniBridgeSheet(
       ) {
         OutlinedButton(
           onClick = { onCopyCode(activeFile.content) },
+          shape = RoundedCornerShape(20.dp),
           modifier = Modifier.weight(1f).testTag("copy_rust_bridge_btn"),
         ) {
-          Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
+          Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
           Spacer(Modifier.width(6.dp))
           Text(stringResource(R.string.action_copy_code))
         }
         Button(
           onClick = onExportZip,
+          shape = RoundedCornerShape(20.dp),
           modifier = Modifier.weight(1.2f).testTag("export_rust_bridge_zip_btn"),
         ) {
-          Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+          Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(16.dp))
           Spacer(Modifier.width(6.dp))
           Text("Export Crate .ZIP")
         }

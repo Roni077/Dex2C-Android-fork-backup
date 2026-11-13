@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,16 +21,16 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -61,6 +62,7 @@ import com.example.transpiler.JniBindingStyle
 import com.example.transpiler.TranspilerConfig
 import com.example.ui.CloudApkChoice
 import com.example.ui.components.BuildMonitorCard
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import java.util.Locale
@@ -124,9 +126,10 @@ fun CloudBuildScreen(
           Spacer(Modifier.width(8.dp))
           OutlinedButton(
             onClick = onOpenSettings,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_open_settings_btn"),
           ) {
-            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Settings, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text(stringResource(R.string.nav_settings))
           }
@@ -155,7 +158,7 @@ fun CloudBuildScreen(
         ) {
           if (cloudSettings.githubClientId.isBlank()) {
             Surface(
-              shape = RoundedCornerShape(12.dp),
+              shape = RoundedCornerShape(18.dp),
               color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f),
               border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)),
             ) {
@@ -176,9 +179,10 @@ fun CloudBuildScreen(
                 )
                 Button(
                   onClick = onOpenSettings,
+                  shape = RoundedCornerShape(20.dp),
                   modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_configure_client_id_btn"),
                 ) {
-                  Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
+                  Icon(Icons.Rounded.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
                   Spacer(Modifier.width(8.dp))
                   Text("Configure OAuth Client ID")
                 }
@@ -196,9 +200,10 @@ fun CloudBuildScreen(
                 Spacer(Modifier.height(10.dp))
                 Button(
                   onClick = onStartDeviceLogin,
+                  shape = RoundedCornerShape(20.dp),
                   modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_device_signin_btn"),
                 ) {
-                  Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(18.dp))
+                  Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(18.dp))
                   Spacer(Modifier.width(8.dp))
                   Text(stringResource(R.string.cloud_sign_in_device))
                 }
@@ -220,7 +225,7 @@ fun CloudBuildScreen(
               is DeviceAuthState.AwaitingUser -> {
                 Surface(
                   modifier = Modifier.fillMaxWidth(),
-                  shape = RoundedCornerShape(14.dp),
+                  shape = RoundedCornerShape(18.dp),
                   color = MaterialTheme.colorScheme.surfaceContainerHigh,
                   border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
                 ) {
@@ -249,17 +254,19 @@ fun CloudBuildScreen(
                     ) {
                       OutlinedButton(
                         onClick = { onCopyCode(deviceAuthState.userCode) },
+                        shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_copy_device_code_btn"),
                       ) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(6.dp))
                         Text("Copy Code")
                       }
                       Button(
                         onClick = { onOpenBrowserUrl(deviceAuthState.verificationUri) },
+                        shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_open_device_url_btn"),
                       ) {
-                        Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(6.dp))
                         Text("Authorize")
                       }
@@ -296,7 +303,7 @@ fun CloudBuildScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                   ) {
                     Icon(
-                      imageVector = Icons.Default.CheckCircle,
+                      imageVector = Icons.Rounded.CheckCircle,
                       contentDescription = null,
                       tint = MaterialTheme.colorScheme.primary,
                       modifier = Modifier.size(20.dp),
@@ -324,9 +331,10 @@ fun CloudBuildScreen(
                 Spacer(Modifier.height(10.dp))
                 Button(
                   onClick = onStartDeviceLogin,
+                  shape = RoundedCornerShape(20.dp),
                   modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_device_retry_btn"),
                 ) {
-                  Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                  Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                   Spacer(Modifier.width(8.dp))
                   Text("Retry Device Flow Login")
                 }
@@ -377,8 +385,9 @@ fun CloudBuildScreen(
             value = cloudSettings.repoName,
             onValueChange = onUpdateRepoName,
             label = { Text("Private Workspace Repository Name") },
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = null) },
             singleLine = true,
+            shape = RoundedCornerShape(16.dp),
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.fillMaxWidth().testTag("cloud_repo_name_input"),
           )
@@ -399,11 +408,11 @@ fun CloudBuildScreen(
             is RepoSetupState.Ready -> {
               Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(18.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
               ) {
                 Column(
-                  modifier = Modifier.padding(12.dp),
+                  modifier = Modifier.padding(14.dp),
                   verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                   Row(
@@ -430,17 +439,19 @@ fun CloudBuildScreen(
                   FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                       onClick = onInitializeRepoAndWorkflow,
+                      shape = RoundedCornerShape(20.dp),
                       modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_resync_workflow_btn"),
                     ) {
-                      Icon(Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
+                      Icon(Icons.Rounded.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
                       Spacer(Modifier.width(6.dp))
                       Text("Re-sync dex2c.yml")
                     }
                     OutlinedButton(
                       onClick = { onOpenBrowserUrl(repoSetupState.htmlUrl) },
+                      shape = RoundedCornerShape(20.dp),
                       modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_open_repo_btn"),
                     ) {
-                      Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+                      Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
                       Spacer(Modifier.width(6.dp))
                       Text("Open Repo")
                     }
@@ -465,9 +476,10 @@ fun CloudBuildScreen(
               Button(
                 onClick = onInitializeRepoAndWorkflow,
                 enabled = cloudSettings.isAuthenticated,
+                shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_init_repo_btn"),
               ) {
-                Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Rounded.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.cloud_init_repo_btn))
               }
@@ -477,9 +489,10 @@ fun CloudBuildScreen(
               Button(
                 onClick = onInitializeRepoAndWorkflow,
                 enabled = cloudSettings.isAuthenticated,
+                shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_init_repo_btn"),
               ) {
-                Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Rounded.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.cloud_init_repo_btn))
               }
@@ -502,16 +515,16 @@ fun CloudBuildScreen(
         ) {
           Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(18.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
           ) {
             Row(
-              modifier = Modifier.padding(12.dp),
+              modifier = Modifier.padding(14.dp),
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
               Icon(
-                imageVector = Icons.Default.Android,
+                imageVector = Icons.Rounded.Android,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp),
@@ -544,17 +557,19 @@ fun CloudBuildScreen(
           ) {
             OutlinedButton(
               onClick = onPickApkFile,
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_pick_apk_btn"),
             ) {
-              Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))
+              Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
               Text("Pick APK")
             }
             OutlinedButton(
               onClick = onUseLiveApk,
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_use_live_apk_btn"),
             ) {
-              Icon(Icons.Default.Android, contentDescription = null, modifier = Modifier.size(16.dp))
+              Icon(Icons.Rounded.Android, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
               Text("Use base.apk")
             }
@@ -567,6 +582,7 @@ fun CloudBuildScreen(
             label = { Text("APK URL Fallback (optional, skips repo APK upload)") },
             placeholder = { Text("https://example.com/target.apk") },
             singleLine = true,
+            shape = RoundedCornerShape(16.dp),
             textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.fillMaxWidth().testTag("cloud_apk_url_input"),
           )
@@ -607,9 +623,10 @@ fun CloudBuildScreen(
           Button(
             onClick = onDispatchBuild,
             enabled = canRun,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_run_build_btn"),
           ) {
-            Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.cloud_run_build_btn))
           }
@@ -639,7 +656,7 @@ fun CloudBuildScreen(
                   onClick = onRefreshRuns,
                   modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_refresh_runs_btn"),
                 ) {
-                  Icon(Icons.Default.Refresh, contentDescription = "Refresh Runs", modifier = Modifier.size(16.dp))
+                  Icon(Icons.Rounded.Refresh, contentDescription = "Refresh Runs", modifier = Modifier.size(16.dp))
                   Spacer(Modifier.width(4.dp))
                   Text("Refresh")
                 }
@@ -653,7 +670,7 @@ fun CloudBuildScreen(
                     .padding(vertical = 3.dp)
                     .clickable { onAttachToRun(run.id) }
                     .testTag("cloud_run_item_${run.id}"),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
               ) {
                 Row(
@@ -707,12 +724,12 @@ private fun CloudStepCard(
   content: @Composable () -> Unit,
 ) {
   Surface(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(16.dp),
+    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(18.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,

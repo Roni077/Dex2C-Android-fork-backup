@@ -22,9 +22,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,7 +66,8 @@ fun ApkPreviewSheet(
   ModalBottomSheet(
     onDismissRequest = onDismiss,
     sheetState = sheetState,
-    containerColor = MaterialTheme.colorScheme.surface,
+    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
   ) {
     Column(
       modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
@@ -102,19 +103,23 @@ fun ApkPreviewSheet(
         is ApkStagingState.Error -> {
           Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.errorContainer,
           ) {
             Row(
-              modifier = Modifier.padding(16.dp),
+              modifier = Modifier.padding(18.dp),
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-              Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+              Icon(Icons.Rounded.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
               Text(stagingState.message, style = MaterialTheme.typography.bodyMedium)
             }
           }
-          OutlinedButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+          OutlinedButton(
+            onClick = onDismiss,
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.fillMaxWidth(),
+          ) {
             Text("Close")
           }
         }
@@ -147,28 +152,28 @@ private fun PreviewReadyContent(
 
   Surface(
     modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(16.dp),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (iconBitmap != null) {
           Image(
             bitmap = iconBitmap,
             contentDescription = "${preview.appLabel} icon",
-            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)),
+            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)),
           )
         } else {
           Box(
             modifier =
               Modifier.size(48.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(14.dp))
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
           ) {
             Icon(
-              imageVector = if (preview.isSingleDex) Icons.Default.Memory else Icons.Default.Android,
+              imageVector = if (preview.isSingleDex) Icons.Rounded.Memory else Icons.Rounded.Android,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onPrimaryContainer,
             )
@@ -261,10 +266,10 @@ private fun PreviewReadyContent(
       Surface(
         modifier =
           Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(18.dp))
             .clickable { onSelectDexEntry(entry.entryName) }
             .testTag("preview_dex_${entry.entryName}"),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(18.dp),
         color =
           if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
           else MaterialTheme.colorScheme.surfaceContainer,
@@ -273,7 +278,7 @@ private fun PreviewReadyContent(
             width = 1.dp,
             color =
               if (isSelected) MaterialTheme.colorScheme.primary
-              else MaterialTheme.colorScheme.outlineVariant,
+              else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f),
           ),
       ) {
         Row(
@@ -309,6 +314,7 @@ private fun PreviewReadyContent(
   ) {
     OutlinedButton(
       onClick = onDismiss,
+      shape = RoundedCornerShape(20.dp),
       modifier = Modifier.weight(1f),
       contentPadding = PaddingValues(vertical = 12.dp),
     ) {
@@ -316,6 +322,7 @@ private fun PreviewReadyContent(
     }
     Button(
       onClick = onConfirmLoad,
+      shape = RoundedCornerShape(20.dp),
       modifier = Modifier.weight(1.4f).testTag("preview_load_dex_button"),
       contentPadding = PaddingValues(vertical = 12.dp),
     ) {

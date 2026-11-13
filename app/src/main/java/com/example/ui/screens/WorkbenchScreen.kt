@@ -1,10 +1,12 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,17 +25,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DataObject
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.DataObject
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,6 +47,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,9 +66,11 @@ import com.example.apk.PickerTab
 import com.example.apk.RecentBinaryItem
 import com.example.ui.DexLoadState
 import com.example.ui.components.DexMapListCard
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.HeaderKeyValueRow
 import com.example.ui.components.MetricTile
 import com.example.ui.components.TagPill
+import com.example.ui.components.expressivePressScale
 import com.example.ui.components.formatApkSize
 
 @Composable
@@ -120,10 +125,10 @@ fun WorkbenchScreen(
         is DexLoadState.Loading -> {
           item {
             Surface(
-              modifier = Modifier.fillMaxWidth(),
-              shape = RoundedCornerShape(18.dp),
+              modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+              shape = RoundedCornerShape(24.dp),
               color = MaterialTheme.colorScheme.surfaceContainer,
-              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             ) {
               Row(
                 modifier = Modifier.padding(24.dp),
@@ -151,7 +156,7 @@ fun WorkbenchScreen(
           item {
             Surface(
               modifier = Modifier.fillMaxWidth(),
-              shape = RoundedCornerShape(18.dp),
+              shape = RoundedCornerShape(24.dp),
               color = MaterialTheme.colorScheme.errorContainer,
             ) {
               Row(
@@ -160,7 +165,7 @@ fun WorkbenchScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
               ) {
                 Icon(
-                  imageVector = Icons.Default.ErrorOutline,
+                  imageVector = Icons.Rounded.ErrorOutline,
                   contentDescription = null,
                   tint = MaterialTheme.colorScheme.error,
                 )
@@ -217,14 +222,14 @@ fun WorkbenchScreen(
                 MetricTile(
                   label = "Classes",
                   value = "%,d".format(dex.header.classDefsSize),
-                  icon = Icons.Default.DataObject,
+                  icon = Icons.Rounded.DataObject,
                   accent = MaterialTheme.colorScheme.primary,
                   modifier = Modifier.weight(1f),
                 )
                 MetricTile(
                   label = "Methods",
                   value = "%,d".format(dex.header.methodIdsSize),
-                  icon = Icons.Default.Code,
+                  icon = Icons.Rounded.Code,
                   accent = MaterialTheme.colorScheme.tertiary,
                   modifier = Modifier.weight(1f),
                 )
@@ -236,14 +241,14 @@ fun WorkbenchScreen(
                 MetricTile(
                   label = "Strings",
                   value = "%,d".format(dex.header.stringIdsSize),
-                  icon = Icons.Default.Memory,
+                  icon = Icons.Rounded.Memory,
                   accent = MaterialTheme.colorScheme.secondary,
                   modifier = Modifier.weight(1f),
                 )
                 MetricTile(
                   label = "Binary Size",
                   value = formatBytes(dex.header.fileSize),
-                  icon = Icons.Default.Storage,
+                  icon = Icons.Rounded.Storage,
                   accent = MaterialTheme.colorScheme.primary,
                   modifier = Modifier.weight(1f),
                 )
@@ -254,11 +259,11 @@ fun WorkbenchScreen(
           item {
             Surface(
               modifier = Modifier.fillMaxWidth(),
-              shape = RoundedCornerShape(18.dp),
+              shape = RoundedCornerShape(24.dp),
               color = MaterialTheme.colorScheme.surfaceContainer,
-              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             ) {
-              Column(modifier = Modifier.padding(16.dp)) {
+              Column(modifier = Modifier.padding(18.dp)) {
                 Row(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.SpaceBetween,
@@ -307,10 +312,12 @@ private fun HeroWorkbenchBanner(
   onOpenPicker: () -> Unit,
   onOpenInstalledApps: () -> Unit,
 ) {
+  val openInteraction = remember { MutableInteractionSource() }
+  val appsInteraction = remember { MutableInteractionSource() }
   Surface(
     modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(22.dp),
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    shape = RoundedCornerShape(24.dp),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
     Box(modifier = Modifier.fillMaxWidth()) {
       Image(
@@ -357,21 +364,25 @@ private fun HeroWorkbenchBanner(
         ) {
           Button(
             onClick = onOpenPicker,
-            modifier = Modifier.weight(1f).testTag("open_dex_apk_button"),
+            interactionSource = openInteraction,
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.weight(1f).expressivePressScale(openInteraction).testTag("open_dex_apk_button"),
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
           ) {
-            Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.action_open_file), maxLines = 1)
           }
           OutlinedButton(
             onClick = onOpenInstalledApps,
-            modifier = Modifier.weight(1f).testTag("open_installed_apps_button"),
+            interactionSource = appsInteraction,
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.weight(1f).expressivePressScale(appsInteraction).testTag("open_installed_apps_button"),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)),
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
           ) {
-            Icon(Icons.Default.Apps, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Rounded.Apps, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.picker_tab_apps), maxLines = 1)
           }
@@ -394,7 +405,7 @@ private fun RecentQuickStrip(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        Icon(Icons.Default.History, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+        Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
         Text("Recent APKs & DEX", style = MaterialTheme.typography.titleMedium)
       }
       TextButton(onClick = onViewAll) {
@@ -406,11 +417,11 @@ private fun RecentQuickStrip(
         Surface(
           modifier =
             Modifier.widthIn(min = 170.dp, max = 230.dp)
-              .clip(RoundedCornerShape(14.dp))
+              .clip(RoundedCornerShape(18.dp))
               .clickable { onSelectRecent(item) },
-          shape = RoundedCornerShape(14.dp),
+          shape = RoundedCornerShape(18.dp),
           color = MaterialTheme.colorScheme.surfaceContainer,
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
         ) {
           Row(
             modifier = Modifier.padding(12.dp),
@@ -419,8 +430,8 @@ private fun RecentQuickStrip(
           ) {
             Icon(
               imageVector =
-                if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Default.Android
-                else Icons.Default.FolderOpen,
+                if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
+                else Icons.Rounded.FolderOpen,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.primary,
               modifier = Modifier.size(20.dp),
@@ -452,16 +463,16 @@ private fun EmptyWorkspaceCard(
 ) {
   Surface(
     modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(18.dp),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainerLow,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
     Column(
       modifier = Modifier.padding(24.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Icon(
-        imageVector = Icons.Default.Memory,
+        imageVector = Icons.Rounded.Memory,
         contentDescription = null,
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp),
@@ -479,7 +490,11 @@ private fun EmptyWorkspaceCard(
       )
       Spacer(Modifier.height(18.dp))
       Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Button(onClick = onOpenPicker, modifier = Modifier.testTag("empty_open_file_btn")) {
+        Button(
+          onClick = onOpenPicker,
+          shape = RoundedCornerShape(20.dp),
+          modifier = Modifier.testTag("empty_open_file_btn"),
+        ) {
           Text(stringResource(R.string.action_open_file))
         }
         TextButton(onClick = onInspectSelfApk, modifier = Modifier.testTag("empty_inspect_apk_btn")) {
@@ -501,12 +516,12 @@ private fun TranspileActionBanner(
   onBuildOutput: () -> Unit,
 ) {
   Surface(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(18.dp),
+    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -541,9 +556,10 @@ private fun TranspileActionBanner(
       ) {
         OutlinedButton(
           onClick = onAutoSelect,
+          shape = RoundedCornerShape(20.dp),
           modifier = Modifier.weight(1f).testTag("auto_select_methods_button"),
         ) {
-          Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
+          Icon(Icons.Rounded.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
           Spacer(Modifier.width(6.dp))
           Text(stringResource(R.string.action_select_app_classes), maxLines = 1)
         }
@@ -560,6 +576,7 @@ private fun TranspileActionBanner(
       ) {
         OutlinedButton(
           onClick = onBrowseClasses,
+          shape = RoundedCornerShape(20.dp),
           modifier = Modifier.weight(1f).testTag("browse_classes_button"),
         ) {
           Text("Browse Classes")
@@ -567,11 +584,12 @@ private fun TranspileActionBanner(
         Button(
           onClick = onBuildOutput,
           enabled = selectedMethodCount > 0,
+          shape = RoundedCornerShape(20.dp),
           modifier = Modifier.weight(1f).testTag("build_c_output_button"),
         ) {
           Text(stringResource(R.string.action_view_output))
           Spacer(Modifier.width(6.dp))
-          Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
+          Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
         }
       }
     }

@@ -10,14 +10,31 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 enum class AppThemeMode(val label: String, val summary: String) {
-  DARK("Obsidian Dark", "High-contrast dark silicon lab theme"),
-  LIGHT("Light Lab", "Crisp daylight lab surface palette"),
-  SYSTEM("Follow System", "Match Android system dark mode"),
+  SYSTEM("Follow System", "Automatically match Android system appearance"),
+  LIGHT("Light", "Crisp daylight Material 3 tonal surfaces"),
+  DARK("Dark", "Deep obsidian tonal surfaces for low-light focus"),
+  AMOLED("AMOLED Black", "Pure #000000 canvas for OLED contrast and power savings"),
 }
+
+data class AccentPreset(
+  val name: String,
+  val hex: String,
+)
+
+val CURATED_ACCENT_PRESETS =
+  listOf(
+    AccentPreset("Silicon Mint", "#2EE59D"),
+    AccentPreset("Pixel Blue", "#4C8DF6"),
+    AccentPreset("Electric Cyan", "#38BDF8"),
+    AccentPreset("Amber Quartz", "#F59E0B"),
+    AccentPreset("Iris Violet", "#8B5CF6"),
+    AccentPreset("Coral Crimson", "#F43F5E"),
+  )
 
 data class AppSettings(
   val themeMode: AppThemeMode = AppThemeMode.DARK,
   val dynamicColor: Boolean = false,
+  val accentSeedHex: String = "#2EE59D",
   val codeFontSizeSp: Int = 12,
   val showLineNumbers: Boolean = true,
   val maxCodePreviewLines: Int = 2500,
@@ -35,6 +52,7 @@ class AppPreferences(private val context: Context) {
   private object Keys {
     val THEME_MODE = stringPreferencesKey("theme_mode")
     val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+    val ACCENT_SEED_HEX = stringPreferencesKey("accent_seed_hex")
     val CODE_FONT_SIZE_SP = intPreferencesKey("code_font_size_sp")
     val SHOW_LINE_NUMBERS = booleanPreferencesKey("show_line_numbers")
     val MAX_CODE_PREVIEW_LINES = intPreferencesKey("max_code_preview_lines")
@@ -53,6 +71,8 @@ class AppPreferences(private val context: Context) {
           prefs[Keys.THEME_MODE]?.let { runCatching { AppThemeMode.valueOf(it) }.getOrNull() }
             ?: defaults.themeMode,
         dynamicColor = prefs[Keys.DYNAMIC_COLOR] ?: defaults.dynamicColor,
+        accentSeedHex =
+          prefs[Keys.ACCENT_SEED_HEX]?.takeIf { isValidHexColor(it) } ?: defaults.accentSeedHex,
         codeFontSizeSp = (prefs[Keys.CODE_FONT_SIZE_SP] ?: defaults.codeFontSizeSp).coerceIn(10, 18),
         showLineNumbers = prefs[Keys.SHOW_LINE_NUMBERS] ?: defaults.showLineNumbers,
         maxCodePreviewLines =
@@ -70,6 +90,9 @@ class AppPreferences(private val context: Context) {
     context.appDataStore.edit { prefs ->
       prefs[Keys.THEME_MODE] = settings.themeMode.name
       prefs[Keys.DYNAMIC_COLOR] = settings.dynamicColor
+      prefs[Keys.ACCENT_SEED_HEX] =
+        if (isValidHexColor(settings.accentSeedHex)) normalizeHexColor(settings.accentSeedHex)
+        else "#2EE59D"
       prefs[Keys.CODE_FONT_SIZE_SP] = settings.codeFontSizeSp
       prefs[Keys.SHOW_LINE_NUMBERS] = settings.showLineNumbers
       prefs[Keys.MAX_CODE_PREVIEW_LINES] = settings.maxCodePreviewLines
@@ -84,4 +107,14 @@ class AppPreferences(private val context: Context) {
   suspend fun resetToDefaults(preserveOnboarding: Boolean = true) {
     saveSettings(AppSettings(hasCompletedOnboarding = preserveOnboarding))
   }
+}
+
+fun normalizeHexColor(input: String): String {
+  val stripped = input.trim().removePrefix("#").uppercase()
+  return "#$stripped"
+}
+
+fun isValidHexColor(input: String): Boolean {
+  val clean = input.trim().removePrefix("#")
+  return clean.length == 6 && clean.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }
 }

@@ -1,8 +1,10 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,17 +23,17 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CloudQueue
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.CloudQueue
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -47,6 +49,7 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,21 +64,23 @@ import com.example.R
 import com.example.cloud.CloudSettings
 import com.example.data.AppSettings
 import com.example.transpiler.TranspilerConfig
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.TagPill
+import com.example.ui.components.expressivePressScale
 
 enum class SettingsSection(
   val title: String,
   val groupName: String,
   val icon: ImageVector,
 ) {
-  APPEARANCE("Appearance & Theme", "General & Editor", Icons.Default.Palette),
-  CODE_EDITOR("Code Editor & Viewer", "General & Editor", Icons.Default.Code),
-  DEX_PARSER("DEX Parser & Workbench", "Analysis & Pipeline", Icons.Default.Memory),
-  GITHUB_CLOUD("GitHub Cloud & Workspace Repo", "Cloud Build & Alerts", Icons.Default.CloudQueue),
-  NDK_SIGNING("NDK Toolchain & APK Signing", "Cloud Build & Alerts", Icons.Default.Build),
-  NOTIFICATIONS("Notifications & Alerts", "Cloud Build & Alerts", Icons.Default.NotificationsActive),
-  STORAGE_RESET("Storage, Cache & Reset", "Maintenance & Info", Icons.Default.Storage),
-  ABOUT("About & Diagnostics", "Maintenance & Info", Icons.Default.Info),
+  APPEARANCE("Appearance & Theme", "General & Editor", Icons.Rounded.Palette),
+  CODE_EDITOR("Code Editor & Viewer", "General & Editor", Icons.Rounded.Code),
+  DEX_PARSER("DEX Parser & Workbench", "Analysis & Pipeline", Icons.Rounded.Memory),
+  GITHUB_CLOUD("GitHub Cloud & Workspace Repo", "Cloud Build & Alerts", Icons.Rounded.CloudQueue),
+  NDK_SIGNING("NDK Toolchain & APK Signing", "Cloud Build & Alerts", Icons.Rounded.Build),
+  NOTIFICATIONS("Notifications & Alerts", "Cloud Build & Alerts", Icons.Rounded.NotificationsActive),
+  STORAGE_RESET("Storage, Cache & Reset", "Maintenance & Info", Icons.Rounded.Storage),
+  ABOUT("About & Diagnostics", "Maintenance & Info", Icons.Rounded.Info),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,7 +163,7 @@ fun SettingsScreen(
               modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_back_btn"),
             ) {
               Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = stringResource(R.string.action_back),
               )
             }
@@ -184,52 +189,13 @@ fun SettingsScreen(
           }
           VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
           Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            SettingsDetailHost(
-              section = detailSection,
-              appSettings = appSettings,
-              cloudSettings = cloudSettings,
-              transpilerConfig = transpilerConfig,
-              recentHistoryCount = recentHistoryCount,
-              hasNotificationPermission = hasNotificationPermission,
-              onUpdateAppSettings = onUpdateAppSettings,
-              onUpdateCloudSettings = onUpdateCloudSettings,
-              onToggleNotifications = onToggleNotifications,
-              onRequestNotificationPermission = onRequestNotificationPermission,
-              onSendTestNotification = onSendTestNotification,
-              onSyncWorkflowToRepo = onSyncWorkflowToRepo,
-              onStartDeviceLogin = onStartDeviceLogin,
-              onSignOutGitHub = onSignOutGitHub,
-              onOpenGitHubAppSettings = onOpenGitHubAppSettings,
-              onGoToPipelineConfig = onGoToPipelineConfig,
-              onOpenRustBridge = onOpenRustBridge,
-              onClearRecentHistory = onClearRecentHistory,
-              onResetAllSettings = onResetAllSettings,
-              onReplayOnboarding = onReplayOnboarding,
-              onCopyText = onCopyText,
-            )
-          }
-        }
-      } else {
-        Box(
-          modifier = Modifier.fillMaxSize().padding(innerPadding),
-          contentAlignment = Alignment.TopCenter,
-        ) {
-          Box(modifier = Modifier.fillMaxSize().widthIn(max = 840.dp)) {
-            if (activeSubScreen == null) {
-              SettingsHubList(
-                appSettings = appSettings,
-                cloudSettings = cloudSettings,
-                transpilerConfig = transpilerConfig,
-                recentHistoryCount = recentHistoryCount,
-                hasNotificationPermission = hasNotificationPermission,
-                selectedSection = null,
-                showSelectionHighlight = false,
-                onSelectSection = { activeSubScreen = it },
-                onGoToPipelineConfig = onGoToPipelineConfig,
-              )
-            } else {
+            AnimatedContent(
+              targetState = detailSection,
+              transitionSpec = { ExpressiveMotion.sharedAxisHorizontal(true) },
+              label = "settingsTabletDetail",
+            ) { currentDetail ->
               SettingsDetailHost(
-                section = activeSubScreen!!,
+                section = currentDetail,
                 appSettings = appSettings,
                 cloudSettings = cloudSettings,
                 transpilerConfig = transpilerConfig,
@@ -251,6 +217,57 @@ fun SettingsScreen(
                 onReplayOnboarding = onReplayOnboarding,
                 onCopyText = onCopyText,
               )
+            }
+          }
+        }
+      } else {
+        Box(
+          modifier = Modifier.fillMaxSize().padding(innerPadding),
+          contentAlignment = Alignment.TopCenter,
+        ) {
+          Box(modifier = Modifier.fillMaxSize().widthIn(max = 840.dp)) {
+            AnimatedContent(
+              targetState = activeSubScreen,
+              transitionSpec = { ExpressiveMotion.sharedAxisHorizontal(targetState != null) },
+              label = "settingsCompactTransition",
+            ) { currentSub ->
+              if (currentSub == null) {
+                SettingsHubList(
+                  appSettings = appSettings,
+                  cloudSettings = cloudSettings,
+                  transpilerConfig = transpilerConfig,
+                  recentHistoryCount = recentHistoryCount,
+                  hasNotificationPermission = hasNotificationPermission,
+                  selectedSection = null,
+                  showSelectionHighlight = false,
+                  onSelectSection = { activeSubScreen = it },
+                  onGoToPipelineConfig = onGoToPipelineConfig,
+                )
+              } else {
+                SettingsDetailHost(
+                  section = currentSub,
+                  appSettings = appSettings,
+                  cloudSettings = cloudSettings,
+                  transpilerConfig = transpilerConfig,
+                  recentHistoryCount = recentHistoryCount,
+                  hasNotificationPermission = hasNotificationPermission,
+                  onUpdateAppSettings = onUpdateAppSettings,
+                  onUpdateCloudSettings = onUpdateCloudSettings,
+                  onToggleNotifications = onToggleNotifications,
+                  onRequestNotificationPermission = onRequestNotificationPermission,
+                  onSendTestNotification = onSendTestNotification,
+                  onSyncWorkflowToRepo = onSyncWorkflowToRepo,
+                  onStartDeviceLogin = onStartDeviceLogin,
+                  onSignOutGitHub = onSignOutGitHub,
+                  onOpenGitHubAppSettings = onOpenGitHubAppSettings,
+                  onGoToPipelineConfig = onGoToPipelineConfig,
+                  onOpenRustBridge = onOpenRustBridge,
+                  onClearRecentHistory = onClearRecentHistory,
+                  onResetAllSettings = onResetAllSettings,
+                  onReplayOnboarding = onReplayOnboarding,
+                  onCopyText = onCopyText,
+                )
+              }
             }
           }
         }
@@ -289,9 +306,9 @@ private fun SettingsHubList(
           )
           Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surfaceContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
           ) {
             Column {
               sections.forEachIndexed { idx, section ->
@@ -315,15 +332,15 @@ private fun SettingsHubList(
                 )
                 if (idx < sections.lastIndex || groupTitle == "Analysis & Pipeline") {
                   HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                    modifier = Modifier.padding(horizontal = 18.dp),
                   )
                 }
               }
               if (groupTitle == "Analysis & Pipeline") {
                 SettingsHubRow(
                   title = "Transpiler Pipeline Shortcut",
-                  icon = Icons.Default.Tune,
+                  icon = Icons.Rounded.Tune,
                   summary = "${transpilerConfig.moduleName} • ${transpilerConfig.jniStyle.name} • allow-init: ${transpilerConfig.allowInit}",
                   badgeText = "Open",
                   selected = false,
@@ -350,17 +367,19 @@ private fun SettingsHubRow(
   testTag: String,
   onClick: () -> Unit,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
   Surface(
     color =
-      if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+      if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.38f)
       else MaterialTheme.colorScheme.surfaceContainer,
     modifier =
       Modifier.fillMaxWidth()
-        .clickable(onClick = onClick)
+        .expressivePressScale(interactionSource, 0.985f)
+        .clickable(interactionSource = interactionSource, indication = androidx.compose.material3.ripple(), onClick = onClick)
         .testTag(testTag),
   ) {
     Row(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+      modifier = Modifier.padding(horizontal = 18.dp, vertical = 15.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -395,7 +414,7 @@ private fun SettingsHubRow(
         )
       }
       Icon(
-        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
         contentDescription = "Open $title",
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.size(20.dp),
@@ -495,7 +514,7 @@ private fun sectionSummary(
 ): String =
   when (section) {
     SettingsSection.APPEARANCE ->
-      "${appSettings.themeMode.label}${if (appSettings.dynamicColor) " • Dynamic" else ""}"
+      "${appSettings.themeMode.label}${if (appSettings.dynamicColor) " • Wallpaper" else " • ${appSettings.accentSeedHex}"}"
     SettingsSection.CODE_EDITOR ->
       "${appSettings.codeFontSizeSp}sp • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"
     SettingsSection.DEX_PARSER ->

@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import android.os.Build
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,16 +20,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.RestartAlt
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,6 +66,8 @@ import com.example.data.AppSettings
 import com.example.data.AppThemeMode
 import com.example.dex.NativeDexParserBridge
 import com.example.transpiler.TranspilerConfig
+import com.example.ui.components.AccentColorPickerSection
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
@@ -81,7 +84,7 @@ fun SettingsAppearanceSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Color Theme Mode") {
+      SubScreenCard(title = "Theme Posture") {
         AppThemeMode.entries.forEach { mode ->
           Row(
             modifier =
@@ -109,17 +112,27 @@ fun SettingsAppearanceSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Material You & Surface Accent") {
+      SubScreenCard(title = "Dynamic Wallpaper Colors") {
         val supportsDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         SettingsToggleRow(
-          title = "Material Dynamic Color",
+          title = "Wallpaper-Based Palette",
           subtitle =
-            if (supportsDynamic) "Adapt surface and accent colors from Android wallpaper"
-            else "Available on Android 12+ (uses Obsidian Silicon palette here)",
+            if (supportsDynamic) "Extract personalized Material 3 tonal roles from your Android wallpaper (works with AMOLED Black too)"
+            else "Available on Android 12+ (custom accent seed used below)",
           checked = appSettings.dynamicColor,
           enabled = supportsDynamic,
           onCheckedChange = { enabled -> onUpdateAppSettings { it.copy(dynamicColor = enabled) } },
           testTag = "settings_dynamic_color_switch",
+        )
+      }
+    }
+
+    item {
+      SubScreenCard(title = "Custom Accent Color") {
+        AccentColorPickerSection(
+          selectedHex = appSettings.accentSeedHex,
+          enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
+          onSelectHex = { hex -> onUpdateAppSettings { it.copy(accentSeedHex = hex, dynamicColor = false) } },
         )
       }
     }
@@ -281,7 +294,7 @@ fun SettingsDexParserSubScreen(
             onClick = onGoToPipelineConfig,
             modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_open_pipeline_btn"),
           ) {
-            Icon(Icons.Default.Tune, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Tune, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("Pipeline Config")
           }
@@ -289,7 +302,7 @@ fun SettingsDexParserSubScreen(
             onClick = onOpenRustBridge,
             modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_open_rust_bridge_btn"),
           ) {
-            Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Build, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("Rust JNI Bridge")
           }
@@ -350,7 +363,7 @@ fun SettingsGitHubCloudSubScreen(
           onValueChange = { id -> onUpdateCloudSettings { it.copy(githubClientId = id.trim()) } },
           label = { Text("GitHub OAuth App Client ID") },
           placeholder = { Text("Ov23li...") },
-          leadingIcon = { Icon(Icons.Default.Key, contentDescription = null) },
+          leadingIcon = { Icon(Icons.Rounded.Key, contentDescription = null) },
           singleLine = true,
           textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
           modifier = Modifier.fillMaxWidth().testTag("settings_client_id_input"),
@@ -372,7 +385,7 @@ fun SettingsGitHubCloudSubScreen(
               enabled = cloudSettings.githubClientId.isNotBlank(),
               modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_start_device_login_btn"),
             ) {
-              Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+              Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
               Text(stringResource(R.string.cloud_sign_in_device))
             }
@@ -388,7 +401,7 @@ fun SettingsGitHubCloudSubScreen(
             onClick = onOpenGitHubAppSettings,
             modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_open_github_dev_btn"),
           ) {
-            Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("GitHub OAuth Settings")
           }
@@ -447,7 +460,7 @@ fun SettingsGitHubCloudSubScreen(
             enabled = cloudSettings.isAuthenticated,
             modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_sync_workflow_btn"),
           ) {
-            Icon(Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("Init / Sync dex2c.yml")
           }
@@ -455,7 +468,7 @@ fun SettingsGitHubCloudSubScreen(
             onClick = { showYamlPreview = !showYamlPreview },
             modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_toggle_yaml_preview_btn"),
           ) {
-            Icon(Icons.Default.Code, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Code, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text(if (showYamlPreview) "Hide dex2c.yml" else "Preview dex2c.yml")
           }
@@ -653,7 +666,7 @@ fun SettingsNotificationsSubScreen(
               onClick = onRequestPermission,
               modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_request_notif_btn"),
             ) {
-              Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
+              Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
               Text("Allow Permission")
             }
@@ -663,7 +676,7 @@ fun SettingsNotificationsSubScreen(
             enabled = hasNotificationPermission,
             modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_test_notif_btn"),
           ) {
-            Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("Send Test Alert")
           }
@@ -712,7 +725,7 @@ fun SettingsStorageResetSubScreen(
           enabled = recentHistoryCount > 0,
           modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_clear_history_btn"),
         ) {
-          Icon(Icons.Default.DeleteSweep, contentDescription = null, modifier = Modifier.size(18.dp))
+          Icon(Icons.Rounded.DeleteSweep, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
           Text("Clear Recent File History")
         }
@@ -739,7 +752,7 @@ fun SettingsStorageResetSubScreen(
             ),
           modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_reset_all_btn"),
         ) {
-          Icon(Icons.Default.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
+          Icon(Icons.Rounded.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
           Text("Reset All Settings to Defaults")
         }
@@ -750,6 +763,7 @@ fun SettingsStorageResetSubScreen(
   if (showClearHistoryDialog) {
     AlertDialog(
       onDismissRequest = { showClearHistoryDialog = false },
+      shape = RoundedCornerShape(28.dp),
       title = { Text("Clear Recent File History?") },
       text = {
         Text("Removes all $recentHistoryCount recent APK/DEX shortcuts from Dex2C Studio. Your APK files on device storage remain untouched.")
@@ -774,6 +788,7 @@ fun SettingsStorageResetSubScreen(
   if (showResetDialog) {
     AlertDialog(
       onDismissRequest = { showResetDialog = false },
+      shape = RoundedCornerShape(28.dp),
       title = { Text("Reset All Settings?") },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -845,7 +860,7 @@ fun SettingsAboutSubScreen(
           onClick = onReplayOnboarding,
           modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_replay_onboarding_btn"),
         ) {
-          Icon(Icons.Default.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
+          Icon(Icons.Rounded.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
           Text(stringResource(R.string.settings_replay_onboarding))
         }
@@ -889,18 +904,18 @@ fun SubScreenCard(
   content: @Composable () -> Unit,
 ) {
   Surface(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(16.dp),
+    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(18.dp)) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         Icon(
-          imageVector = Icons.Default.Lock,
+          imageVector = Icons.Rounded.Lock,
           contentDescription = null,
           tint = MaterialTheme.colorScheme.primary,
           modifier = Modifier.size(16.dp),

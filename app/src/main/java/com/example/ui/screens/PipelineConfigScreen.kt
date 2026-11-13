@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -49,6 +50,7 @@ import com.example.transpiler.JniBindingStyle
 import com.example.transpiler.LoaderMode
 import com.example.transpiler.TargetCLanguage
 import com.example.transpiler.TranspilerConfig
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
@@ -90,9 +92,10 @@ fun PipelineConfigScreen(
           }
           OutlinedButton(
             onClick = onImportDccCfg,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.testTag("import_dcc_cfg_button"),
           ) {
-            Icon(Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text(stringResource(R.string.config_import_dcc_cfg))
           }
@@ -144,6 +147,7 @@ fun PipelineConfigScreen(
             onValueChange = { v -> onUpdateConfig { it.copy(customLoaderClass = v) } },
             label = { Text(stringResource(R.string.config_custom_loader)) },
             singleLine = true,
+            shape = RoundedCornerShape(16.dp),
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.fillMaxWidth().testTag("input_custom_loader"),
           )
@@ -256,6 +260,7 @@ fun PipelineConfigScreen(
             onValueChange = { v -> onUpdateConfig { it.copy(moduleName = v) } },
             label = { Text(stringResource(R.string.config_module_name)) },
             singleLine = true,
+            shape = RoundedCornerShape(16.dp),
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.fillMaxWidth().testTag("input_module_name"),
           )
@@ -295,6 +300,7 @@ fun PipelineConfigScreen(
             label = { Text(stringResource(R.string.config_filter_txt_label)) },
             minLines = 5,
             maxLines = 9,
+            shape = RoundedCornerShape(16.dp),
             textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.fillMaxWidth().testTag("input_filter_txt"),
           )
@@ -305,15 +311,17 @@ fun PipelineConfigScreen(
           ) {
             OutlinedButton(
               onClick = onImportFilterTxt,
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.weight(1f).testTag("import_filter_txt_button"),
             ) {
-              Icon(Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+              Icon(Icons.Rounded.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
               Text(stringResource(R.string.config_import_filter), maxLines = 1)
             }
             Button(
               onClick = onApplyFilterRules,
               enabled = hasLoadedDex,
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.weight(1.2f).testTag("apply_filter_rules_button"),
             ) {
               Text(stringResource(R.string.config_apply_filters), maxLines = 1)
@@ -331,12 +339,12 @@ private fun ConfigSectionCard(
   content: @Composable () -> Unit,
 ) {
   Surface(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(18.dp),
+    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(18.dp)) {
       Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,

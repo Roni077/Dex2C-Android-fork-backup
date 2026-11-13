@@ -18,9 +18,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.rounded.Archive
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
@@ -72,16 +72,16 @@ fun OutputExportScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Surface(
             modifier = Modifier.fillMaxWidth().widthIn(max = 460.dp),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surfaceContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
           ) {
             Column(
               modifier = Modifier.padding(24.dp),
               horizontalAlignment = Alignment.CenterHorizontally,
             ) {
               Icon(
-                imageVector = Icons.Default.Code,
+                imageVector = Icons.Rounded.Code,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(40.dp),
@@ -100,6 +100,7 @@ fun OutputExportScreen(
               Spacer(Modifier.height(16.dp))
               Button(
                 onClick = onGoToClasses,
+                shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.testTag("export_go_classes_btn"),
               ) {
                 Text("Select Methods")
@@ -166,19 +167,21 @@ fun OutputExportScreen(
         ) {
           OutlinedButton(
             onClick = { onCopyFile(activeFile.content) },
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.weight(1f).testTag("copy_output_file_btn"),
             contentPadding = PaddingValues(vertical = 12.dp),
           ) {
-            Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.action_copy_code))
           }
           Button(
             onClick = onExportZip,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.weight(1f).testTag("export_ndk_zip_btn"),
             contentPadding = PaddingValues(vertical = 12.dp),
           ) {
-            Icon(Icons.Default.Archive, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(Icons.Rounded.Archive, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.action_export_zip))
           }

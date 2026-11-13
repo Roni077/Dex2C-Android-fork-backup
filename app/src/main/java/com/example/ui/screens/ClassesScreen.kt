@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -53,6 +54,7 @@ import com.example.dex.DexEncodedMethod
 import com.example.dex.formatAccessFlags
 import com.example.ui.ClassFilterState
 import com.example.ui.DexLoadState
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
@@ -83,16 +85,16 @@ fun ClassesScreen(
           onValueChange = onSearchChange,
           modifier = Modifier.fillMaxWidth().testTag("class_search_input"),
           placeholder = { Text(stringResource(R.string.label_search_classes)) },
-          leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+          leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
           trailingIcon = {
             if (filterState.searchQuery.isNotEmpty()) {
               IconButton(onClick = { onSearchChange("") }) {
-                Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                Icon(Icons.Rounded.Clear, contentDescription = "Clear search")
               }
             }
           },
           singleLine = true,
-          shape = RoundedCornerShape(14.dp),
+          shape = RoundedCornerShape(18.dp),
         )
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -136,6 +138,7 @@ fun ClassesScreen(
             Spacer(Modifier.height(10.dp))
             androidx.compose.material3.Button(
               onClick = onInspectSelfApk,
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.testTag("classes_inspect_apk_btn"),
             ) {
               Text(stringResource(R.string.action_inspect_self_apk))
@@ -195,15 +198,15 @@ private fun DexClassCard(
   val allSelected = methods.isNotEmpty() && selectedCount >= selectableCount
 
   Surface(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(16.dp),
+    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
     border =
       BorderStroke(
         width = 1.dp,
         color =
           if (selectedCount > 0) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-          else MaterialTheme.colorScheme.outlineVariant,
+          else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f),
       ),
   ) {
     Column {
@@ -252,7 +255,7 @@ private fun DexClassCard(
           modifier = Modifier.minimumInteractiveComponentSize(),
         ) {
           Icon(
-            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+            imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
             contentDescription = if (expanded) "Collapse class methods" else "Expand class methods",
           )
         }
@@ -339,7 +342,7 @@ private fun MethodRow(
     }
     Spacer(Modifier.width(6.dp))
     Icon(
-      imageVector = Icons.Default.ChevronRight,
+      imageVector = Icons.Rounded.ChevronRight,
       contentDescription = "Inspect method",
       tint = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.size(18.dp),

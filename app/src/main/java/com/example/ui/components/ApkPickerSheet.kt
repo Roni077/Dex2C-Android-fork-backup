@@ -20,14 +20,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -85,7 +85,8 @@ fun ApkPickerSheet(
   ModalBottomSheet(
     onDismissRequest = onDismiss,
     sheetState = sheetState,
-    containerColor = MaterialTheme.colorScheme.surface,
+    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
   ) {
     Column(
       modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
@@ -109,14 +110,14 @@ fun ApkPickerSheet(
           selected = activeTab == PickerTab.STORAGE,
           onClick = { onSelectTab(PickerTab.STORAGE) },
           text = { Text(stringResource(R.string.picker_tab_storage)) },
-          icon = { Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp)) },
+          icon = { Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp)) },
           modifier = Modifier.testTag("picker_tab_storage"),
         )
         Tab(
           selected = activeTab == PickerTab.APPS,
           onClick = { onSelectTab(PickerTab.APPS) },
           text = { Text(stringResource(R.string.picker_tab_apps)) },
-          icon = { Icon(Icons.Default.Apps, contentDescription = null, modifier = Modifier.size(18.dp)) },
+          icon = { Icon(Icons.Rounded.Apps, contentDescription = null, modifier = Modifier.size(18.dp)) },
           modifier = Modifier.testTag("picker_tab_apps"),
         )
         Tab(
@@ -128,7 +129,7 @@ fun ApkPickerSheet(
               else stringResource(R.string.picker_tab_recent)
             Text(label)
           },
-          icon = { Icon(Icons.Default.History, contentDescription = null, modifier = Modifier.size(18.dp)) },
+          icon = { Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(18.dp)) },
           modifier = Modifier.testTag("picker_tab_recent"),
         )
       }
@@ -177,9 +178,9 @@ private fun StoragePickerTab(
   ) {
     Surface(
       modifier = Modifier.fillMaxWidth(),
-      shape = RoundedCornerShape(18.dp),
+      shape = RoundedCornerShape(24.dp),
       color = MaterialTheme.colorScheme.surfaceContainer,
-      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
     ) {
       Column(
         modifier = Modifier.padding(20.dp),
@@ -190,13 +191,13 @@ private fun StoragePickerTab(
           horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
           Surface(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(14.dp),
             color = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier.size(44.dp),
           ) {
             Box(contentAlignment = Alignment.Center) {
               Icon(
-                imageVector = Icons.Default.FolderOpen,
+                imageVector = Icons.Rounded.FolderOpen,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
               )
@@ -224,10 +225,11 @@ private fun StoragePickerTab(
 
         Button(
           onClick = onBrowseStorage,
+          shape = RoundedCornerShape(20.dp),
           modifier = Modifier.fillMaxWidth().testTag("picker_launch_saf_button"),
           contentPadding = PaddingValues(vertical = 13.dp),
         ) {
-          Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
+          Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
           Text(stringResource(R.string.action_browse_storage))
         }
@@ -236,10 +238,11 @@ private fun StoragePickerTab(
 
     OutlinedButton(
       onClick = onInspectSelfApk,
+      shape = RoundedCornerShape(20.dp),
       modifier = Modifier.fillMaxWidth().testTag("picker_inspect_self_button"),
       contentPadding = PaddingValues(vertical = 12.dp),
     ) {
-      Icon(Icons.Default.Android, contentDescription = null, modifier = Modifier.size(18.dp))
+      Icon(Icons.Rounded.Android, contentDescription = null, modifier = Modifier.size(18.dp))
       Spacer(Modifier.width(8.dp))
       Text(stringResource(R.string.action_inspect_self_apk))
     }
@@ -263,16 +266,16 @@ private fun InstalledAppsTab(
       onValueChange = onSearchChange,
       modifier = Modifier.fillMaxWidth().testTag("picker_apps_search"),
       placeholder = { Text(stringResource(R.string.picker_search_apps)) },
-      leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+      leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
       trailingIcon = {
         if (searchQuery.isNotEmpty()) {
           IconButton(onClick = { onSearchChange("") }) {
-            Icon(Icons.Default.Clear, contentDescription = "Clear filter")
+            Icon(Icons.Rounded.Clear, contentDescription = "Clear filter")
           }
         }
       },
       singleLine = true,
-      shape = RoundedCornerShape(14.dp),
+      shape = RoundedCornerShape(18.dp),
     )
 
     if (isLoading) {
@@ -316,33 +319,33 @@ private fun InstalledAppRow(
   Surface(
     modifier =
       Modifier.fillMaxWidth()
-        .clip(RoundedCornerShape(14.dp))
+        .clip(RoundedCornerShape(18.dp))
         .clickable(onClick = onClick)
         .testTag("installed_app_${app.packageName}"),
-    shape = RoundedCornerShape(14.dp),
+    shape = RoundedCornerShape(18.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
     Row(
-      modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+      modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       if (bitmap != null) {
         Image(
           bitmap = bitmap,
           contentDescription = "${app.appLabel} icon",
-          modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)),
+          modifier = Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)),
         )
       } else {
         Box(
           modifier =
             Modifier.size(40.dp)
-              .clip(RoundedCornerShape(10.dp))
+              .clip(RoundedCornerShape(12.dp))
               .background(MaterialTheme.colorScheme.primaryContainer),
           contentAlignment = Alignment.Center,
         ) {
           Icon(
-            Icons.Default.Android,
+            Icons.Rounded.Android,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onPrimaryContainer,
           )
@@ -374,7 +377,7 @@ private fun InstalledAppRow(
       }
 
       Icon(
-        imageVector = Icons.Default.ChevronRight,
+        imageVector = Icons.Rounded.ChevronRight,
         contentDescription = "Preview APK",
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
       )
@@ -421,21 +424,21 @@ private fun RecentBinariesTab(
           Surface(
             modifier =
               Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(18.dp))
                 .clickable { onSelectRecent(item) }
                 .testTag("recent_item_${item.id}"),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(18.dp),
             color = MaterialTheme.colorScheme.surfaceContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
           ) {
             Row(
-              modifier = Modifier.padding(start = 12.dp, end = 6.dp, top = 10.dp, bottom = 10.dp),
+              modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 10.dp, bottom = 10.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               Icon(
                 imageVector =
-                  if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Default.Android
-                  else Icons.Default.FolderOpen,
+                  if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
+                  else Icons.Rounded.FolderOpen,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp),
@@ -471,7 +474,7 @@ private fun RecentBinariesTab(
                 modifier = Modifier.minimumInteractiveComponentSize(),
               ) {
                 Icon(
-                  imageVector = Icons.Default.DeleteOutline,
+                  imageVector = Icons.Rounded.DeleteOutline,
                   contentDescription = "Remove from history",
                   tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

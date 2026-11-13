@@ -162,6 +162,7 @@ class GitHubCloudWorkflowTest {
     val defaults = com.example.data.AppSettings()
     assertEquals(com.example.data.AppThemeMode.DARK, defaults.themeMode)
     assertFalse(defaults.dynamicColor)
+    assertEquals("#2EE59D", defaults.accentSeedHex)
     assertEquals(12, defaults.codeFontSizeSp)
     assertTrue(defaults.showLineNumbers)
     assertEquals(2500, defaults.maxCodePreviewLines)
@@ -170,6 +171,26 @@ class GitHubCloudWorkflowTest {
     assertEquals(32, defaults.autoSelectMethodLimit)
     assertTrue(defaults.preferRustJniBridge)
     assertFalse(defaults.hasCompletedOnboarding)
-    assertEquals(3, com.example.data.AppThemeMode.entries.size)
+    assertEquals(4, com.example.data.AppThemeMode.entries.size)
+    assertTrue(com.example.data.AppThemeMode.entries.contains(com.example.data.AppThemeMode.AMOLED))
+  }
+
+  @Test
+  fun m3TonalColorEngine_generatesAccessibleLightDarkAndTrueBlackAmoledPalettes() {
+    val seedHex = "#4C8DF6"
+    val parsed = com.example.ui.theme.M3TonalColorEngine.parseHexOrDefault(seedHex)
+    assertEquals(seedHex, com.example.ui.theme.M3TonalColorEngine.toHexString(parsed))
+
+    val light = com.example.ui.theme.M3TonalColorEngine.buildSchemeFromSeed(parsed, isDark = false, isAmoled = false)
+    val dark = com.example.ui.theme.M3TonalColorEngine.buildSchemeFromSeed(parsed, isDark = true, isAmoled = false)
+    val amoled = com.example.ui.theme.M3TonalColorEngine.buildSchemeFromSeed(parsed, isDark = true, isAmoled = true)
+
+    assertTrue(light.background.red > 0.9f)
+    assertTrue(dark.background.blue > dark.background.red)
+    assertEquals(com.example.ui.theme.AmoledBlack, amoled.background)
+    assertEquals(com.example.ui.theme.AmoledBlack, amoled.surface)
+    assertEquals(com.example.ui.theme.AmoledBlack, amoled.surfaceContainerLowest)
+    assertTrue(com.example.data.isValidHexColor("#2EE59D"))
+    assertFalse(com.example.data.isValidHexColor("2EE59"))
   }
 }

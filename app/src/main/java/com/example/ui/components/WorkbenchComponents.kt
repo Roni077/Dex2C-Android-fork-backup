@@ -35,17 +35,17 @@ fun MetricTile(
 ) {
   Surface(
     modifier = modifier,
-    shape = RoundedCornerShape(14.dp),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(14.dp)) {
+    Column(modifier = Modifier.padding(16.dp)) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
           imageVector = icon,
           contentDescription = null,
           tint = accent,
-          modifier = Modifier.size(16.dp),
+          modifier = Modifier.size(18.dp),
         )
         Spacer(Modifier.width(6.dp))
         Text(
@@ -77,15 +77,15 @@ fun TagPill(
 ) {
   Surface(
     modifier = modifier,
-    shape = RoundedCornerShape(8.dp),
+    shape = RoundedCornerShape(50),
     color = containerColor,
   ) {
     Text(
       text = text,
       style = MaterialTheme.typography.labelSmall,
       color = contentColor,
-      fontWeight = FontWeight.Medium,
-      modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+      fontWeight = FontWeight.SemiBold,
+      modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )

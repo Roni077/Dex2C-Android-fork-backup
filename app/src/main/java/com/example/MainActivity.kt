@@ -24,18 +24,13 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CloudQueue
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DataObject
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.CloudQueue
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.DataObject
-import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.CloudQueue
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.DataObject
+import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,6 +76,7 @@ import com.example.ui.Dex2cViewModel
 import com.example.ui.DexLoadState
 import com.example.ui.components.ApkPickerSheet
 import com.example.ui.components.ApkPreviewSheet
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.RustJniBridgeSheet
 import com.example.ui.screens.ClassesScreen
 import com.example.ui.screens.CloudBuildScreen
@@ -125,11 +121,12 @@ class MainActivity : ComponentActivity() {
     setContent {
       val appViewModel: Dex2cViewModel = viewModel()
       val appSettings by appViewModel.appSettings.collectAsStateWithLifecycle()
+      val systemDark = isSystemInDarkTheme()
       val isDarkTheme =
         when (appSettings.themeMode) {
-          AppThemeMode.DARK -> true
+          AppThemeMode.DARK, AppThemeMode.AMOLED -> true
           AppThemeMode.LIGHT -> false
-          AppThemeMode.SYSTEM -> isSystemInDarkTheme()
+          AppThemeMode.SYSTEM -> systemDark
         }
       DisposableEffect(isDarkTheme) {
         enableEdgeToEdge(
@@ -143,8 +140,9 @@ class MainActivity : ComponentActivity() {
         onDispose {}
       }
       Dex2cTheme(
-        darkTheme = isDarkTheme,
+        themeMode = appSettings.themeMode,
         dynamicColor = appSettings.dynamicColor,
+        accentSeedHex = appSettings.accentSeedHex,
         editorSettings =
           EditorDisplaySettings(
             fontSizeSp = appSettings.codeFontSizeSp,
@@ -309,11 +307,11 @@ fun Dex2cApp(
 
   val navItems =
     listOf(
-      NavDestinationItem(ROUTE_WORKBENCH, R.string.nav_workbench, Icons.Filled.Build, Icons.Outlined.Build, "nav_workbench"),
-      NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Filled.DataObject, Icons.Outlined.DataObject, "nav_classes"),
-      NavDestinationItem(ROUTE_CONFIG, R.string.nav_config, Icons.Filled.Tune, Icons.Outlined.Tune, "nav_config"),
-      NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Filled.CloudQueue, Icons.Outlined.CloudQueue, "nav_cloud"),
-      NavDestinationItem(ROUTE_EXPORT, R.string.nav_export, Icons.Filled.Code, Icons.Outlined.Code, "nav_export"),
+      NavDestinationItem(ROUTE_WORKBENCH, R.string.nav_workbench, Icons.Rounded.Build, Icons.Rounded.Build, "nav_workbench"),
+      NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Rounded.DataObject, "nav_classes"),
+      NavDestinationItem(ROUTE_CONFIG, R.string.nav_config, Icons.Rounded.Tune, Icons.Rounded.Tune, "nav_config"),
+      NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Rounded.CloudQueue, "nav_cloud"),
+      NavDestinationItem(ROUTE_EXPORT, R.string.nav_export, Icons.Rounded.Code, Icons.Rounded.Code, "nav_export"),
     )
 
   val backStackEntry by navController.currentBackStackEntryAsState()
@@ -363,7 +361,7 @@ fun Dex2cApp(
                 modifier = Modifier.testTag("topbar_pick_apk_button"),
               ) {
                 Icon(
-                  imageVector = Icons.Default.FolderOpen,
+                  imageVector = Icons.Rounded.FolderOpen,
                   contentDescription = stringResource(R.string.action_open_file),
                 )
               }
@@ -372,7 +370,7 @@ fun Dex2cApp(
                 modifier = Modifier.testTag("topbar_settings_button"),
               ) {
                 Icon(
-                  imageVector = Icons.Default.Settings,
+                  imageVector = Icons.Rounded.Settings,
                   contentDescription = stringResource(R.string.nav_settings),
                 )
               }
@@ -456,9 +454,30 @@ fun Dex2cApp(
               remember(appSettingsHydrated) {
                 if (appSettings.hasCompletedOnboarding) ROUTE_WORKBENCH else ROUTE_ONBOARDING
               }
+            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_WORKBENCH, ROUTE_CLASSES, ROUTE_CONFIG, ROUTE_CLOUD, ROUTE_EXPORT, ROUTE_METHOD_DETAIL, ROUTE_SETTINGS)
             NavHost(
               navController = navController,
               startDestination = startDestination,
+              enterTransition = {
+                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
+              },
+              exitTransition = {
+                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
+              },
+              popEnterTransition = {
+                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
+              },
+              popExitTransition = {
+                val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
+                val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
+              },
             ) {
             composable(ROUTE_WORKBENCH) {
               WorkbenchScreen(

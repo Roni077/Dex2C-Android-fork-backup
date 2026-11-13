@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -12,11 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AddCircleOutline
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -43,6 +45,7 @@ import com.example.R
 import com.example.ui.MethodInspectionState
 import com.example.ui.components.DalvikInstructionViewer
 import com.example.ui.components.DexMethodMetaViewer
+import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
 
@@ -80,7 +83,7 @@ fun MethodDetailScreen(
       },
       navigationIcon = {
         IconButton(onClick = onBack, modifier = Modifier.testTag("method_detail_back_btn")) {
-          Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.action_back))
+          Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.action_back))
         }
       },
       actions = {
@@ -88,7 +91,7 @@ fun MethodDetailScreen(
           onClick = { onCopyCCode(inspection.transpiledC) },
           modifier = Modifier.testTag("method_copy_c_btn"),
         ) {
-          Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.action_copy_code))
+          Icon(Icons.Rounded.ContentCopy, contentDescription = stringResource(R.string.action_copy_code))
         }
       },
     )
@@ -117,10 +120,11 @@ fun MethodDetailScreen(
 
       FilledTonalButton(
         onClick = onToggleSelect,
+        shape = RoundedCornerShape(20.dp),
         modifier = Modifier.testTag("method_toggle_queue_btn"),
       ) {
         Icon(
-          imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.AddCircleOutline,
+          imageVector = if (isSelected) Icons.Rounded.CheckCircle else Icons.Rounded.AddCircleOutline,
           contentDescription = null,
           modifier = Modifier.size(16.dp),
         )
@@ -213,24 +217,31 @@ fun MethodDetailScreen(
             )
           }
           Spacer(Modifier.height(10.dp))
-          when (selectedTab) {
-            0 ->
-              DalvikInstructionViewer(
-                instructions = inspection.instructions,
-                tryBlocks = inspection.tryBlocks,
-                modifier = Modifier.fillMaxSize(),
-              )
-            1 ->
-              SyntaxCodeViewer(
-                code = inspection.transpiledC,
-                modifier = Modifier.fillMaxSize(),
-              )
-            else ->
-              DexMethodMetaViewer(
-                meta = inspection.structuralMeta,
-                tryBlocks = inspection.tryBlocks,
-                modifier = Modifier.fillMaxSize(),
-              )
+          AnimatedContent(
+            targetState = selectedTab,
+            transitionSpec = { ExpressiveMotion.sharedAxisHorizontal(targetState >= initialState) },
+            label = "method_detail_tab",
+            modifier = Modifier.weight(1f),
+          ) { tab ->
+            when (tab) {
+              0 ->
+                DalvikInstructionViewer(
+                  instructions = inspection.instructions,
+                  tryBlocks = inspection.tryBlocks,
+                  modifier = Modifier.fillMaxSize(),
+                )
+              1 ->
+                SyntaxCodeViewer(
+                  code = inspection.transpiledC,
+                  modifier = Modifier.fillMaxSize(),
+                )
+              else ->
+                DexMethodMetaViewer(
+                  meta = inspection.structuralMeta,
+                  tryBlocks = inspection.tryBlocks,
+                  modifier = Modifier.fillMaxSize(),
+                )
+            }
           }
         }
       }

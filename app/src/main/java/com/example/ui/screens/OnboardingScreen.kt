@@ -9,6 +9,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,18 +32,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CloudQueue
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.DataObject
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CloudQueue
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.DataObject
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -59,6 +59,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,8 +78,10 @@ import com.example.cloud.CloudSettings
 import com.example.cloud.DeviceAuthState
 import com.example.data.AppSettings
 import com.example.data.AppThemeMode
+import com.example.ui.components.AccentColorPickerSection
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
+import com.example.ui.components.expressivePressScale
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -143,7 +146,7 @@ fun OnboardingScreen(
             modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_close_btn"),
           ) {
             Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
               contentDescription = stringResource(R.string.action_back),
             )
           }
@@ -243,7 +246,7 @@ fun OnboardingScreen(
               modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_prev_btn"),
             ) {
               Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
               )
@@ -285,6 +288,7 @@ fun OnboardingScreen(
           }
 
           val isLast = pagerState.currentPage == ONBOARDING_PAGE_COUNT - 1
+          val nextInteraction = remember { MutableInteractionSource() }
           Button(
             onClick = {
               if (!isLast) {
@@ -293,8 +297,11 @@ fun OnboardingScreen(
                 if (isReplayMode) onDismissReplay() else onFinish()
               }
             },
+            interactionSource = nextInteraction,
+            shape = RoundedCornerShape(20.dp),
             modifier =
               Modifier
+                .expressivePressScale(nextInteraction, 0.96f)
                 .minimumInteractiveComponentSize()
                 .testTag(if (isLast) "onboarding_finish_btn" else "onboarding_next_btn"),
           ) {
@@ -307,7 +314,7 @@ fun OnboardingScreen(
             if (!isLast) {
               Spacer(Modifier.width(6.dp))
               Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
               )
@@ -327,8 +334,8 @@ private fun OnboardingTourPage() {
   ) {
     Surface(
       modifier = Modifier.fillMaxWidth().height(180.dp),
-      shape = RoundedCornerShape(20.dp),
-      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+      shape = RoundedCornerShape(24.dp),
+      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
     ) {
       Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -370,17 +377,17 @@ private fun OnboardingTourPage() {
     )
 
     OnboardingFeatureCard(
-      icon = Icons.Default.DataObject,
+      icon = Icons.Rounded.DataObject,
       title = "1. Deep Dalvik DEX Inspector",
       description = "Open APKs, multi-dex containers, or the live app APK to browse classes, opcodes, debug info, and structural map tables.",
     )
     OnboardingFeatureCard(
-      icon = Icons.Default.Code,
+      icon = Icons.Rounded.Code,
       title = "2. Kirlif/d2c & Rust JNI Parity",
       description = "Apply dcc.cfg & filter.txt rules, XOR string obfuscation, control-flow flattening, and export CMake + Android.mk bundles.",
     )
     OnboardingFeatureCard(
-      icon = Icons.Default.CloudQueue,
+      icon = Icons.Rounded.CloudQueue,
       title = "3. Cloud CI Builds & Live Alerts",
       description = "Connect your private GitHub workspace once to compile NDK shared libraries remotely and receive background completion alerts.",
     )
@@ -409,7 +416,7 @@ private fun OnboardingThemeEditorPage(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Icon(Icons.Default.Palette, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+      Icon(Icons.Rounded.Palette, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
       Text(
         text = "Appearance & Code Viewer",
         style = MaterialTheme.typography.headlineMedium,
@@ -474,6 +481,16 @@ private fun OnboardingThemeEditorPage(
     }
 
     OnboardingSectionSurface {
+      Text("Custom Accent Seed", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+      Spacer(Modifier.height(10.dp))
+      AccentColorPickerSection(
+        selectedHex = appSettings.accentSeedHex,
+        enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
+        onSelectHex = { hex -> onUpdateAppSettings { it.copy(accentSeedHex = hex, dynamicColor = false) } },
+      )
+    }
+
+    OnboardingSectionSurface {
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -530,7 +547,7 @@ private fun OnboardingCloudSetupPage(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Icon(Icons.Default.CloudQueue, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+      Icon(Icons.Rounded.CloudQueue, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
       Text(
         text = "GitHub Cloud CI (Optional)",
         style = MaterialTheme.typography.headlineMedium,
@@ -548,7 +565,7 @@ private fun OnboardingCloudSetupPage(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-          Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+          Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
           Column(modifier = Modifier.weight(1f)) {
             Text(
               text = "Connected as @${cloudSettings.githubUsername}",
@@ -614,7 +631,7 @@ private fun OnboardingCloudSetupPage(
                     onClick = { onCopyCode(deviceAuthState.userCode) },
                     modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_copy_device_code"),
                   ) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Copy Code")
                   }
@@ -622,7 +639,7 @@ private fun OnboardingCloudSetupPage(
                     onClick = { onOpenBrowserUrl(deviceAuthState.verificationUri) },
                     modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_open_device_url"),
                   ) {
-                    Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Open GitHub")
                   }
@@ -655,7 +672,7 @@ private fun OnboardingCloudSetupPage(
                 enabled = cloudSettings.githubClientId.isNotBlank(),
                 modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_start_oauth_btn"),
               ) {
-                Icon(Icons.Default.Security, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Rounded.Security, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(6.dp))
                 Text("Sign in via Device Flow")
               }
@@ -663,7 +680,7 @@ private fun OnboardingCloudSetupPage(
                 onClick = { onOpenBrowserUrl("https://github.com/settings/developers") },
                 modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_github_dev_settings_btn"),
               ) {
-                Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(6.dp))
                 Text("Create OAuth App")
               }
@@ -692,7 +709,7 @@ private fun OnboardingNotificationsFinishPage(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Icon(Icons.Default.NotificationsActive, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+      Icon(Icons.Rounded.NotificationsActive, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
       Text(
         text = "Alerts & Ready to Build",
         style = MaterialTheme.typography.headlineMedium,
@@ -746,7 +763,7 @@ private fun OnboardingNotificationsFinishPage(
           onClick = onRequestNotificationPermission,
           modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("onboarding_allow_notifications_btn"),
         ) {
-          Icon(Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
+          Icon(Icons.Rounded.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
           Spacer(Modifier.width(8.dp))
           Text("Allow Notification Permission")
         }
@@ -781,12 +798,12 @@ private fun OnboardingFeatureCard(
 ) {
   Surface(
     modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(14.dp),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
     Row(
-      modifier = Modifier.padding(14.dp),
+      modifier = Modifier.padding(16.dp),
       horizontalArrangement = Arrangement.spacedBy(12.dp),
       verticalAlignment = Alignment.Top,
     ) {
@@ -812,11 +829,11 @@ private fun OnboardingFeatureCard(
 private fun OnboardingSectionSurface(content: @Composable () -> Unit) {
   Surface(
     modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(16.dp),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(18.dp)) {
       content()
     }
   }

@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -18,15 +19,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
@@ -92,12 +93,12 @@ fun BuildMonitorCard(
   }
 
   Surface(
-    modifier = modifier.fillMaxWidth().testTag("build_monitor_card"),
-    shape = RoundedCornerShape(16.dp),
+    modifier = modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()).testTag("build_monitor_card"),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(18.dp)) {
       // Card Header
       Row(
         modifier = Modifier.fillMaxWidth(),
@@ -133,7 +134,7 @@ fun BuildMonitorCard(
             label = { Text(if (isAutoPollEnabled) "Auto" else "Paused") },
             leadingIcon = {
               Icon(
-                imageVector = if (isAutoPollEnabled) Icons.Default.Pause else Icons.Default.PlayArrow,
+                imageVector = if (isAutoPollEnabled) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
               )
@@ -146,7 +147,7 @@ fun BuildMonitorCard(
               modifier = Modifier.minimumInteractiveComponentSize().testTag("build_monitor_refresh_btn"),
             ) {
               Icon(
-                imageVector = Icons.Default.Refresh,
+                imageVector = Icons.Rounded.Refresh,
                 contentDescription = "Refresh Build Monitor",
               )
             }
@@ -300,17 +301,17 @@ fun BuildMonitorCard(
               cloudRunState.artifacts.forEach { artifact ->
                 Surface(
                   modifier = Modifier.fillMaxWidth(),
-                  shape = RoundedCornerShape(12.dp),
+                  shape = RoundedCornerShape(18.dp),
                   color = MaterialTheme.colorScheme.surfaceContainerHigh,
                   border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)),
                 ) {
                   Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                   ) {
                     Icon(
-                      Icons.Default.CloudUpload,
+                      Icons.Rounded.CloudUpload,
                       contentDescription = null,
                       tint = MaterialTheme.colorScheme.primary,
                     )
@@ -329,9 +330,10 @@ fun BuildMonitorCard(
                     Button(
                       onClick = { onDownloadArtifact(artifact) },
                       enabled = !artifact.expired,
+                      shape = RoundedCornerShape(20.dp),
                       modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_save_apk_btn"),
                     ) {
-                      Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                      Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(16.dp))
                       Spacer(Modifier.width(6.dp))
                       Text(stringResource(R.string.cloud_save_signed_apk))
                     }
@@ -390,7 +392,7 @@ private fun MonitorGaugeBlock(
 
   Surface(
     modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(14.dp),
+    shape = RoundedCornerShape(18.dp),
     color = MaterialTheme.colorScheme.surfaceContainerHigh,
   ) {
     Row(
@@ -475,7 +477,7 @@ private fun MonitorGaugeBlock(
         ) {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-              imageVector = Icons.Default.Schedule,
+              imageVector = Icons.Rounded.Schedule,
               contentDescription = "Job Duration",
               tint = MaterialTheme.colorScheme.primary,
               modifier = Modifier.size(15.dp),
@@ -495,7 +497,7 @@ private fun MonitorGaugeBlock(
               onClick = { onOpenBrowserUrl(htmlUrl) },
               modifier = Modifier.testTag("build_monitor_open_logs_btn"),
             ) {
-              Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(14.dp))
+              Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(14.dp))
               Spacer(Modifier.width(4.dp))
               Text("Logs", style = MaterialTheme.typography.labelMedium)
             }
@@ -526,14 +528,14 @@ private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
         when {
           step.conclusion == "success" ->
             Icon(
-              Icons.Default.CheckCircle,
+              Icons.Rounded.CheckCircle,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.primary,
               modifier = Modifier.size(15.dp),
             )
           step.conclusion == "failure" ->
             Icon(
-              Icons.Default.ErrorOutline,
+              Icons.Rounded.ErrorOutline,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.error,
               modifier = Modifier.size(15.dp),
@@ -542,7 +544,7 @@ private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
             CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
           else ->
             Icon(
-              Icons.Default.Schedule,
+              Icons.Rounded.Schedule,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.size(15.dp),

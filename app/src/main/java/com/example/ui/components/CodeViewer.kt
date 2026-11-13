@@ -51,9 +51,9 @@ fun SyntaxCodeViewer(
   Box(
     modifier =
       modifier
-        .clip(RoundedCornerShape(14.dp))
+        .clip(RoundedCornerShape(20.dp))
         .background(palette.codeBackground)
-        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(14.dp))
+        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f), RoundedCornerShape(20.dp))
   ) {
     SelectionContainer {
       LazyColumn(
@@ -102,9 +102,9 @@ fun DalvikInstructionViewer(
   Box(
     modifier =
       modifier
-        .clip(RoundedCornerShape(14.dp))
+        .clip(RoundedCornerShape(20.dp))
         .background(palette.codeBackground)
-        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(14.dp))
+        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f), RoundedCornerShape(20.dp))
   ) {
     SelectionContainer {
       LazyColumn(
