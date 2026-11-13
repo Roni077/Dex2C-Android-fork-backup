@@ -18,7 +18,9 @@ import com.example.cloud.CloudBuildNotifier
 import com.example.cloud.CloudBuildRunState
 import com.example.cloud.CloudDownloadedApk
 import com.example.cloud.CloudErrorAction
+import com.example.cloud.CloudLiveNotificationContent
 import com.example.cloud.CloudSettings
+import com.example.cloud.CloudTimeUtil
 import com.example.cloud.Dex2cWorkflowGenerator
 import com.example.cloud.DeviceAuthState
 import com.example.cloud.GitHubApiClient
@@ -554,6 +556,22 @@ class Dex2cViewModel @JvmOverloads constructor(
     rebuildBundle()
   }
 
+  fun togglePackageSelection(packageClasses: List<DexClassInfo>) {
+    val allowInit = _config.value.allowInit
+    val bytecodeIds =
+      packageClasses.flatMap { cls ->
+        cls.allMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+      }
+    val targetIds =
+      bytecodeIds.ifEmpty { packageClasses.flatMap { cls -> cls.allMethods.map { it.id } } }.toSet()
+    if (targetIds.isEmpty()) return
+    _selectedMethodIds.update { current ->
+      val allSelected = targetIds.all { it in current }
+      if (allSelected) current - targetIds else current + targetIds
+    }
+    rebuildBundle()
+  }
+
   fun autoSelectAppMethods() {
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val allowInit = _config.value.allowInit
@@ -696,11 +714,16 @@ class Dex2cViewModel @JvmOverloads constructor(
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val cfg = _config.value
     viewModelScope.launch {
-      val newCode =
-        withContext(Dispatchers.Default) {
-          Dex2cTranspiler.transpileMethodToC(ready.parsedDex, current.method, cfg)
-        }
-      _inspection.value = current.copy(transpiledC = newCode)
+      try {
+        val newCode =
+          withContext(Dispatchers.Default) {
+            Dex2cTranspiler.transpileMethodToC(ready.parsedDex, current.method, cfg)
+          }
+        _inspection.value = current.copy(transpiledC = newCode)
+      } catch (t: Throwable) {
+        if (t is CancellationException) throw t
+        _statusBanner.value = "C preview failed: ${t.message ?: t::class.simpleName}"
+      }
     }
   }
 
@@ -716,16 +739,22 @@ class Dex2cViewModel @JvmOverloads constructor(
     bundleJob =
       viewModelScope.launch {
         _isTranspiling.value = true
-        val bundle =
-          withContext(Dispatchers.Default) {
-            val methods =
-              ready.parsedDex.classes
-                .flatMap { it.allMethods }
-                .filter { it.id in selectedIds }
-            Dex2cTranspiler.transpileBundle(ready.parsedDex, methods, cfg)
-          }
-        _generatedBundle.value = bundle
-        _isTranspiling.value = false
+        try {
+          val bundle =
+            withContext(Dispatchers.Default) {
+              val methods =
+                ready.parsedDex.classes
+                  .flatMap { it.allMethods }
+                  .filter { it.id in selectedIds }
+              Dex2cTranspiler.transpileBundle(ready.parsedDex, methods, cfg)
+            }
+          _generatedBundle.value = bundle
+        } catch (t: Throwable) {
+          if (t is CancellationException) throw t
+          _statusBanner.value = "Transpilation failed: ${t.message ?: t::class.simpleName}"
+        } finally {
+          _isTranspiling.value = false
+        }
       }
   }
 
@@ -978,6 +1007,7 @@ class Dex2cViewModel @JvmOverloads constructor(
     repoSetupJob?.cancel()
     cloudRunPollJob?.cancel()
     CloudBuildMonitorScheduler.cancelMonitor(getApplication())
+    CloudBuildNotifier.cancelLiveProgressNotification(getApplication())
     viewModelScope.launch {
       cloudPrefs.clearAuthSession()
       _deviceAuthState.value = DeviceAuthState.Idle
@@ -1207,7 +1237,28 @@ class Dex2cViewModel @JvmOverloads constructor(
           val branch = settings.defaultBranch.ifBlank { "main" }
           val transCfg = _config.value
 
-          _cloudRunState.value = CloudBuildRunState.UploadingInputs("Auto-syncing dex2c.yml, dcc.cfg & filter.txt…")
+          fun postLiveUploadNotification(
+            stageLabel: String,
+            fraction: Float?,
+            uploaded: Long = 0L,
+            total: Long = 0L,
+          ) {
+            postLiveProgressNotification(
+              CloudBuildNotifier.buildUploadProgressNotification(
+                stageLabel = stageLabel,
+                bytesUploaded = uploaded,
+                totalBytes = total,
+                progressFraction = fraction,
+              )
+            )
+          }
+
+          _cloudRunState.value =
+            CloudBuildRunState.UploadingInputs(
+              message = "Auto-syncing dex2c.yml (1/3)…",
+              progressFraction = 0.05f,
+            )
+          postLiveUploadNotification("Syncing dex2c.yml…", 0.05f)
           NetworkResilience.retryTransient(maxAttempts = 3) {
             withContext(Dispatchers.IO) {
               gitHubClient.upsertRepoFile(
@@ -1221,6 +1272,13 @@ class Dex2cViewModel @JvmOverloads constructor(
               )
             }
           }
+
+          _cloudRunState.value =
+            CloudBuildRunState.UploadingInputs(
+              message = "Auto-syncing dcc.cfg (2/3)…",
+              progressFraction = 0.12f,
+            )
+          postLiveUploadNotification("Syncing dcc.cfg…", 0.12f)
           NetworkResilience.retryTransient(maxAttempts = 3) {
             withContext(Dispatchers.IO) {
               gitHubClient.upsertRepoFile(
@@ -1234,6 +1292,13 @@ class Dex2cViewModel @JvmOverloads constructor(
               )
             }
           }
+
+          _cloudRunState.value =
+            CloudBuildRunState.UploadingInputs(
+              message = "Auto-syncing filter.txt (3/3)…",
+              progressFraction = 0.20f,
+            )
+          postLiveUploadNotification("Syncing filter.txt…", 0.20f)
           NetworkResilience.retryTransient(maxAttempts = 3) {
             withContext(Dispatchers.IO) {
               gitHubClient.upsertRepoFile(
@@ -1249,8 +1314,6 @@ class Dex2cViewModel @JvmOverloads constructor(
           }
 
           if (urlFallback.isEmpty() && apkChoice != null) {
-            _cloudRunState.value =
-              CloudBuildRunState.UploadingInputs("Uploading ${apkChoice.label} to private repo…")
             val apkBytes =
               withContext(Dispatchers.IO) {
                 when {
@@ -1263,12 +1326,24 @@ class Dex2cViewModel @JvmOverloads constructor(
               }
             val limitBytes = settings.maxDirectUploadMb.coerceIn(5, 95) * 1024 * 1024
             if (apkBytes.size > limitBytes) {
+              CloudBuildNotifier.cancelLiveProgressNotification(getApplication())
               _cloudRunState.value =
                 CloudBuildRunState.Error(
                   "APK (${apkBytes.size / (1024 * 1024)} MB) exceeds ${settings.maxDirectUploadMb} MB direct commit limit. Paste a direct APK URL below instead."
                 )
               return@launch
             }
+            val apkTotalBytes = apkBytes.size.toLong()
+            _cloudRunState.value =
+              CloudBuildRunState.UploadingInputs(
+                message = "Uploading ${apkChoice.label}…",
+                progressFraction = 0.22f,
+                bytesUploaded = 0L,
+                totalBytes = apkTotalBytes,
+              )
+            postLiveUploadNotification("Uploading ${apkChoice.label}", 0.22f, 0L, apkTotalBytes)
+
+            var lastNotifyAtMs = 0L
             NetworkResilience.retryTransient(maxAttempts = 3) {
               withContext(Dispatchers.IO) {
                 gitHubClient.upsertRepoFile(
@@ -1279,6 +1354,30 @@ class Dex2cViewModel @JvmOverloads constructor(
                   branch = branch,
                   commitMessage = "Upload target APK (${apkChoice.label}) for Dex2C build",
                   contentBytes = apkBytes,
+                  onUploadProgress = { written, wireTotal ->
+                    val wireRatio =
+                      if (wireTotal > 0L) (written.toFloat() / wireTotal.toFloat()).coerceIn(0f, 1f)
+                      else 0f
+                    val displayUploaded = (wireRatio * apkTotalBytes).toLong().coerceIn(0L, apkTotalBytes)
+                    val overallFraction = (0.22f + wireRatio * 0.74f).coerceIn(0.22f, 0.96f)
+                    _cloudRunState.value =
+                      CloudBuildRunState.UploadingInputs(
+                        message = "Uploading ${apkChoice.label}…",
+                        progressFraction = overallFraction,
+                        bytesUploaded = displayUploaded,
+                        totalBytes = apkTotalBytes,
+                      )
+                    val now = System.currentTimeMillis()
+                    if (written >= wireTotal || now - lastNotifyAtMs >= 250L) {
+                      lastNotifyAtMs = now
+                      postLiveUploadNotification(
+                        stageLabel = "Uploading ${apkChoice.label}",
+                        fraction = overallFraction,
+                        uploaded = displayUploaded,
+                        total = apkTotalBytes,
+                      )
+                    }
+                  },
                 )
               }
             }
@@ -1291,6 +1390,7 @@ class Dex2cViewModel @JvmOverloads constructor(
             }
 
           _cloudRunState.value = CloudBuildRunState.Dispatching
+          postLiveUploadNotification("Triggering dex2c.yml workflow…", 0.98f)
           NetworkResilience.retryTransient(maxAttempts = 3) {
             withContext(Dispatchers.IO) {
               gitHubClient.dispatchWorkflow(
@@ -1361,6 +1461,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           pollWorkflowRunUntilDone(settings, owner, repo, initialRun.id, notifyIfCompleted = true)
         } catch (t: Throwable) {
           if (t is CancellationException) throw t
+          CloudBuildNotifier.cancelLiveProgressNotification(getApplication())
           _cloudRunState.value =
             CloudBuildRunState.Error(
               message =
@@ -1582,6 +1683,8 @@ class Dex2cViewModel @JvmOverloads constructor(
           durationMs = durationMs,
           hasArtifacts = artifacts.any { !it.expired },
         )
+      } else {
+        CloudBuildNotifier.cancelLiveProgressNotification(getApplication())
       }
       true
     } else {
@@ -1597,6 +1700,21 @@ class Dex2cViewModel @JvmOverloads constructor(
           startedAtMillis = startedMs,
           lastPolledAtMillis = nowMs,
         )
+      val doneSteps = job.steps.count { it.status == "completed" }
+      val activeStep =
+        job.steps.firstOrNull { it.status == "in_progress" }?.name
+          ?: job.steps.lastOrNull { it.status == "completed" }?.name
+      postLiveProgressNotification(
+        content =
+          CloudBuildNotifier.buildWorkflowProgressNotification(
+            runNumber = run.runNumber,
+            status = run.status,
+            activeStepName = activeStep,
+            completedSteps = doneSteps,
+            totalSteps = job.steps.size,
+          ),
+        runId = run.id,
+      )
       false
     }
   }
@@ -1623,19 +1741,88 @@ class Dex2cViewModel @JvmOverloads constructor(
     val settings = _cloudSettings.value
     if (!settings.isAuthenticated) return
     val prevState = _cloudRunState.value
+    val completedSnapshot = prevState as? CloudBuildRunState.Completed
+    val expectedBytes = artifact.sizeInBytes
     viewModelScope.launch {
       try {
-        _cloudRunState.value = CloudBuildRunState.SavingArtifact("Downloading ${artifact.name}…")
+        val initialFraction = if (expectedBytes > 0L) 0f else null
+        _cloudRunState.value =
+          CloudBuildRunState.SavingArtifact(
+            label = "Downloading ${artifact.name}…",
+            bytesDownloaded = 0L,
+            totalBytes = expectedBytes,
+            progressFraction = initialFraction,
+            completedSnapshot = completedSnapshot,
+          )
+        postLiveProgressNotification(
+          content =
+            CloudBuildNotifier.buildDownloadProgressNotification(
+              artifactName = artifact.name,
+              bytesDownloaded = 0L,
+              totalBytes = expectedBytes,
+              progressFraction = initialFraction,
+            ),
+          runId = completedSnapshot?.runId,
+        )
+
+        var lastNotifyAtMs = 0L
         val extracted =
           withContext(Dispatchers.IO) {
-            val zipBytes = gitHubClient.downloadArtifactZip(settings.accessToken, artifact.archiveDownloadUrl)
+            val zipBytes =
+              gitHubClient.downloadArtifactZip(
+                token = settings.accessToken,
+                archiveDownloadUrl = artifact.archiveDownloadUrl,
+                expectedTotalBytes = expectedBytes,
+                onDownloadProgress = { read, total ->
+                  val effectiveTotal = if (total > 0L) total else expectedBytes
+                  val fraction =
+                    if (effectiveTotal > 0L) (read.toFloat() / effectiveTotal.toFloat()).coerceIn(0f, 1f)
+                    else null
+                  _cloudRunState.value =
+                    CloudBuildRunState.SavingArtifact(
+                      label = "Downloading ${artifact.name}…",
+                      bytesDownloaded = read,
+                      totalBytes = effectiveTotal,
+                      progressFraction = fraction,
+                      completedSnapshot = completedSnapshot,
+                    )
+                  val now = System.currentTimeMillis()
+                  if ((effectiveTotal > 0L && read >= effectiveTotal) || now - lastNotifyAtMs >= 250L) {
+                    lastNotifyAtMs = now
+                    postLiveProgressNotification(
+                      content =
+                        CloudBuildNotifier.buildDownloadProgressNotification(
+                          artifactName = artifact.name,
+                          bytesDownloaded = read,
+                          totalBytes = effectiveTotal,
+                          progressFraction = fraction,
+                        ),
+                      runId = completedSnapshot?.runId,
+                    )
+                  }
+                },
+              )
             gitHubClient.extractApkFromArtifactZip(zipBytes)
           }
         _cloudRunState.value = prevState
         _pendingCloudApkSave.value = extracted
+        CloudBuildNotifier.notifyDownloadCompleted(
+          context = getApplication(),
+          fileName = extracted.fileName,
+          isError = false,
+          notificationsEnabled = _cloudSettings.value.notificationsEnabled,
+          bodyOverride = "Downloaded ${extracted.fileName} (${CloudTimeUtil.formatTransferBytes(extracted.bytes.size.toLong())}). Choose save location.",
+        )
       } catch (t: Throwable) {
+        if (t is CancellationException) throw t
         _cloudRunState.value = prevState
         _statusBanner.value = "Artifact download failed: ${t.message}"
+        CloudBuildNotifier.notifyDownloadCompleted(
+          context = getApplication(),
+          fileName = artifact.name,
+          isError = true,
+          notificationsEnabled = _cloudSettings.value.notificationsEnabled,
+        )
       }
     }
   }
@@ -1652,6 +1839,13 @@ class Dex2cViewModel @JvmOverloads constructor(
         }
         _pendingCloudApkSave.value = null
         _statusBanner.value = "Saved ${pending.fileName}!"
+        CloudBuildNotifier.notifyDownloadCompleted(
+          context = context,
+          fileName = pending.fileName,
+          isError = false,
+          notificationsEnabled = _cloudSettings.value.notificationsEnabled,
+          bodyOverride = "Saved ${pending.fileName} (${CloudTimeUtil.formatTransferBytes(pending.bytes.size.toLong())}) to device.",
+        )
       } catch (t: Throwable) {
         _statusBanner.value = "Save failed: ${t.message}"
       }
@@ -1660,6 +1854,19 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun clearPendingCloudApkSave() {
     _pendingCloudApkSave.value = null
+  }
+
+  private fun postLiveProgressNotification(
+    content: CloudLiveNotificationContent,
+    runId: Long? = null,
+  ) {
+    if (!_cloudSettings.value.notificationsEnabled) return
+    CloudBuildNotifier.updateLiveProgressNotification(
+      context = getApplication(),
+      content = content,
+      runId = runId,
+      notificationsEnabled = true,
+    )
   }
 
   private fun queryDisplayName(uri: Uri): String? {

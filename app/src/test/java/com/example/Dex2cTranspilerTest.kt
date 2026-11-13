@@ -106,6 +106,55 @@ class Dex2cTranspilerTest {
     assertTrue("arm64-v8a" in decoded.targetAbis)
   }
 
+  @Test
+  fun transpileMethodWithPercentFormatSpecifiersAndCommentCloseDoesNotCrash() {
+    val formatLiteral = "Count=%d %s %20 100% /* */"
+    val parsed = DexParser.parseDex(buildMinimalTestDex(), "unit_test.dex", "classes.dex")
+    val method = parsed.classes.first().directMethods.first()
+
+    // Append synthetic Dalvik instructions at the end of rawBytes:
+    //   0000: const-string v0, string@stringIdx   (0x001A, stringIdx)
+    //   0002: return v0                             (0x000F)
+    val stringIdx = parsed.strings.size
+    val extraInsns =
+      ByteBuffer.allocate(6)
+        .order(ByteOrder.LITTLE_ENDIAN)
+        .putShort(0x001A.toShort())
+        .putShort(stringIdx.toShort())
+        .putShort(0x000F.toShort())
+        .array()
+    val newInsnsOffset = parsed.rawBytes.size
+    val dexWithString =
+      parsed.copy(
+        rawBytes = parsed.rawBytes + extraInsns,
+        strings = parsed.strings + formatLiteral,
+      )
+    val modifiedMethod =
+      method.copy(
+        codeMeta =
+          method.codeMeta!!.copy(
+            insnsCount = 3,
+            insnsOffsetBytes = newInsnsOffset,
+          )
+      )
+
+    val flattenedPlainCfg =
+      TranspilerConfig(
+        controlFlowFlattening = true,
+        stringEncryption = false,
+      )
+    val plainC = Dex2cTranspiler.transpileMethodToC(dexWithString, modifiedMethod, flattenedPlainCfg)
+    assertTrue(plainC.contains("case 0x0000u:"))
+    assertTrue(plainC.contains("case 0x0002u:"))
+    assertTrue(plainC.contains("Count=%d %s %20 100%"))
+    assertFalse(plainC.contains("/* */ */"))
+
+    val flattenedEncCfg = flattenedPlainCfg.copy(stringEncryption = true)
+    val bundle = Dex2cTranspiler.transpileBundle(dexWithString, listOf(modifiedMethod), flattenedEncCfg)
+    assertEquals(1, bundle.transpiledMethodCount)
+    assertTrue(bundle.sourceFile.content.contains("dex2c_xor_decode"))
+  }
+
   private fun buildMinimalTestDex(): ByteArray {
     val strings = listOf("I", "III", "Lcom/example/SecretCalc;", "Ljava/lang/Object;", "compute")
     val strDataStream = ByteArrayOutputStream()

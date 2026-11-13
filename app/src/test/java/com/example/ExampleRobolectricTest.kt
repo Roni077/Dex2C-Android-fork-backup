@@ -577,4 +577,223 @@ class ExampleRobolectricTest {
     }
     composeTestRule.onNodeWithText("Save Build Log").assertIsDisplayed()
   }
+
+  @Test
+  fun `buildMonitor renders upload and download progress bars with bytes and updates live notification`() {
+    val app = ApplicationProvider.getApplicationContext<Application>()
+    org.robolectric.Shadows.shadowOf(app).grantPermissions(android.Manifest.permission.POST_NOTIFICATIONS)
+    var runState by mutableStateOf<CloudBuildRunState>(
+      CloudBuildRunState.UploadingInputs(
+        message = "Uploading base.apk…",
+        progressFraction = 0.62f,
+        bytesUploaded = 1_572_864L,
+        totalBytes = 2_621_440L,
+      )
+    )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        BuildMonitorCard(
+          cloudSettings = CloudSettings(accessToken = "gho_abc", githubUsername = "userio12", workflowInitialized = true),
+          cloudRunState = runState,
+          isAutoPollEnabled = true,
+          onToggleAutoPoll = {},
+          onRefreshMonitor = {},
+          onOpenBrowserUrl = {},
+          onDownloadArtifact = {},
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithTag("build_monitor_upload_progress").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_monitor_upload_bar").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_monitor_upload_pct").assertTextContains("62%")
+    composeTestRule.onNodeWithTag("build_monitor_upload_bytes").assertTextContains("1.50 MB / 2.50 MB")
+
+    val snapshot =
+      CloudBuildRunState.Completed(
+        runId = 909L,
+        runNumber = 15,
+        conclusion = "success",
+        htmlUrl = "https://github.com/userio12/dex2c-cloud-workspace/actions/runs/909",
+        artifacts = emptyList(),
+        steps = listOf(GitHubWorkflowStep("Run Kirlif/d2c Compilation", "completed", "success")),
+      )
+    runState =
+      CloudBuildRunState.SavingArtifact(
+        label = "Downloading dex2c-signed-apk…",
+        bytesDownloaded = 2_097_152L,
+        totalBytes = 4_194_304L,
+        progressFraction = 0.50f,
+        completedSnapshot = snapshot,
+      )
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("build_monitor_download_progress").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_monitor_download_bar").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_monitor_download_pct").assertTextContains("50%")
+    composeTestRule.onNodeWithTag("build_monitor_download_bytes").assertTextContains("2.00 MB / 4.00 MB")
+
+    val shadowNm = org.robolectric.Shadows.shadowOf(
+      app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    )
+    CloudBuildNotifier.ensureNotificationChannel(app)
+    val progressChannel = (app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+      .getNotificationChannel(CloudBuildNotifier.PROGRESS_CHANNEL_ID)
+    assertNotNull(progressChannel)
+    assertEquals(NotificationManager.IMPORTANCE_LOW, progressChannel.importance)
+
+    val liveDownload =
+      CloudBuildNotifier.buildDownloadProgressNotification(
+        artifactName = "dex2c-signed-apk",
+        bytesDownloaded = 2_097_152L,
+        totalBytes = 4_194_304L,
+        progressFraction = 0.50f,
+      )
+    assertTrue(CloudBuildNotifier.updateLiveProgressNotification(app, liveDownload, runId = 909L))
+    val postedLive = shadowNm.getNotification(CloudBuildNotifier.LIVE_PROGRESS_NOTIFICATION_ID)
+    assertNotNull(postedLive)
+    assertEquals(CloudBuildNotifier.PROGRESS_CHANNEL_ID, postedLive.channelId)
+
+    assertTrue(CloudBuildNotifier.notifyDownloadCompleted(app, "dex2c-signed-output.apk"))
+    assertNull(shadowNm.getNotification(CloudBuildNotifier.LIVE_PROGRESS_NOTIFICATION_ID))
+    assertNotNull(shadowNm.getNotification(CloudBuildNotifier.DOWNLOAD_DONE_NOTIFICATION_ID))
+  }
+
+  @Test
+  fun `classesScreen groups packages with tri-state checkbox and switches between tree and flat view`() {
+    fun makeClass(idx: Int, pkg: String, simple: String, methodName: String): com.example.dex.DexClassInfo {
+      val clsDesc = "L${pkg.replace('.', '/')}/$simple;"
+      val m =
+        com.example.dex.DexEncodedMethod(
+          id = "m_$idx",
+          methodIndex = idx,
+          methodRef =
+            com.example.dex.DexMethodRef(
+              definingClass = clsDesc,
+              proto = com.example.dex.DexProto("V", "V", emptyList()),
+              name = methodName,
+            ),
+          accessFlags = 0x0001,
+          isDirect = false,
+          codeMeta =
+            com.example.dex.DexCodeMeta(
+              registersSize = 2,
+              insSize = 1,
+              outsSize = 0,
+              triesSize = 0,
+              insnsCount = 4,
+              insnsOffsetBytes = 0,
+            ),
+        )
+      return com.example.dex.DexClassInfo(
+        classIndex = idx,
+        descriptor = clsDesc,
+        fullName = "$pkg.$simple",
+        simpleName = simple,
+        packageName = pkg,
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "$simple.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = listOf(m),
+      )
+    }
+
+    val c1 = makeClass(1, "okhttp3", "Address", "url")
+    val c2 = makeClass(2, "okhttp3", "Authenticator", "authenticate")
+    val c3 = makeClass(3, "okio", "ForwardingSource", "read")
+    val classes = listOf(c1, c2, c3)
+    val dummyDex =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "test.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(0),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n035",
+            version = "035",
+            checksum = 1L,
+            sha1Hex = "00",
+            fileSize = 0,
+            endianTag = 0x12345678L,
+            stringIdsSize = 0,
+            typeIdsSize = 0,
+            protoIdsSize = 0,
+            fieldIdsSize = 0,
+            methodIdsSize = 0,
+            classDefsSize = 3,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = classes,
+      )
+    val readyState = com.example.ui.DexLoadState.Ready("test.apk", emptyList(), "classes.dex", dummyDex)
+    var selectedIds by mutableStateOf(setOf("m_1"))
+    var packageToggleInvoked = false
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.ClassesScreen(
+          loadState = readyState,
+          classes = classes,
+          filterState = com.example.ui.ClassFilterState(),
+          selectedMethodIds = selectedIds,
+          allowInit = false,
+          onSearchChange = {},
+          onToggleHideFramework = {},
+          onToggleOnlyBytecode = {},
+          onToggleOnlySelected = {},
+          onTogglePackageSelection = { pkgClasses ->
+            packageToggleInvoked = true
+            val ids = pkgClasses.flatMap { it.allMethods }.map { it.id }.toSet()
+            selectedIds = if (ids.all { it in selectedIds }) selectedIds - ids else selectedIds + ids
+          },
+          onToggleClassSelection = {},
+          onToggleMethodSelection = {},
+          onInspectMethod = { _, _ -> },
+          onInspectSelfApk = {},
+        )
+      }
+    }
+
+    // Initially in Tree mode: package rows shown, class rows collapsed
+    composeTestRule.onNodeWithTag("pkg_row_okhttp3").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pkg_row_okio").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").assert(
+      androidx.compose.ui.test.SemanticsMatcher.expectValue(
+        androidx.compose.ui.semantics.SemanticsProperties.ToggleableState,
+        androidx.compose.ui.state.ToggleableState.Indeterminate,
+      )
+    )
+
+    // Tapping package checkbox selects all methods in okhttp3
+    composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(packageToggleInvoked)
+    assertTrue("m_1" in selectedIds && "m_2" in selectedIds)
+    composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").assert(
+      androidx.compose.ui.test.SemanticsMatcher.expectValue(
+        androidx.compose.ui.semantics.SemanticsProperties.ToggleableState,
+        androidx.compose.ui.state.ToggleableState.On,
+      )
+    )
+
+    // Expand okhttp3 folder -> reveals Address and Authenticator
+    composeTestRule.onNodeWithTag("pkg_row_okhttp3").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("class_row_1").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("class_row_2").assertIsDisplayed()
+
+    // Switch to Flat view -> shows ForwardingSource without folder nesting
+    composeTestRule.onNodeWithTag("chip_view_mode_toggle").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("class_row_3").assertIsDisplayed()
+  }
 }

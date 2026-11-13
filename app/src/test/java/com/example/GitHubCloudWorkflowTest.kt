@@ -286,4 +286,127 @@ class GitHubCloudWorkflowTest {
     assertTrue(dnsMsg.contains("DNS lookup failed"))
     assertTrue(dnsMsg.contains("Retry"))
   }
+
+  @Test
+  fun cloudBuildNotifier_buildsLiveStageNotificationsForUploadBuildAndDownload() {
+    val upload =
+      com.example.cloud.CloudBuildNotifier.buildUploadProgressNotification(
+        stageLabel = "Uploading target.apk",
+        bytesUploaded = 1_048_576L,
+        totalBytes = 2_097_152L,
+        progressFraction = 0.50f,
+      )
+    assertEquals(com.example.cloud.CloudLivePhase.UPLOADING, upload.phase)
+    assertEquals(50, upload.progressCurrent)
+    assertEquals(100, upload.progressMax)
+    assertFalse(upload.indeterminate)
+    assertTrue(upload.body.contains("1.00 MB / 2.00 MB"))
+    assertTrue(upload.body.contains("50%"))
+
+    val building =
+      com.example.cloud.CloudBuildNotifier.buildWorkflowProgressNotification(
+        runNumber = 19,
+        status = "in_progress",
+        activeStepName = "Run Kirlif/d2c Compilation",
+        completedSteps = 4,
+        totalSteps = 10,
+      )
+    assertEquals(com.example.cloud.CloudLivePhase.BUILDING, building.phase)
+    assertTrue(building.title.contains("#19"))
+    assertEquals(4, building.progressCurrent)
+    assertEquals(10, building.progressMax)
+    assertTrue(building.body.contains("Step 4/10"))
+    assertTrue(building.body.contains("Run Kirlif/d2c Compilation"))
+
+    val download =
+      com.example.cloud.CloudBuildNotifier.buildDownloadProgressNotification(
+        artifactName = "dex2c-signed-apk",
+        bytesDownloaded = 1_572_864L,
+        totalBytes = 3_145_728L,
+        progressFraction = 0.50f,
+      )
+    assertEquals(com.example.cloud.CloudLivePhase.DOWNLOADING, download.phase)
+    assertTrue(download.title.contains("dex2c-signed-apk"))
+    assertEquals(50, download.progressCurrent)
+    assertTrue(download.body.contains("1.50 MB / 3.00 MB"))
+    assertTrue(download.body.contains("50%"))
+  }
+
+  @Test
+  fun gitHubApiClient_streamsUploadAndDownloadByteProgress() {
+    val uploadPayload = ByteArray(96 * 1024) { (it % 127).toByte() }
+    val downloadPayload = ByteArray(80 * 1024) { ((it * 3) % 127).toByte() }
+    val jsonType = "application/json; charset=utf-8".let { okhttp3.MediaType.Companion.run { it.toMediaType() } }
+    val binType = "application/zip".let { okhttp3.MediaType.Companion.run { it.toMediaType() } }
+
+    val loopbackDns = object : okhttp3.Dns {
+      override fun lookup(hostname: String): List<java.net.InetAddress> =
+        listOf(java.net.InetAddress.getByAddress(byteArrayOf(127, 0, 0, 1)))
+    }
+    val httpClient =
+      okhttp3.OkHttpClient.Builder()
+        .dns(loopbackDns)
+        .addInterceptor { chain ->
+          val req = chain.request()
+          val path = req.url.encodedPath
+          val method = req.method
+          if (method == "PUT") {
+            val sink = okio.Buffer()
+            req.body?.writeTo(sink)
+            assertTrue(sink.size > 0L)
+          }
+          val respBody =
+            okhttp3.ResponseBody.Companion.run {
+              when {
+                method == "GET" && path.contains("/contents/") ->
+                  """{"sha":"old"}""".toResponseBody(jsonType)
+                method == "PUT" && path.contains("/contents/") ->
+                  """{"content":{"sha":"new"}}""".toResponseBody(jsonType)
+                path.endsWith("/zip") ->
+                  downloadPayload.toResponseBody(binType)
+                else ->
+                  "{}".toResponseBody(jsonType)
+              }
+            }
+          okhttp3.Response.Builder()
+            .request(req)
+            .protocol(okhttp3.Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(respBody)
+            .build()
+        }
+        .build()
+
+    val api = GitHubApiClient(httpClient = httpClient)
+    val uploadEvents = mutableListOf<Pair<Long, Long>>()
+    api.upsertRepoFile(
+      token = "gho_test",
+      owner = "userio12",
+      repo = "dex2c-cloud-workspace",
+      path = "input/target.apk",
+      branch = "main",
+      commitMessage = "upload apk",
+      contentBytes = uploadPayload,
+      onUploadProgress = { written, total -> uploadEvents += written to total },
+    )
+    assertTrue(uploadEvents.size >= 2)
+    assertEquals(0L, uploadEvents.first().first)
+    assertEquals(uploadEvents.last().second, uploadEvents.last().first)
+    assertTrue(uploadEvents.last().second > uploadPayload.size)
+
+    val downloadEvents = mutableListOf<Pair<Long, Long>>()
+    val downloaded =
+      api.downloadArtifactZip(
+        token = "gho_test",
+        archiveDownloadUrl = "https://api.github.com/repos/userio12/dex2c-cloud-workspace/actions/artifacts/1/zip",
+        expectedTotalBytes = downloadPayload.size.toLong(),
+        onDownloadProgress = { read, total -> downloadEvents += read to total },
+      )
+    assertArrayEquals(downloadPayload, downloaded)
+    assertTrue(downloadEvents.size >= 2)
+    assertEquals(0L, downloadEvents.first().first)
+    assertEquals(downloadPayload.size.toLong(), downloadEvents.last().first)
+    assertEquals(downloadPayload.size.toLong(), downloadEvents.last().second)
+  }
 }

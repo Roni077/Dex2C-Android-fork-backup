@@ -525,6 +525,7 @@ fun Dex2cApp(
                 onToggleHideFramework = { viewModel.toggleHideFramework() },
                 onToggleOnlyBytecode = { viewModel.toggleOnlyWithBytecode() },
                 onToggleOnlySelected = { viewModel.toggleOnlySelected() },
+                onTogglePackageSelection = { viewModel.togglePackageSelection(it) },
                 onToggleClassSelection = { viewModel.toggleClassSelection(it) },
                 onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
                 onInspectMethod = { cls, method ->

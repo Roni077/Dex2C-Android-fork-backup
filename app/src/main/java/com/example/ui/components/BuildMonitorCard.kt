@@ -33,6 +33,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -176,18 +177,31 @@ fun BuildMonitorCard(
         }
 
         is CloudBuildRunState.UploadingInputs -> {
+          val fraction = cloudRunState.progressFraction
+          val pct = fraction?.let { "${(it * 100).toInt().coerceIn(0, 100)}%" } ?: "…"
           MonitorGaugeBlock(
-            progress = null,
-            isIndeterminate = true,
-            centerText = "…",
+            progress = fraction,
+            isIndeterminate = fraction == null,
+            centerText = pct,
             centerSubtext = "UPLOAD",
             isError = false,
             runHeading = "Preparing Workspace Inputs",
             durationText = "00:00",
             statusSummary = cloudRunState.message,
-            statusPillText = "SYNCING",
+            statusPillText = if (fraction != null) pct else "SYNCING",
             htmlUrl = null,
             onOpenBrowserUrl = onOpenBrowserUrl,
+          )
+          Spacer(Modifier.height(10.dp))
+          TransferProgressPanel(
+            title = cloudRunState.message,
+            transferredBytes = cloudRunState.bytesUploaded,
+            totalBytes = cloudRunState.totalBytes,
+            progressFraction = fraction,
+            containerTag = "build_monitor_upload_progress",
+            barTag = "build_monitor_upload_bar",
+            bytesTag = "build_monitor_upload_bytes",
+            pctTag = "build_monitor_upload_pct",
           )
         }
 
@@ -208,19 +222,45 @@ fun BuildMonitorCard(
         }
 
         is CloudBuildRunState.SavingArtifact -> {
+          val fraction = cloudRunState.progressFraction
+          val pct = fraction?.let { "${(it * 100).toInt().coerceIn(0, 100)}%" } ?: "APK"
+          val snap = cloudRunState.completedSnapshot
+          val runDurationMs =
+            if (snap?.startedAtMillis != null && snap.completedAtMillis != null) {
+              (snap.completedAtMillis - snap.startedAtMillis).coerceAtLeast(0L)
+            } else {
+              null
+            }
           MonitorGaugeBlock(
-            progress = null,
-            isIndeterminate = true,
-            centerText = "APK",
-            centerSubtext = "SAVE",
+            progress = fraction,
+            isIndeterminate = fraction == null,
+            centerText = pct,
+            centerSubtext = "FETCH",
             isError = false,
-            runHeading = "Downloading Output Artifact",
-            durationText = "--:--",
+            runHeading =
+              if (snap != null) "Run #${snap.runNumber} • Downloading"
+              else "Downloading Output Artifact",
+            durationText = runDurationMs?.let { CloudTimeUtil.formatDurationMmSs(it) } ?: "--:--",
             statusSummary = cloudRunState.label,
-            statusPillText = "FETCHING",
-            htmlUrl = null,
+            statusPillText = if (fraction != null) pct else "FETCHING",
+            htmlUrl = snap?.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
           )
+          Spacer(Modifier.height(10.dp))
+          TransferProgressPanel(
+            title = cloudRunState.label,
+            transferredBytes = cloudRunState.bytesDownloaded,
+            totalBytes = cloudRunState.totalBytes,
+            progressFraction = fraction,
+            containerTag = "build_monitor_download_progress",
+            barTag = "build_monitor_download_bar",
+            bytesTag = "build_monitor_download_bytes",
+            pctTag = "build_monitor_download_pct",
+          )
+          if (snap != null && snap.steps.isNotEmpty()) {
+            Spacer(Modifier.height(12.dp))
+            StepProgressList(steps = snap.steps)
+          }
         }
 
         is CloudBuildRunState.Polling -> {
@@ -598,13 +638,92 @@ private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
   }
 }
 
-private fun formatArtifactBytes(bytes: Long): String {
-  if (bytes <= 0L) return "0 B"
-  val kb = bytes / 1024.0
-  val mb = kb / 1024.0
-  return when {
-    mb >= 1.0 -> String.format(Locale.US, "%.2f MB", mb)
-    kb >= 1.0 -> String.format(Locale.US, "%.1f KB", kb)
-    else -> "$bytes B"
+@Composable
+private fun TransferProgressPanel(
+  title: String,
+  transferredBytes: Long,
+  totalBytes: Long,
+  progressFraction: Float?,
+  containerTag: String,
+  barTag: String,
+  bytesTag: String,
+  pctTag: String,
+) {
+  val pctInt = progressFraction?.let { (it * 100).toInt().coerceIn(0, 100) }
+  val animatedBar by
+    animateFloatAsState(
+      targetValue = progressFraction ?: 0f,
+      animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+      label = "transfer_bar_progress",
+    )
+
+  Surface(
+    modifier = Modifier.fillMaxWidth().testTag(containerTag),
+    shape = RoundedCornerShape(18.dp),
+    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)),
+  ) {
+    Column(
+      modifier = Modifier.padding(14.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = title,
+          style = MaterialTheme.typography.titleSmall,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+          text = pctInt?.let { "$it%" } ?: "…",
+          fontFamily = JetBrainsMonoFontFamily,
+          fontSize = 13.sp,
+          fontWeight = FontWeight.Bold,
+          color = MaterialTheme.colorScheme.primary,
+          modifier = Modifier.testTag(pctTag),
+        )
+      }
+
+      if (progressFraction != null) {
+        LinearProgressIndicator(
+          progress = { animatedBar },
+          modifier = Modifier.fillMaxWidth().height(7.dp).testTag(barTag),
+          color = MaterialTheme.colorScheme.primary,
+          trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+          strokeCap = StrokeCap.Round,
+        )
+      } else {
+        LinearProgressIndicator(
+          modifier = Modifier.fillMaxWidth().height(7.dp).testTag(barTag),
+          color = MaterialTheme.colorScheme.primary,
+          trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+          strokeCap = StrokeCap.Round,
+        )
+      }
+
+      val byteSummary =
+        when {
+          totalBytes > 0L ->
+            "${CloudTimeUtil.formatTransferBytes(transferredBytes.coerceAtMost(totalBytes))} / ${CloudTimeUtil.formatTransferBytes(totalBytes)}"
+          transferredBytes > 0L ->
+            "${CloudTimeUtil.formatTransferBytes(transferredBytes)} transferred"
+          else -> "Preparing transfer…"
+        }
+      Text(
+        text = byteSummary,
+        fontFamily = JetBrainsMonoFontFamily,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.testTag(bytesTag),
+      )
+    }
   }
 }
+
+private fun formatArtifactBytes(bytes: Long): String = CloudTimeUtil.formatTransferBytes(bytes)

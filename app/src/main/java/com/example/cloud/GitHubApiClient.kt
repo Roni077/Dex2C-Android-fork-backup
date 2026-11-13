@@ -1,14 +1,19 @@
 package com.example.cloud
 
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import okhttp3.FormBody
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import okio.BufferedSink
 import okio.ByteString.Companion.toByteString
 
 sealed interface TokenPollResult {
@@ -208,6 +213,7 @@ class GitHubApiClient(
     branch: String,
     commitMessage: String,
     contentBytes: ByteArray,
+    onUploadProgress: ((bytesWritten: Long, totalBytes: Long) -> Unit)? = null,
   ) {
     val cleanPath = path.trimStart('/')
     val existingSha = getContentSha(token, owner, repo, cleanPath, branch)
@@ -221,9 +227,16 @@ class GitHubApiClient(
           add("sha" to existingSha)
         }
       }
+    val payloadBytes = JsonMini.objectJson(fields).toByteArray(Charsets.UTF_8)
+    val requestBody =
+      if (onUploadProgress == null) {
+        payloadBytes.toRequestBody(JSON_MEDIA)
+      } else {
+        ProgressByteRequestBody(payloadBytes, JSON_MEDIA, onUploadProgress)
+      }
     val req =
       apiRequest(token, "$apiBaseUrl/repos/$owner/$repo/contents/$cleanPath")
-        .put(JsonMini.objectJson(fields).toRequestBody(JSON_MEDIA))
+        .put(requestBody)
         .build()
 
     httpClient.newCall(req).execute().use { resp ->
@@ -371,7 +384,12 @@ class GitHubApiClient(
     }
   }
 
-  fun downloadArtifactZip(token: String, archiveDownloadUrl: String): ByteArray {
+  fun downloadArtifactZip(
+    token: String,
+    archiveDownloadUrl: String,
+    expectedTotalBytes: Long = -1L,
+    onDownloadProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
+  ): ByteArray {
     val req = apiRequest(token, archiveDownloadUrl).get().build()
     noRedirectClient.newCall(req).execute().use { resp ->
       if (resp.code in 300..399) {
@@ -383,13 +401,84 @@ class GitHubApiClient(
           if (!s3Resp.isSuccessful) {
             throw IOException("Failed downloading artifact payload (${s3Resp.code}).")
           }
-          return s3Resp.body?.bytes() ?: throw IOException("Empty artifact payload.")
+          val body = s3Resp.body ?: throw IOException("Empty artifact payload.")
+          return readBodyWithProgress(body, expectedTotalBytes, onDownloadProgress)
         }
       }
       if (!resp.isSuccessful) {
         throw IOException("Artifact download failed (${resp.code}).")
       }
-      return resp.body?.bytes() ?: throw IOException("Empty artifact response.")
+      val body = resp.body ?: throw IOException("Empty artifact response.")
+      return readBodyWithProgress(body, expectedTotalBytes, onDownloadProgress)
+    }
+  }
+
+  private fun readBodyWithProgress(
+    body: ResponseBody,
+    expectedTotalBytes: Long,
+    onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)?,
+  ): ByteArray {
+    if (onProgress == null) {
+      return body.bytes()
+    }
+    val headerLen = body.contentLength()
+    val total =
+      when {
+        headerLen > 0L -> headerLen
+        expectedTotalBytes > 0L -> expectedTotalBytes
+        else -> -1L
+      }
+    val out = ByteArrayOutputStream(if (total > 0L) total.toInt().coerceAtMost(8 * 1024 * 1024) else 32_768)
+    val buffer = ByteArray(16_384)
+    var totalRead = 0L
+    var lastEmitBytes = 0L
+    var lastEmitTime = 0L
+    onProgress(0L, total)
+    body.byteStream().use { input ->
+      while (true) {
+        val read = input.read(buffer)
+        if (read == -1) break
+        out.write(buffer, 0, read)
+        totalRead += read
+        val now = System.currentTimeMillis()
+        if (totalRead - lastEmitBytes >= 32_768L || now - lastEmitTime >= 120L) {
+          lastEmitBytes = totalRead
+          lastEmitTime = now
+          onProgress(totalRead, if (total > 0L) total.coerceAtLeast(totalRead) else -1L)
+        }
+      }
+    }
+    val finalTotal = if (total > 0L) total.coerceAtLeast(totalRead) else totalRead
+    onProgress(totalRead, finalTotal)
+    return out.toByteArray()
+  }
+
+  private class ProgressByteRequestBody(
+    private val bytes: ByteArray,
+    private val mediaType: MediaType,
+    private val onProgress: (bytesWritten: Long, totalBytes: Long) -> Unit,
+  ) : RequestBody() {
+    override fun contentType(): MediaType = mediaType
+    override fun contentLength(): Long = bytes.size.toLong()
+
+    override fun writeTo(sink: BufferedSink) {
+      val total = bytes.size.toLong()
+      var offset = 0
+      var lastEmitBytes = 0L
+      var lastEmitTime = 0L
+      onProgress(0L, total)
+      while (offset < bytes.size) {
+        val chunk = (bytes.size - offset).coerceAtMost(16_384)
+        sink.write(bytes, offset, chunk)
+        offset += chunk
+        val written = offset.toLong()
+        val now = System.currentTimeMillis()
+        if (written == total || written - lastEmitBytes >= 32_768L || now - lastEmitTime >= 120L) {
+          lastEmitBytes = written
+          lastEmitTime = now
+          onProgress(written, total)
+        }
+      }
     }
   }
 

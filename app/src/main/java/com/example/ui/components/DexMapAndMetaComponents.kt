@@ -269,8 +269,9 @@ fun DexMapListCard(
               )
             }
             dex.callSites.take(12).forEach { cs ->
+              val offHex = "0x%06X".format(cs.encodedArrayOffset)
               Text(
-                text = "call_site[${cs.index}] ${cs.methodName ?: "bootstrap"} ${cs.methodDescriptor ?: ""} @ 0x%06X".format(cs.encodedArrayOffset),
+                text = "call_site[${cs.index}] ${cs.methodName ?: "bootstrap"} ${cs.methodDescriptor ?: ""} @ $offHex",
                 style = MaterialTheme.typography.labelSmall,
                 fontFamily = JetBrainsMonoFontFamily,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -415,9 +416,13 @@ fun DexMethodMetaViewer(
               style = MaterialTheme.typography.titleMedium,
             )
             tryBlocks.forEach { tb ->
-              val catches = tb.handlers.joinToString(", ") { "${it.typeDescriptor ?: "<all>"}@0x%04X".format(it.handlerOffsetWord) }
+              val catches = tb.handlers.joinToString(", ") { h ->
+                val hOff = "0x%04X".format(h.handlerOffsetWord)
+                "${h.typeDescriptor ?: "<all>"}@$hOff"
+              }
+              val spanHex = "[0x%04X..0x%04X)".format(tb.startOffsetWord, tb.endOffsetWord)
               Text(
-                text = "try [0x%04X..0x%04X) -> $catches".format(tb.startOffsetWord, tb.endOffsetWord),
+                text = "try $spanHex -> $catches",
                 style = MaterialTheme.typography.labelSmall,
                 fontFamily = JetBrainsMonoFontFamily,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

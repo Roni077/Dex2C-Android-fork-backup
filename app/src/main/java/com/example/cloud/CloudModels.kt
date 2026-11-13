@@ -127,7 +127,12 @@ enum class CloudErrorAction {
 
 sealed interface CloudBuildRunState {
   data object Idle : CloudBuildRunState
-  data class UploadingInputs(val message: String) : CloudBuildRunState
+  data class UploadingInputs(
+    val message: String,
+    val progressFraction: Float? = null,
+    val bytesUploaded: Long = 0L,
+    val totalBytes: Long = 0L,
+  ) : CloudBuildRunState
   data object Dispatching : CloudBuildRunState
   data class Polling(
     val runId: Long,
@@ -151,7 +156,13 @@ sealed interface CloudBuildRunState {
     val startedAtMillis: Long? = null,
     val completedAtMillis: Long? = null,
   ) : CloudBuildRunState
-  data class SavingArtifact(val label: String) : CloudBuildRunState
+  data class SavingArtifact(
+    val label: String,
+    val bytesDownloaded: Long = 0L,
+    val totalBytes: Long = 0L,
+    val progressFraction: Float? = null,
+    val completedSnapshot: Completed? = null,
+  ) : CloudBuildRunState
   data class Error(
     val message: String,
     val retryAction: CloudErrorAction? = null,
@@ -226,5 +237,16 @@ object CloudTimeUtil {
     if (steps.isEmpty()) return null
     val completed = steps.count { it.status == "completed" }
     return (completed.toFloat() / steps.size.toFloat()).coerceIn(0f, 1f)
+  }
+
+  fun formatTransferBytes(bytes: Long): String {
+    if (bytes <= 0L) return "0 B"
+    val kb = bytes / 1024.0
+    val mb = kb / 1024.0
+    return when {
+      mb >= 1.0 -> String.format(Locale.US, "%.2f MB", mb)
+      kb >= 1.0 -> String.format(Locale.US, "%.1f KB", kb)
+      else -> "$bytes B"
+    }
   }
 }

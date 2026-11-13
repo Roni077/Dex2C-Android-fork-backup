@@ -54,11 +54,12 @@ class CloudBuildMonitorWorker(
           ?: runs.firstOrNull()
           ?: return Result.success()
 
+      val job =
+        runCatching {
+          client.getRunJobTelemetry(settings.accessToken, owner, repo, run.id)
+        }.getOrNull()
+
       if (run.status == "completed") {
-        val job =
-          runCatching {
-            client.getRunJobTelemetry(settings.accessToken, owner, repo, run.id)
-          }.getOrNull()
         val artifacts =
           runCatching {
             client.listRunArtifacts(settings.accessToken, owner, repo, run.id)
@@ -79,6 +80,25 @@ class CloudBuildMonitorWorker(
           hasArtifacts = artifacts.any { !it.expired },
         )
         return Result.success()
+      } else {
+        val steps = job?.steps.orEmpty()
+        val doneSteps = steps.count { it.status == "completed" }
+        val activeStep =
+          steps.firstOrNull { it.status == "in_progress" }?.name
+            ?: steps.lastOrNull { it.status == "completed" }?.name
+        CloudBuildNotifier.updateLiveProgressNotification(
+          context = applicationContext,
+          content =
+            CloudBuildNotifier.buildWorkflowProgressNotification(
+              runNumber = run.runNumber,
+              status = run.status,
+              activeStepName = activeStep,
+              completedSteps = doneSteps,
+              totalSteps = steps.size,
+            ),
+          runId = run.id,
+          notificationsEnabled = settings.notificationsEnabled,
+        )
       }
 
       if (attempt < maxAttempts - 1) {

@@ -115,10 +115,12 @@ fun DalvikInstructionViewer(
             val catches =
               tb.handlers.joinToString(", ") { h ->
                 val t = h.typeDescriptor ?: "<all>"
-                "$t -> L_%04x".format(h.handlerOffsetWord)
+                val handlerLabel = "L_%04x".format(h.handlerOffsetWord)
+                "$t -> $handlerLabel"
               }
+            val trySpan = "[L_%04x..L_%04x)".format(tb.startOffsetWord, tb.endOffsetWord)
             Text(
-              text = ".try [L_%04x..L_%04x) .catch ($catches)".format(tb.startOffsetWord, tb.endOffsetWord),
+              text = ".try $trySpan .catch ($catches)",
               color = palette.label,
               fontFamily = JetBrainsMonoFontFamily,
               fontSize = addrFontSp,

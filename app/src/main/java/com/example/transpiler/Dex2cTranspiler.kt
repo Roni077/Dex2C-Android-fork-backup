@@ -6,6 +6,7 @@ import com.example.dex.DexEncodedMethod
 import com.example.dex.DexParsedFile
 import com.example.dex.DexTryBlock
 import com.example.dex.descriptorToJavaName
+import java.util.Locale
 
 object Dex2cTranspiler {
 
@@ -207,17 +208,18 @@ object Dex2cTranspiler {
 
     if (config.controlFlowFlattening && insns.isNotEmpty()) {
       val firstOffset = insns.first().offsetWords
-      sb.appendLine("    uint32_t __cf_pc = 0x%04Xu;".format(firstOffset))
+      sb.appendLine("    uint32_t __cf_pc = ${formatHex4u(firstOffset)};")
       sb.appendLine("    while (1) {")
       sb.appendLine("        switch (__cf_pc) {")
       insns.forEachIndexed { idx, insn ->
         val nextOffset = insns.getOrNull(idx + 1)?.offsetWords ?: -1
-        sb.appendLine("        case 0x%04Xu: { /* ${insn.mnemonic} ${insn.operandsText} */".format(insn.offsetWords))
+        val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
+        sb.appendLine("        case ${formatHex4u(insn.offsetWords)}: { /* $commentText */")
         emitInstructionC(sb, insn, config, indent = "            ", flattened = true, returnType = ref.proto.returnType)
         emitTryCatchDispatchIfApplicable(sb, insn, tryBlocks, config, indent = "            ", flattened = true)
         if (insn.mnemonic != "return-void" && !insn.mnemonic.startsWith("return") && insn.mnemonic != "throw" && !insn.mnemonic.startsWith("goto")) {
           if (nextOffset >= 0) {
-            sb.appendLine("            __cf_pc = 0x%04Xu;".format(nextOffset))
+            sb.appendLine("            __cf_pc = ${formatHex4u(nextOffset)};")
             sb.appendLine("            break;")
           } else {
             sb.appendLine("            goto __dex2c_exit;")
@@ -236,7 +238,7 @@ object Dex2cTranspiler {
     } else {
       insns.forEach { insn ->
         if (insn.offsetWords in branchTargets) {
-          sb.appendLine("L_%04x:".format(insn.offsetWords))
+          sb.appendLine("${formatLabelOffset(insn.offsetWords)}:")
         }
         emitInstructionC(sb, insn, config, indent = "    ", flattened = false, returnType = ref.proto.returnType)
         emitTryCatchDispatchIfApplicable(sb, insn, tryBlocks, config, indent = "    ", flattened = false)
@@ -277,8 +279,8 @@ object Dex2cTranspiler {
     sb.appendLine("${indent}    __exc = ${jniCall(config, "ExceptionOccurred", "")};")
     activeTries.flatMap { it.handlers }.forEach { handler ->
       val jump =
-        if (flattened) "{ __cf_pc = 0x%04Xu; break; }".format(handler.handlerOffsetWord)
-        else "goto L_%04x;".format(handler.handlerOffsetWord)
+        if (flattened) "{ __cf_pc = ${formatHex4u(handler.handlerOffsetWord)}; break; }"
+        else "goto ${formatLabelOffset(handler.handlerOffsetWord)};"
       if (handler.typeDescriptor == null) {
         sb.appendLine("${indent}    $jump /* catch-all */")
       } else {
@@ -304,7 +306,7 @@ object Dex2cTranspiler {
 
     fun jumpTo(target: Int?): String {
       val off = target ?: 0
-      return if (flattened) "{ __cf_pc = 0x%04Xu; break; }".format(off) else "goto L_%04x;".format(off)
+      return if (flattened) "{ __cf_pc = ${formatHex4u(off)}; break; }" else "goto ${formatLabelOffset(off)};"
     }
 
     when (insn.mnemonic) {
@@ -454,7 +456,10 @@ object Dex2cTranspiler {
           emitArrayAccessInstruction(sb, insn, config, indent, a, b, c) -> Unit
           emitFieldInstruction(sb, insn, config, indent, a, b) -> Unit
           emitInvokeInstruction(sb, insn, config, indent) -> Unit
-          else -> sb.appendLine("${indent}/* ${insn.mnemonic} ${insn.operandsText} */")
+          else -> {
+            val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
+            sb.appendLine("${indent}/* $commentText */")
+          }
         }
       }
     }
@@ -888,6 +893,17 @@ object Dex2cTranspiler {
 
   private fun sanitizeModuleName(raw: String): String =
     raw.trim().replace(Regex("[^A-Za-z0-9_]"), "_").ifEmpty { "dex2c_native" }
+
+  private fun formatHex4u(offset: Int): String = String.format(Locale.US, "0x%04Xu", offset)
+
+  private fun formatLabelOffset(offset: Int): String = String.format(Locale.US, "L_%04x", offset)
+
+  private fun sanitizeCComment(raw: String): String =
+    raw
+      .replace("/*", "/ *")
+      .replace("*/", "* /")
+      .replace("\r", " ")
+      .replace("\n", " ")
 
   private fun escapeC(raw: String): String =
     raw

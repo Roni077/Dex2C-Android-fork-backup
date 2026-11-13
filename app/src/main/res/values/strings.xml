@@ -69,6 +69,9 @@
     <string name="chip_hide_framework">App Only</string>
     <string name="chip_has_bytecode">Has Bytecode</string>
     <string name="chip_selected_only">Selected</string>
+    <string name="chip_view_tree">Tree</string>
+    <string name="chip_view_flat">Flat</string>
+    <string name="label_default_package">(default package)</string>
 
     <string name="tab_dalvik">Dalvik IR</string>
     <string name="tab_transpiled_c">JNI C/C++</string>
