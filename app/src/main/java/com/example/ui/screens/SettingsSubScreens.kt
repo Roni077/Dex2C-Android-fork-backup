@@ -347,22 +347,29 @@ fun SettingsGitHubCloudSubScreen(
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
-          if (cloudSettings.isAuthenticated) {
+          Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             TagPill(
-              text = "@${cloudSettings.githubUsername}",
-              containerColor = MaterialTheme.colorScheme.primaryContainer,
-              contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+              text = if (cloudSettings.usingCustomClientId) "Custom OAuth ID" else "gh CLI Default",
+              containerColor = MaterialTheme.colorScheme.secondaryContainer,
+              contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             )
-          } else {
-            TagPill(text = "Signed Out")
+            if (cloudSettings.isAuthenticated) {
+              TagPill(
+                text = "@${cloudSettings.githubUsername}",
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+              )
+            } else {
+              TagPill(text = "Signed Out")
+            }
           }
         }
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(
           value = cloudSettings.githubClientId,
           onValueChange = { id -> onUpdateCloudSettings { it.copy(githubClientId = id.trim()) } },
-          label = { Text("GitHub OAuth App Client ID") },
-          placeholder = { Text("Ov23li...") },
+          label = { Text("Custom GitHub OAuth Client ID (optional)") },
+          placeholder = { Text(com.example.cloud.GITHUB_CLI_CLIENT_ID) },
           leadingIcon = { Icon(Icons.Rounded.Key, contentDescription = null) },
           singleLine = true,
           textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
@@ -370,7 +377,7 @@ fun SettingsGitHubCloudSubScreen(
         )
         Spacer(Modifier.height(6.dp))
         Text(
-          text = "Enable \"Device Authorization Flow\" on your GitHub OAuth App and paste its Client ID here.",
+          text = "Leave blank to use GitHub CLI's built-in Client ID (${com.example.cloud.GITHUB_CLI_CLIENT_ID}), or enter your own GitHub OAuth App Client ID.",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -382,16 +389,17 @@ fun SettingsGitHubCloudSubScreen(
           if (!cloudSettings.isAuthenticated) {
             Button(
               onClick = onStartDeviceLogin,
-              enabled = cloudSettings.githubClientId.isNotBlank(),
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_start_device_login_btn"),
             ) {
               Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
-              Text(stringResource(R.string.cloud_sign_in_device))
+              Text(stringResource(R.string.action_continue_with_github))
             }
           } else {
             OutlinedButton(
               onClick = onSignOutGitHub,
+              shape = RoundedCornerShape(20.dp),
               modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_sign_out_btn"),
             ) {
               Text("Sign Out (@${cloudSettings.githubUsername})")
@@ -399,6 +407,7 @@ fun SettingsGitHubCloudSubScreen(
           }
           OutlinedButton(
             onClick = onOpenGitHubAppSettings,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_open_github_dev_btn"),
           ) {
             Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))

@@ -13,6 +13,9 @@ enum class CloudSigningMode(val label: String, val summary: String) {
 val SUPPORTED_NDK_VERSIONS = listOf("r25b", "r26d", "r27c")
 val SUPPORTED_JDK_VERSIONS = listOf("17", "21")
 
+const val GITHUB_CLI_CLIENT_ID = "178c6fc778ccc68e1d6a"
+const val GITHUB_DEVICE_VERIFICATION_URL = "https://github.com/login/device"
+
 data class CloudSettings(
   val githubClientId: String = "",
   val accessToken: String = "",
@@ -33,6 +36,8 @@ data class CloudSettings(
   val isAuthenticated: Boolean get() = accessToken.isNotBlank() && githubUsername.isNotBlank()
   val effectiveOwner: String get() = repoOwner.ifBlank { githubUsername }
   val isRepoConfigured: Boolean get() = isAuthenticated && effectiveOwner.isNotBlank() && repoName.isNotBlank()
+  val effectiveClientId: String get() = githubClientId.trim().ifBlank { GITHUB_CLI_CLIENT_ID }
+  val usingCustomClientId: Boolean get() = githubClientId.trim().isNotEmpty()
 }
 
 data class DeviceCodeResponse(
@@ -51,8 +56,19 @@ sealed interface DeviceAuthState {
     val verificationUri: String,
     val expiresInSec: Int,
     val intervalSec: Int,
+    val expiresAtMillis: Long = System.currentTimeMillis() + expiresInSec.coerceAtLeast(1) * 1000L,
     val statusNote: String = "Waiting for authorization at github.com/login/device…",
-  ) : DeviceAuthState
+  ) : DeviceAuthState {
+    fun remainingMillisAt(nowMillis: Long): Long = (expiresAtMillis - nowMillis).coerceAtLeast(0L)
+
+    fun remainingFormattedAt(nowMillis: Long): String {
+      val remMs = remainingMillisAt(nowMillis)
+      val displaySec =
+        if (remMs == 0L) 0L
+        else ((remMs + 999L) / 1000L).coerceAtMost(expiresInSec.toLong().coerceAtLeast(1L))
+      return CloudTimeUtil.formatDurationMmSs(displaySec * 1000L)
+    }
+  }
   data class Authenticated(val username: String) : DeviceAuthState
   data class Error(val message: String) : DeviceAuthState
 }

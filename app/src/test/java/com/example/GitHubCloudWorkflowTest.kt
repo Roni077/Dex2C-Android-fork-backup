@@ -193,4 +193,35 @@ class GitHubCloudWorkflowTest {
     assertTrue(com.example.data.isValidHexColor("#2EE59D"))
     assertFalse(com.example.data.isValidHexColor("2EE59"))
   }
+
+  @Test
+  fun cloudSettings_usesBuiltInGhCliClientIdByDefaultAndSupportsCustomOverride() {
+    val defaultSettings = CloudSettings()
+    assertFalse(defaultSettings.usingCustomClientId)
+    assertEquals(com.example.cloud.GITHUB_CLI_CLIENT_ID, defaultSettings.effectiveClientId)
+    assertEquals("178c6fc778ccc68e1d6a", defaultSettings.effectiveClientId)
+
+    val customSettings = CloudSettings(githubClientId = "  Ov23liCustomAppId99  ")
+    assertTrue(customSettings.usingCustomClientId)
+    assertEquals("Ov23liCustomAppId99", customSettings.effectiveClientId)
+  }
+
+  @Test
+  fun deviceAuthState_formats15MinuteExpiryCountdownAccurately() {
+    val startMs = 1_700_000_000_000L
+    val state =
+      com.example.cloud.DeviceAuthState.AwaitingUser(
+        userCode = "ABCD-1234",
+        verificationUri = com.example.cloud.GITHUB_DEVICE_VERIFICATION_URL,
+        expiresInSec = 900,
+        intervalSec = 5,
+        expiresAtMillis = startMs + 900_000L,
+      )
+    assertEquals("15:00", state.remainingFormattedAt(startMs))
+    assertEquals("15:00", state.remainingFormattedAt(startMs + 250L))
+    assertEquals("14:59", state.remainingFormattedAt(startMs + 1_000L))
+    assertEquals("00:01", state.remainingFormattedAt(startMs + 899_500L))
+    assertEquals("00:00", state.remainingFormattedAt(startMs + 900_000L))
+    assertEquals("00:00", state.remainingFormattedAt(startMs + 950_000L))
+  }
 }

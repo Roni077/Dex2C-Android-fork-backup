@@ -850,12 +850,7 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
   }
 
   fun startDeviceFlowLogin() {
-    val clientId = _cloudSettings.value.githubClientId.trim()
-    if (clientId.isEmpty()) {
-      _deviceAuthState.value =
-        DeviceAuthState.Error("Enter your GitHub OAuth App Client ID in Detailed Settings first.")
-      return
-    }
+    val clientId = _cloudSettings.value.effectiveClientId
     devicePollJob?.cancel()
     _deviceAuthState.value = DeviceAuthState.RequestingCode
 
@@ -864,18 +859,21 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
         try {
           val codeResp = withContext(Dispatchers.IO) { gitHubClient.requestDeviceCode(clientId) }
           var intervalSec = codeResp.intervalSec
-          val deadlineMs = System.currentTimeMillis() + codeResp.expiresInSec * 1000L
+          val safeExpiresInSec = codeResp.expiresInSec.coerceAtLeast(60)
+          val deadlineMs = System.currentTimeMillis() + safeExpiresInSec * 1000L
 
           _deviceAuthState.value =
             DeviceAuthState.AwaitingUser(
               userCode = codeResp.userCode,
               verificationUri = codeResp.verificationUri,
-              expiresInSec = codeResp.expiresInSec,
+              expiresInSec = safeExpiresInSec,
               intervalSec = intervalSec,
+              expiresAtMillis = deadlineMs,
             )
 
           while (isActive && System.currentTimeMillis() < deadlineMs) {
             delay(intervalSec * 1000L)
+            if (System.currentTimeMillis() >= deadlineMs) break
             val pollResult =
               withContext(Dispatchers.IO) {
                 gitHubClient.pollAccessTokenOnce(clientId, codeResp.deviceCode, intervalSec)
@@ -890,7 +888,7 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
                 }
               }
               is TokenPollResult.Expired -> {
-                _deviceAuthState.value = DeviceAuthState.Error("Device code expired. Start login again.")
+                _deviceAuthState.value = DeviceAuthState.Error("Device code expired after 15 minutes. Tap Continue with GitHub account to generate a new code.")
                 return@launch
               }
               is TokenPollResult.Denied -> {
@@ -921,7 +919,7 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
               }
             }
           }
-          _deviceAuthState.value = DeviceAuthState.Error("Device code timed out.")
+          _deviceAuthState.value = DeviceAuthState.Error("Device code expired (15:00 limit reached). Start login again.")
         } catch (t: Throwable) {
           _deviceAuthState.value =
             DeviceAuthState.Error(t.message ?: "Failed to initiate GitHub Device Flow.")

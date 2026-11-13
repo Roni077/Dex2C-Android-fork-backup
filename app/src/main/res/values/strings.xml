@@ -13,7 +13,13 @@
     <string name="cloud_step_repo">2. Private Repo &amp; dex2c.yml Setup</string>
     <string name="cloud_step_build">3. Dispatch Cloud Dex2C Build</string>
     <string name="cloud_open_device_url">Open github.com/login/device</string>
-    <string name="cloud_sign_in_device">Sign in via Device Flow</string>
+    <string name="cloud_sign_in_device">Continue with GitHub account</string>
+    <string name="action_continue_with_github">Continue with GitHub account</string>
+    <string name="github_device_url">https://github.com/login/device</string>
+    <string name="github_device_code_label">Enter this 8-digit code on GitHub</string>
+    <string name="github_device_open_browser">Open in Browser</string>
+    <string name="github_device_waiting">Waiting for GitHub authorization…</string>
+    <string name="github_device_cli_badge">gh CLI Device Flow</string>
     <string name="cloud_init_repo_btn">Setup Private Repo &amp; Init dex2c.yml</string>
     <string name="cloud_run_build_btn">Run Cloud Dex2C Build</string>
     <string name="cloud_save_signed_apk">Save Signed APK</string>

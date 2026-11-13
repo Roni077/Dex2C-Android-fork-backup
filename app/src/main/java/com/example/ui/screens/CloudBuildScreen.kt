@@ -42,6 +42,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -55,6 +60,7 @@ import com.example.cloud.CloudBuildRunState
 import com.example.cloud.CloudSettings
 import com.example.cloud.Dex2cWorkflowGenerator
 import com.example.cloud.DeviceAuthState
+import com.example.cloud.GITHUB_DEVICE_VERIFICATION_URL
 import com.example.cloud.GitHubArtifactItem
 import com.example.cloud.GitHubWorkflowRunSummary
 import com.example.cloud.RepoSetupState
@@ -63,9 +69,11 @@ import com.example.transpiler.TranspilerConfig
 import com.example.ui.CloudApkChoice
 import com.example.ui.components.BuildMonitorCard
 import com.example.ui.components.ExpressiveMotion
+import com.example.ui.components.GitHubDeviceAuthCard
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import java.util.Locale
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -99,6 +107,27 @@ fun CloudBuildScreen(
   onDownloadArtifact: (GitHubArtifactItem) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var lastAutoOpenedUserCode by rememberSaveable { mutableStateOf<String?>(null) }
+
+  LaunchedEffect(deviceAuthState) {
+    when (deviceAuthState) {
+      is DeviceAuthState.AwaitingUser -> {
+        val code = deviceAuthState.userCode
+        if (code.isNotBlank() && code != lastAutoOpenedUserCode) {
+          delay(650L)
+          lastAutoOpenedUserCode = code
+          onOpenBrowserUrl(deviceAuthState.verificationUri.ifBlank { GITHUB_DEVICE_VERIFICATION_URL })
+        }
+      }
+      is DeviceAuthState.Idle,
+      is DeviceAuthState.RequestingCode,
+      is DeviceAuthState.Authenticated -> {
+        lastAutoOpenedUserCode = null
+      }
+      is DeviceAuthState.Error -> Unit
+    }
+  }
+
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     LazyColumn(
       modifier = Modifier.fillMaxSize().widthIn(max = 860.dp),
@@ -149,198 +178,24 @@ fun CloudBuildScreen(
               )
             } else {
               TagPill(
-                text = "Not Signed In",
+                text = if (cloudSettings.usingCustomClientId) "Custom OAuth ID" else "gh CLI Ready",
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
               )
             }
           },
         ) {
-          if (cloudSettings.githubClientId.isBlank()) {
-            Surface(
-              shape = RoundedCornerShape(18.dp),
-              color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f),
-              border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)),
-            ) {
-              Column(
-                modifier = Modifier.fillMaxWidth().padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-              ) {
-                Text(
-                  text = "GitHub OAuth Client ID Required",
-                  style = MaterialTheme.typography.titleSmall,
-                  color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-                Text(
-                  text =
-                    "Enter your GitHub OAuth App Client ID (with Device Flow enabled) in Detailed Settings to sign in at github.com/login/device.",
-                  style = MaterialTheme.typography.bodyMedium,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Button(
-                  onClick = onOpenSettings,
-                  shape = RoundedCornerShape(20.dp),
-                  modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_configure_client_id_btn"),
-                ) {
-                  Icon(Icons.Rounded.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-                  Spacer(Modifier.width(8.dp))
-                  Text("Configure OAuth Client ID")
-                }
-              }
-            }
-          } else {
-            when (deviceAuthState) {
-              is DeviceAuthState.Idle -> {
-                Text(
-                  text =
-                    "Authenticate with GitHub using OAuth Device Flow (scopes: repo, workflow). No manual personal access token copy-paste required.",
-                  style = MaterialTheme.typography.bodyMedium,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(10.dp))
-                Button(
-                  onClick = onStartDeviceLogin,
-                  shape = RoundedCornerShape(20.dp),
-                  modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_device_signin_btn"),
-                ) {
-                  Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(18.dp))
-                  Spacer(Modifier.width(8.dp))
-                  Text(stringResource(R.string.cloud_sign_in_device))
-                }
-              }
-
-              is DeviceAuthState.RequestingCode -> {
-                Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                  CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                  Text(
-                    text = "Requesting device verification code from GitHub…",
-                    style = MaterialTheme.typography.bodyMedium,
-                  )
-                }
-              }
-
-              is DeviceAuthState.AwaitingUser -> {
-                Surface(
-                  modifier = Modifier.fillMaxWidth(),
-                  shape = RoundedCornerShape(18.dp),
-                  color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                  border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
-                ) {
-                  Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                  ) {
-                    Text(
-                      text = "Enter this code at ${deviceAuthState.verificationUri}",
-                      style = MaterialTheme.typography.labelLarge,
-                      color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                      text = deviceAuthState.userCode,
-                      fontFamily = JetBrainsMonoFontFamily,
-                      fontSize = 28.sp,
-                      fontWeight = FontWeight.Bold,
-                      letterSpacing = 3.sp,
-                      color = MaterialTheme.colorScheme.primary,
-                      modifier = Modifier.testTag("cloud_device_user_code"),
-                    )
-                    Row(
-                      modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                      OutlinedButton(
-                        onClick = { onCopyCode(deviceAuthState.userCode) },
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_copy_device_code_btn"),
-                      ) {
-                        Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("Copy Code")
-                      }
-                      Button(
-                        onClick = { onOpenBrowserUrl(deviceAuthState.verificationUri) },
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_open_device_url_btn"),
-                      ) {
-                        Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("Authorize")
-                      }
-                    }
-                    Row(
-                      verticalAlignment = Alignment.CenterVertically,
-                      horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                      CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
-                      Text(
-                        text = "${deviceAuthState.statusNote} (${deviceAuthState.intervalSec}s poll)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                      )
-                    }
-                    TextButton(
-                      onClick = onCancelDeviceLogin,
-                      modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_cancel_device_btn"),
-                    ) {
-                      Text("Cancel Login")
-                    }
-                  }
-                }
-              }
-
-              is DeviceAuthState.Authenticated -> {
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.SpaceBetween,
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  ) {
-                    Icon(
-                      imageVector = Icons.Rounded.CheckCircle,
-                      contentDescription = null,
-                      tint = MaterialTheme.colorScheme.primary,
-                      modifier = Modifier.size(20.dp),
-                    )
-                    Text(
-                      text = "Signed in via Device Flow as @${deviceAuthState.username}",
-                      style = MaterialTheme.typography.bodyMedium,
-                    )
-                  }
-                  TextButton(
-                    onClick = onSignOut,
-                    modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_sign_out_btn"),
-                  ) {
-                    Text("Sign Out")
-                  }
-                }
-              }
-
-              is DeviceAuthState.Error -> {
-                Text(
-                  text = deviceAuthState.message,
-                  style = MaterialTheme.typography.bodyMedium,
-                  color = MaterialTheme.colorScheme.error,
-                )
-                Spacer(Modifier.height(10.dp))
-                Button(
-                  onClick = onStartDeviceLogin,
-                  shape = RoundedCornerShape(20.dp),
-                  modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_device_retry_btn"),
-                ) {
-                  Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
-                  Spacer(Modifier.width(8.dp))
-                  Text("Retry Device Flow Login")
-                }
-              }
-            }
-          }
+          GitHubDeviceAuthCard(
+            cloudSettings = cloudSettings,
+            deviceAuthState = deviceAuthState,
+            onStartDeviceLogin = onStartDeviceLogin,
+            onCancelDeviceLogin = onCancelDeviceLogin,
+            onCopyCode = onCopyCode,
+            onOpenBrowserUrl = onOpenBrowserUrl,
+            tagPrefix = "cloud",
+            compact = false,
+            onSignOut = onSignOut,
+          )
         }
       }
 

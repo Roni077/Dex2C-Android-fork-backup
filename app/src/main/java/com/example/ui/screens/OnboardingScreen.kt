@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,17 +34,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.CloudQueue
 import androidx.compose.material.icons.rounded.Code
-import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DataObject
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,9 +56,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,19 +73,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.R
 import com.example.cloud.CloudSettings
 import com.example.cloud.DeviceAuthState
+import com.example.cloud.GITHUB_CLI_CLIENT_ID
+import com.example.cloud.GITHUB_DEVICE_VERIFICATION_URL
 import com.example.data.AppSettings
 import com.example.data.AppThemeMode
 import com.example.ui.components.AccentColorPickerSection
+import com.example.ui.components.GitHubDeviceAuthCard
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
 import com.example.ui.components.expressivePressScale
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import kotlin.math.roundToInt
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private const val ONBOARDING_PAGE_COUNT = 4
@@ -109,6 +114,27 @@ fun OnboardingScreen(
 ) {
   val pagerState = rememberPagerState(pageCount = { ONBOARDING_PAGE_COUNT })
   val scope = rememberCoroutineScope()
+  var lastAutoOpenedUserCode by rememberSaveable { mutableStateOf<String?>(null) }
+
+  // Show the 8-digit code & 15:00 timer first, then launch https://github.com/login/device once per code
+  LaunchedEffect(deviceAuthState) {
+    when (deviceAuthState) {
+      is DeviceAuthState.AwaitingUser -> {
+        val code = deviceAuthState.userCode
+        if (code.isNotBlank() && code != lastAutoOpenedUserCode) {
+          delay(650L)
+          lastAutoOpenedUserCode = code
+          onOpenBrowserUrl(deviceAuthState.verificationUri.ifBlank { GITHUB_DEVICE_VERIFICATION_URL })
+        }
+      }
+      is DeviceAuthState.Idle,
+      is DeviceAuthState.RequestingCode,
+      is DeviceAuthState.Authenticated -> {
+        lastAutoOpenedUserCode = null
+      }
+      is DeviceAuthState.Error -> Unit
+    }
+  }
 
   BackHandler {
     when {
@@ -191,7 +217,15 @@ fun OnboardingScreen(
               .padding(horizontal = 20.dp),
         ) {
           when (page) {
-            0 -> OnboardingTourPage()
+            0 ->
+              OnboardingTourPage(
+                cloudSettings = cloudSettings,
+                deviceAuthState = deviceAuthState,
+                onStartDeviceLogin = onStartDeviceLogin,
+                onCancelDeviceLogin = onCancelDeviceLogin,
+                onCopyCode = onCopyCode,
+                onOpenBrowserUrl = onOpenBrowserUrl,
+              )
             1 ->
               OnboardingThemeEditorPage(
                 appSettings = appSettings,
@@ -327,7 +361,14 @@ fun OnboardingScreen(
 }
 
 @Composable
-private fun OnboardingTourPage() {
+private fun OnboardingTourPage(
+  cloudSettings: CloudSettings,
+  deviceAuthState: DeviceAuthState,
+  onStartDeviceLogin: () -> Unit,
+  onCancelDeviceLogin: () -> Unit,
+  onCopyCode: (String) -> Unit,
+  onOpenBrowserUrl: (String) -> Unit,
+) {
   Column(
     modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -374,6 +415,18 @@ private fun OnboardingTourPage() {
         "Inspect Android DEX bytecode, transpile sensitive classes into native JNI C/C++, and optionally dispatch signed cloud builds via GitHub Actions.",
       style = MaterialTheme.typography.bodyLarge,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+
+    // Expressive Hero CTA: Continue with GitHub account (gh CLI OAuth Device Flow)
+    GitHubDeviceAuthCard(
+      cloudSettings = cloudSettings,
+      deviceAuthState = deviceAuthState,
+      onStartDeviceLogin = onStartDeviceLogin,
+      onCancelDeviceLogin = onCancelDeviceLogin,
+      onCopyCode = onCopyCode,
+      onOpenBrowserUrl = onOpenBrowserUrl,
+      tagPrefix = "hero",
+      compact = true,
     )
 
     OnboardingFeatureCard(
@@ -539,6 +592,8 @@ private fun OnboardingCloudSetupPage(
   onCopyCode: (String) -> Unit,
   onOpenBrowserUrl: (String) -> Unit,
 ) {
+  var showCustomClientId by rememberSaveable { mutableStateOf(cloudSettings.usingCustomClientId) }
+
   Column(
     modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -554,130 +609,87 @@ private fun OnboardingCloudSetupPage(
       )
     }
     Text(
-      text = "Link GitHub Device Flow OAuth to dispatch remote NDK + Kirlif/d2c APK builds in a private repository. You can also skip this and work 100% locally.",
+      text = "Link your GitHub account using the gh CLI Device Flow to dispatch remote NDK + Kirlif/d2c builds in a private repository. You can also skip this and work 100% locally.",
       style = MaterialTheme.typography.bodyMedium,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
-    OnboardingSectionSurface {
-      if (cloudSettings.isAuthenticated) {
+    GitHubDeviceAuthCard(
+      cloudSettings = cloudSettings,
+      deviceAuthState = deviceAuthState,
+      onStartDeviceLogin = onStartDeviceLogin,
+      onCancelDeviceLogin = onCancelDeviceLogin,
+      onCopyCode = onCopyCode,
+      onOpenBrowserUrl = onOpenBrowserUrl,
+      tagPrefix = "onboarding",
+      compact = false,
+    )
+
+    if (!cloudSettings.isAuthenticated) {
+      OnboardingSectionSurface {
         Row(
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .clip(RoundedCornerShape(14.dp))
+              .clickable { showCustomClientId = !showCustomClientId }
+              .minimumInteractiveComponentSize()
+              .testTag("onboarding_custom_client_id_toggle"),
+          horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-          Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-          Column(modifier = Modifier.weight(1f)) {
+          Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+            Text("Custom OAuth Client ID (Advanced)", style = MaterialTheme.typography.titleSmall)
             Text(
-              text = "Connected as @${cloudSettings.githubUsername}",
-              style = MaterialTheme.typography.titleSmall,
-            )
-            Text(
-              text = "Workspace repository: ${cloudSettings.effectiveOwner}/${cloudSettings.repoName}",
+              text =
+                if (cloudSettings.usingCustomClientId) "Overridden: ${cloudSettings.effectiveClientId}"
+                else "Default: built-in gh CLI ID ($GITHUB_CLI_CLIENT_ID)",
               style = MaterialTheme.typography.bodySmall,
+              fontFamily = JetBrainsMonoFontFamily,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
           }
-          TagPill(text = "Ready")
+          Icon(
+            imageVector = if (showCustomClientId) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+            contentDescription = if (showCustomClientId) "Collapse" else "Expand",
+          )
         }
-      } else {
-        Text("GitHub OAuth App Client ID", style = MaterialTheme.typography.titleSmall)
-        Spacer(Modifier.height(6.dp))
-        OutlinedTextField(
-          value = cloudSettings.githubClientId,
-          onValueChange = { cid -> onUpdateCloudSettings { it.copy(githubClientId = cid.trim()) } },
-          label = { Text("OAuth Client ID (Ov23li…)") },
-          singleLine = true,
-          modifier = Modifier.fillMaxWidth().testTag("onboarding_github_client_id"),
-        )
-        Spacer(Modifier.height(10.dp))
 
-        when (deviceAuthState) {
-          is DeviceAuthState.RequestingCode -> {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-              CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-              Text("Requesting GitHub Device Flow code…", style = MaterialTheme.typography.bodyMedium)
-            }
-          }
-
-          is DeviceAuthState.AwaitingUser -> {
-            Surface(
-              modifier = Modifier.fillMaxWidth(),
-              shape = RoundedCornerShape(12.dp),
-              color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-              border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
-            ) {
-              Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Enter this code on GitHub:", style = MaterialTheme.typography.labelLarge)
-                Text(
-                  text = deviceAuthState.userCode,
-                  style = MaterialTheme.typography.headlineMedium,
-                  fontFamily = JetBrainsMonoFontFamily,
-                  fontWeight = FontWeight.Bold,
-                  color = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                  text = deviceAuthState.statusNote,
-                  style = MaterialTheme.typography.bodySmall,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                FlowRow(
-                  horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                  OutlinedButton(
-                    onClick = { onCopyCode(deviceAuthState.userCode) },
-                    modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_copy_device_code"),
-                  ) {
-                    Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("Copy Code")
-                  }
-                  Button(
-                    onClick = { onOpenBrowserUrl(deviceAuthState.verificationUri) },
-                    modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_open_device_url"),
-                  ) {
-                    Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("Open GitHub")
-                  }
-                  TextButton(
-                    onClick = onCancelDeviceLogin,
-                    modifier = Modifier.minimumInteractiveComponentSize(),
-                  ) {
-                    Text("Cancel")
-                  }
-                }
-              }
-            }
-          }
-
-          else -> {
-            if (deviceAuthState is DeviceAuthState.Error) {
-              Text(
-                text = deviceAuthState.message,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-              )
-              Spacer(Modifier.height(8.dp))
-            }
+        AnimatedVisibility(visible = showCustomClientId) {
+          Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+          ) {
+            Text(
+              text = "Uses GitHub CLI's public Device Flow Client ID by default — identical to gh auth login. Enter your own OAuth App Client ID below only if required by your organization.",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedTextField(
+              value = cloudSettings.githubClientId,
+              onValueChange = { cid -> onUpdateCloudSettings { it.copy(githubClientId = cid.trim()) } },
+              label = { Text("Custom OAuth Client ID (optional)") },
+              placeholder = { Text(GITHUB_CLI_CLIENT_ID) },
+              singleLine = true,
+              textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
+              modifier = Modifier.fillMaxWidth().testTag("onboarding_github_client_id"),
+            )
             FlowRow(
               horizontalArrangement = Arrangement.spacedBy(8.dp),
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-              Button(
-                onClick = onStartDeviceLogin,
-                enabled = cloudSettings.githubClientId.isNotBlank(),
-                modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_start_oauth_btn"),
-              ) {
-                Icon(Icons.Rounded.Security, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("Sign in via Device Flow")
+              if (cloudSettings.usingCustomClientId) {
+                OutlinedButton(
+                  onClick = { onUpdateCloudSettings { it.copy(githubClientId = "") } },
+                  shape = RoundedCornerShape(20.dp),
+                  modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_reset_client_id_btn"),
+                ) {
+                  Text("Use Built-in gh CLI ID")
+                }
               }
               OutlinedButton(
                 onClick = { onOpenBrowserUrl("https://github.com/settings/developers") },
+                shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_github_dev_settings_btn"),
               ) {
                 Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
