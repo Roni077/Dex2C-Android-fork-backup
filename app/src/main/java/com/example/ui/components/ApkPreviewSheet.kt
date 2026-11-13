@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,15 +26,16 @@ import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -60,6 +61,8 @@ fun ApkPreviewSheet(
   onSelectDexEntry: (String) -> Unit,
   onConfirmLoad: () -> Unit,
   onDismiss: () -> Unit,
+  onSelectAllDexEntries: () -> Unit = {},
+  onSelectPrimaryDexEntry: () -> Unit = {},
 ) {
   val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -127,8 +130,10 @@ fun ApkPreviewSheet(
         is ApkStagingState.Ready -> {
           PreviewReadyContent(
             preview = stagingState.preview,
-            selectedEntry = stagingState.selectedEntryName,
-            onSelectDexEntry = onSelectDexEntry,
+            selectedEntries = stagingState.selectedEntryNames,
+            onToggleDexEntry = onSelectDexEntry,
+            onSelectAllDexEntries = onSelectAllDexEntries,
+            onSelectPrimaryDexEntry = onSelectPrimaryDexEntry,
             onConfirmLoad = onConfirmLoad,
             onDismiss = onDismiss,
           )
@@ -141,133 +146,159 @@ fun ApkPreviewSheet(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PreviewReadyContent(
+private fun ColumnScope.PreviewReadyContent(
   preview: ApkStagingPreview,
-  selectedEntry: String,
-  onSelectDexEntry: (String) -> Unit,
+  selectedEntries: Set<String>,
+  onToggleDexEntry: (String) -> Unit,
+  onSelectAllDexEntries: () -> Unit,
+  onSelectPrimaryDexEntry: () -> Unit,
   onConfirmLoad: () -> Unit,
   onDismiss: () -> Unit,
 ) {
   val iconBitmap = remember(preview.iconBitmap) { preview.iconBitmap?.asImageBitmap() }
+  val isMultiDexContainer = preview.dexEntries.size > 1
+  val allSelected = isMultiDexContainer && selectedEntries.size >= preview.dexEntries.size
 
-  Surface(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(24.dp),
-    color = MaterialTheme.colorScheme.surfaceContainer,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
+  LazyColumn(
+    modifier = Modifier.fillMaxWidth().weight(1f, fill = false).testTag("preview_dex_list"),
+    verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        if (iconBitmap != null) {
-          Image(
-            bitmap = iconBitmap,
-            contentDescription = "${preview.appLabel} icon",
-            modifier = Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)),
-          )
-        } else {
-          Box(
-            modifier =
-              Modifier.size(48.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center,
-          ) {
-            Icon(
-              imageVector = if (preview.isSingleDex) Icons.Rounded.Memory else Icons.Rounded.Android,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-          }
-        }
-
-        Spacer(Modifier.width(12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-          Text(
-            text = preview.appLabel ?: preview.sourceLabel,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-          if (!preview.packageName.isNullOrBlank()) {
-            Text(
-              text = preview.packageName,
-              style = MaterialTheme.typography.labelSmall,
-              fontFamily = JetBrainsMonoFontFamily,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-            )
-          } else {
-            Text(
-              text = preview.sourceLabel,
-              style = MaterialTheme.typography.labelSmall,
-              fontFamily = JetBrainsMonoFontFamily,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-        }
-      }
-
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+    item(key = "preview_meta_card") {
+      Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
       ) {
-        TagPill(preview.sourceType.label)
-        TagPill(formatApkSize(preview.totalByteSize))
-        if (!preview.versionName.isNullOrBlank()) {
-          val verText =
-            if (preview.versionCode != null) "v${preview.versionName} (${preview.versionCode})"
-            else preview.versionName
-          TagPill(verText)
-        }
-        if (preview.minSdk != null) TagPill("minSdk ${preview.minSdk}")
-        if (preview.targetSdk != null && preview.targetSdk > 0) TagPill("targetSdk ${preview.targetSdk}")
-      }
-
-      if (!preview.isSingleDex) {
-        Text(
-          text = stringResource(R.string.preview_abis_section),
-          style = MaterialTheme.typography.labelLarge,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        FlowRow(
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-          if (preview.nativeAbis.isEmpty()) {
-            TagPill("Pure Dalvik (No .so libs)")
-          } else {
-            preview.nativeAbis.forEach { abi ->
-              TagPill(
-                text = abi,
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            if (iconBitmap != null) {
+              Image(
+                bitmap = iconBitmap,
+                contentDescription = "${preview.appLabel} icon",
+                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)),
               )
+            } else {
+              Box(
+                modifier =
+                  Modifier.size(48.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+              ) {
+                Icon(
+                  imageVector = if (preview.isSingleDex) Icons.Rounded.Memory else Icons.Rounded.Android,
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+              }
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+              Text(
+                text = preview.appLabel ?: preview.sourceLabel,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+              if (!preview.packageName.isNullOrBlank()) {
+                Text(
+                  text = preview.packageName,
+                  style = MaterialTheme.typography.labelSmall,
+                  fontFamily = JetBrainsMonoFontFamily,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                )
+              } else {
+                Text(
+                  text = preview.sourceLabel,
+                  style = MaterialTheme.typography.labelSmall,
+                  fontFamily = JetBrainsMonoFontFamily,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              }
+            }
+          }
+
+          FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            TagPill(preview.sourceType.label)
+            TagPill(formatApkSize(preview.totalByteSize))
+            if (!preview.versionName.isNullOrBlank()) {
+              val verText =
+                if (preview.versionCode != null) "v${preview.versionName} (${preview.versionCode})"
+                else preview.versionName
+              TagPill(verText)
+            }
+            if (preview.minSdk != null) TagPill("minSdk ${preview.minSdk}")
+            if (preview.targetSdk != null && preview.targetSdk > 0) TagPill("targetSdk ${preview.targetSdk}")
+          }
+
+          if (!preview.isSingleDex) {
+            Text(
+              text = stringResource(R.string.preview_abis_section),
+              style = MaterialTheme.typography.labelLarge,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            FlowRow(
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
+              verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+              if (preview.nativeAbis.isEmpty()) {
+                TagPill("Pure Dalvik (No .so libs)")
+              } else {
+                preview.nativeAbis.forEach { abi ->
+                  TagPill(
+                    text = abi,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                  )
+                }
+              }
             }
           }
         }
       }
     }
-  }
 
-  Text(
-    text = "${stringResource(R.string.preview_dex_section)} (${preview.dexEntries.size})",
-    style = MaterialTheme.typography.titleMedium,
-  )
+    item(key = "preview_dex_header") {
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text =
+            if (isMultiDexContainer) "${stringResource(R.string.preview_dex_section)} (${selectedEntries.size}/${preview.dexEntries.size})"
+            else "${stringResource(R.string.preview_dex_section)} (${preview.dexEntries.size})",
+          style = MaterialTheme.typography.titleMedium,
+          modifier = Modifier.weight(1f),
+        )
+        if (isMultiDexContainer) {
+          TextButton(
+            onClick = { if (allSelected) onSelectPrimaryDexEntry() else onSelectAllDexEntries() },
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+            modifier = Modifier.testTag("preview_select_all_dex_btn"),
+          ) {
+            Text(if (allSelected) "Primary Only" else "Select All")
+          }
+        }
+      }
+    }
 
-  LazyColumn(
-    modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp, max = 220.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
     items(preview.dexEntries, key = { it.entryName }) { entry ->
-      val isSelected = entry.entryName == selectedEntry
+      val isSelected = entry.entryName in selectedEntries
       Surface(
         modifier =
           Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .clickable { onSelectDexEntry(entry.entryName) }
+            .clickable { onToggleDexEntry(entry.entryName) }
             .testTag("preview_dex_${entry.entryName}"),
         shape = RoundedCornerShape(18.dp),
         color =
@@ -285,10 +316,10 @@ private fun PreviewReadyContent(
           modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          RadioButton(
-            selected = isSelected,
-            onClick = { onSelectDexEntry(entry.entryName) },
-            modifier = Modifier.minimumInteractiveComponentSize(),
+          Checkbox(
+            checked = isSelected,
+            onCheckedChange = { onToggleDexEntry(entry.entryName) },
+            modifier = Modifier.minimumInteractiveComponentSize().testTag("preview_dex_checkbox_${entry.entryName}"),
           )
           Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -322,11 +353,18 @@ private fun PreviewReadyContent(
     }
     Button(
       onClick = onConfirmLoad,
+      enabled = selectedEntries.isNotEmpty(),
       shape = RoundedCornerShape(20.dp),
       modifier = Modifier.weight(1.4f).testTag("preview_load_dex_button"),
       contentPadding = PaddingValues(vertical = 12.dp),
     ) {
-      Text(stringResource(R.string.preview_load_dex))
+      val buttonText =
+        when (selectedEntries.size) {
+          0 -> "Select a DEX"
+          1 -> stringResource(R.string.preview_load_dex)
+          else -> "Load ${selectedEntries.size} DEXes"
+        }
+      Text(buttonText)
     }
   }
 }

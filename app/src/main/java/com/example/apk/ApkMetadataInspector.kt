@@ -26,6 +26,96 @@ object ApkMetadataInspector {
     )
   }
 
+  fun inspectMultipleUris(context: Context, items: List<Pair<Uri, String>>): ApkStagingPreview {
+    if (items.isEmpty()) {
+      throw IllegalArgumentException("No files selected.")
+    }
+    if (items.size == 1) {
+      val (uri, name) = items.first()
+      return inspectFromUri(context, uri, name)
+    }
+
+    val entries = mutableListOf<ApkDexEntry>()
+    val dexMap = linkedMapOf<String, ByteArray>()
+    val abis = linkedSetOf<String>()
+    var totalBytes = 0L
+
+    fun registerEntry(desiredName: String, dexBytes: ByteArray) {
+      var candidate = desiredName
+      var suffix = 2
+      while (candidate in dexMap) {
+        val dot = desiredName.lastIndexOf('.')
+        candidate =
+          if (dot > 0) "${desiredName.substring(0, dot)} ($suffix)${desiredName.substring(dot)}"
+          else "$desiredName ($suffix)"
+        suffix++
+      }
+      entries += ApkDexEntry(candidate, dexBytes.size)
+      dexMap[candidate] = dexBytes
+    }
+
+    items.forEach { (uri, displayName) ->
+      val bytes =
+        context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+          ?: throw IllegalArgumentException("Unable to read \"$displayName\".")
+      totalBytes += bytes.size.toLong()
+      if (
+        bytes.size >= 8 &&
+          bytes[0] == 'd'.code.toByte() &&
+          bytes[1] == 'e'.code.toByte() &&
+          bytes[2] == 'x'.code.toByte() &&
+          bytes[3] == '\n'.code.toByte()
+      ) {
+        val entryName = if (displayName.endsWith(".dex", ignoreCase = true)) displayName else "$displayName.dex"
+        registerEntry(entryName, bytes)
+      } else {
+        var foundInsideZip = false
+        ZipInputStream(ByteArrayInputStream(bytes)).use { zis ->
+          while (true) {
+            val entry = zis.nextEntry ?: break
+            val name = entry.name
+            if (!entry.isDirectory) {
+              if (name.endsWith(".dex", ignoreCase = true)) {
+                foundInsideZip = true
+                val dexBytes = zis.readBytes()
+                registerEntry("${displayName.substringBeforeLast('.')}/$name", dexBytes)
+              } else if (name.startsWith("lib/") && name.endsWith(".so")) {
+                val parts = name.split('/')
+                if (parts.size >= 3) abis += parts[1]
+              }
+            }
+            zis.closeEntry()
+          }
+        }
+        if (!foundInsideZip) {
+          throw IllegalArgumentException("\"$displayName\" is not a valid DEX or APK archive.")
+        }
+      }
+    }
+
+    if (entries.isEmpty()) {
+      throw IllegalArgumentException("No valid DEX entries found in the selected files.")
+    }
+
+    return ApkStagingPreview(
+      sourceLabel = "${items.size} DEX files",
+      sourceRef = items.joinToString("|") { it.first.toString() },
+      sourceType = BinarySourceType.SAF_URI,
+      packageName = null,
+      appLabel = "${entries.size} Selected DEX Binaries",
+      versionName = "${entries.size} DEX files",
+      versionCode = null,
+      minSdk = null,
+      targetSdk = null,
+      totalByteSize = totalBytes,
+      nativeAbis = abis.sorted(),
+      dexEntries = entries,
+      dexByteMap = dexMap,
+      isSingleDex = false,
+      iconBitmap = null,
+    )
+  }
+
   fun inspectFromInstalledApp(context: Context, app: InstalledAppItem): ApkStagingPreview {
     val file = File(app.apkPath)
     if (!file.exists() || !file.canRead()) {

@@ -104,7 +104,7 @@ private sealed interface ExplorerRowItem {
     val expanded: Boolean,
     val inTreeMode: Boolean,
   ) : ExplorerRowItem {
-    override val key: String = "cls:${dexClass.classIndex}"
+    override val key: String = "cls:${dexClass.uniqueKey}"
   }
 
   data class MethodRow(
@@ -139,13 +139,15 @@ fun ClassesScreen(
   onToggleNonEmptyPackages: () -> Unit = {},
   onResetExtraFilters: () -> Unit = {},
   onTogglePackageSelection: (List<DexClassInfo>) -> Unit = {},
+  onDexSourceFilterChange: (String?) -> Unit = {},
 ) {
   var viewMode by remember { mutableStateOf(ClassesViewMode.TREE) }
   var showSortMenu by remember { mutableStateOf(false) }
+  var showDexMenu by remember { mutableStateOf(false) }
   var showExtraFilters by remember { mutableStateOf(false) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
-  val expandedClasses = remember { mutableStateMapOf<Int, Boolean>() }
+  val expandedClasses = remember { mutableStateMapOf<String, Boolean>() }
 
   val autoExpandPackages = filterState.searchQuery.isNotBlank() || filterState.onlySelected
   LaunchedEffect(autoExpandPackages) {
@@ -219,7 +221,7 @@ fun ClassesScreen(
             add(ExplorerRowItem.PackageRow(group = group, expanded = pkgExpanded))
             if (pkgExpanded) {
               group.classes.forEach { dexClass ->
-                val clsExpanded = expandedClasses[dexClass.classIndex] == true
+                val clsExpanded = expandedClasses[dexClass.uniqueKey] == true
                 add(ExplorerRowItem.ClassRow(dexClass = dexClass, expanded = clsExpanded, inTreeMode = true))
                 if (clsExpanded) {
                   dexClass.allMethods
@@ -233,7 +235,7 @@ fun ClassesScreen(
           }
         } else {
           flatClasses.take(flatCap).forEach { dexClass ->
-            val clsExpanded = expandedClasses[dexClass.classIndex] == true
+            val clsExpanded = expandedClasses[dexClass.uniqueKey] == true
             add(ExplorerRowItem.ClassRow(dexClass = dexClass, expanded = clsExpanded, inTreeMode = false))
             if (clsExpanded) {
               dexClass.allMethods
@@ -333,6 +335,67 @@ fun ClassesScreen(
                     },
                     modifier = Modifier.testTag("sort_option_${order.name}"),
                   )
+                }
+              }
+            }
+          }
+          val loadedDexNames =
+            (loadState as? DexLoadState.Ready)?.loadedEntryNames ?: emptyList()
+          if (loadedDexNames.size > 1) {
+            item {
+              val activeDex = filterState.dexSourceFilter?.takeIf { it in loadedDexNames }
+              Box {
+                FilterChip(
+                  selected = activeDex != null,
+                  onClick = { showDexMenu = true },
+                  label = {
+                    Text(
+                      if (activeDex == null) "DEX: All (${loadedDexNames.size})"
+                      else "DEX: $activeDex"
+                    )
+                  },
+                  modifier = Modifier.testTag("chip_dex_source"),
+                )
+                DropdownMenu(
+                  expanded = showDexMenu,
+                  onDismissRequest = { showDexMenu = false },
+                ) {
+                  DropdownMenuItem(
+                    text = { Text("All Loaded DEXes (${loadedDexNames.size})") },
+                    trailingIcon = {
+                      if (activeDex == null) {
+                        Icon(
+                          imageVector = Icons.Rounded.Check,
+                          contentDescription = null,
+                          modifier = Modifier.size(16.dp),
+                        )
+                      }
+                    },
+                    onClick = {
+                      onDexSourceFilterChange(null)
+                      showDexMenu = false
+                    },
+                    modifier = Modifier.testTag("dex_source_all"),
+                  )
+                  loadedDexNames.forEach { entryName ->
+                    DropdownMenuItem(
+                      text = { Text(entryName, fontFamily = JetBrainsMonoFontFamily) },
+                      trailingIcon = {
+                        if (activeDex == entryName) {
+                          Icon(
+                            imageVector = Icons.Rounded.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                          )
+                        }
+                      },
+                      onClick = {
+                        onDexSourceFilterChange(entryName)
+                        showDexMenu = false
+                      },
+                      modifier = Modifier.testTag("dex_source_$entryName"),
+                    )
+                  }
                 }
               }
             }
@@ -560,14 +623,16 @@ fun ClassesScreen(
                 }
 
                 is ExplorerRowItem.ClassRow -> {
+                  val isMultiDex = (loadState as? DexLoadState.Ready)?.loadedDexes?.size ?: 0 > 1
                   CompactClassRow(
                     dexClass = item.dexClass,
                     expanded = item.expanded,
                     inTreeMode = item.inTreeMode,
+                    showDexOrigin = isMultiDex,
                     selectedMethodIds = selectedMethodIds,
                     methodScopeFilter = filterState.methodScopeFilter,
                     allowInit = allowInit,
-                    onToggleExpand = { expandedClasses[item.dexClass.classIndex] = !item.expanded },
+                    onToggleExpand = { expandedClasses[item.dexClass.uniqueKey] = !item.expanded },
                     onToggleClassSelect = { onToggleClassSelection(item.dexClass) },
                   )
                 }
@@ -718,6 +783,7 @@ private fun CompactClassRow(
   dexClass: DexClassInfo,
   expanded: Boolean,
   inTreeMode: Boolean,
+  showDexOrigin: Boolean,
   selectedMethodIds: Set<String>,
   methodScopeFilter: MethodScopeFilter,
   allowInit: Boolean,
@@ -742,6 +808,13 @@ private fun CompactClassRow(
       else -> ToggleableState.Indeterminate
     }
 
+  val classRowTag =
+    if (dexClass.sourceEntryName == "classes.dex") "class_row_${dexClass.classIndex}"
+    else "class_row_${dexClass.sourceEntryName}_${dexClass.classIndex}"
+  val classCheckboxTag =
+    if (dexClass.sourceEntryName == "classes.dex") "class_checkbox_${dexClass.classIndex}"
+    else "class_checkbox_${dexClass.sourceEntryName}_${dexClass.classIndex}"
+
   Row(
     modifier =
       Modifier.fillMaxWidth()
@@ -752,7 +825,7 @@ private fun CompactClassRow(
         )
         .clickable(onClick = onToggleExpand)
         .padding(start = if (inTreeMode) 14.dp else 2.dp, end = 10.dp)
-        .testTag("class_row_${dexClass.classIndex}"),
+        .testTag(classRowTag),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     if (inTreeMode) {
@@ -767,7 +840,7 @@ private fun CompactClassRow(
     TriStateCheckbox(
       state = toggleState,
       onClick = onToggleClassSelect,
-      modifier = Modifier.minimumInteractiveComponentSize().testTag("class_checkbox_${dexClass.classIndex}"),
+      modifier = Modifier.minimumInteractiveComponentSize().testTag(classCheckboxTag),
     )
     Column(modifier = Modifier.weight(1f).padding(vertical = 4.dp)) {
       Text(
@@ -788,6 +861,14 @@ private fun CompactClassRow(
           overflow = TextOverflow.Ellipsis,
         )
       }
+    }
+    if (showDexOrigin) {
+      Spacer(Modifier.width(4.dp))
+      InlineBadge(
+        text = dexClass.sourceEntryName.substringAfterLast('/').removeSuffix(".dex"),
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+      )
     }
     Spacer(Modifier.width(6.dp))
     val displayedBytecodeCount =

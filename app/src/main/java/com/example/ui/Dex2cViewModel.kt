@@ -59,6 +59,9 @@ import java.io.File
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -79,13 +82,28 @@ sealed interface DexLoadState {
     val dexEntries: List<ApkDexEntry>,
     val activeEntryName: String,
     val parsedDex: DexParsedFile,
-  ) : DexLoadState
+    val loadedDexes: Map<String, DexParsedFile> = mapOf(parsedDex.entryName to parsedDex),
+  ) : DexLoadState {
+    val mergedClasses: List<DexClassInfo>
+      get() =
+        if (loadedDexes.size <= 1) parsedDex.classes
+        else loadedDexes.values.flatMap { it.classes }
+
+    val loadedEntryNames: List<String>
+      get() = loadedDexes.keys.toList()
+  }
   data class Error(val message: String) : DexLoadState
 }
 
 sealed interface ApkStagingState {
   data class Loading(val label: String) : ApkStagingState
-  data class Ready(val preview: ApkStagingPreview, val selectedEntryName: String) : ApkStagingState
+  data class Ready(
+    val preview: ApkStagingPreview,
+    val selectedEntryNames: Set<String> = preview.dexEntries.firstOrNull()?.let { setOf(it.entryName) } ?: emptySet(),
+  ) : ApkStagingState {
+    val selectedEntryName: String
+      get() = selectedEntryNames.firstOrNull().orEmpty()
+  }
   data class Error(val message: String) : ApkStagingState
 }
 
@@ -132,6 +150,7 @@ data class ClassFilterState(
   val hideFramework: Boolean = true,
   val onlyWithBytecode: Boolean = true,
   val onlySelected: Boolean = false,
+  val dexSourceFilter: String? = null,
   val sortOrder: ClassSortOrder = ClassSortOrder.NAME_ASC,
   val classTypeFilter: ClassTypeFilter = ClassTypeFilter.ALL,
   val hideInnerClasses: Boolean = false,
@@ -262,9 +281,12 @@ class Dex2cViewModel @JvmOverloads constructor(
   val filteredClasses: StateFlow<List<DexClassInfo>> =
     combine(_loadState, _filterState, _selectedMethodIds) { load, filter, selected ->
       val ready = load as? DexLoadState.Ready ?: return@combine emptyList()
+      val activeDexFilter =
+        filter.dexSourceFilter?.takeIf { it in ready.loadedDexes }
       val query = filter.searchQuery.trim().lowercase()
       val filtered =
-        ready.parsedDex.classes.filter { cls ->
+        ready.mergedClasses.filter { cls ->
+          if (activeDexFilter != null && cls.sourceEntryName != activeDexFilter) return@filter false
           if (filter.hideFramework && cls.isFrameworkClass) return@filter false
           if (filter.onlyWithBytecode && cls.bytecodeMethodCount == 0) return@filter false
           if (filter.onlySelected && cls.allMethods.none { it.id in selected }) return@filter false
@@ -327,7 +349,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   val filterMatchSummary: StateFlow<FilterMatchSummary?> =
     combine(_loadState, _config) { load, cfg ->
       val ready = load as? DexLoadState.Ready ?: return@combine null
-      withContext(Dispatchers.Default) { FilterRuleEngine.evaluate(ready.parsedDex, cfg) }
+      withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
   private var hasInitializedFilterDefaults = false
@@ -411,25 +433,40 @@ class Dex2cViewModel @JvmOverloads constructor(
   }
 
   fun stageFromSafUri(uri: Uri) {
+    stageFromSafUris(listOf(uri))
+  }
+
+  fun stageFromSafUris(uris: List<Uri>) {
+    if (uris.isEmpty()) return
     val context = getApplication<Application>()
-    // Try taking persistable read permission so recent history can reopen this file later
-    runCatching {
-      context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-    val name = queryDisplayName(uri) ?: "selected_binary.apk"
+    val items =
+      uris.mapIndexed { idx, uri ->
+        runCatching {
+          context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val fallback = if (uris.size > 1) "classes${if (idx == 0) "" else idx + 1}.dex" else "selected_binary.apk"
+        uri to (queryDisplayName(uri) ?: fallback)
+      }
+
     _isPickerOpen.value = false
-    _stagingState.value = ApkStagingState.Loading(name)
+    val loadingLabel = if (items.size == 1) items.first().second else "${items.size} selected files"
+    _stagingState.value = ApkStagingState.Loading(loadingLabel)
 
     viewModelScope.launch {
       try {
         val preview =
           withContext(Dispatchers.IO) {
-            ApkMetadataInspector.inspectFromUri(context, uri, name)
+            ApkMetadataInspector.inspectMultipleUris(context, items)
           }
-        recordRecent(preview)
-        _stagingState.value = ApkStagingState.Ready(preview, preview.dexEntries.first().entryName)
+        if (items.size == 1) {
+          recordRecent(preview)
+        }
+        val initialSelected =
+          if (items.size > 1) preview.dexEntries.map { it.entryName }.toSet()
+          else setOf(preview.dexEntries.first().entryName)
+        _stagingState.value = ApkStagingState.Ready(preview, initialSelected)
       } catch (t: Throwable) {
-        _stagingState.value = ApkStagingState.Error(t.message ?: "Failed to inspect selected file.")
+        _stagingState.value = ApkStagingState.Error(t.message ?: "Failed to inspect selected file(s).")
       }
     }
   }
@@ -446,7 +483,7 @@ class Dex2cViewModel @JvmOverloads constructor(
             ApkMetadataInspector.inspectFromInstalledApp(context, app)
           }
         recordRecent(preview)
-        _stagingState.value = ApkStagingState.Ready(preview, preview.dexEntries.first().entryName)
+        _stagingState.value = ApkStagingState.Ready(preview, setOf(preview.dexEntries.first().entryName))
       } catch (t: Throwable) {
         _stagingState.value = ApkStagingState.Error(t.message ?: "Failed to inspect ${app.appLabel}.")
       }
@@ -470,7 +507,7 @@ class Dex2cViewModel @JvmOverloads constructor(
             }
           }
         recordRecent(preview)
-        _stagingState.value = ApkStagingState.Ready(preview, preview.dexEntries.first().entryName)
+        _stagingState.value = ApkStagingState.Ready(preview, setOf(preview.dexEntries.first().entryName))
       } catch (t: Throwable) {
         _stagingState.value =
           ApkStagingState.Error(
@@ -492,23 +529,41 @@ class Dex2cViewModel @JvmOverloads constructor(
             ApkMetadataInspector.inspectFromFilePath(context, selfFile.absolutePath, "Dex2C Studio (base.apk)")
           }
         recordRecent(preview)
-        _stagingState.value = ApkStagingState.Ready(preview, preview.dexEntries.first().entryName)
+        _stagingState.value = ApkStagingState.Ready(preview, setOf(preview.dexEntries.first().entryName))
       } catch (t: Throwable) {
         _stagingState.value = ApkStagingState.Error(t.message ?: "Unable to read live APK.")
       }
     }
   }
 
-  fun selectStagedDexEntry(entryName: String) {
+  fun toggleStagedDexEntry(entryName: String) {
     val ready = _stagingState.value as? ApkStagingState.Ready ?: return
-    _stagingState.value = ready.copy(selectedEntryName = entryName)
+    val updated =
+      if (entryName in ready.selectedEntryNames) ready.selectedEntryNames - entryName
+      else ready.selectedEntryNames + entryName
+    _stagingState.value = ready.copy(selectedEntryNames = updated)
+  }
+
+  fun selectStagedDexEntry(entryName: String) {
+    toggleStagedDexEntry(entryName)
+  }
+
+  fun selectAllStagedDexEntries() {
+    val ready = _stagingState.value as? ApkStagingState.Ready ?: return
+    _stagingState.value = ready.copy(selectedEntryNames = ready.preview.dexEntries.map { it.entryName }.toSet())
+  }
+
+  fun selectPrimaryStagedDexEntry() {
+    val ready = _stagingState.value as? ApkStagingState.Ready ?: return
+    val primary = ready.preview.dexEntries.firstOrNull()?.entryName?.let { setOf(it) } ?: emptySet()
+    _stagingState.value = ready.copy(selectedEntryNames = primary)
   }
 
   fun commitStagedDex() {
     val ready = _stagingState.value as? ApkStagingState.Ready ?: return
     val preview = ready.preview
-    val chosenEntry = ready.selectedEntryName
-    val dexBytes = preview.dexByteMap[chosenEntry] ?: return
+    val chosenEntries = preview.dexEntries.map { it.entryName }.filter { it in ready.selectedEntryNames }
+    if (chosenEntries.isEmpty()) return
 
     // Automatically track the selected APK for Cloud Build dispatch too
     if (preview.sourceLabel.endsWith(".apk", ignoreCase = true) || preview.sourceType == BinarySourceType.INSTALLED_APK) {
@@ -522,23 +577,39 @@ class Dex2cViewModel @JvmOverloads constructor(
     }
 
     _stagingState.value = null
-    _loadState.value = DexLoadState.Loading("${preview.appLabel ?: preview.sourceLabel} ($chosenEntry)")
+    val loadingSummary =
+      if (chosenEntries.size == 1) chosenEntries.first() else "${chosenEntries.size} DEX files"
+    _loadState.value = DexLoadState.Loading("${preview.appLabel ?: preview.sourceLabel} ($loadingSummary)")
 
     viewModelScope.launch {
       try {
         val label = preview.appLabel?.takeIf { it.isNotBlank() } ?: preview.sourceLabel
-        val parsed =
-          withContext(Dispatchers.Default) {
-            DexParser.parseDex(
-              rawBytes = dexBytes,
-              sourceLabel = label,
-              entryName = chosenEntry,
-              preferNativeBridge = _appSettings.value.preferRustJniBridge,
-            )
+        val preferNative = _appSettings.value.preferRustJniBridge
+        val parsedList =
+          coroutineScope {
+            chosenEntries
+              .mapNotNull { entryName -> preview.dexByteMap[entryName]?.let { entryName to it } }
+              .map { (entryName, bytes) ->
+                async(Dispatchers.Default) {
+                  DexParser.parseDex(
+                    rawBytes = bytes,
+                    sourceLabel = label,
+                    entryName = entryName,
+                    preferNativeBridge = preferNative,
+                  )
+                }
+              }
+              .awaitAll()
           }
-        applyParsedDex(label, preview.dexEntries, preview.dexByteMap, parsed)
+        if (parsedList.isEmpty()) {
+          _loadState.value = DexLoadState.Error("Selected DEX binaries could not be read.")
+          return@launch
+        }
+        val dexMap = linkedMapOf<String, DexParsedFile>()
+        parsedList.forEach { dexMap[it.entryName] = it }
+        applyParsedDexes(label, preview.dexEntries, preview.dexByteMap, dexMap)
       } catch (t: Throwable) {
-        _loadState.value = DexLoadState.Error(t.message ?: "Failed to parse $chosenEntry.")
+        _loadState.value = DexLoadState.Error(t.message ?: "Failed to parse selected DEX files.")
       }
     }
   }
@@ -570,10 +641,44 @@ class Dex2cViewModel @JvmOverloads constructor(
   }
 
   fun switchDexEntry(entryName: String) {
+    toggleLoadedDexEntry(entryName)
+  }
+
+  fun toggleLoadedDexEntry(entryName: String) {
+    val current = _loadState.value as? DexLoadState.Ready ?: return
+    if (entryName in current.loadedDexes) {
+      if (current.loadedDexes.size <= 1) {
+        focusHeaderDexEntry(entryName)
+        return
+      }
+      val removedMethodIds =
+        current.loadedDexes[entryName]?.classes?.flatMap { it.allMethods }?.map { it.id }?.toSet() ?: emptySet()
+      val updatedMap = linkedMapOf<String, DexParsedFile>()
+      current.loadedDexes.forEach { (k, v) -> if (k != entryName) updatedMap[k] = v }
+      val nextActive =
+        if (current.activeEntryName == entryName) updatedMap.keys.first() else current.activeEntryName
+      val nextParsed = updatedMap[nextActive] ?: updatedMap.values.first()
+      if (removedMethodIds.isNotEmpty()) {
+        _selectedMethodIds.update { it - removedMethodIds }
+      }
+      if (_filterState.value.dexSourceFilter == entryName) {
+        _filterState.update { it.copy(dexSourceFilter = null) }
+      }
+      if (_inspection.value?.dexClass?.sourceEntryName == entryName) {
+        _inspection.value = null
+      }
+      _loadState.value =
+        current.copy(
+          activeEntryName = nextActive,
+          parsedDex = nextParsed,
+          loadedDexes = updatedMap,
+        )
+      rebuildBundle()
+      return
+    }
+
     val bytes = dexByteCache[entryName] ?: return
-    val currentEntries = (_loadState.value as? DexLoadState.Ready)?.dexEntries ?: return
     viewModelScope.launch {
-      _loadState.value = DexLoadState.Loading(entryName)
       try {
         val parsed =
           withContext(Dispatchers.Default) {
@@ -584,28 +689,51 @@ class Dex2cViewModel @JvmOverloads constructor(
               preferNativeBridge = _appSettings.value.preferRustJniBridge,
             )
           }
-        _selectedMethodIds.value = emptySet()
-        _inspection.value = null
-        _generatedBundle.value = null
-        _loadState.value = DexLoadState.Ready(currentSourceLabel, currentEntries, entryName, parsed)
+        val latest = _loadState.value as? DexLoadState.Ready ?: return@launch
+        val orderedMap = linkedMapOf<String, DexParsedFile>()
+        latest.dexEntries.forEach { entry ->
+          when {
+            entry.entryName == entryName -> orderedMap[entry.entryName] = parsed
+            entry.entryName in latest.loadedDexes -> orderedMap[entry.entryName] = latest.loadedDexes.getValue(entry.entryName)
+          }
+        }
+        if (entryName !in orderedMap) {
+          latest.loadedDexes.forEach { (k, v) -> orderedMap[k] = v }
+          orderedMap[entryName] = parsed
+        }
+        _loadState.value =
+          latest.copy(
+            activeEntryName = entryName,
+            parsedDex = parsed,
+            loadedDexes = orderedMap,
+          )
+        _statusBanner.value = "Loaded $entryName (${orderedMap.size} DEXes active)."
       } catch (t: Throwable) {
-        _loadState.value = DexLoadState.Error(t.message ?: "Failed to parse $entryName.")
+        _statusBanner.value = "Failed to parse $entryName: ${t.message}"
       }
     }
   }
 
-  private fun applyParsedDex(
+  fun focusHeaderDexEntry(entryName: String) {
+    val current = _loadState.value as? DexLoadState.Ready ?: return
+    val target = current.loadedDexes[entryName] ?: return
+    _loadState.value = current.copy(activeEntryName = entryName, parsedDex = target)
+  }
+
+  private fun applyParsedDexes(
     label: String,
     entries: List<ApkDexEntry>,
     byteMap: Map<String, ByteArray>,
-    parsed: DexParsedFile,
+    dexMap: Map<String, DexParsedFile>,
   ) {
     currentSourceLabel = label
     dexByteCache = byteMap
     _selectedMethodIds.value = emptySet()
     _inspection.value = null
     _generatedBundle.value = null
-    _loadState.value = DexLoadState.Ready(label, entries, parsed.entryName, parsed)
+    _filterState.update { it.copy(dexSourceFilter = null) }
+    val primary = dexMap.values.first()
+    _loadState.value = DexLoadState.Ready(label, entries, primary.entryName, primary, dexMap)
   }
 
   fun updateSearchQuery(query: String) {
@@ -642,6 +770,10 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun toggleNonEmptyPackagesOnly() {
     _filterState.update { it.copy(nonEmptyPackagesOnly = !it.nonEmptyPackagesOnly) }
+  }
+
+  fun setDexSourceFilter(entryName: String?) {
+    _filterState.update { it.copy(dexSourceFilter = entryName) }
   }
 
   fun resetExtraClassFilters() {
@@ -699,8 +831,9 @@ class Dex2cViewModel @JvmOverloads constructor(
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val allowInit = _config.value.allowInit
     val limit = _appSettings.value.autoSelectMethodLimit.coerceIn(8, 256)
+    val allClasses = ready.mergedClasses
     val appMethods =
-      ready.parsedDex.classes
+      allClasses
         .filter { !it.isFrameworkClass }
         .flatMap { it.allMethods }
         .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
@@ -711,7 +844,7 @@ class Dex2cViewModel @JvmOverloads constructor(
       if (appMethods.isNotEmpty()) {
         appMethods
       } else {
-        ready.parsedDex.classes
+        allClasses
           .flatMap { it.allMethods }
           .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
           .take((limit / 2).coerceAtLeast(8))
@@ -727,7 +860,7 @@ class Dex2cViewModel @JvmOverloads constructor(
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val cfg = _config.value
     viewModelScope.launch {
-      val summary = withContext(Dispatchers.Default) { FilterRuleEngine.evaluate(ready.parsedDex, cfg) }
+      val summary = withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
       val capped = summary.matchedMethodIds.take(96).toSet()
       _selectedMethodIds.value = capped
       val extra =
@@ -810,14 +943,18 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun inspectMethod(dexClass: DexClassInfo, method: DexEncodedMethod) {
     val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val targetDex =
+      ready.loadedDexes[dexClass.sourceEntryName]
+        ?: ready.loadedDexes[method.sourceEntryName]
+        ?: ready.parsedDex
     val cfg = _config.value
     viewModelScope.launch {
       val state =
         withContext(Dispatchers.Default) {
-          val insns = DalvikDisassembler.disassemble(ready.parsedDex, method)
-          val tries = DalvikDisassembler.parseTryBlocks(ready.parsedDex, method)
-          val cCode = Dex2cTranspiler.transpileMethodToC(ready.parsedDex, method, cfg)
-          val meta = DexHelper.inspectMethodMetadata(ready.parsedDex, dexClass, method)
+          val insns = DalvikDisassembler.disassemble(targetDex, method)
+          val tries = DalvikDisassembler.parseTryBlocks(targetDex, method)
+          val cCode = Dex2cTranspiler.transpileMethodToC(targetDex, method, cfg)
+          val meta = DexHelper.inspectMethodMetadata(targetDex, dexClass, method)
           MethodInspectionState(method, dexClass, insns, tries, cCode, meta)
         }
       _inspection.value = state
@@ -835,12 +972,16 @@ class Dex2cViewModel @JvmOverloads constructor(
   private fun refreshInspectionIfActive() {
     val current = _inspection.value ?: return
     val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val targetDex =
+      ready.loadedDexes[current.dexClass.sourceEntryName]
+        ?: ready.loadedDexes[current.method.sourceEntryName]
+        ?: ready.parsedDex
     val cfg = _config.value
     viewModelScope.launch {
       try {
         val newCode =
           withContext(Dispatchers.Default) {
-            Dex2cTranspiler.transpileMethodToC(ready.parsedDex, current.method, cfg)
+            Dex2cTranspiler.transpileMethodToC(targetDex, current.method, cfg)
           }
         _inspection.value = current.copy(transpiledC = newCode)
       } catch (t: Throwable) {
@@ -865,11 +1006,17 @@ class Dex2cViewModel @JvmOverloads constructor(
         try {
           val bundle =
             withContext(Dispatchers.Default) {
-              val methods =
-                ready.parsedDex.classes
-                  .flatMap { it.allMethods }
-                  .filter { it.id in selectedIds }
-              Dex2cTranspiler.transpileBundle(ready.parsedDex, methods, cfg)
+              val dexMethodPairs =
+                ready.loadedDexes.values.flatMap { dex ->
+                  dex.classes.flatMap { cls ->
+                    cls.allMethods.filter { it.id in selectedIds }.map { dex to it }
+                  }
+                }
+              Dex2cTranspiler.transpileBundleMultiDex(
+                entries = dexMethodPairs,
+                config = cfg,
+                sourceLabelHint = ready.sourceLabel,
+              )
             }
           _generatedBundle.value = bundle
         } catch (t: Throwable) {

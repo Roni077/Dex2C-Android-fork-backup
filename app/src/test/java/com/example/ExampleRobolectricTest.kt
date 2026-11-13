@@ -1111,4 +1111,202 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("build_tab_pipeline").assertIsDisplayed()
     composeTestRule.onNodeWithTag("build_tab_output").assertIsDisplayed()
   }
+
+  @Test
+  fun `apkPreviewSheet supports checking multiple DEX entries and Select All`() {
+    val entries =
+      listOf(
+        com.example.dex.ApkDexEntry("classes.dex", 1_200_000),
+        com.example.dex.ApkDexEntry("classes2.dex", 850_000),
+        com.example.dex.ApkDexEntry("classes3.dex", 320_000),
+      )
+    val preview =
+      com.example.apk.ApkStagingPreview(
+        sourceLabel = "sample.apk",
+        sourceRef = "content://sample.apk",
+        sourceType = com.example.apk.BinarySourceType.SAF_URI,
+        packageName = "com.example.sample",
+        appLabel = "Sample App",
+        versionName = "1.0",
+        versionCode = 1L,
+        minSdk = 26,
+        targetSdk = 34,
+        totalByteSize = 3_000_000L,
+        nativeAbis = listOf("arm64-v8a"),
+        dexEntries = entries,
+        dexByteMap = entries.associate { it.entryName to ByteArray(4) },
+        isSingleDex = false,
+        iconBitmap = null,
+      )
+    var staging by mutableStateOf(
+      com.example.ui.ApkStagingState.Ready(preview, setOf("classes.dex"))
+    )
+    var confirmed by mutableStateOf(false)
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.components.ApkPreviewSheet(
+          stagingState = staging,
+          onSelectDexEntry = { entry ->
+            val current = staging.selectedEntryNames
+            val next = if (entry in current) current - entry else current + entry
+            staging = staging.copy(selectedEntryNames = next)
+          },
+          onSelectAllDexEntries = {
+            staging = staging.copy(selectedEntryNames = entries.map { it.entryName }.toSet())
+          },
+          onSelectPrimaryDexEntry = {
+            staging = staging.copy(selectedEntryNames = setOf("classes.dex"))
+          },
+          onConfirmLoad = { confirmed = true },
+          onDismiss = {},
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("preview_load_dex_button").assertTextContains("Load Selected DEX")
+
+    // Check classes2.dex as well -> button updates to Load 2 DEXes
+    composeTestRule.onNodeWithTag("preview_dex_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("preview_dex_classes2.dex"))
+    composeTestRule.onNodeWithTag("preview_dex_checkbox_classes2.dex").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(setOf("classes.dex", "classes2.dex"), staging.selectedEntryNames)
+    composeTestRule.onNodeWithTag("preview_load_dex_button").assertTextContains("Load 2 DEXes")
+
+    // Tap Select All -> selects all 3 DEX entries
+    composeTestRule.onNodeWithTag("preview_dex_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("preview_select_all_dex_btn"))
+    composeTestRule.onNodeWithTag("preview_select_all_dex_btn").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(setOf("classes.dex", "classes2.dex", "classes3.dex"), staging.selectedEntryNames)
+    composeTestRule.onNodeWithTag("preview_load_dex_button").assertTextContains("Load 3 DEXes")
+
+    composeTestRule.onNodeWithTag("preview_load_dex_button").performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(confirmed)
+  }
+
+  @Test
+  fun `classesScreen merges multi-DEX classes and filters by DEX source chip`() {
+    val proto = com.example.dex.DexProto("V", "V", emptyList())
+    val m1 =
+      com.example.dex.DexEncodedMethod(
+        id = "classes.dex::Lcom/app/Main;#0",
+        methodIndex = 0,
+        methodRef = com.example.dex.DexMethodRef("Lcom/app/Main;", proto, "runPrimary"),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta = com.example.dex.DexCodeMeta(1, 1, 0, 0, 2, 0),
+        sourceEntryName = "classes.dex",
+      )
+    val c1 =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/app/Main;",
+        fullName = "com.app.Main",
+        simpleName = "Main",
+        packageName = "com.app",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Main.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = listOf(m1),
+        sourceEntryName = "classes.dex",
+      )
+    val m2 =
+      com.example.dex.DexEncodedMethod(
+        id = "classes2.dex::Lcom/app/Helper;#0",
+        methodIndex = 0,
+        methodRef = com.example.dex.DexMethodRef("Lcom/app/Helper;", proto, "runSecondary"),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta = com.example.dex.DexCodeMeta(1, 1, 0, 0, 2, 0),
+        sourceEntryName = "classes2.dex",
+      )
+    val c2 =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/app/Helper;",
+        fullName = "com.app.Helper",
+        simpleName = "Helper",
+        packageName = "com.app",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Helper.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = listOf(m2),
+        sourceEntryName = "classes2.dex",
+      )
+    val hdr =
+      com.example.dex.DexHeaderInfo("dex\n035", "035", 1L, "abc", 100, 0x12345678L, 1, 1, 1, 1, 1, 1)
+    val dex1 =
+      com.example.dex.DexParsedFile(
+        "app.apk", "classes.dex", ByteArray(0), hdr, emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), listOf(c1)
+      )
+    val dex2 =
+      com.example.dex.DexParsedFile(
+        "app.apk", "classes2.dex", ByteArray(0), hdr, emptyList(), emptyList(), emptyList(), emptyList(), emptyList(), listOf(c2)
+      )
+    val readyState =
+      com.example.ui.DexLoadState.Ready(
+        sourceLabel = "app.apk",
+        dexEntries = listOf(com.example.dex.ApkDexEntry("classes.dex", 100), com.example.dex.ApkDexEntry("classes2.dex", 100)),
+        activeEntryName = "classes.dex",
+        parsedDex = dex1,
+        loadedDexes = linkedMapOf("classes.dex" to dex1, "classes2.dex" to dex2),
+      )
+
+    var filterState by mutableStateOf(com.example.ui.ClassFilterState())
+
+    composeTestRule.setContent {
+      val visibleClasses =
+        readyState.mergedClasses.filter { cls ->
+          filterState.dexSourceFilter == null || cls.sourceEntryName == filterState.dexSourceFilter
+        }
+      Dex2cTheme {
+        com.example.ui.screens.ClassesScreen(
+          loadState = readyState,
+          classes = visibleClasses,
+          filterState = filterState,
+          selectedMethodIds = emptySet(),
+          allowInit = false,
+          onSearchChange = {},
+          onToggleHideFramework = {},
+          onToggleOnlyBytecode = {},
+          onToggleOnlySelected = {},
+          onDexSourceFilterChange = { filterState = filterState.copy(dexSourceFilter = it) },
+          onToggleClassSelection = {},
+          onToggleMethodSelection = {},
+          onInspectMethod = { _, _ -> },
+          onInspectSelfApk = {},
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("chip_dex_source").assertIsDisplayed().assertTextContains("DEX: All (2)")
+
+    // Expand merged com.app package -> contains classes from BOTH DEXes (Main + Helper)
+    composeTestRule.onNodeWithTag("pkg_row_com.app").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("class_row_0").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("class_row_classes2.dex_0").assertIsDisplayed()
+
+    // Filter to classes2.dex only -> keeps Helper, hides Main
+    composeTestRule.onNodeWithTag("chip_dex_source").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("dex_source_classes2.dex").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("chip_dex_source").assertTextContains("DEX: classes2.dex")
+    composeTestRule.onNodeWithTag("class_row_classes2.dex_0").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("class_row_0").assertDoesNotExist()
+  }
 }

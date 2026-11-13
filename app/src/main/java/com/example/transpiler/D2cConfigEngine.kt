@@ -12,7 +12,10 @@ data class FilterMatchSummary(
 
 object FilterRuleEngine {
 
-  fun evaluate(dex: DexParsedFile, config: TranspilerConfig): FilterMatchSummary {
+  fun evaluate(dex: DexParsedFile, config: TranspilerConfig): FilterMatchSummary =
+    evaluateAll(listOf(dex), config)
+
+  fun evaluateAll(dexFiles: Collection<DexParsedFile>, config: TranspilerConfig): FilterMatchSummary {
     val includes = mutableListOf<Regex>()
     val excludes = mutableListOf<Regex>()
     val invalid = mutableListOf<String>()
@@ -35,19 +38,21 @@ object FilterRuleEngine {
     }
 
     val matchedIds = linkedSetOf<String>()
-    val matchedClasses = linkedSetOf<Int>()
+    val matchedClasses = linkedSetOf<String>()
     var skippedInits = 0
 
-    for (cls in dex.classes) {
-      for (method in cls.allMethods) {
-        if (!method.hasBytecode) continue
-        if (!config.allowInit && method.isInitConstructor) {
-          skippedInits++
-          continue
-        }
-        if (matchesRules(cls.fullName, method, includes, excludes)) {
-          matchedIds += method.id
-          matchedClasses += cls.classIndex
+    for (dex in dexFiles) {
+      for (cls in dex.classes) {
+        for (method in cls.allMethods) {
+          if (!method.hasBytecode) continue
+          if (!config.allowInit && method.isInitConstructor) {
+            skippedInits++
+            continue
+          }
+          if (matchesRules(cls.fullName, method, includes, excludes)) {
+            matchedIds += method.id
+            matchedClasses += cls.uniqueKey
+          }
         }
       }
     }

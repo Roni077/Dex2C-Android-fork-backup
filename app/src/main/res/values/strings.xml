@@ -48,14 +48,14 @@
     <string name="picker_tab_apps">Installed Apps</string>
     <string name="picker_tab_recent">Recent</string>
     <string name="picker_storage_title">Open from Files &amp; Downloads</string>
-    <string name="picker_storage_desc">Choose any .apk or .dex file via the Android system file picker. No broad storage permissions required.</string>
+    <string name="picker_storage_desc">Pick any .apk archive, single .dex binary, or multi-select multiple .dex files via the Android file picker.</string>
     <string name="picker_search_apps">Filter installed apps by name or package…</string>
     <string name="picker_recent_empty">No recently opened APK or DEX files yet.</string>
     <string name="picker_apps_empty">No launchable apps matched your filter.</string>
     <string name="picker_clear_recent">Clear History</string>
 
     <string name="preview_title">APK &amp; DEX Container Preview</string>
-    <string name="preview_dex_section">Select DEX Container to Parse</string>
+    <string name="preview_dex_section">Select DEX Containers to Load</string>
     <string name="preview_abis_section">Bundled Native ABIs</string>
     <string name="preview_load_dex">Load Selected DEX</string>
     <string name="preview_staging_loading">Inspecting APK archive &amp; manifest…</string>

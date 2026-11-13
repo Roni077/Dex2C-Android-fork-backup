@@ -192,6 +192,7 @@ data class DexEncodedMethod(
   val accessFlags: Int,
   val isDirect: Boolean,
   val codeMeta: DexCodeMeta?,
+  val sourceEntryName: String = "classes.dex",
 ) {
   val isStatic: Boolean get() = (accessFlags and 0x0008) != 0
   val isNative: Boolean get() = (accessFlags and 0x0100) != 0
@@ -218,7 +219,11 @@ data class DexClassInfo(
   val annotationsOffset: Int = 0,
   val staticValuesOffset: Int = 0,
   val classDataOffset: Int = 0,
+  val sourceEntryName: String = "classes.dex",
 ) {
+  val uniqueKey: String
+    get() = "$sourceEntryName::$classIndex::$descriptor"
+
   val allMethods: List<DexEncodedMethod>
     get() = directMethods + virtualMethods
 

@@ -155,6 +155,37 @@ class Dex2cTranspilerTest {
     assertTrue(bundle.sourceFile.content.contains("dex2c_xor_decode"))
   }
 
+  @Test
+  fun multiDexTranspileAndFilterEvaluateAllCombineBothDexes() {
+    val dex1 = DexParser.parseDex(buildMinimalTestDex(), "app.apk", "classes.dex")
+    val dex2 = DexParser.parseDex(buildMinimalTestDex(), "app.apk", "classes2.dex")
+    val m1 = dex1.classes.first().directMethods.first()
+    val m2 = dex2.classes.first().directMethods.first()
+    // Method IDs are namespaced by source DEX entryName so they never collide
+    assertFalse(m1.id == m2.id)
+
+    val cfg =
+      TranspilerConfig(
+        jniStyle = JniBindingStyle.REGISTER_NATIVES,
+        allowInit = true,
+        filterRulesText = "com\\.example\\.SecretCalc.*",
+      )
+    val summary = FilterRuleEngine.evaluateAll(listOf(dex1, dex2), cfg)
+    assertEquals(setOf(m1.id, m2.id), summary.matchedMethodIds)
+    assertEquals(2, summary.matchedClassCount)
+
+    val multiBundle =
+      Dex2cTranspiler.transpileBundleMultiDex(
+        entries = listOf(dex1 to m1, dex2 to m2),
+        config = cfg,
+        sourceLabelHint = "app.apk",
+      )
+    assertEquals(2, multiBundle.transpiledMethodCount)
+    assertTrue(multiBundle.sourceFile.content.contains("classes.dex"))
+    assertTrue(multiBundle.sourceFile.content.contains("classes2.dex"))
+    assertTrue(multiBundle.sourceFile.content.contains("JNI_OnLoad"))
+  }
+
   private fun buildMinimalTestDex(): ByteArray {
     val strings = listOf("I", "III", "Lcom/example/SecretCalc;", "Ljava/lang/Object;", "compute")
     val strDataStream = ByteArrayOutputStream()

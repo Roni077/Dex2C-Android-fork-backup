@@ -212,9 +212,9 @@ fun Dex2cApp(
   val pendingCloudApkSave by viewModel.pendingCloudApkSave.collectAsStateWithLifecycle()
 
   val openDocLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-      if (uri != null) {
-        viewModel.stageFromSafUri(uri)
+    rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+      if (uris.isNotEmpty()) {
+        viewModel.stageFromSafUris(uris)
       }
     }
 
@@ -514,6 +514,7 @@ fun Dex2cApp(
                   buildHubTab = BuildHubTab.OUTPUT
                   navigateTopLevel(ROUTE_BUILD)
                 },
+                onFocusHeaderDex = { viewModel.focusHeaderDexEntry(it) },
               )
             }
 
@@ -535,6 +536,7 @@ fun Dex2cApp(
                 onToggleNonEmptyPackages = { viewModel.toggleNonEmptyPackagesOnly() },
                 onResetExtraFilters = { viewModel.resetExtraClassFilters() },
                 onTogglePackageSelection = { viewModel.togglePackageSelection(it) },
+                onDexSourceFilterChange = { viewModel.setDexSourceFilter(it) },
                 onToggleClassSelection = { viewModel.toggleClassSelection(it) },
                 onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
                 onInspectMethod = { cls, method ->
@@ -744,7 +746,9 @@ fun Dex2cApp(
   if (activeStaging != null) {
     ApkPreviewSheet(
       stagingState = activeStaging,
-      onSelectDexEntry = { viewModel.selectStagedDexEntry(it) },
+      onSelectDexEntry = { viewModel.toggleStagedDexEntry(it) },
+      onSelectAllDexEntries = { viewModel.selectAllStagedDexEntries() },
+      onSelectPrimaryDexEntry = { viewModel.selectPrimaryStagedDexEntry() },
       onConfirmLoad = { viewModel.commitStagedDex() },
       onDismiss = { viewModel.dismissStagingPreview() },
     )

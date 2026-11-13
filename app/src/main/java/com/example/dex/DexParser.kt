@@ -264,12 +264,13 @@ object DexParser {
             if (ref != null) {
               directMethods +=
                 DexEncodedMethod(
-                  id = "$descriptor#$methodIdx",
+                  id = "$entryName::$descriptor#$methodIdx",
                   methodIndex = methodIdx,
                   methodRef = ref,
                   accessFlags = flags,
                   isDirect = true,
                   codeMeta = readCodeMeta(buf, rawBytes.size, codeOff),
+                  sourceEntryName = entryName,
                 )
             }
           }
@@ -283,12 +284,13 @@ object DexParser {
             if (ref != null) {
               virtualMethods +=
                 DexEncodedMethod(
-                  id = "$descriptor#$methodIdx",
+                  id = "$entryName::$descriptor#$methodIdx",
                   methodIndex = methodIdx,
                   methodRef = ref,
                   accessFlags = flags,
                   isDirect = false,
                   codeMeta = readCodeMeta(buf, rawBytes.size, codeOff),
+                  sourceEntryName = entryName,
                 )
             }
           }
@@ -311,6 +313,7 @@ object DexParser {
           annotationsOffset = annotationsOff,
           staticValuesOffset = staticValuesOff,
           classDataOffset = classDataOff,
+          sourceEntryName = entryName,
         )
       }
 

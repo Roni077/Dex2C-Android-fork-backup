@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DataObject
 import androidx.compose.material.icons.rounded.ErrorOutline
@@ -88,6 +89,7 @@ fun WorkbenchScreen(
   onNavigateToClasses: () -> Unit,
   onNavigateToExport: () -> Unit,
   modifier: Modifier = Modifier,
+  onFocusHeaderDex: (String) -> Unit = {},
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     LazyColumn(
@@ -180,18 +182,37 @@ fun WorkbenchScreen(
 
         is DexLoadState.Ready -> {
           val dex = loadState.parsedDex
+          val loadedDexList = loadState.loadedDexes.values.toList()
+          val totalClasses = loadedDexList.sumOf { it.header.classDefsSize }
+          val totalMethods = loadedDexList.sumOf { it.header.methodIdsSize }
+          val totalStrings = loadedDexList.sumOf { it.header.stringIdsSize }
+          val totalSizeBytes = loadedDexList.sumOf { it.header.fileSize }
+
           if (loadState.dexEntries.size > 1) {
             item {
               Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                  text = stringResource(R.string.label_dex_entries),
+                  text = "${stringResource(R.string.label_dex_entries)} (${loadState.loadedDexes.size}/${loadState.dexEntries.size} loaded)",
                   style = MaterialTheme.typography.titleMedium,
                 )
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                   items(loadState.dexEntries) { entry ->
+                    val isLoaded = entry.entryName in loadState.loadedDexes
                     FilterChip(
-                      selected = entry.entryName == loadState.activeEntryName,
+                      selected = isLoaded,
                       onClick = { onSelectDexEntry(entry.entryName) },
+                      leadingIcon =
+                        if (isLoaded) {
+                          {
+                            Icon(
+                              imageVector = Icons.Rounded.Check,
+                              contentDescription = null,
+                              modifier = Modifier.size(16.dp),
+                            )
+                          }
+                        } else {
+                          null
+                        },
                       label = { Text("${entry.entryName} (${formatBytes(entry.byteSize)})") },
                       modifier = Modifier.testTag("dex_entry_${entry.entryName}"),
                     )
@@ -202,9 +223,12 @@ fun WorkbenchScreen(
           }
 
           item {
+            val bannerSummary =
+              if (loadedDexList.size > 1) "${loadedDexList.size} DEXes merged"
+              else loadState.activeEntryName
             TranspileActionBanner(
               sourceLabel = loadState.sourceLabel,
-              entryName = loadState.activeEntryName,
+              entryName = bannerSummary,
               selectedMethodCount = selectedMethodCount,
               onAutoSelect = onAutoSelectAppMethods,
               onClearSelection = onClearSelection,
@@ -221,14 +245,14 @@ fun WorkbenchScreen(
               ) {
                 MetricTile(
                   label = "Classes",
-                  value = "%,d".format(dex.header.classDefsSize),
+                  value = "%,d".format(totalClasses),
                   icon = Icons.Rounded.DataObject,
                   accent = MaterialTheme.colorScheme.primary,
                   modifier = Modifier.weight(1f),
                 )
                 MetricTile(
                   label = "Methods",
-                  value = "%,d".format(dex.header.methodIdsSize),
+                  value = "%,d".format(totalMethods),
                   icon = Icons.Rounded.Code,
                   accent = MaterialTheme.colorScheme.tertiary,
                   modifier = Modifier.weight(1f),
@@ -240,14 +264,14 @@ fun WorkbenchScreen(
               ) {
                 MetricTile(
                   label = "Strings",
-                  value = "%,d".format(dex.header.stringIdsSize),
+                  value = "%,d".format(totalStrings),
                   icon = Icons.Rounded.Memory,
                   accent = MaterialTheme.colorScheme.secondary,
                   modifier = Modifier.weight(1f),
                 )
                 MetricTile(
                   label = "Binary Size",
-                  value = formatBytes(dex.header.fileSize),
+                  value = formatBytes(totalSizeBytes),
                   icon = Icons.Rounded.Storage,
                   accent = MaterialTheme.colorScheme.primary,
                   modifier = Modifier.weight(1f),
@@ -278,6 +302,19 @@ fun WorkbenchScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                   )
+                }
+                if (loadedDexList.size > 1) {
+                  Spacer(Modifier.height(8.dp))
+                  LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(loadedDexList, key = { it.entryName }) { loadedItem ->
+                      FilterChip(
+                        selected = loadedItem.entryName == dex.entryName,
+                        onClick = { onFocusHeaderDex(loadedItem.entryName) },
+                        label = { Text(loadedItem.entryName) },
+                        modifier = Modifier.testTag("header_dex_${loadedItem.entryName}"),
+                      )
+                    }
+                  }
                 }
                 Spacer(Modifier.height(10.dp))
                 HeaderKeyValueRow("Source", loadState.sourceLabel)
