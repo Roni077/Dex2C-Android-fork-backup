@@ -32,7 +32,6 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DataObject
 import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +55,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -80,12 +80,12 @@ import com.example.ui.components.ApkPickerSheet
 import com.example.ui.components.ApkPreviewSheet
 import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.RustJniBridgeSheet
+import com.example.ui.screens.BuildHubScreen
+import com.example.ui.screens.BuildHubTab
 import com.example.ui.screens.ClassesScreen
 import com.example.ui.screens.CloudBuildScreen
 import com.example.ui.screens.MethodDetailScreen
 import com.example.ui.screens.OnboardingScreen
-import com.example.ui.screens.OutputExportScreen
-import com.example.ui.screens.PipelineConfigScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.WorkbenchScreen
 import com.example.ui.theme.Dex2cTheme
@@ -94,9 +94,8 @@ import kotlinx.coroutines.launch
 
 const val ROUTE_WORKBENCH = "workbench"
 const val ROUTE_CLASSES = "classes"
-const val ROUTE_CONFIG = "config"
+const val ROUTE_BUILD = "build"
 const val ROUTE_CLOUD = "cloud"
-const val ROUTE_EXPORT = "export"
 const val ROUTE_METHOD_DETAIL = "method_detail"
 const val ROUTE_SETTINGS = "settings"
 const val ROUTE_ONBOARDING = "onboarding"
@@ -307,13 +306,14 @@ fun Dex2cApp(
     saveCloudApkLauncher.launch(pending.fileName)
   }
 
+  var buildHubTab by rememberSaveable { mutableStateOf(BuildHubTab.PIPELINE) }
+
   val navItems =
     listOf(
       NavDestinationItem(ROUTE_WORKBENCH, R.string.nav_workbench, Icons.Rounded.Build, Icons.Rounded.Build, "nav_workbench"),
       NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Rounded.DataObject, "nav_classes"),
-      NavDestinationItem(ROUTE_CONFIG, R.string.nav_config, Icons.Rounded.Tune, Icons.Rounded.Tune, "nav_config"),
+      NavDestinationItem(ROUTE_BUILD, R.string.nav_build, Icons.Rounded.Code, Icons.Rounded.Code, "nav_build"),
       NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Rounded.CloudQueue, "nav_cloud"),
-      NavDestinationItem(ROUTE_EXPORT, R.string.nav_export, Icons.Rounded.Code, Icons.Rounded.Code, "nav_export"),
     )
 
   val backStackEntry by navController.currentBackStackEntryAsState()
@@ -397,7 +397,7 @@ fun Dex2cApp(
                 onClick = { navigateTopLevel(item.route) },
                 modifier = Modifier.testTag(item.testTag),
                 icon = {
-                  if (item.route == ROUTE_EXPORT && selectedMethodIds.isNotEmpty()) {
+                  if (item.route == ROUTE_BUILD && selectedMethodIds.isNotEmpty()) {
                     BadgedBox(badge = { Badge { Text("${selectedMethodIds.size}") } }) {
                       Icon(
                         imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
@@ -430,7 +430,7 @@ fun Dex2cApp(
                 onClick = { navigateTopLevel(item.route) },
                 modifier = Modifier.testTag(item.testTag),
                 icon = {
-                  if (item.route == ROUTE_EXPORT && selectedMethodIds.isNotEmpty()) {
+                  if (item.route == ROUTE_BUILD && selectedMethodIds.isNotEmpty()) {
                     BadgedBox(badge = { Badge { Text("${selectedMethodIds.size}") } }) {
                       Icon(
                         imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
@@ -456,7 +456,7 @@ fun Dex2cApp(
               remember(appSettingsHydrated) {
                 if (appSettings.hasCompletedOnboarding) ROUTE_WORKBENCH else ROUTE_ONBOARDING
               }
-            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_WORKBENCH, ROUTE_CLASSES, ROUTE_CONFIG, ROUTE_CLOUD, ROUTE_EXPORT, ROUTE_METHOD_DETAIL, ROUTE_SETTINGS)
+            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_WORKBENCH, ROUTE_CLASSES, ROUTE_BUILD, ROUTE_CLOUD, ROUTE_METHOD_DETAIL, ROUTE_SETTINGS)
             NavHost(
               navController = navController,
               startDestination = startDestination,
@@ -510,7 +510,10 @@ fun Dex2cApp(
                 onClearSelection = { viewModel.clearSelection() },
                 onOpenRustBridge = { viewModel.openRustBridgeSheet() },
                 onNavigateToClasses = { navigateTopLevel(ROUTE_CLASSES) },
-                onNavigateToExport = { navigateTopLevel(ROUTE_EXPORT) },
+                onNavigateToExport = {
+                  buildHubTab = BuildHubTab.OUTPUT
+                  navigateTopLevel(ROUTE_BUILD)
+                },
               )
             }
 
@@ -525,6 +528,12 @@ fun Dex2cApp(
                 onToggleHideFramework = { viewModel.toggleHideFramework() },
                 onToggleOnlyBytecode = { viewModel.toggleOnlyWithBytecode() },
                 onToggleOnlySelected = { viewModel.toggleOnlySelected() },
+                onSortOrderChange = { viewModel.setClassSortOrder(it) },
+                onClassTypeFilterChange = { viewModel.setClassTypeFilter(it) },
+                onToggleHideInnerClasses = { viewModel.toggleHideInnerClasses() },
+                onMethodScopeFilterChange = { viewModel.setMethodScopeFilter(it) },
+                onToggleNonEmptyPackages = { viewModel.toggleNonEmptyPackagesOnly() },
+                onResetExtraFilters = { viewModel.resetExtraClassFilters() },
                 onTogglePackageSelection = { viewModel.togglePackageSelection(it) },
                 onToggleClassSelection = { viewModel.toggleClassSelection(it) },
                 onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
@@ -536,8 +545,11 @@ fun Dex2cApp(
               )
             }
 
-            composable(ROUTE_CONFIG) {
-              PipelineConfigScreen(
+            composable(ROUTE_BUILD) {
+              BuildHubScreen(
+                activeTab = buildHubTab,
+                onSelectTab = { buildHubTab = it },
+                selectedMethodCount = selectedMethodIds.size,
                 config = config,
                 hasLoadedDex = loadState is DexLoadState.Ready,
                 filterMatchSummary = filterMatchSummary,
@@ -546,8 +558,16 @@ fun Dex2cApp(
                 onImportDccCfg = { importDccCfgLauncher.launch(arrayOf("application/json", "text/*", "*/*")) },
                 onApplyFilterRules = {
                   viewModel.applyFilterRules()
-                  navigateTopLevel(ROUTE_EXPORT)
+                  buildHubTab = BuildHubTab.OUTPUT
                 },
+                bundle = generatedBundle,
+                isTranspiling = isTranspiling,
+                onCopyFile = { copyText(it) },
+                onExportZip = {
+                  val name = "${config.moduleName.ifBlank { "dex2c_native" }}_jni.zip"
+                  exportZipLauncher.launch(name)
+                },
+                onGoToClasses = { navigateTopLevel(ROUTE_CLASSES) },
               )
             }
 
@@ -590,19 +610,6 @@ fun Dex2cApp(
                 onRefreshRuns = { viewModel.refreshCloudRuns() },
                 onAttachToRun = { viewModel.attachToCloudRun(it) },
                 onDownloadArtifact = { viewModel.downloadArtifactAndPromptSave(it) },
-              )
-            }
-
-            composable(ROUTE_EXPORT) {
-              OutputExportScreen(
-                bundle = generatedBundle,
-                isTranspiling = isTranspiling,
-                onCopyFile = { copyText(it) },
-                onExportZip = {
-                  val name = "${config.moduleName.ifBlank { "dex2c_native" }}_jni.zip"
-                  exportZipLauncher.launch(name)
-                },
-                onGoToClasses = { navigateTopLevel(ROUTE_CLASSES) },
               )
             }
 
@@ -650,7 +657,8 @@ fun Dex2cApp(
                 onOpenGitHubAppSettings = { openBrowserUrl("https://github.com/settings/developers") },
                 onGoToPipelineConfig = {
                   navController.popBackStack()
-                  navigateTopLevel(ROUTE_CONFIG)
+                  buildHubTab = BuildHubTab.PIPELINE
+                  navigateTopLevel(ROUTE_BUILD)
                 },
                 onOpenRustBridge = {
                   navController.popBackStack()

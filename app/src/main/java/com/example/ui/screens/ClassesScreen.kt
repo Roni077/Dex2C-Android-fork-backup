@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +23,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.automirrored.rounded.ViewList
 import androidx.compose.material.icons.rounded.AccountTree
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.ExpandLess
@@ -30,10 +34,12 @@ import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.UnfoldLess
-import androidx.compose.material.icons.rounded.ViewList
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -67,7 +73,11 @@ import com.example.dex.DexClassInfo
 import com.example.dex.DexEncodedMethod
 import com.example.dex.formatAccessFlags
 import com.example.ui.ClassFilterState
+import com.example.ui.ClassSortOrder
+import com.example.ui.ClassTypeFilter
 import com.example.ui.DexLoadState
+import com.example.ui.MethodScopeFilter
+import com.example.ui.matchesMethodScope
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
 enum class ClassesViewMode {
@@ -79,6 +89,7 @@ private data class PackageGroup(
   val packageName: String,
   val classes: List<DexClassInfo>,
   val totalBytecodeMethods: Int,
+  val selectedMethodCount: Int,
 )
 
 private sealed interface ExplorerRowItem {
@@ -121,9 +132,17 @@ fun ClassesScreen(
   onInspectMethod: (DexClassInfo, DexEncodedMethod) -> Unit,
   onInspectSelfApk: () -> Unit,
   modifier: Modifier = Modifier,
+  onSortOrderChange: (ClassSortOrder) -> Unit = {},
+  onClassTypeFilterChange: (ClassTypeFilter) -> Unit = {},
+  onToggleHideInnerClasses: () -> Unit = {},
+  onMethodScopeFilterChange: (MethodScopeFilter) -> Unit = {},
+  onToggleNonEmptyPackages: () -> Unit = {},
+  onResetExtraFilters: () -> Unit = {},
   onTogglePackageSelection: (List<DexClassInfo>) -> Unit = {},
 ) {
   var viewMode by remember { mutableStateOf(ClassesViewMode.TREE) }
+  var showSortMenu by remember { mutableStateOf(false) }
+  var showExtraFilters by remember { mutableStateOf(false) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val expandedClasses = remember { mutableStateMapOf<Int, Boolean>() }
@@ -137,19 +156,43 @@ fun ClassesScreen(
 
   val defaultPackageLabel = stringResource(R.string.label_default_package)
   val packageGroups =
-    remember(classes, defaultPackageLabel) {
-      classes
-        .groupBy { it.packageName.ifBlank { defaultPackageLabel } }
-        .entries
-        .sortedBy { it.key }
-        .map { (pkg, pkgClasses) ->
-          val sortedClasses = pkgClasses.sortedWith(compareBy({ it.simpleName }, { it.classIndex }))
-          PackageGroup(
-            packageName = pkg,
-            classes = sortedClasses,
-            totalBytecodeMethods = sortedClasses.sumOf { it.bytecodeMethodCount },
+    remember(classes, selectedMethodIds, filterState.sortOrder, defaultPackageLabel) {
+      val grouped =
+        classes
+          .groupBy { it.packageName.ifBlank { defaultPackageLabel } }
+          .entries
+          .map { (pkg, pkgClasses) ->
+            val sortedClasses = sortClassesForDisplay(pkgClasses, filterState.sortOrder, selectedMethodIds)
+            val selCount =
+              sortedClasses.sumOf { cls -> cls.allMethods.count { it.id in selectedMethodIds } }
+            PackageGroup(
+              packageName = pkg,
+              classes = sortedClasses,
+              totalBytecodeMethods = sortedClasses.sumOf { it.bytecodeMethodCount },
+              selectedMethodCount = selCount,
+            )
+          }
+      when (filterState.sortOrder) {
+        ClassSortOrder.NAME_ASC -> grouped.sortedBy { it.packageName.lowercase() }
+        ClassSortOrder.NAME_DESC -> grouped.sortedByDescending { it.packageName.lowercase() }
+        ClassSortOrder.BYTECODE_DESC ->
+          grouped.sortedWith(
+            compareByDescending<PackageGroup> { it.totalBytecodeMethods }.thenBy { it.packageName.lowercase() }
           )
-        }
+        ClassSortOrder.SELECTED_FIRST ->
+          grouped.sortedWith(
+            compareByDescending<PackageGroup> { it.selectedMethodCount > 0 }
+              .thenByDescending { it.selectedMethodCount }
+              .thenByDescending { it.totalBytecodeMethods }
+              .thenBy { it.packageName.lowercase() }
+          )
+        ClassSortOrder.DEX_ORDER -> grouped
+      }
+    }
+
+  val flatClasses =
+    remember(classes, selectedMethodIds, filterState.sortOrder) {
+      sortClassesForDisplay(classes, filterState.sortOrder, selectedMethodIds)
     }
 
   val flatCap = 500
@@ -157,7 +200,8 @@ fun ClassesScreen(
     remember(
       viewMode,
       packageGroups,
-      classes,
+      flatClasses,
+      filterState.methodScopeFilter,
       autoExpandPackages,
       manualExpandedPackages.toMap(),
       searchCollapsedPackages.toMap(),
@@ -178,21 +222,25 @@ fun ClassesScreen(
                 val clsExpanded = expandedClasses[dexClass.classIndex] == true
                 add(ExplorerRowItem.ClassRow(dexClass = dexClass, expanded = clsExpanded, inTreeMode = true))
                 if (clsExpanded) {
-                  dexClass.allMethods.forEach { method ->
-                    add(ExplorerRowItem.MethodRow(dexClass = dexClass, method = method, inTreeMode = true))
-                  }
+                  dexClass.allMethods
+                    .filter { matchesMethodScope(it, filterState.methodScopeFilter) }
+                    .forEach { method ->
+                      add(ExplorerRowItem.MethodRow(dexClass = dexClass, method = method, inTreeMode = true))
+                    }
                 }
               }
             }
           }
         } else {
-          classes.take(flatCap).forEach { dexClass ->
+          flatClasses.take(flatCap).forEach { dexClass ->
             val clsExpanded = expandedClasses[dexClass.classIndex] == true
             add(ExplorerRowItem.ClassRow(dexClass = dexClass, expanded = clsExpanded, inTreeMode = false))
             if (clsExpanded) {
-              dexClass.allMethods.forEach { method ->
-                add(ExplorerRowItem.MethodRow(dexClass = dexClass, method = method, inTreeMode = false))
-              }
+              dexClass.allMethods
+                .filter { matchesMethodScope(it, filterState.methodScopeFilter) }
+                .forEach { method ->
+                  add(ExplorerRowItem.MethodRow(dexClass = dexClass, method = method, inTreeMode = false))
+                }
             }
           }
         }
@@ -237,7 +285,7 @@ fun ClassesScreen(
               onClick = { viewMode = if (isTree) ClassesViewMode.FLAT else ClassesViewMode.TREE },
               leadingIcon = {
                 Icon(
-                  imageVector = if (isTree) Icons.Rounded.AccountTree else Icons.Rounded.ViewList,
+                  imageVector = if (isTree) Icons.Rounded.AccountTree else Icons.AutoMirrored.Rounded.ViewList,
                   contentDescription = null,
                   modifier = Modifier.size(16.dp),
                 )
@@ -246,6 +294,65 @@ fun ClassesScreen(
                 Text(stringResource(if (isTree) R.string.chip_view_tree else R.string.chip_view_flat))
               },
               modifier = Modifier.testTag("chip_view_mode_toggle"),
+            )
+          }
+          item {
+            Box {
+              FilterChip(
+                selected = filterState.sortOrder != ClassSortOrder.NAME_ASC,
+                onClick = { showSortMenu = true },
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.Sort,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = { Text("Sort: ${filterState.sortOrder.label}") },
+                modifier = Modifier.testTag("chip_class_sort"),
+              )
+              DropdownMenu(
+                expanded = showSortMenu,
+                onDismissRequest = { showSortMenu = false },
+              ) {
+                ClassSortOrder.entries.forEach { order ->
+                  DropdownMenuItem(
+                    text = { Text(order.label) },
+                    trailingIcon = {
+                      if (filterState.sortOrder == order) {
+                        Icon(
+                          imageVector = Icons.Rounded.Check,
+                          contentDescription = null,
+                          modifier = Modifier.size(16.dp),
+                        )
+                      }
+                    },
+                    onClick = {
+                      onSortOrderChange(order)
+                      showSortMenu = false
+                    },
+                    modifier = Modifier.testTag("sort_option_${order.name}"),
+                  )
+                }
+              }
+            }
+          }
+          item {
+            val activeCount = filterState.extraFilterCount
+            FilterChip(
+              selected = showExtraFilters || activeCount > 0,
+              onClick = { showExtraFilters = !showExtraFilters },
+              leadingIcon = {
+                Icon(
+                  imageVector = Icons.Rounded.Tune,
+                  contentDescription = null,
+                  modifier = Modifier.size(16.dp),
+                )
+              },
+              label = {
+                Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
+              },
+              modifier = Modifier.testTag("chip_extra_filters"),
             )
           }
           item {
@@ -273,6 +380,79 @@ fun ClassesScreen(
             )
           }
         }
+
+        AnimatedVisibility(visible = showExtraFilters) {
+          Surface(
+            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+          ) {
+            Column(
+              modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+              verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+              LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                ClassTypeFilter.entries.forEach { typeFilter ->
+                  item {
+                    FilterChip(
+                      selected = filterState.classTypeFilter == typeFilter,
+                      onClick = { onClassTypeFilterChange(typeFilter) },
+                      label = { Text(typeFilter.label) },
+                      modifier = Modifier.testTag("filter_class_type_${typeFilter.name}"),
+                    )
+                  }
+                }
+                item {
+                  FilterChip(
+                    selected = filterState.hideInnerClasses,
+                    onClick = onToggleHideInnerClasses,
+                    label = { Text("Hide \$Inner") },
+                    modifier = Modifier.testTag("filter_hide_inner"),
+                  )
+                }
+                item {
+                  FilterChip(
+                    selected = filterState.nonEmptyPackagesOnly,
+                    onClick = onToggleNonEmptyPackages,
+                    label = { Text("Non-Empty Pkgs") },
+                    modifier = Modifier.testTag("filter_non_empty_pkgs"),
+                  )
+                }
+              }
+              Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                LazyRow(
+                  modifier = Modifier.weight(1f),
+                  horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                  MethodScopeFilter.entries.forEach { scope ->
+                    item {
+                      FilterChip(
+                        selected = filterState.methodScopeFilter == scope,
+                        onClick = { onMethodScopeFilterChange(scope) },
+                        label = { Text(scope.label) },
+                        modifier = Modifier.testTag("filter_method_scope_${scope.name}"),
+                      )
+                    }
+                  }
+                }
+                if (filterState.extraFilterCount > 0) {
+                  TextButton(
+                    onClick = onResetExtraFilters,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                    modifier = Modifier.defaultMinSize(minHeight = 32.dp).testTag("filter_reset_extra_btn"),
+                  ) {
+                    Text("Reset", style = MaterialTheme.typography.labelSmall)
+                  }
+                }
+              }
+            }
+          }
+        }
+
         if (loadState is DexLoadState.Ready && classes.isNotEmpty()) {
           Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
@@ -280,17 +460,19 @@ fun ClassesScreen(
           ) {
             val summaryText =
               if (viewMode == ClassesViewMode.TREE) {
-                "${packageGroups.size} pkgs • ${classes.size} classes"
+                "${packageGroups.size} pkgs • ${classes.size} cls • ${filterState.sortOrder.label}"
               } else if (classes.size > flatCap) {
-                "Showing $flatCap of ${classes.size} classes"
+                "Top $flatCap of ${classes.size} cls • ${filterState.sortOrder.label}"
               } else {
-                "${classes.size} classes"
+                "${classes.size} cls • ${filterState.sortOrder.label}"
               }
             Text(
               text = summaryText,
               style = MaterialTheme.typography.labelSmall,
               fontFamily = JetBrainsMonoFontFamily,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
               modifier = Modifier.weight(1f),
             )
             if (hasAnyExpandedPackage) {
@@ -341,7 +523,7 @@ fun ClassesScreen(
           contentAlignment = Alignment.Center,
         ) {
           Text(
-            text = "No classes match the active search or filter chips. Try turning off \"App Only\".",
+            text = "No classes match the active search or filters. Adjust filters or turn off \"App Only\".",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -364,6 +546,7 @@ fun ClassesScreen(
                     group = item.group,
                     expanded = item.expanded,
                     selectedMethodIds = selectedMethodIds,
+                    methodScopeFilter = filterState.methodScopeFilter,
                     allowInit = allowInit,
                     onToggleExpand = {
                       if (autoExpandPackages) {
@@ -382,6 +565,7 @@ fun ClassesScreen(
                     expanded = item.expanded,
                     inTreeMode = item.inTreeMode,
                     selectedMethodIds = selectedMethodIds,
+                    methodScopeFilter = filterState.methodScopeFilter,
                     allowInit = allowInit,
                     onToggleExpand = { expandedClasses[item.dexClass.classIndex] = !item.expanded },
                     onToggleClassSelect = { onToggleClassSelection(item.dexClass) },
@@ -413,22 +597,51 @@ fun ClassesScreen(
   }
 }
 
+private fun sortClassesForDisplay(
+  classes: List<DexClassInfo>,
+  sortOrder: ClassSortOrder,
+  selectedMethodIds: Set<String>,
+): List<DexClassInfo> =
+  when (sortOrder) {
+    ClassSortOrder.NAME_ASC ->
+      classes.sortedWith(compareBy({ it.simpleName.lowercase() }, { it.packageName.lowercase() }, { it.classIndex }))
+    ClassSortOrder.NAME_DESC ->
+      classes.sortedWith(
+        compareByDescending<DexClassInfo> { it.simpleName.lowercase() }
+          .thenBy { it.packageName.lowercase() }
+          .thenBy { it.classIndex }
+      )
+    ClassSortOrder.BYTECODE_DESC ->
+      classes.sortedWith(
+        compareByDescending<DexClassInfo> { it.bytecodeMethodCount }
+          .thenBy { it.simpleName.lowercase() }
+          .thenBy { it.classIndex }
+      )
+    ClassSortOrder.SELECTED_FIRST ->
+      classes.sortedWith(
+        compareByDescending<DexClassInfo> { cls -> cls.allMethods.count { it.id in selectedMethodIds } }
+          .thenByDescending { it.bytecodeMethodCount }
+          .thenBy { it.simpleName.lowercase() }
+          .thenBy { it.classIndex }
+      )
+    ClassSortOrder.DEX_ORDER -> classes
+  }
+
 @Composable
 private fun PackageFolderRow(
   group: PackageGroup,
   expanded: Boolean,
   selectedMethodIds: Set<String>,
+  methodScopeFilter: MethodScopeFilter,
   allowInit: Boolean,
   onToggleExpand: () -> Unit,
   onTogglePackageSelect: () -> Unit,
 ) {
   val targetIds =
-    remember(group, allowInit) {
-      val bytecodeIds =
-        group.classes.flatMap { cls ->
-          cls.allMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
-        }
-      bytecodeIds.ifEmpty { group.classes.flatMap { cls -> cls.allMethods.map { it.id } } }
+    remember(group, allowInit, methodScopeFilter) {
+      val scoped = group.classes.flatMap { cls -> cls.allMethods.filter { matchesMethodScope(it, methodScopeFilter) } }
+      val bytecodeIds = scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+      bytecodeIds.ifEmpty { scoped.map { it.id } }
     }
   val selectedCount = targetIds.count { it in selectedMethodIds }
   val toggleState =
@@ -506,16 +719,20 @@ private fun CompactClassRow(
   expanded: Boolean,
   inTreeMode: Boolean,
   selectedMethodIds: Set<String>,
+  methodScopeFilter: MethodScopeFilter,
   allowInit: Boolean,
   onToggleExpand: () -> Unit,
   onToggleClassSelect: () -> Unit,
 ) {
-  val methods = dexClass.allMethods
+  val scopedMethods =
+    remember(dexClass, methodScopeFilter) {
+      dexClass.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
+    }
   val targetIds =
-    remember(methods, allowInit) {
+    remember(scopedMethods, allowInit) {
       val bytecodeIds =
-        methods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
-      bytecodeIds.ifEmpty { methods.map { it.id } }
+        scopedMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+      bytecodeIds.ifEmpty { scopedMethods.map { it.id } }
     }
   val selectedCount = targetIds.count { it in selectedMethodIds }
   val toggleState =
@@ -573,8 +790,11 @@ private fun CompactClassRow(
       }
     }
     Spacer(Modifier.width(6.dp))
+    val displayedBytecodeCount =
+      if (methodScopeFilter == MethodScopeFilter.ALL) dexClass.bytecodeMethodCount
+      else scopedMethods.count { it.hasBytecode }
     InlineBadge(
-      text = "${dexClass.bytecodeMethodCount}m",
+      text = "${displayedBytecodeCount}m",
       containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
       contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
     )

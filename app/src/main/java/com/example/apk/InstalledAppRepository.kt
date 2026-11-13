@@ -2,6 +2,7 @@ package com.example.apk
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -52,6 +53,9 @@ object InstalledAppRepository {
       val minSdk =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) appInfo.minSdkVersion else null
       val targetSdk = appInfo.targetSdkVersion
+      val isSystemApp =
+        (appInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
+      val lastUpdateTimeMillis = pkgInfo?.lastUpdateTime ?: apkFile.lastModified()
       val iconBitmap = runCatching { drawableToBitmap(ri.loadIcon(pm)) }.getOrNull()
 
       items +=
@@ -65,6 +69,8 @@ object InstalledAppRepository {
           apkPath = sourceDir,
           apkSizeBytes = apkFile.length(),
           iconBitmap = iconBitmap,
+          isSystemApp = isSystemApp,
+          lastUpdateTimeMillis = lastUpdateTimeMillis,
         )
     }
 

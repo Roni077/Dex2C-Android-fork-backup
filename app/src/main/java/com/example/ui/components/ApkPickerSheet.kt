@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.DeleteOutline
@@ -30,7 +33,10 @@ import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +51,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,10 +65,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.R
+import com.example.apk.AppScopeFilter
 import com.example.apk.BinarySourceType
 import com.example.apk.InstalledAppItem
+import com.example.apk.PickerSortOrder
 import com.example.apk.PickerTab
 import com.example.apk.RecentBinaryItem
+import com.example.apk.RecentSourceFilter
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -257,9 +269,31 @@ private fun InstalledAppsTab(
   onSearchChange: (String) -> Unit,
   onSelectApp: (InstalledAppItem) -> Unit,
 ) {
+  var scopeFilter by remember { mutableStateOf(AppScopeFilter.ALL) }
+  var sortOrder by remember { mutableStateOf(PickerSortOrder.NAME_ASC) }
+  var showSortMenu by remember { mutableStateOf(false) }
+
+  val displayedApps =
+    remember(apps, scopeFilter, sortOrder) {
+      val scoped =
+        when (scopeFilter) {
+          AppScopeFilter.ALL -> apps
+          AppScopeFilter.USER_ONLY -> apps.filter { !it.isSystemApp }
+          AppScopeFilter.SYSTEM_ONLY -> apps.filter { it.isSystemApp }
+        }
+      when (sortOrder) {
+        PickerSortOrder.NAME_ASC -> scoped.sortedBy { it.appLabel.lowercase() }
+        PickerSortOrder.NAME_DESC -> scoped.sortedByDescending { it.appLabel.lowercase() }
+        PickerSortOrder.SIZE_DESC ->
+          scoped.sortedWith(compareByDescending<InstalledAppItem> { it.apkSizeBytes }.thenBy { it.appLabel.lowercase() })
+        PickerSortOrder.RECENT ->
+          scoped.sortedWith(compareByDescending<InstalledAppItem> { it.lastUpdateTimeMillis }.thenBy { it.appLabel.lowercase() })
+      }
+    }
+
   Column(
     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-    verticalArrangement = Arrangement.spacedBy(10.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     OutlinedTextField(
       value = searchQuery,
@@ -278,6 +312,59 @@ private fun InstalledAppsTab(
       shape = RoundedCornerShape(18.dp),
     )
 
+    LazyRow(
+      modifier = Modifier.testTag("picker_apps_filter_row"),
+      horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+      item {
+        Box {
+          FilterChip(
+            selected = sortOrder != PickerSortOrder.NAME_ASC,
+            onClick = { showSortMenu = true },
+            leadingIcon = {
+              Icon(
+                imageVector = Icons.AutoMirrored.Rounded.Sort,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+              )
+            },
+            label = { Text("Sort: ${sortOrder.label}") },
+            modifier = Modifier.testTag("picker_apps_sort_chip"),
+          )
+          DropdownMenu(
+            expanded = showSortMenu,
+            onDismissRequest = { showSortMenu = false },
+          ) {
+            PickerSortOrder.entries.forEach { order ->
+              DropdownMenuItem(
+                text = { Text(order.label) },
+                trailingIcon = {
+                  if (sortOrder == order) {
+                    Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                  }
+                },
+                onClick = {
+                  sortOrder = order
+                  showSortMenu = false
+                },
+                modifier = Modifier.testTag("picker_sort_${order.name}"),
+              )
+            }
+          }
+        }
+      }
+      AppScopeFilter.entries.forEach { scope ->
+        item {
+          FilterChip(
+            selected = scopeFilter == scope,
+            onClick = { scopeFilter = scope },
+            label = { Text(scope.label) },
+            modifier = Modifier.testTag("picker_app_scope_${scope.name}"),
+          )
+        }
+      }
+    }
+
     if (isLoading) {
       Box(
         modifier = Modifier.fillMaxWidth().height(220.dp),
@@ -285,7 +372,7 @@ private fun InstalledAppsTab(
       ) {
         CircularProgressIndicator()
       }
-    } else if (apps.isEmpty()) {
+    } else if (displayedApps.isEmpty()) {
       Box(
         modifier = Modifier.fillMaxWidth().height(180.dp),
         contentAlignment = Alignment.Center,
@@ -298,10 +385,10 @@ private fun InstalledAppsTab(
       }
     } else {
       LazyColumn(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp, max = 380.dp),
+        modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp, max = 380.dp).testTag("picker_apps_list"),
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        items(apps, key = { it.packageName }) { app ->
+        items(displayedApps, key = { it.packageName }) { app ->
           InstalledAppRow(app = app, onClick = { onSelectApp(app) })
         }
       }
@@ -369,11 +456,17 @@ private fun InstalledAppRow(
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
         )
-        Text(
-          text = "v${app.versionName} • ${formatApkSize(app.apkSizeBytes)}",
-          style = MaterialTheme.typography.labelSmall,
-          color = MaterialTheme.colorScheme.primary,
-        )
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(6.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+            text = "v${app.versionName} • ${formatApkSize(app.apkSizeBytes)}",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+          )
+          TagPill(text = if (app.isSystemApp) "Sys" else "User")
+        }
       }
 
       Icon(
@@ -392,6 +485,27 @@ private fun RecentBinariesTab(
   onRemoveRecent: (String) -> Unit,
   onClearRecent: () -> Unit,
 ) {
+  var sourceFilter by remember { mutableStateOf(RecentSourceFilter.ALL) }
+  var sortOrder by remember { mutableStateOf(PickerSortOrder.RECENT) }
+  var showSortMenu by remember { mutableStateOf(false) }
+
+  val displayedItems =
+    remember(items, sourceFilter, sortOrder) {
+      val filtered =
+        when (sourceFilter) {
+          RecentSourceFilter.ALL -> items
+          RecentSourceFilter.STORAGE -> items.filter { it.sourceType == BinarySourceType.SAF_URI }
+          RecentSourceFilter.APPS -> items.filter { it.sourceType == BinarySourceType.INSTALLED_APK }
+        }
+      when (sortOrder) {
+        PickerSortOrder.RECENT -> filtered.sortedByDescending { it.lastOpenedMillis }
+        PickerSortOrder.NAME_ASC -> filtered.sortedBy { it.displayName.lowercase() }
+        PickerSortOrder.NAME_DESC -> filtered.sortedByDescending { it.displayName.lowercase() }
+        PickerSortOrder.SIZE_DESC ->
+          filtered.sortedWith(compareByDescending<RecentBinaryItem> { it.byteSize }.thenBy { it.displayName.lowercase() })
+      }
+    }
+
   Column(
     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -410,74 +524,139 @@ private fun RecentBinariesTab(
     } else {
       Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
       ) {
+        LazyRow(
+          modifier = Modifier.weight(1f).testTag("picker_recent_filter_row"),
+          horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+          item {
+            Box {
+              FilterChip(
+                selected = sortOrder != PickerSortOrder.RECENT,
+                onClick = { showSortMenu = true },
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.Sort,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = { Text("Sort: ${sortOrder.label}") },
+                modifier = Modifier.testTag("picker_recent_sort_chip"),
+              )
+              DropdownMenu(
+                expanded = showSortMenu,
+                onDismissRequest = { showSortMenu = false },
+              ) {
+                PickerSortOrder.entries.forEach { order ->
+                  DropdownMenuItem(
+                    text = { Text(order.label) },
+                    trailingIcon = {
+                      if (sortOrder == order) {
+                        Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                      }
+                    },
+                    onClick = {
+                      sortOrder = order
+                      showSortMenu = false
+                    },
+                    modifier = Modifier.testTag("picker_recent_sort_${order.name}"),
+                  )
+                }
+              }
+            }
+          }
+          RecentSourceFilter.entries.forEach { src ->
+            item {
+              FilterChip(
+                selected = sourceFilter == src,
+                onClick = { sourceFilter = src },
+                label = { Text(src.label) },
+                modifier = Modifier.testTag("picker_recent_filter_${src.name}"),
+              )
+            }
+          }
+        }
         TextButton(onClick = onClearRecent, modifier = Modifier.testTag("clear_recent_history_btn")) {
           Text(stringResource(R.string.picker_clear_recent))
         }
       }
-      LazyColumn(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        items(items, key = { it.id }) { item ->
-          Surface(
-            modifier =
-              Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(18.dp))
-                .clickable { onSelectRecent(item) }
-                .testTag("recent_item_${item.id}"),
-            shape = RoundedCornerShape(18.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
-          ) {
-            Row(
-              modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 10.dp, bottom = 10.dp),
-              verticalAlignment = Alignment.CenterVertically,
+      if (displayedItems.isEmpty()) {
+        Box(
+          modifier = Modifier.fillMaxWidth().height(160.dp),
+          contentAlignment = Alignment.Center,
+        ) {
+          Text(
+            text = "No recent binaries match this source filter.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      } else {
+        LazyColumn(
+          modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp).testTag("picker_recent_list"),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          items(displayedItems, key = { it.id }) { item ->
+            Surface(
+              modifier =
+                Modifier.fillMaxWidth()
+                  .clip(RoundedCornerShape(18.dp))
+                  .clickable { onSelectRecent(item) }
+                  .testTag("recent_item_${item.id}"),
+              shape = RoundedCornerShape(18.dp),
+              color = MaterialTheme.colorScheme.surfaceContainer,
+              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
             ) {
-              Icon(
-                imageVector =
-                  if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
-                  else Icons.Rounded.FolderOpen,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(22.dp),
-              )
-              Spacer(Modifier.width(12.dp))
-              Column(modifier = Modifier.weight(1f)) {
-                Text(
-                  text = item.displayName,
-                  style = MaterialTheme.typography.titleMedium,
-                  maxLines = 1,
-                  overflow = TextOverflow.Ellipsis,
+              Row(
+                modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 10.dp, bottom = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Icon(
+                  imageVector =
+                    if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
+                    else Icons.Rounded.FolderOpen,
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.primary,
+                  modifier = Modifier.size(22.dp),
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                  TagPill(item.sourceType.label)
-                  if (item.byteSize > 0) {
-                    TagPill(formatApkSize(item.byteSize))
-                  }
-                }
-                if (!item.packageName.isNullOrBlank()) {
-                  Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
                   Text(
-                    text = item.packageName,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontFamily = JetBrainsMonoFontFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = item.displayName,
+                    style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                   )
+                  Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    TagPill(item.sourceType.label)
+                    if (item.byteSize > 0) {
+                      TagPill(formatApkSize(item.byteSize))
+                    }
+                  }
+                  if (!item.packageName.isNullOrBlank()) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                      text = item.packageName,
+                      style = MaterialTheme.typography.labelSmall,
+                      fontFamily = JetBrainsMonoFontFamily,
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                    )
+                  }
                 }
-              }
-              IconButton(
-                onClick = { onRemoveRecent(item.id) },
-                modifier = Modifier.minimumInteractiveComponentSize(),
-              ) {
-                Icon(
-                  imageVector = Icons.Rounded.DeleteOutline,
-                  contentDescription = "Remove from history",
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                IconButton(
+                  onClick = { onRemoveRecent(item.id) },
+                  modifier = Modifier.minimumInteractiveComponentSize(),
+                ) {
+                  Icon(
+                    imageVector = Icons.Rounded.DeleteOutline,
+                    contentDescription = "Remove from history",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                  )
+                }
               }
             }
           }

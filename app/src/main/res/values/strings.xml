@@ -2,6 +2,7 @@
     <string name="app_name">Dex2C Studio</string>
     <string name="nav_workbench">Workbench</string>
     <string name="nav_classes">Classes</string>
+    <string name="nav_build">Build</string>
     <string name="nav_config">Pipeline</string>
     <string name="nav_cloud">Cloud</string>
     <string name="nav_export">Output</string>

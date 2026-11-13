@@ -14,6 +14,25 @@ enum class PickerTab {
   RECENT,
 }
 
+enum class AppScopeFilter(val label: String) {
+  ALL("All Apps"),
+  USER_ONLY("User Only"),
+  SYSTEM_ONLY("System"),
+}
+
+enum class PickerSortOrder(val label: String) {
+  NAME_ASC("Name A–Z"),
+  NAME_DESC("Name Z–A"),
+  SIZE_DESC("Largest"),
+  RECENT("Newest"),
+}
+
+enum class RecentSourceFilter(val label: String) {
+  ALL("All Sources"),
+  STORAGE("Storage"),
+  APPS("Installed"),
+}
+
 data class InstalledAppItem(
   val packageName: String,
   val appLabel: String,
@@ -24,6 +43,8 @@ data class InstalledAppItem(
   val apkPath: String,
   val apkSizeBytes: Long,
   val iconBitmap: Bitmap?,
+  val isSystemApp: Boolean = false,
+  val lastUpdateTimeMillis: Long = 0L,
 )
 
 data class RecentBinaryItem(

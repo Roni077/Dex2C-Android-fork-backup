@@ -98,12 +98,53 @@ data class MethodInspectionState(
   val structuralMeta: DexMethodStructuralMeta,
 )
 
+enum class ClassSortOrder(val label: String) {
+  NAME_ASC("Name A–Z"),
+  NAME_DESC("Name Z–A"),
+  BYTECODE_DESC("Most Bytecode"),
+  SELECTED_FIRST("Selected First"),
+  DEX_ORDER("DEX Order"),
+}
+
+enum class ClassTypeFilter(val label: String) {
+  ALL("All Classes"),
+  CONCRETE("Concrete"),
+  INTERFACE_OR_ENUM("Interface/Enum"),
+}
+
+enum class MethodScopeFilter(val label: String) {
+  ALL("All Methods"),
+  PUBLIC_ONLY("Public"),
+  STATIC_ONLY("Static"),
+  NON_INIT("No <init>"),
+}
+
+fun matchesMethodScope(method: DexEncodedMethod, scope: MethodScopeFilter): Boolean =
+  when (scope) {
+    MethodScopeFilter.ALL -> true
+    MethodScopeFilter.PUBLIC_ONLY -> (method.accessFlags and 0x0001) != 0
+    MethodScopeFilter.STATIC_ONLY -> method.isStatic
+    MethodScopeFilter.NON_INIT -> !method.isInitConstructor
+  }
+
 data class ClassFilterState(
   val searchQuery: String = "",
   val hideFramework: Boolean = true,
   val onlyWithBytecode: Boolean = true,
   val onlySelected: Boolean = false,
-)
+  val sortOrder: ClassSortOrder = ClassSortOrder.NAME_ASC,
+  val classTypeFilter: ClassTypeFilter = ClassTypeFilter.ALL,
+  val hideInnerClasses: Boolean = false,
+  val methodScopeFilter: MethodScopeFilter = MethodScopeFilter.ALL,
+  val nonEmptyPackagesOnly: Boolean = false,
+) {
+  val extraFilterCount: Int
+    get() =
+      (if (classTypeFilter != ClassTypeFilter.ALL) 1 else 0) +
+        (if (hideInnerClasses) 1 else 0) +
+        (if (methodScopeFilter != MethodScopeFilter.ALL) 1 else 0) +
+        (if (nonEmptyPackagesOnly) 1 else 0)
+}
 
 data class CloudApkChoice(
   val label: String,
@@ -222,16 +263,64 @@ class Dex2cViewModel @JvmOverloads constructor(
     combine(_loadState, _filterState, _selectedMethodIds) { load, filter, selected ->
       val ready = load as? DexLoadState.Ready ?: return@combine emptyList()
       val query = filter.searchQuery.trim().lowercase()
-      ready.parsedDex.classes.filter { cls ->
-        if (filter.hideFramework && cls.isFrameworkClass) return@filter false
-        if (filter.onlyWithBytecode && cls.bytecodeMethodCount == 0) return@filter false
-        if (filter.onlySelected && cls.allMethods.none { it.id in selected }) return@filter false
-        if (query.isNotEmpty()) {
-          val matchesClass = cls.fullName.lowercase().contains(query) || cls.descriptor.lowercase().contains(query)
-          val matchesMethod = cls.allMethods.any { it.methodRef.name.lowercase().contains(query) }
-          if (!matchesClass && !matchesMethod) return@filter false
+      val filtered =
+        ready.parsedDex.classes.filter { cls ->
+          if (filter.hideFramework && cls.isFrameworkClass) return@filter false
+          if (filter.onlyWithBytecode && cls.bytecodeMethodCount == 0) return@filter false
+          if (filter.onlySelected && cls.allMethods.none { it.id in selected }) return@filter false
+          val isInterfaceOrEnum = (cls.accessFlags and 0x4200) != 0
+          when (filter.classTypeFilter) {
+            ClassTypeFilter.ALL -> Unit
+            ClassTypeFilter.CONCRETE -> if (isInterfaceOrEnum) return@filter false
+            ClassTypeFilter.INTERFACE_OR_ENUM -> if (!isInterfaceOrEnum) return@filter false
+          }
+          if (filter.hideInnerClasses && ('$' in cls.simpleName || (cls.accessFlags and 0x1000) != 0)) {
+            return@filter false
+          }
+          if (filter.methodScopeFilter != MethodScopeFilter.ALL) {
+            if (cls.allMethods.none { matchesMethodScope(it, filter.methodScopeFilter) }) {
+              return@filter false
+            }
+          }
+          if (query.isNotEmpty()) {
+            val matchesClass = cls.fullName.lowercase().contains(query) || cls.descriptor.lowercase().contains(query)
+            val matchesMethod =
+              cls.allMethods.any {
+                matchesMethodScope(it, filter.methodScopeFilter) &&
+                  it.methodRef.name.lowercase().contains(query)
+              }
+            if (!matchesClass && !matchesMethod) return@filter false
+          }
+          true
         }
-        true
+
+      val packageFiltered =
+        if (filter.nonEmptyPackagesOnly) {
+          val nonEmptyPkgs =
+            filtered
+              .groupBy { it.packageName }
+              .filterValues { pkgClasses -> pkgClasses.sumOf { it.bytecodeMethodCount } > 0 }
+              .keys
+          filtered.filter { it.packageName in nonEmptyPkgs }
+        } else {
+          filtered
+        }
+
+      when (filter.sortOrder) {
+        ClassSortOrder.NAME_ASC ->
+          packageFiltered.sortedWith(compareBy({ it.simpleName.lowercase() }, { it.packageName.lowercase() }, { it.classIndex }))
+        ClassSortOrder.NAME_DESC ->
+          packageFiltered.sortedWith(compareByDescending<DexClassInfo> { it.simpleName.lowercase() }.thenBy { it.packageName.lowercase() }.thenBy { it.classIndex })
+        ClassSortOrder.BYTECODE_DESC ->
+          packageFiltered.sortedWith(compareByDescending<DexClassInfo> { it.bytecodeMethodCount }.thenBy { it.simpleName.lowercase() }.thenBy { it.classIndex })
+        ClassSortOrder.SELECTED_FIRST ->
+          packageFiltered.sortedWith(
+            compareByDescending<DexClassInfo> { cls -> cls.allMethods.count { it.id in selected } }
+              .thenByDescending { it.bytecodeMethodCount }
+              .thenBy { it.simpleName.lowercase() }
+              .thenBy { it.classIndex }
+          )
+        ClassSortOrder.DEX_ORDER -> packageFiltered
       }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
@@ -535,6 +624,37 @@ class Dex2cViewModel @JvmOverloads constructor(
     _filterState.update { it.copy(onlySelected = !it.onlySelected) }
   }
 
+  fun setClassSortOrder(sortOrder: ClassSortOrder) {
+    _filterState.update { it.copy(sortOrder = sortOrder) }
+  }
+
+  fun setClassTypeFilter(classTypeFilter: ClassTypeFilter) {
+    _filterState.update { it.copy(classTypeFilter = classTypeFilter) }
+  }
+
+  fun toggleHideInnerClasses() {
+    _filterState.update { it.copy(hideInnerClasses = !it.hideInnerClasses) }
+  }
+
+  fun setMethodScopeFilter(methodScopeFilter: MethodScopeFilter) {
+    _filterState.update { it.copy(methodScopeFilter = methodScopeFilter) }
+  }
+
+  fun toggleNonEmptyPackagesOnly() {
+    _filterState.update { it.copy(nonEmptyPackagesOnly = !it.nonEmptyPackagesOnly) }
+  }
+
+  fun resetExtraClassFilters() {
+    _filterState.update {
+      it.copy(
+        classTypeFilter = ClassTypeFilter.ALL,
+        hideInnerClasses = false,
+        methodScopeFilter = MethodScopeFilter.ALL,
+        nonEmptyPackagesOnly = false,
+      )
+    }
+  }
+
   fun toggleMethodSelection(methodId: String) {
     _selectedMethodIds.update { current ->
       if (methodId in current) current - methodId else current + methodId
@@ -544,11 +664,13 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun toggleClassSelection(dexClass: DexClassInfo) {
     val allowInit = _config.value.allowInit
+    val scope = _filterState.value.methodScopeFilter
+    val scopedMethods = dexClass.allMethods.filter { matchesMethodScope(it, scope) }
     val bytecodeIds =
-      dexClass.allMethods
+      scopedMethods
         .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
         .map { it.id }
-    val targetIds = bytecodeIds.ifEmpty { dexClass.allMethods.map { it.id } }
+    val targetIds = bytecodeIds.ifEmpty { scopedMethods.map { it.id } }
     _selectedMethodIds.update { current ->
       val allSelected = targetIds.isNotEmpty() && targetIds.all { it in current }
       if (allSelected) current - targetIds.toSet() else current + targetIds
@@ -558,12 +680,13 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun togglePackageSelection(packageClasses: List<DexClassInfo>) {
     val allowInit = _config.value.allowInit
+    val scope = _filterState.value.methodScopeFilter
+    val scopedMethods = packageClasses.flatMap { cls -> cls.allMethods.filter { matchesMethodScope(it, scope) } }
     val bytecodeIds =
-      packageClasses.flatMap { cls ->
-        cls.allMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
-      }
-    val targetIds =
-      bytecodeIds.ifEmpty { packageClasses.flatMap { cls -> cls.allMethods.map { it.id } } }.toSet()
+      scopedMethods
+        .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
+        .map { it.id }
+    val targetIds = bytecodeIds.ifEmpty { scopedMethods.map { it.id } }.toSet()
     if (targetIds.isEmpty()) return
     _selectedMethodIds.update { current ->
       val allSelected = targetIds.all { it in current }

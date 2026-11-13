@@ -11,12 +11,14 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
@@ -795,5 +797,318 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("chip_view_mode_toggle").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("class_row_3").assertIsDisplayed()
+  }
+
+  @Test
+  fun `classesScreen sort dropdown and extra filter tray update filter state`() {
+    var filterState by mutableStateOf(com.example.ui.ClassFilterState())
+    val cls =
+      com.example.dex.DexClassInfo(
+        classIndex = 10,
+        descriptor = "Lcom/demo/MainApp;",
+        fullName = "com.demo.MainApp",
+        simpleName = "MainApp",
+        packageName = "com.demo",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "MainApp.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = emptyList(),
+      )
+    val dummyDex =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "app.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(0),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n035",
+            version = "035",
+            checksum = 1L,
+            sha1Hex = "00",
+            fileSize = 0,
+            endianTag = 0x12345678L,
+            stringIdsSize = 0,
+            typeIdsSize = 0,
+            protoIdsSize = 0,
+            fieldIdsSize = 0,
+            methodIdsSize = 0,
+            classDefsSize = 1,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = listOf(cls),
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.ClassesScreen(
+          loadState = com.example.ui.DexLoadState.Ready("app.apk", emptyList(), "classes.dex", dummyDex),
+          classes = listOf(cls),
+          filterState = filterState,
+          selectedMethodIds = emptySet(),
+          allowInit = false,
+          onSearchChange = {},
+          onToggleHideFramework = {},
+          onToggleOnlyBytecode = {},
+          onToggleOnlySelected = {},
+          onSortOrderChange = { filterState = filterState.copy(sortOrder = it) },
+          onClassTypeFilterChange = { filterState = filterState.copy(classTypeFilter = it) },
+          onToggleHideInnerClasses = { filterState = filterState.copy(hideInnerClasses = !filterState.hideInnerClasses) },
+          onMethodScopeFilterChange = { filterState = filterState.copy(methodScopeFilter = it) },
+          onToggleNonEmptyPackages = { filterState = filterState.copy(nonEmptyPackagesOnly = !filterState.nonEmptyPackagesOnly) },
+          onResetExtraFilters = {
+            filterState =
+              filterState.copy(
+                classTypeFilter = com.example.ui.ClassTypeFilter.ALL,
+                hideInnerClasses = false,
+                methodScopeFilter = com.example.ui.MethodScopeFilter.ALL,
+                nonEmptyPackagesOnly = false,
+              )
+          },
+          onToggleClassSelection = {},
+          onToggleMethodSelection = {},
+          onInspectMethod = { _, _ -> },
+          onInspectSelfApk = {},
+        )
+      }
+    }
+
+    // Open sort menu and select SELECTED_FIRST
+    composeTestRule.onNodeWithTag("chip_class_sort").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("sort_option_SELECTED_FIRST").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(com.example.ui.ClassSortOrder.SELECTED_FIRST, filterState.sortOrder)
+
+    // Open extra filter tray and toggle Concrete + Static
+    composeTestRule.onNodeWithTag("chip_extra_filters").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("filter_class_type_CONCRETE").performClick()
+    composeTestRule.onNodeWithTag("filter_method_scope_STATIC_ONLY").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(2, filterState.extraFilterCount)
+    composeTestRule.onNodeWithTag("chip_extra_filters").assertTextContains("Filters (2)")
+
+    // Reset extra filters clears badge
+    composeTestRule.onNodeWithTag("filter_reset_extra_btn").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(0, filterState.extraFilterCount)
+  }
+
+  @Test
+  fun `apkPickerSheet filters installed apps by user or system scope and sorts recent items`() {
+    var activeTab by mutableStateOf(com.example.apk.PickerTab.APPS)
+    val userApp =
+      com.example.apk.InstalledAppItem(
+        packageName = "com.user.alpha",
+        appLabel = "Alpha App",
+        versionName = "1.0",
+        versionCode = 1L,
+        minSdk = 26,
+        targetSdk = 34,
+        apkPath = "/data/app/alpha.apk",
+        apkSizeBytes = 10_000_000L,
+        iconBitmap = null,
+        isSystemApp = false,
+        lastUpdateTimeMillis = 200L,
+      )
+    val sysApp =
+      com.example.apk.InstalledAppItem(
+        packageName = "com.android.sys",
+        appLabel = "System Core",
+        versionName = "14",
+        versionCode = 34L,
+        minSdk = 34,
+        targetSdk = 34,
+        apkPath = "/system/app/sys.apk",
+        apkSizeBytes = 25_000_000L,
+        iconBitmap = null,
+        isSystemApp = true,
+        lastUpdateTimeMillis = 100L,
+      )
+    val recentStorage =
+      com.example.apk.RecentBinaryItem(
+        id = "rec_storage",
+        displayName = "target.apk",
+        sourceType = com.example.apk.BinarySourceType.SAF_URI,
+        uriOrPath = "content://doc/1",
+        packageName = null,
+        byteSize = 5_000_000L,
+        lastOpenedMillis = 1000L,
+      )
+    val recentApp =
+      com.example.apk.RecentBinaryItem(
+        id = "rec_app",
+        displayName = "Alpha App",
+        sourceType = com.example.apk.BinarySourceType.INSTALLED_APK,
+        uriOrPath = "/data/app/alpha.apk",
+        packageName = "com.user.alpha",
+        byteSize = 10_000_000L,
+        lastOpenedMillis = 2000L,
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.components.ApkPickerSheet(
+          activeTab = activeTab,
+          installedApps = listOf(userApp, sysApp),
+          isLoadingApps = false,
+          appSearchQuery = "",
+          recentFiles = listOf(recentStorage, recentApp),
+          onSelectTab = { activeTab = it },
+          onBrowseStorage = {},
+          onInspectSelfApk = {},
+          onAppSearchChange = {},
+          onSelectInstalledApp = {},
+          onSelectRecent = {},
+          onRemoveRecent = {},
+          onClearRecent = {},
+          onDismiss = {},
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithTag("picker_apps_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("installed_app_com.user.alpha"))
+    composeTestRule.onNodeWithTag("installed_app_com.user.alpha").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("picker_apps_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("installed_app_com.android.sys"))
+    composeTestRule.onNodeWithTag("installed_app_com.android.sys").assertIsDisplayed()
+
+    // Filter to User Only -> hides system app
+    composeTestRule.onNodeWithTag("picker_apps_filter_row")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_app_scope_USER_ONLY"))
+    composeTestRule.onNodeWithTag("picker_app_scope_USER_ONLY").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("installed_app_com.user.alpha").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("installed_app_com.android.sys").assertDoesNotExist()
+
+    // Filter to System Only -> shows system app only
+    composeTestRule.onNodeWithTag("picker_apps_filter_row")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_app_scope_SYSTEM_ONLY"))
+    composeTestRule.onNodeWithTag("picker_app_scope_SYSTEM_ONLY").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("installed_app_com.android.sys").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("installed_app_com.user.alpha").assertDoesNotExist()
+
+    // Switch back to All Apps and sort by Largest
+    composeTestRule.onNodeWithTag("picker_apps_filter_row")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_app_scope_ALL"))
+    composeTestRule.onNodeWithTag("picker_app_scope_ALL").performClick()
+    composeTestRule.onNodeWithTag("picker_apps_filter_row")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_apps_sort_chip"))
+    composeTestRule.onNodeWithTag("picker_apps_sort_chip").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("picker_sort_SIZE_DESC").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("picker_apps_sort_chip").assertTextContains("Sort: Largest")
+
+    // Switch to Recent tab and filter to Storage only
+    composeTestRule.onNodeWithTag("picker_tab_recent").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("picker_recent_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("recent_item_rec_storage"))
+    composeTestRule.onNodeWithTag("recent_item_rec_storage").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("picker_recent_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("recent_item_rec_app"))
+    composeTestRule.onNodeWithTag("recent_item_rec_app").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("picker_recent_filter_row")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_recent_filter_STORAGE"))
+    composeTestRule.onNodeWithTag("picker_recent_filter_STORAGE").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("recent_item_rec_storage").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("recent_item_rec_app").assertDoesNotExist()
+  }
+
+  @Test
+  fun `buildHubScreen merges pipeline and output tabs with queued badge and filter auto-switch`() {
+    var activeTab by mutableStateOf(com.example.ui.screens.BuildHubTab.PIPELINE)
+    var appliedFilters by mutableStateOf(false)
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.BuildHubScreen(
+          activeTab = activeTab,
+          onSelectTab = { activeTab = it },
+          selectedMethodCount = 4,
+          config = com.example.transpiler.TranspilerConfig(),
+          hasLoadedDex = true,
+          filterMatchSummary = null,
+          onUpdateConfig = {},
+          onImportFilterTxt = {},
+          onImportDccCfg = {},
+          onApplyFilterRules = { appliedFilters = true },
+          bundle = null,
+          isTranspiling = false,
+          onCopyFile = {},
+          onExportZip = {},
+          onGoToClasses = {},
+        )
+      }
+    }
+
+    // Both segmented tabs render, with badge count on Output
+    composeTestRule.onNodeWithTag("build_tab_pipeline").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_tab_output")
+      .assertIsDisplayed()
+      .assertTextContains("4", substring = true)
+
+    // Pipeline content starts visible
+    composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertIsDisplayed()
+
+    // Switch directly to Output tab via segmented control
+    composeTestRule.onNodeWithTag("build_tab_output").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(com.example.ui.screens.BuildHubTab.OUTPUT, activeTab)
+    composeTestRule.onNodeWithTag("export_go_classes_btn").assertIsDisplayed()
+
+    // Switch back to Pipeline and trigger Apply Filter Rules -> switches in-place to Output
+    composeTestRule.onNodeWithTag("build_tab_pipeline").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("pipeline_config_list")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("apply_filter_rules_button"))
+    composeTestRule.onNodeWithTag("apply_filter_rules_button").performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(appliedFilters)
+    assertEquals(com.example.ui.screens.BuildHubTab.OUTPUT, activeTab)
+    composeTestRule.onNodeWithTag("export_go_classes_btn").assertIsDisplayed()
+  }
+
+  @Test
+  fun `dex2cApp displays 4 bottom navigation tabs and opens Build hub`() {
+    val app = ApplicationProvider.getApplicationContext<Application>()
+    val vm = Dex2cViewModel(app)
+    vm.completeOnboarding()
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        Dex2cApp(viewModel = vm)
+      }
+    }
+
+    composeTestRule.waitUntil(timeoutMillis = 5_000L) {
+      vm.appSettingsHydrated.value && vm.appSettings.value.hasCompletedOnboarding
+    }
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("nav_workbench").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nav_classes").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nav_build").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nav_cloud").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nav_config").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("nav_export").assertDoesNotExist()
+
+    // Tapping Build tab shows merged Pipeline / Output segmented control
+    composeTestRule.onNodeWithTag("nav_build").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("build_tab_pipeline").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_tab_output").assertIsDisplayed()
   }
 }

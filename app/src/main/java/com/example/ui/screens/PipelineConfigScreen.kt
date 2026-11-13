@@ -68,7 +68,7 @@ fun PipelineConfigScreen(
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     LazyColumn(
-      modifier = Modifier.fillMaxSize().widthIn(max = 840.dp),
+      modifier = Modifier.fillMaxSize().widthIn(max = 840.dp).testTag("pipeline_config_list"),
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
