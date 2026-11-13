@@ -1,0 +1,608 @@
+﻿2026-11-13T06:23:03.0372116Z Current runner version: '2.338.2'
+2026-11-13T06:23:03.0398277Z ##[group]Runner Image Provisioner
+2026-11-13T06:23:03.0399172Z Hosted Compute Agent
+2026-11-13T06:23:03.0399825Z Version: 20261103.629
+2026-11-13T06:23:03.0400948Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-13T06:23:03.0401802Z Build Date: 2026-11-03T17:26:59Z
+2026-11-13T06:23:03.0402501Z Worker ID: {e79b947a-9cc1-4ce9-b632-01bb13b2b36a}
+2026-11-13T06:23:03.0403209Z Region: us-west-2
+2026-11-13T06:23:03.0403788Z Cloud: AWS
+2026-11-13T06:23:03.0404299Z ##[endgroup]
+2026-11-13T06:23:03.0405907Z ##[group]Operating System
+2026-11-13T06:23:03.0406580Z Ubuntu
+2026-11-13T06:23:03.0407088Z 26.04.1
+2026-11-13T06:23:03.0407856Z LTS
+2026-11-13T06:23:03.0408365Z ##[endgroup]
+2026-11-13T06:23:03.0408898Z ##[group]Runner Image
+2026-11-13T06:23:03.0409528Z Image: ubuntu-26.04
+2026-11-13T06:23:03.0410061Z Version: 20261111.82.6
+2026-11-13T06:23:03.0411722Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.82/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-13T06:23:03.0413219Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.82
+2026-11-13T06:23:03.0414219Z ##[endgroup]
+2026-11-13T06:23:03.0415283Z ##[group]GITHUB_TOKEN Permissions
+2026-11-13T06:23:03.0417560Z Contents: read
+2026-11-13T06:23:03.0418150Z Metadata: read
+2026-11-13T06:23:03.0418734Z ##[endgroup]
+2026-11-13T06:23:03.0421484Z Secret source: Actions
+2026-11-13T06:23:03.0422475Z Cache mode: write
+2026-11-13T06:23:03.0423194Z Prepare workflow directory
+2026-11-13T06:23:03.0758584Z Prepare all required actions
+2026-11-13T06:23:03.0856772Z Getting action download info
+2026-11-13T06:23:03.4754135Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-13T06:23:05.6232003Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-11-13T06:23:05.8789836Z Download action repository 'gradle/actions@v4' (SHA:ed408507eac070d1f99cc633dbcf757c94c7933a)
+2026-11-13T06:23:06.5484668Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-13T06:23:06.9225486Z Complete job name: Verify Tests & Debug APK
+2026-11-13T06:23:06.9957199Z ##[group]Run actions/checkout@v4
+2026-11-13T06:23:06.9958217Z with:
+2026-11-13T06:23:06.9958967Z   repository: userio12/Dex2c-Android
+2026-11-13T06:23:06.9965336Z   token: ***
+2026-11-13T06:23:06.9966022Z   ssh-strict: true
+2026-11-13T06:23:06.9966769Z   ssh-user: git
+2026-11-13T06:23:06.9967506Z   persist-credentials: true
+2026-11-13T06:23:06.9968289Z   clean: true
+2026-11-13T06:23:06.9969039Z   sparse-checkout-cone-mode: true
+2026-11-13T06:23:06.9969878Z   fetch-depth: 1
+2026-11-13T06:23:06.9970705Z   fetch-tags: false
+2026-11-13T06:23:06.9971477Z   show-progress: true
+2026-11-13T06:23:06.9972202Z   lfs: false
+2026-11-13T06:23:06.9972890Z   submodules: false
+2026-11-13T06:23:06.9973618Z   set-safe-directory: true
+2026-11-13T06:23:06.9974447Z   allow-unsafe-pr-checkout: false
+2026-11-13T06:23:06.9975476Z ##[endgroup]
+2026-11-13T06:23:10.1139489Z Syncing repository: userio12/Dex2c-Android
+2026-11-13T06:23:10.1140779Z ##[group]Getting Git version info
+2026-11-13T06:23:10.1141192Z Working directory is '/home/runner/work/Dex2c-Android/Dex2c-Android'
+2026-11-13T06:23:10.1141684Z [command]/usr/bin/git version
+2026-11-13T06:23:10.1209153Z git version 2.56.1
+2026-11-13T06:23:10.1226339Z ##[endgroup]
+2026-11-13T06:23:10.1237646Z Temporarily overriding HOME='/home/runner/work/_temp/de901410-0b4b-4eed-8444-8dfe3e999141' before making global git config changes
+2026-11-13T06:23:10.1242159Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-13T06:23:10.1246979Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Dex2c-Android/Dex2c-Android
+2026-11-13T06:23:10.1795852Z Deleting the contents of '/home/runner/work/Dex2c-Android/Dex2c-Android'
+2026-11-13T06:23:10.1805351Z ##[group]Initializing the repository
+2026-11-13T06:23:10.1810144Z [command]/usr/bin/git init /home/runner/work/Dex2c-Android/Dex2c-Android
+2026-11-13T06:23:10.2736264Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-13T06:23:10.2737344Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-13T06:23:10.2737930Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-13T06:23:10.2738278Z hint: call:
+2026-11-13T06:23:10.2738447Z hint:
+2026-11-13T06:23:10.2738724Z hint: 	git config --global init.defaultBranch <name>
+2026-11-13T06:23:10.2739008Z hint:
+2026-11-13T06:23:10.2739341Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-13T06:23:10.2739789Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-13T06:23:10.2740082Z hint:
+2026-11-13T06:23:10.2740278Z hint: 	git branch -m <name>
+2026-11-13T06:23:10.2740502Z hint:
+2026-11-13T06:23:10.2741092Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-13T06:23:10.2763695Z Initialized empty Git repository in /home/runner/work/Dex2c-Android/Dex2c-Android/.git/
+2026-11-13T06:23:10.2769935Z [command]/usr/bin/git remote add origin https://github.com/userio12/Dex2c-Android
+2026-11-13T06:23:10.2836031Z ##[endgroup]
+2026-11-13T06:23:10.2837234Z ##[group]Disabling automatic garbage collection
+2026-11-13T06:23:10.2838258Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-13T06:23:10.2862990Z ##[endgroup]
+2026-11-13T06:23:10.2863548Z ##[group]Setting up auth
+2026-11-13T06:23:10.2868042Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-13T06:23:10.2891287Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-13T06:23:10.7583769Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-13T06:23:10.7586058Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-13T06:23:10.7795391Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-13T06:23:10.7817895Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-13T06:23:10.7968059Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-13T06:23:10.8007839Z ##[endgroup]
+2026-11-13T06:23:10.8008552Z ##[group]Fetching the repository
+2026-11-13T06:23:10.8015033Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d44e6d6f72a86f4e4887a380968f741de0d65cab:refs/remotes/origin/main
+2026-11-13T06:23:11.4350229Z From https://github.com/userio12/Dex2c-Android
+2026-11-13T06:23:11.4351542Z  * [new ref]         d44e6d6f72a86f4e4887a380968f741de0d65cab -> origin/main
+2026-11-13T06:23:11.4353108Z ##[endgroup]
+2026-11-13T06:23:11.4353579Z ##[group]Determining the checkout info
+2026-11-13T06:23:11.4354264Z ##[endgroup]
+2026-11-13T06:23:11.4354793Z [command]/usr/bin/git sparse-checkout disable
+2026-11-13T06:23:11.4410083Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-13T06:23:11.4430323Z ##[group]Checking out the ref
+2026-11-13T06:23:11.4433742Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-13T06:23:11.4640144Z Switched to a new branch 'main'
+2026-11-13T06:23:11.4650375Z branch 'main' set up to track 'origin/main'.
+2026-11-13T06:23:11.4660430Z ##[endgroup]
+2026-11-13T06:23:11.4703180Z [command]/usr/bin/git log -1 --format=%H
+2026-11-13T06:23:11.4714933Z d44e6d6f72a86f4e4887a380968f741de0d65cab
+2026-11-13T06:23:11.4946074Z ##[group]Run actions/setup-java@v4
+2026-11-13T06:23:11.4946285Z with:
+2026-11-13T06:23:11.4946572Z   distribution: temurin
+2026-11-13T06:23:11.4946740Z   java-version: 21
+2026-11-13T06:23:11.4946895Z   java-package: jdk
+2026-11-13T06:23:11.4947055Z   check-latest: false
+2026-11-13T06:23:11.4947218Z   server-id: github
+2026-11-13T06:23:11.4947404Z   server-username: GITHUB_ACTOR
+2026-11-13T06:23:11.4947636Z   server-password: GITHUB_TOKEN
+2026-11-13T06:23:11.4947837Z   overwrite-settings: true
+2026-11-13T06:23:11.4948022Z   job-status: success
+2026-11-13T06:23:11.4949697Z   token: ***
+2026-11-13T06:23:11.4949870Z ##[endgroup]
+2026-11-13T06:23:11.6327521Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-11-13T06:23:11.6334894Z ##[group]Installed distributions
+2026-11-13T06:23:11.6389991Z Resolved Java 21.0.13+9 from tool-cache
+2026-11-13T06:23:11.6390815Z Setting Java 21.0.13+9 as the default
+2026-11-13T06:23:11.6397563Z (node:2300) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T06:23:11.6398540Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T06:23:11.6399647Z Creating toolchains.xml for JDK version 21 from temurin
+2026-11-13T06:23:11.6451928Z Writing to /home/runner/.m2/toolchains.xml
+2026-11-13T06:23:11.6452425Z 
+2026-11-13T06:23:11.6452672Z Java configuration:
+2026-11-13T06:23:11.6453087Z   Distribution: temurin
+2026-11-13T06:23:11.6453455Z   Version: 21.0.13+9
+2026-11-13T06:23:11.6453914Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:11.6454338Z 
+2026-11-13T06:23:11.6454829Z ##[endgroup]
+2026-11-13T06:23:11.6483455Z Creating settings.xml with server-id: github
+2026-11-13T06:23:11.6500107Z Writing to /home/runner/.m2/settings.xml
+2026-11-13T06:23:11.6671035Z ##[group]Run if [ -d "${ANDROID_HOME:-}" ]; then
+2026-11-13T06:23:11.6671509Z [36;1mif [ -d "${ANDROID_HOME:-}" ]; then[0m
+2026-11-13T06:23:11.6672062Z [36;1m  yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true[0m
+2026-11-13T06:23:11.6672561Z [36;1mfi[0m
+2026-11-13T06:23:11.6704294Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-13T06:23:11.6704674Z env:
+2026-11-13T06:23:11.6705040Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:11.6705577Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:11.6705993Z ##[endgroup]
+2026-11-13T06:23:26.4307981Z yes: standard output: Broken pipe
+2026-11-13T06:23:26.4451798Z ##[group]Run gradle/actions/setup-gradle@v4
+2026-11-13T06:23:26.4452030Z with:
+2026-11-13T06:23:26.4452188Z   gradle-version: 9.3.1
+2026-11-13T06:23:26.4452383Z   cache-disabled: false
+2026-11-13T06:23:26.4452574Z   cache-read-only: false
+2026-11-13T06:23:26.4452831Z   cache-write-only: false
+2026-11-13T06:23:26.4453020Z   cache-overwrite-existing: false
+2026-11-13T06:23:26.4453220Z   cache-cleanup: on-success
+2026-11-13T06:23:26.4453434Z   gradle-home-cache-includes: caches
+notifications
+
+2026-11-13T06:23:26.4453683Z   add-job-summary: always
+2026-11-13T06:23:26.4453875Z   add-job-summary-as-pr-comment: never
+2026-11-13T06:23:26.4454116Z   dependency-graph: disabled
+2026-11-13T06:23:26.4454350Z   dependency-graph-report-dir: dependency-graph-reports
+2026-11-13T06:23:26.4454617Z   dependency-graph-continue-on-failure: true
+2026-11-13T06:23:26.4454841Z   build-scan-publish: false
+2026-11-13T06:23:26.4455023Z   validate-wrappers: true
+2026-11-13T06:23:26.4455253Z   allow-snapshot-wrappers: false
+2026-11-13T06:23:26.4455465Z   gradle-home-cache-strict-match: false
+2026-11-13T06:23:26.4455689Z   workflow-job-context: null
+2026-11-13T06:23:26.4457383Z   github-token: ***
+2026-11-13T06:23:26.4457537Z env:
+2026-11-13T06:23:26.4457758Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:26.4458108Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:26.4458376Z ##[endgroup]
+2026-11-13T06:23:26.9542695Z Merged default JDK locations into /home/runner/.m2/toolchains.xml
+2026-11-13T06:23:26.9563701Z Preparing cache for cleanup.
+2026-11-13T06:23:26.9581785Z ##[group]Restore Gradle state from cache
+2026-11-13T06:23:27.2985038Z Cache hit for restore-key: gradle-home-v1|Linux-X64|verify-and-debug[81c9dbb0e8e1df9c460cd196c993774b]-36ff8c6983fdb1174e1a66cb4d28e0ec5af24d89
+2026-11-13T06:23:28.6340938Z Received 0 of 52683687 (0.0%), 0.0 MBs/sec
+2026-11-13T06:23:29.4376461Z Received 52683687 of 52683687 (100.0%), 27.9 MBs/sec
+2026-11-13T06:23:29.4377719Z Cache Size: ~50 MB (52683687 B)
+2026-11-13T06:23:29.4396258Z [command]/usr/bin/tar -xf /home/runner/work/_temp/fb86fe03-b4ee-40ba-bfa9-d0bee1262ffc/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:29.5297360Z Cache restored successfully
+2026-11-13T06:23:29.5317567Z Restored cache entry with key gradle-home-v1|Linux-X64|verify-and-debug[81c9dbb0e8e1df9c460cd196c993774b]-d44e6d6f72a86f4e4887a380968f741de0d65cab to /home/runner/.gradle/caches,/home/runner/.gradle/notifications,/home/runner/.gradle/.setup-gradle in 2575ms
+2026-11-13T06:23:29.7949140Z Cache hit for: gradle-groovy-dsl-v1-a95ee8859b920874d84ac1ff3d5ddd5b
+2026-11-13T06:23:29.8070486Z Cache hit for: gradle-kotlin-dsl-v1-34b5bd388a9909cea6fc895a9a3b1fdd
+2026-11-13T06:23:29.8171397Z Cache hit for: gradle-transforms-v1-8722a39dcecd8dcbcd70811c5e07ab66
+2026-11-13T06:23:29.8231432Z Cache hit for: gradle-dependencies-v1-8226234b07b0adaf060cdce2201e7813
+2026-11-13T06:23:29.8274240Z Cache hit for: gradle-instrumented-jars-v1-319f8ba8a1f88fbc15de21dbe5129e1a
+2026-11-13T06:23:29.8469368Z Cache hit for: gradle-generated-gradle-jars-v1-cb4b032a7d08b9bf1e84e9eacaebcc29
+2026-11-13T06:23:30.6055766Z Received 99407 of 99407 (100.0%), 0.2 MBs/sec
+2026-11-13T06:23:30.6056177Z Cache Size: ~0 MB (99407 B)
+2026-11-13T06:23:30.6067163Z [command]/usr/bin/tar -xf /home/runner/work/_temp/8b2c6e85-d236-4c7a-b6c5-cc10bdf35c9d/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:30.6158945Z Cache restored successfully
+2026-11-13T06:23:30.6161040Z Restored cache entry with key gradle-groovy-dsl-v1-a95ee8859b920874d84ac1ff3d5ddd5b to /home/runner/.gradle/caches/*/groovy-dsl/*/ in 1082ms
+2026-11-13T06:23:30.6832898Z Received 88518 of 88518 (100.0%), 0.2 MBs/sec
+2026-11-13T06:23:30.6833768Z Cache Size: ~0 MB (88518 B)
+2026-11-13T06:23:30.6846022Z [command]/usr/bin/tar -xf /home/runner/work/_temp/ad37f7c0-4b22-4e5d-96e2-88fd449311e3/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:30.6993682Z Cache restored successfully
+2026-11-13T06:23:30.6996663Z Restored cache entry with key gradle-kotlin-dsl-v1-34b5bd388a9909cea6fc895a9a3b1fdd to /home/runner/.gradle/caches/*/kotlin-dsl/accessors/*/,/home/runner/.gradle/caches/*/kotlin-dsl/scripts/*/ in 1167ms
+2026-11-13T06:23:30.7113771Z Received 65295 of 65295 (100.0%), 0.1 MBs/sec
+2026-11-13T06:23:30.7114420Z Cache Size: ~0 MB (65295 B)
+2026-11-13T06:23:30.7125138Z [command]/usr/bin/tar -xf /home/runner/work/_temp/49b0d423-bac3-4efe-91d6-2db64bdfa3ff/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:30.7192863Z Cache restored successfully
+2026-11-13T06:23:30.7194426Z Restored cache entry with key gradle-instrumented-jars-v1-319f8ba8a1f88fbc15de21dbe5129e1a to /home/runner/.gradle/caches/jars-*/*/ in 1187ms
+2026-11-13T06:23:31.1478128Z Received 0 of 206452077 (0.0%), 0.0 MBs/sec
+2026-11-13T06:23:31.1659080Z Received 0 of 524201172 (0.0%), 0.0 MBs/sec
+2026-11-13T06:23:31.1904630Z Received 0 of 41993400 (0.0%), 0.0 MBs/sec
+2026-11-13T06:23:31.8174642Z Received 41993400 of 41993400 (100.0%), 24.6 MBs/sec
+2026-11-13T06:23:31.8176370Z Cache Size: ~40 MB (41993400 B)
+2026-11-13T06:23:31.8246515Z [command]/usr/bin/tar -xf /home/runner/work/_temp/db0c7cd4-fc5d-4522-b0f1-29277153dd23/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:32.1552241Z Cache restored successfully
+2026-11-13T06:23:32.1602159Z Received 92274688 of 206452077 (44.7%), 43.8 MBs/sec
+2026-11-13T06:23:32.1641202Z Restored cache entry with key gradle-generated-gradle-jars-v1-cb4b032a7d08b9bf1e84e9eacaebcc29 to /home/runner/.gradle/caches/9.3.1/generated-gradle-jars/gradle-api-9.3.1.jar in 2631ms
+2026-11-13T06:23:32.1667793Z Received 75497472 of 524201172 (14.4%), 36.0 MBs/sec
+2026-11-13T06:23:33.1562365Z Received 176160768 of 206452077 (85.3%), 55.8 MBs/sec
+2026-11-13T06:23:33.1672701Z Received 167772160 of 524201172 (32.0%), 53.3 MBs/sec
+2026-11-13T06:23:33.3171979Z Received 206452077 of 206452077 (100.0%), 62.1 MBs/sec
+2026-11-13T06:23:33.3173796Z Cache Size: ~197 MB (206452077 B)
+2026-11-13T06:23:33.3456605Z [command]/usr/bin/tar -xf /home/runner/work/_temp/2be2172a-95ca-4576-b724-09274c8d6a2e/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:34.1695923Z Received 272629760 of 524201172 (52.0%), 65.0 MBs/sec
+2026-11-13T06:23:35.1702600Z Received 390070272 of 524201172 (74.4%), 74.4 MBs/sec
+2026-11-13T06:23:36.1506741Z Cache restored successfully
+2026-11-13T06:23:36.1580252Z Restored cache entry with key gradle-transforms-v1-8722a39dcecd8dcbcd70811c5e07ab66 to /home/runner/.gradle/caches/transforms-4/*/,/home/runner/.gradle/caches/*/transforms/*/ in 6624ms
+2026-11-13T06:23:36.1691550Z Received 398458880 of 524201172 (76.0%), 63.3 MBs/sec
+2026-11-13T06:23:37.1685915Z Received 402653184 of 524201172 (76.8%), 54.8 MBs/sec
+2026-11-13T06:23:38.1695762Z Received 503316480 of 524201172 (96.0%), 60.0 MBs/sec
+2026-11-13T06:23:38.5782704Z Received 524201172 of 524201172 (100.0%), 59.4 MBs/sec
+2026-11-13T06:23:38.5784063Z Cache Size: ~500 MB (524201172 B)
+2026-11-13T06:23:38.6053341Z [command]/usr/bin/tar -xf /home/runner/work/_temp/4f0fe31d-f691-4cd5-936e-3f273bc4fb30/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:42.2046622Z Cache restored successfully
+2026-11-13T06:23:42.2216219Z Restored cache entry with key gradle-dependencies-v1-8226234b07b0adaf060cdce2201e7813 to /home/runner/.gradle/caches/modules-*/files-*/*/*/*/* in 12689ms
+2026-11-13T06:23:42.2410771Z ##[endgroup]
+2026-11-13T06:23:42.2448950Z ##[group]All Gradle Wrapper jars are valid
+2026-11-13T06:23:42.2449673Z 
+2026-11-13T06:23:42.2450075Z ##[endgroup]
+2026-11-13T06:23:42.3462737Z ##[group]Provision Gradle 9.3.1
+2026-11-13T06:23:48.5012445Z Cache hit for: gradle-9.3.1
+2026-11-13T06:23:49.5934185Z Received 96468992 of 136943103 (70.4%), 91.9 MBs/sec
+2026-11-13T06:23:50.2024689Z Received 136943103 of 136943103 (100.0%), 81.1 MBs/sec
+2026-11-13T06:23:50.2025569Z Cache Size: ~131 MB (136943103 B)
+2026-11-13T06:23:50.2042619Z [command]/usr/bin/tar -xf /home/runner/work/_temp/db72f7bf-67a3-4397-afa8-7da0d3d3fe73/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T06:23:50.3043836Z Cache restored successfully
+2026-11-13T06:23:50.3091653Z Restored Gradle distribution gradle-9.3.1 from cache to /home/runner/work/_temp/.gradle-actions/gradle-installations/downloads/gradle-9.3.1-bin.zip
+2026-11-13T06:23:50.3104735Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/.gradle-actions/gradle-installations/downloads/gradle-9.3.1-bin.zip
+2026-11-13T06:23:51.1772393Z Extracted Gradle 9.3.1 to /home/runner/work/_temp/.gradle-actions/gradle-installations/installs/gradle-9.3.1
+2026-11-13T06:23:51.1773581Z Provisioned Gradle executable /home/runner/work/_temp/.gradle-actions/gradle-installations/installs/gradle-9.3.1/bin/gradle
+2026-11-13T06:23:51.1774592Z ##[endgroup]
+2026-11-13T06:23:51.1930989Z ##[group]Run if [ -f debug.keystore.base64 ]; then
+2026-11-13T06:23:51.1931370Z [36;1mif [ -f debug.keystore.base64 ]; then[0m
+2026-11-13T06:23:51.1931686Z [36;1m  base64 -d debug.keystore.base64 > debug.keystore[0m
+2026-11-13T06:23:51.1932000Z [36;1melif [ ! -f debug.keystore ]; then[0m
+2026-11-13T06:23:51.1932265Z [36;1m  keytool -genkeypair -v \[0m
+2026-11-13T06:23:51.1932551Z [36;1m    -keystore debug.keystore \[0m
+2026-11-13T06:23:51.1932912Z [36;1m    -storetype PKCS12 \[0m
+2026-11-13T06:23:51.1933168Z [36;1m    -keyalg RSA \[0m
+2026-11-13T06:23:51.1933403Z [36;1m    -keysize 2048 \[0m
+2026-11-13T06:23:51.1933635Z [36;1m    -validity 10000 \[0m
+2026-11-13T06:23:51.1933877Z [36;1m    -alias androiddebugkey \[0m
+2026-11-13T06:23:51.1934123Z [36;1m    -storepass android \[0m
+2026-11-13T06:23:51.1934364Z [36;1m    -keypass android \[0m
+2026-11-13T06:23:51.1934645Z [36;1m    -dname "CN=Android Debug,O=Android,C=US"[0m
+2026-11-13T06:23:51.1934934Z [36;1mfi[0m
+2026-11-13T06:23:51.1954752Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-13T06:23:51.1955059Z env:
+2026-11-13T06:23:51.1955337Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:51.1955740Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:51.1956085Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-13T06:23:51.1956368Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-13T06:23:51.1956619Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-13T06:23:51.1956890Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-11-13T06:23:51.1957249Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-13T06:23:51.1957635Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-13T06:23:51.1957915Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-13T06:23:51.1958162Z ##[endgroup]
+2026-11-13T06:23:51.7012587Z Generating 2,048 bit RSA key pair and self-signed certificate (SHA384withRSA) with a validity of 10,000 days
+2026-11-13T06:23:51.7031991Z 	for: CN=Android Debug, O=Android, C=US
+2026-11-13T06:23:51.8425057Z [Storing debug.keystore]
+2026-11-13T06:23:52.0127742Z ##[group]Run gradle :app:testDebugUnitTest --stacktrace
+2026-11-13T06:23:52.0128203Z [36;1mgradle :app:testDebugUnitTest --stacktrace[0m
+2026-11-13T06:23:52.0146398Z shell: /usr/bin/bash -e {0}
+2026-11-13T06:23:52.0146738Z env:
+2026-11-13T06:23:52.0147149Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:52.0147619Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:23:52.0148096Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-13T06:23:52.0148444Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-13T06:23:52.0148801Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-13T06:23:52.0149176Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-11-13T06:23:52.0149614Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-13T06:23:52.0150096Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-13T06:23:52.0150741Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-13T06:23:52.0151109Z ##[endgroup]
+2026-11-13T06:23:52.7534534Z Starting a Gradle Daemon (subsequent builds will be faster)
+2026-11-13T06:23:56.0529297Z Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest
+2026-11-13T06:24:06.9554293Z > Task :app:generateDebugAssets UP-TO-DATE
+2026-11-13T06:24:06.9573243Z > Task :app:preBuild UP-TO-DATE
+2026-11-13T06:24:06.9581763Z > Task :app:preDebugBuild UP-TO-DATE
+2026-11-13T06:24:07.0546680Z > Task :app:generateDebugBuildConfig FROM-CACHE
+2026-11-13T06:24:07.0575533Z > Task :app:processDebugGoogleServices FROM-CACHE
+2026-11-13T06:24:07.0579394Z > Task :app:kspDebugKotlin SKIPPED
+2026-11-13T06:24:07.0579991Z > Task :app:javaPreCompileDebug FROM-CACHE
+2026-11-13T06:24:07.1552110Z > Task :app:mapDebugSourceSetPaths
+2026-11-13T06:24:07.2572288Z > Task :app:generateDebugResources
+2026-11-13T06:24:07.2603333Z > Task :app:createDebugCompatibleScreenManifests
+2026-11-13T06:24:07.2639428Z > Task :app:extractDeepLinksDebug FROM-CACHE
+2026-11-13T06:24:07.7570218Z > Task :app:processDebugNavigationResources
+2026-11-13T06:24:07.7625380Z > Task :app:preDebugUnitTestBuild UP-TO-DATE
+2026-11-13T06:24:07.8524598Z > Task :app:javaPreCompileDebugUnitTest FROM-CACHE
+2026-11-13T06:24:07.8527674Z > Task :app:packageDebugResources
+2026-11-13T06:24:10.0533811Z > Task :app:processDebugMainManifest FROM-CACHE
+2026-11-13T06:24:10.0602088Z > Task :app:compileDebugNavigationResources FROM-CACHE
+2026-11-13T06:24:10.0635156Z > Task :app:checkDebugAarMetadata
+2026-11-13T06:24:10.0671370Z > Task :app:mergeDebugAssets
+2026-11-13T06:24:10.0705101Z > Task :app:processDebugManifest FROM-CACHE
+2026-11-13T06:24:10.0738282Z > Task :app:processDebugManifestForPackage FROM-CACHE
+2026-11-13T06:24:10.1562147Z > Task :app:parseDebugLocalResources
+2026-11-13T06:24:10.3533827Z > Task :app:generateDebugRFile
+2026-11-13T06:24:10.6533552Z > Task :app:processDebugUnitTestManifest
+2026-11-13T06:24:12.7529110Z > Task :app:mergeDebugResources
+2026-11-13T06:24:13.8600948Z > Task :app:processDebugResources
+2026-11-13T06:24:13.8602075Z > Task :app:packageDebugUnitTestForUnitTest
+2026-11-13T06:24:13.8602670Z > Task :app:generateDebugUnitTestConfig
+2026-11-13T06:24:40.2529153Z > Task :app:compileDebugKotlin
+2026-11-13T06:24:50.4542529Z > Task :app:processDebugJavaRes
+2026-11-13T06:24:53.3530065Z > Task :app:compileDebugJavaWithJavac
+2026-11-13T06:24:53.4536262Z > Task :app:bundleDebugClassesToRuntimeJar
+2026-11-13T06:24:53.4537441Z > Task :app:bundleDebugClassesToCompileJar
+2026-11-13T06:24:53.4538150Z > Task :app:kspDebugUnitTestKotlin SKIPPED
+2026-11-13T06:25:02.9552538Z > Task :app:compileDebugUnitTestKotlin
+2026-11-13T06:25:02.9598156Z > Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+2026-11-13T06:25:02.9652161Z > Task :app:processDebugUnitTestJavaRes
+2026-11-13T06:25:05.0551351Z 
+2026-11-13T06:25:05.0581819Z > Task :app:testDebugUnitTest
+2026-11-13T06:25:05.0628131Z 
+2026-11-13T06:25:05.0651929Z ApkInspectorTest > classMethod FAILED
+2026-11-13T06:25:05.0675771Z     java.lang.AssertionError at MavenArtifactFetcher.java:129
+2026-11-13T06:25:05.0712061Z         Caused by: java.util.concurrent.ExecutionException at AbstractFuture.java:292
+2026-11-13T06:25:05.0731848Z             Caused by: java.io.FileNotFoundException at HttpURLConnection.java:2030
+2026-11-13T06:25:05.2741338Z 
+2026-11-13T06:25:05.2742976Z ExampleRobolectricTest > classMethod FAILED
+2026-11-13T06:25:05.2935847Z     java.lang.AssertionError at MavenArtifactFetcher.java:129
+2026-11-13T06:25:05.2937660Z         Caused by: java.util.concurrent.ExecutionException at AbstractFuture.java:292
+2026-11-13T06:25:05.2938561Z             Caused by: java.io.FileNotFoundException at HttpURLConnection.java:2030
+2026-11-13T06:25:06.1581425Z 
+2026-11-13T06:25:06.1643605Z 16 tests completed, 2 failed
+2026-11-13T06:25:06.2581301Z 
+2026-11-13T06:25:06.2661836Z > Task :app:testDebugUnitTest FAILED
+2026-11-13T06:25:06.3573033Z gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794551037157.json
+2026-11-13T06:25:06.4523345Z 
+2026-11-13T06:25:06.4583639Z FAILURE: Build failed with an exception.
+2026-11-13T06:25:06.4632886Z 
+2026-11-13T06:25:06.4633654Z 31 actionable tasks: 22 executed, 9 from cache
+2026-11-13T06:25:06.4651778Z * What went wrong:
+2026-11-13T06:25:06.4652229Z Configuration cache entry stored.
+2026-11-13T06:25:06.4672214Z Execution failed for task ':app:testDebugUnitTest'.
+2026-11-13T06:25:06.4701895Z > There were failing tests. See the report at: file:///home/runner/work/Dex2c-Android/Dex2c-Android/app/build/reports/tests/testDebugUnitTest/index.html
+2026-11-13T06:25:06.4703591Z 
+2026-11-13T06:25:06.4735006Z * Try:
+2026-11-13T06:25:06.4754649Z > Run with --scan to get full insights from a Build Scan (powered by Develocity).
+2026-11-13T06:25:06.4791231Z 
+2026-11-13T06:25:06.4816125Z * Exception is:
+2026-11-13T06:25:06.4817489Z org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:testDebugUnitTest'.
+2026-11-13T06:25:06.4818891Z 	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:135)
+2026-11-13T06:25:06.4819998Z 	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+2026-11-13T06:25:06.4821183Z 	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:133)
+2026-11-13T06:25:06.4824181Z 	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:121)
+2026-11-13T06:25:06.4826006Z 	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:41)
+2026-11-13T06:25:06.4827422Z 	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+2026-11-13T06:25:06.4828769Z 	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+2026-11-13T06:25:06.4830203Z 	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+2026-11-13T06:25:06.4833298Z 	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+2026-11-13T06:25:06.4834546Z 	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+2026-11-13T06:25:06.4835649Z 	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+2026-11-13T06:25:06.4837116Z 	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+2026-11-13T06:25:06.4838786Z 	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+2026-11-13T06:25:06.4841046Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+2026-11-13T06:25:06.4842899Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+2026-11-13T06:25:06.4844150Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+2026-11-13T06:25:06.4845243Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+2026-11-13T06:25:06.4846605Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+2026-11-13T06:25:06.4847788Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+2026-11-13T06:25:06.4848786Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+2026-11-13T06:25:06.4850158Z 	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+2026-11-13T06:25:06.4851447Z 	at org.gradle.execution.plan.DefaultNodeExecutor.executeLocalTaskNode(DefaultNodeExecutor.java:55)
+2026-11-13T06:25:06.4852501Z 	at org.gradle.execution.plan.DefaultNodeExecutor.execute(DefaultNodeExecutor.java:34)
+2026-11-13T06:25:06.4853489Z 	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:355)
+2026-11-13T06:25:06.4854756Z 	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:343)
+2026-11-13T06:25:06.4856239Z 	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:339)
+2026-11-13T06:25:06.4857513Z 	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:84)
+2026-11-13T06:25:06.4858773Z 	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:339)
+2026-11-13T06:25:06.4860256Z 	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:328)
+2026-11-13T06:25:06.4861960Z 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+2026-11-13T06:25:06.4863207Z 	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+2026-11-13T06:25:06.4864468Z 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+2026-11-13T06:25:06.4865537Z 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+2026-11-13T06:25:06.4867115Z Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There were failing tests. See the report at: file:///home/runner/work/Dex2c-Android/Dex2c-Android/app/build/reports/tests/testDebugUnitTest/index.html
+2026-11-13T06:25:06.4868692Z 	at org.gradle.api.tasks.testing.AbstractTestTask.executeTests(AbstractTestTask.java:552)
+2026-11-13T06:25:06.4869624Z 	at org.gradle.api.tasks.testing.Test.executeTests(Test.java:722)
+2026-11-13T06:25:06.4870716Z 	at com.android.build.gradle.tasks.factory.AndroidUnitTest.executeTests(AndroidUnitTest.java:172)
+2026-11-13T06:25:06.4874166Z 	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:125)
+2026-11-13T06:25:06.4875629Z 	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.doExecute(StandardTaskAction.java:58)
+2026-11-13T06:25:06.4877186Z 	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:51)
+2026-11-13T06:25:06.4878291Z 	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:29)
+2026-11-13T06:25:06.4879441Z 	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:259)
+2026-11-13T06:25:06.4881239Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+2026-11-13T06:25:06.4882821Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+2026-11-13T06:25:06.4884053Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+2026-11-13T06:25:06.4885211Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+2026-11-13T06:25:06.4888963Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+2026-11-13T06:25:06.4890992Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+2026-11-13T06:25:06.4892127Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+2026-11-13T06:25:06.4893307Z 	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:244)
+2026-11-13T06:25:06.4894357Z 	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:227)
+2026-11-13T06:25:06.4895556Z 	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:210)
+2026-11-13T06:25:06.4896934Z 	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:176)
+2026-11-13T06:25:06.4897966Z 	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:110)
+2026-11-13T06:25:06.4898897Z 	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:47)
+2026-11-13T06:25:06.4899814Z 	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:64)
+2026-11-13T06:25:06.4900868Z 	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:61)
+2026-11-13T06:25:06.4902078Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+2026-11-13T06:25:06.4903587Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+2026-11-13T06:25:06.4904875Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+2026-11-13T06:25:06.4906090Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+2026-11-13T06:25:06.4907565Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+2026-11-13T06:25:06.4908777Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+2026-11-13T06:25:06.4909957Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+2026-11-13T06:25:06.4911333Z 	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:61)
+2026-11-13T06:25:06.4913097Z 	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:47)
+2026-11-13T06:25:06.4914104Z 	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
+2026-11-13T06:25:06.4915225Z 	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
+2026-11-13T06:25:06.4916110Z 	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+2026-11-13T06:25:06.4917222Z 	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:51)
+2026-11-13T06:25:06.4918773Z 	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:29)
+2026-11-13T06:25:06.4920014Z 	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:70)
+2026-11-13T06:25:06.4921608Z 	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:40)
+2026-11-13T06:25:06.4922641Z 	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+2026-11-13T06:25:06.4923631Z 	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:62)
+2026-11-13T06:25:06.4924558Z 	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:27)
+2026-11-13T06:25:06.4925531Z 	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
+2026-11-13T06:25:06.4926588Z 	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
+2026-11-13T06:25:06.4928074Z 	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:39)
+2026-11-13T06:25:06.4929278Z 	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:28)
+2026-11-13T06:25:06.4930263Z 	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+2026-11-13T06:25:06.4931494Z 	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:192)
+2026-11-13T06:25:06.4932679Z 	at org.gradle.internal.execution.steps.BuildCacheStep.executeAndStoreInCache(BuildCacheStep.java:148)
+2026-11-13T06:25:06.4933833Z 	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$4(BuildCacheStep.java:104)
+2026-11-13T06:25:06.4934976Z 	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$executeWithCache$5(BuildCacheStep.java:104)
+2026-11-13T06:25:06.4935853Z 	at org.gradle.internal.Try$Success.map(Try.java:170)
+2026-11-13T06:25:06.4936746Z 	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithCache(BuildCacheStep.java:88)
+2026-11-13T06:25:06.4937781Z 	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$0(BuildCacheStep.java:75)
+2026-11-13T06:25:06.4938691Z 	at org.gradle.internal.Either$Left.fold(Either.java:116)
+2026-11-13T06:25:06.4939524Z 	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+2026-11-13T06:25:06.4940458Z 	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
+2026-11-13T06:25:06.4941629Z 	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
+2026-11-13T06:25:06.4942751Z 	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:46)
+2026-11-13T06:25:06.4944387Z 	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:35)
+2026-11-13T06:25:06.4945477Z 	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+2026-11-13T06:25:06.4946521Z 	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+2026-11-13T06:25:06.4947447Z 	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+2026-11-13T06:25:06.4948448Z 	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+2026-11-13T06:25:06.4949638Z 	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+2026-11-13T06:25:06.4951365Z 	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+2026-11-13T06:25:06.4953073Z 	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:49)
+2026-11-13T06:25:06.4954459Z 	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:27)
+2026-11-13T06:25:06.4955769Z 	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:71)
+2026-11-13T06:25:06.4957512Z 	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:39)
+2026-11-13T06:25:06.4958802Z 	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:63)
+2026-11-13T06:25:06.4960108Z 	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:34)
+2026-11-13T06:25:06.4961475Z 	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+2026-11-13T06:25:06.4962301Z 	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:64)
+2026-11-13T06:25:06.4963196Z 	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:42)
+2026-11-13T06:25:06.4964511Z 	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:77)
+2026-11-13T06:25:06.4966330Z 	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:46)
+2026-11-13T06:25:06.4967656Z 	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.executeWithNonEmptySources(AbstractSkipEmptyWorkStep.java:133)
+2026-11-13T06:25:06.4968838Z 	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:64)
+2026-11-13T06:25:06.4969956Z 	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:36)
+2026-11-13T06:25:06.4971284Z 	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+2026-11-13T06:25:06.4972576Z 	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:36)
+2026-11-13T06:25:06.4973841Z 	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:23)
+2026-11-13T06:25:06.4975053Z 	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:77)
+2026-11-13T06:25:06.4976230Z 	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:43)
+2026-11-13T06:25:06.4977347Z 	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:25)
+2026-11-13T06:25:06.4978397Z 	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$execute$0(AssignMutableWorkspaceStep.java:35)
+2026-11-13T06:25:06.4979604Z 	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:305)
+2026-11-13T06:25:06.4981223Z 	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:31)
+2026-11-13T06:25:06.4982416Z 	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:22)
+2026-11-13T06:25:06.4983505Z 	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+2026-11-13T06:25:06.4984541Z 	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+2026-11-13T06:25:06.4985807Z 	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+2026-11-13T06:25:06.4987170Z 	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+2026-11-13T06:25:06.4988572Z 	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+2026-11-13T06:25:06.4989738Z 	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+2026-11-13T06:25:06.4990994Z 	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+2026-11-13T06:25:06.4991921Z 	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:44)
+2026-11-13T06:25:06.4992781Z 	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:31)
+2026-11-13T06:25:06.4993683Z 	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
+2026-11-13T06:25:06.4994821Z 	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:132)
+2026-11-13T06:25:06.4995726Z 	... 30 more
+2026-11-13T06:25:06.4996310Z 
+2026-11-13T06:25:06.4996395Z 
+2026-11-13T06:25:06.4996645Z BUILD FAILED in 1m 14s
+2026-11-13T06:25:06.9106109Z ##[error]Process completed with exit code 1.
+2026-11-13T06:25:06.9168022Z ##[group]Run actions/upload-artifact@v4
+2026-11-13T06:25:06.9168393Z with:
+2026-11-13T06:25:06.9168665Z   name: unit-test-reports
+2026-11-13T06:25:06.9169174Z   path: app/build/reports/tests/testDebugUnitTest/
+app/build/test-results/testDebugUnitTest/
+
+2026-11-13T06:25:06.9169637Z   if-no-files-found: warn
+2026-11-13T06:25:06.9169941Z   retention-days: 14
+2026-11-13T06:25:06.9170232Z   compression-level: 6
+2026-11-13T06:25:06.9171007Z   overwrite: false
+2026-11-13T06:25:06.9171337Z   include-hidden-files: false
+2026-11-13T06:25:06.9171676Z env:
+2026-11-13T06:25:06.9172016Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:25:06.9172568Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:25:06.9173019Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-13T06:25:06.9173384Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-13T06:25:06.9173731Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-13T06:25:06.9174189Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-11-13T06:25:06.9174689Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-13T06:25:06.9175238Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-13T06:25:06.9175699Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-13T06:25:06.9176011Z ##[endgroup]
+2026-11-13T06:25:07.0443166Z (node:2783) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T06:25:07.0444386Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T06:25:07.0640954Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-13T06:25:07.0643973Z The least common ancestor is /home/runner/work/Dex2c-Android/Dex2c-Android/app/build. This will be the root directory of the artifact
+2026-11-13T06:25:07.0645251Z With the provided path, there will be 22 files uploaded
+2026-11-13T06:25:07.0646404Z Artifact name is valid!
+2026-11-13T06:25:07.0647037Z Root directory input is valid!
+2026-11-13T06:25:07.6077032Z Beginning upload of artifact content to blob storage
+2026-11-13T06:25:07.6523173Z (node:2783) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-13T06:25:08.0541954Z Uploaded bytes 37848
+2026-11-13T06:25:08.1455652Z Finished uploading artifact content to blob storage!
+2026-11-13T06:25:08.1457418Z SHA256 digest of uploaded artifact zip is a312158ba41214529a03a9b007b22ed83448e6276aa59a6c37f225b179abe057
+2026-11-13T06:25:08.1459619Z Finalizing artifact upload
+2026-11-13T06:25:08.5323803Z Artifact unit-test-reports.zip successfully finalized. Artifact ID 14015750856
+2026-11-13T06:25:08.5324724Z Artifact unit-test-reports has been successfully uploaded! Final size is 37848 bytes. Artifact ID is 14015750856
+2026-11-13T06:25:08.5325834Z Artifact download URL: https://github.com/userio12/Dex2c-Android/actions/runs/43378305661/artifacts/14015750856
+2026-11-13T06:25:08.5419699Z ##[group]Run if [ "true" = "true" ]; then
+2026-11-13T06:25:08.5420105Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T06:25:08.5420788Z [36;1m  TEST_STATUS='Executed (:app:testDebugUnitTest)'[0m
+2026-11-13T06:25:08.5421224Z [36;1melse[0m
+2026-11-13T06:25:08.5421534Z [36;1m  TEST_STATUS='Skipped'[0m
+2026-11-13T06:25:08.5421888Z [36;1mfi[0m
+2026-11-13T06:25:08.5422160Z [36;1m{[0m
+2026-11-13T06:25:08.5422482Z [36;1m  echo "### Debug & Test Stage"[0m
+2026-11-13T06:25:08.5422820Z [36;1m  echo "- **JDK**: 21 (Temurin)"[0m
+2026-11-13T06:25:08.5423178Z [36;1m  echo "- **Gradle**: 9.3.1"[0m
+2026-11-13T06:25:08.5423602Z [36;1m  echo "- **Unit Tests**: ${TEST_STATUS}"[0m
+2026-11-13T06:25:08.5424066Z [36;1m  echo "- **Debug APK**: :app:assembleDebug -> dex2c-studio-debug-apk"[0m
+2026-11-13T06:25:08.5424517Z [36;1m} >> "$GITHUB_STEP_SUMMARY"[0m
+2026-11-13T06:25:08.5444267Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-13T06:25:08.5444721Z env:
+2026-11-13T06:25:08.5445206Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:25:08.5445706Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T06:25:08.5446191Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-13T06:25:08.5446571Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-13T06:25:08.5446929Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-13T06:25:08.5447322Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-11-13T06:25:08.5447763Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-13T06:25:08.5448285Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-13T06:25:08.5448653Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-13T06:25:08.5449034Z ##[endgroup]
+2026-11-13T06:25:08.5693610Z Post job cleanup.
+2026-11-13T06:25:08.7541173Z In post-action step
+2026-11-13T06:25:08.7561991Z ##[group]Stopping Gradle daemons
+2026-11-13T06:25:08.7566231Z Stopping Gradle daemons for /home/runner/work/_temp/.gradle-actions/gradle-installations/installs/gradle-9.3.1
+2026-11-13T06:25:08.7591743Z [command]/home/runner/work/_temp/.gradle-actions/gradle-installations/installs/gradle-9.3.1/bin/gradle --stop
+2026-11-13T06:25:09.5857712Z Stopping Daemon(s)
+2026-11-13T06:25:09.5891597Z 1 Daemon stopped
+2026-11-13T06:25:09.5981935Z ##[endgroup]
+2026-11-13T06:25:09.6001707Z Not performing cache-cleanup due to build failure
+2026-11-13T06:25:09.6020907Z ##[group]Caching Gradle state
+2026-11-13T06:25:09.6433101Z Not saving configuration-cache state, as no encryption key was provided
+2026-11-13T06:25:10.2302772Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --files-from manifest.txt --use-compress-program zstdmt
+2026-11-13T06:25:13.5907090Z Sent 0 of 206486644 (0.0%), 0.0 MBs/sec
+2026-11-13T06:25:14.5911482Z Sent 5160052 of 206486644 (2.5%), 2.5 MBs/sec
+2026-11-13T06:25:15.2266348Z Sent 206486644 of 206486644 (100.0%), 74.7 MBs/sec
+2026-11-13T06:25:15.5319003Z Saved cache entry with key gradle-transforms-v1-c945a21a207f7e8b4fd9471ec492186c from /home/runner/.gradle/caches/transforms-4/*/,/home/runner/.gradle/caches/*/transforms/*/ in 5504ms
+2026-11-13T06:25:15.6992759Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --files-from manifest.txt --use-compress-program zstdmt
+2026-11-13T06:25:17.2299349Z Sent 10747904 of 61360422 (17.5%), 10.3 MBs/sec
+2026-11-13T06:25:18.2301753Z Sent 56623104 of 61360422 (92.3%), 27.0 MBs/sec
+2026-11-13T06:25:18.4620774Z Sent 61360422 of 61360422 (100.0%), 26.2 MBs/sec
+2026-11-13T06:25:18.7707103Z Saved cache entry with key gradle-home-v1|Linux-X64|verify-and-debug[81c9dbb0e8e1df9c460cd196c993774b]-d44e6d6f72a86f4e4887a380968f741de0d65cab from /home/runner/.gradle/caches,/home/runner/.gradle/notifications,/home/runner/.gradle/.setup-gradle in 3079ms
+2026-11-13T06:25:18.7708841Z ##[endgroup]
+2026-11-13T06:25:18.7712888Z Generating Job Summary
+2026-11-13T06:25:18.7724748Z Completed post-action step
+2026-11-13T06:25:18.7917806Z Post job cleanup.
+2026-11-13T06:25:18.9011583Z (node:2864) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T06:25:18.9013108Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T06:25:18.9356101Z Post job cleanup.
+2026-11-13T06:25:19.0253756Z [command]/usr/bin/git version
+2026-11-13T06:25:19.0312860Z git version 2.56.1
+2026-11-13T06:25:19.0342849Z Temporarily overriding HOME='/home/runner/work/_temp/b7442358-7820-4ba9-a280-bd8eee452425' before making global git config changes
+2026-11-13T06:25:19.0343882Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-13T06:25:19.0344758Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Dex2c-Android/Dex2c-Android
+2026-11-13T06:25:19.0404864Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-13T06:25:19.0458944Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-13T06:25:19.0793334Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-13T06:25:19.0836639Z http.https://github.com/.extraheader
+2026-11-13T06:25:19.0848988Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-13T06:25:19.0955293Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-13T06:25:19.1188609Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-13T06:25:19.1212724Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-13T06:25:19.1503772Z Cleaning up orphan processes
+2026-11-13T06:25:19.1728055Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4, actions/upload-artifact@v4, gradle/actions/setup-gradle@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -31,10 +31,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
@@ -47,9 +47,10 @@ jobs:
           fi
 
       - name: Set up Gradle 9.3.1
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: "9.3.1"
+          cache-provider: basic
 
       - name: Prepare debug keystore
         shell: bash
@@ -77,7 +78,7 @@ jobs:
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Upload Debug APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dex2c-studio-debug-apk
           path: app/build/outputs/apk/debug/*.apk
@@ -86,7 +87,7 @@ jobs:
 
       - name: Upload unit test reports
         if: ${{ always() && (github.event_name != 'workflow_dispatch' || inputs.run_tests) }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: unit-test-reports
           path: |
@@ -121,10 +122,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
@@ -137,9 +138,10 @@ jobs:
           fi
 
       - name: Set up Gradle 9.3.1
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: "9.3.1"
+          cache-provider: basic
 
       - name: Configure debug and release signing keystores
         shell: bash
@@ -183,7 +185,7 @@ jobs:
         run: gradle :app:assembleRelease :app:bundleRelease --stacktrace
 
       - name: Upload Release APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dex2c-studio-release-apk
           path: app/build/outputs/apk/release/*.apk
@@ -191,7 +193,7 @@ jobs:
           retention-days: 14
 
       - name: Upload Release AAB artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dex2c-studio-release-aab
           path: app/build/outputs/bundle/release/*.aab

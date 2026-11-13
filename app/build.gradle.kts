@@ -8,6 +8,17 @@ plugins {
   alias(libs.plugins.google.services)
 }
 
+val robolectricSdk: Configuration by configurations.creating {
+  isTransitive = false
+}
+
+val robolectricJarsDir = layout.buildDirectory.dir("robolectric-jars")
+
+val syncRobolectricSdkJars by tasks.registering(Copy::class) {
+  from(robolectricSdk)
+  into(robolectricJarsDir)
+}
+
 android {
   namespace = "com.example"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
@@ -63,7 +74,26 @@ android {
     compose = true
     buildConfig = true
   }
-  testOptions { unitTests { isIncludeAndroidResources = true } }
+  testOptions {
+    unitTests {
+      isIncludeAndroidResources = true
+      all { test ->
+        test.dependsOn(syncRobolectricSdkJars)
+        test.systemProperty("robolectric.offline", "true")
+        test.systemProperty("robolectric.dependency.dir", robolectricJarsDir.get().asFile.absolutePath)
+        test.jvmArgs(
+          "--add-opens=java.base/java.lang=ALL-UNNAMED",
+          "--add-opens=java.base/java.util=ALL-UNNAMED",
+          "--add-opens=java.base/java.io=ALL-UNNAMED",
+          "--add-opens=java.base/java.net=ALL-UNNAMED",
+          "--add-opens=java.base/java.security=ALL-UNNAMED",
+          "--add-opens=java.base/java.text=ALL-UNNAMED",
+          "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+          "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+        )
+      }
+    }
+  }
   dependenciesInfo {
     includeInApk = false
     includeInBundle = true
@@ -133,6 +163,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)
   testImplementation(libs.robolectric)
+  robolectricSdk(libs.robolectric.android.all.instrumented)
   androidTestImplementation(platform(libs.androidx.compose.bom))
   androidTestImplementation(libs.androidx.compose.ui.test.junit4)
   androidTestImplementation(libs.androidx.espresso.core)
