@@ -1,0 +1,44 @@
+﻿2026-11-13T11:27:57.0879654Z ##[group]Run BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+2026-11-13T11:27:57.0880453Z [36;1mBUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)[0m
+2026-11-13T11:27:57.0881104Z [36;1m"$BUILD_TOOLS/zipalign" -p -f 4 /tmp/work/unsigned_dex2c.apk /tmp/work/aligned_dex2c.apk[0m
+2026-11-13T11:27:57.0881701Z [36;1mif [ "DEBUG_AUTO" = "REPO_KEYSTORE_SECRETS" ] && [ -n "$KEYSTORE_B64" ]; then[0m
+2026-11-13T11:27:57.0882377Z [36;1m  echo "$KEYSTORE_B64" | base64 --decode > /tmp/work/release.jks[0m
+2026-11-13T11:27:57.0882787Z [36;1m  "$BUILD_TOOLS/apksigner" sign \[0m
+2026-11-13T11:27:57.0883082Z [36;1m    --ks /tmp/work/release.jks \[0m
+2026-11-13T11:27:57.0883700Z [36;1m    --ks-pass "env:KEYSTORE_PASS" \[0m
+2026-11-13T11:27:57.0884030Z [36;1m    --ks-key-alias "$KEY_ALIAS" \[0m
+2026-11-13T11:27:57.0884368Z [36;1m    --key-pass "env:KEY_PASS" \[0m
+2026-11-13T11:27:57.0884684Z [36;1m    --out /tmp/work/dex2c-signed-output.apk \[0m
+2026-11-13T11:27:57.0885041Z [36;1m    /tmp/work/aligned_dex2c.apk[0m
+2026-11-13T11:27:57.0885296Z [36;1melse[0m
+2026-11-13T11:27:57.0885506Z [36;1m  keytool -genkeypair -v \[0m
+2026-11-13T11:27:57.0885796Z [36;1m    -keystore /tmp/work/debug.keystore \[0m
+2026-11-13T11:27:57.0886188Z [36;1m    -storepass android -alias androiddebugkey -keypass android \[0m
+2026-11-13T11:27:57.0886601Z [36;1m    -keyalg RSA -keysize 2048 -validity 10000 \[0m
+2026-11-13T11:27:57.0886954Z [36;1m    -dname "CN=Dex2C Cloud,O=Dex2C Studio,C=US"[0m
+2026-11-13T11:27:57.0887285Z [36;1m  "$BUILD_TOOLS/apksigner" sign \[0m
+2026-11-13T11:27:57.0887596Z [36;1m    --ks /tmp/work/debug.keystore \[0m
+2026-11-13T11:27:57.0887891Z [36;1m    --ks-pass pass:android \[0m
+2026-11-13T11:27:57.0888177Z [36;1m    --ks-key-alias androiddebugkey \[0m
+2026-11-13T11:27:57.0888485Z [36;1m    --key-pass pass:android \[0m
+2026-11-13T11:27:57.0888822Z [36;1m    --out /tmp/work/dex2c-signed-output.apk \[0m
+2026-11-13T11:27:57.0889153Z [36;1m    /tmp/work/aligned_dex2c.apk[0m
+2026-11-13T11:27:57.0889405Z [36;1mfi[0m
+2026-11-13T11:27:57.0940146Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:57.0940397Z env:
+2026-11-13T11:27:57.0940661Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0941100Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:57.0941527Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0941908Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0942284Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0942662Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:57.0943096Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:57.0943805Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:57.0944205Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:57.0944479Z   KEYSTORE_B64: 
+2026-11-13T11:27:57.0944673Z   KEYSTORE_PASS: 
+2026-11-13T11:27:57.0944868Z   KEY_ALIAS: 
+2026-11-13T11:27:57.0945047Z   KEY_PASS: 
+2026-11-13T11:27:57.0945228Z ##[endgroup]
+2026-11-13T11:27:57.3351813Z Unable to open '/tmp/work/unsigned_dex2c.apk' as zip archive: No such file or directory
+2026-11-13T11:27:57.3369569Z ##[error]Process completed with exit code 1.

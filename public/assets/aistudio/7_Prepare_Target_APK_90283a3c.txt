@@ -1,0 +1,22 @@
+﻿2026-11-13T11:27:56.9039724Z ##[group]Run mkdir -p /tmp/work
+2026-11-13T11:27:56.9040069Z [36;1mmkdir -p /tmp/work[0m
+2026-11-13T11:27:56.9040313Z [36;1mif [ -n "" ]; then[0m
+2026-11-13T11:27:56.9040595Z [36;1m  echo "Downloading APK from fallback URL..."[0m
+2026-11-13T11:27:56.9040964Z [36;1m  curl -fsSL "" -o /tmp/work/input.apk[0m
+2026-11-13T11:27:56.9041249Z [36;1melse[0m
+2026-11-13T11:27:56.9041494Z [36;1m  cp "input/target.apk" /tmp/work/input.apk[0m
+2026-11-13T11:27:56.9041778Z [36;1mfi[0m
+2026-11-13T11:27:56.9041987Z [36;1mls -lh /tmp/work/input.apk[0m
+2026-11-13T11:27:56.9092405Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:56.9092855Z env:
+2026-11-13T11:27:56.9093125Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9093814Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:56.9094266Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9094671Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9095100Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9095498Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:56.9095951Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9096438Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9096860Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:56.9097132Z ##[endgroup]
+2026-11-13T11:27:56.9261643Z -rw-r--r-- 1 runner runner 2.5M Nov 13 11:27 /tmp/work/input.apk

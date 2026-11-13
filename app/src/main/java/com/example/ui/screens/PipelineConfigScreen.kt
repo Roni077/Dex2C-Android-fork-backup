@@ -151,6 +151,14 @@ fun PipelineConfigScreen(
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.fillMaxWidth().testTag("input_custom_loader"),
           )
+          Spacer(Modifier.height(8.dp))
+          ToggleSettingRow(
+            title = stringResource(R.string.config_force_custom_loader),
+            subtitle = stringResource(R.string.config_force_custom_loader_desc),
+            checked = config.forceCustomLoader,
+            onCheckedChange = { v -> onUpdateConfig { it.copy(forceCustomLoader = v) } },
+            testTag = "switch_force_custom_loader",
+          )
         }
       }
 

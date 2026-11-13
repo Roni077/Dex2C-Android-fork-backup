@@ -89,6 +89,7 @@ class Dex2cTranspilerTest {
         targetLanguage = TargetCLanguage.C11,
         loaderMode = LoaderMode.CUSTOM_LOADER,
         customLoaderClass = "com.custom.MyLoader",
+        forceCustomLoader = true,
         targetAbis = setOf("arm64-v8a"),
       )
     val encoded = DccConfigCodec.encodeDccCfg(cfg)
@@ -100,6 +101,7 @@ class Dex2cTranspilerTest {
     assertEquals(TargetCLanguage.C11, decoded.targetLanguage)
     assertEquals(LoaderMode.CUSTOM_LOADER, decoded.loaderMode)
     assertEquals("com.custom.MyLoader", decoded.customLoaderClass)
+    assertTrue(decoded.forceCustomLoader)
     assertFalse("x86" in decoded.targetAbis)
     assertTrue("arm64-v8a" in decoded.targetAbis)
   }

@@ -74,6 +74,7 @@ fun BuildMonitorCard(
   onOpenBrowserUrl: (String) -> Unit,
   onDownloadArtifact: (GitHubArtifactItem) -> Unit,
   modifier: Modifier = Modifier,
+  onRetryError: (() -> Unit)? = null,
 ) {
   var tickerNowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
@@ -235,6 +236,7 @@ fun BuildMonitorCard(
             cloudRunState.steps.firstOrNull { it.status == "in_progress" }?.name
               ?: cloudRunState.steps.lastOrNull { it.status == "completed" }?.name
               ?: "Waiting for Ubuntu runner…"
+          val isReconnecting = !cloudRunState.reconnectingNote.isNullOrBlank()
 
           MonitorGaugeBlock(
             progress = stepProgress,
@@ -244,8 +246,8 @@ fun BuildMonitorCard(
             isError = false,
             runHeading = "Run #${cloudRunState.runNumber} • ${cloudRunState.jobName}",
             durationText = CloudTimeUtil.formatDurationMmSs(durationMs),
-            statusSummary = "Step: $activeStep",
-            statusPillText = cloudRunState.status.uppercase(Locale.US),
+            statusSummary = cloudRunState.reconnectingNote ?: "Step: $activeStep",
+            statusPillText = if (isReconnecting) "RECONNECTING" else cloudRunState.status.uppercase(Locale.US),
             htmlUrl = cloudRunState.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
           )
@@ -299,11 +301,19 @@ fun BuildMonitorCard(
           } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
               cloudRunState.artifacts.forEach { artifact ->
+                val isLogOnlyArtifact =
+                  artifact.name.contains("log", ignoreCase = true) &&
+                    !artifact.name.contains("apk", ignoreCase = true)
                 Surface(
                   modifier = Modifier.fillMaxWidth(),
                   shape = RoundedCornerShape(18.dp),
                   color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                  border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)),
+                  border =
+                    BorderStroke(
+                      1.dp,
+                      (if (isLogOnlyArtifact) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+                        .copy(alpha = 0.45f),
+                    ),
                 ) {
                   Row(
                     modifier = Modifier.padding(14.dp),
@@ -313,7 +323,7 @@ fun BuildMonitorCard(
                     Icon(
                       Icons.Rounded.CloudUpload,
                       contentDescription = null,
-                      tint = MaterialTheme.colorScheme.primary,
+                      tint = if (isLogOnlyArtifact) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                     )
                     Column(modifier = Modifier.weight(1f)) {
                       Text(
@@ -322,7 +332,12 @@ fun BuildMonitorCard(
                         fontFamily = JetBrainsMonoFontFamily,
                       )
                       Text(
-                        text = "${formatArtifactBytes(artifact.sizeInBytes)} • Signed APK + build log",
+                        text =
+                          if (isLogOnlyArtifact) {
+                            "${formatArtifactBytes(artifact.sizeInBytes)} • Failure build log (.zip)"
+                          } else {
+                            "${formatArtifactBytes(artifact.sizeInBytes)} • Signed APK + build log"
+                          },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                       )
@@ -335,7 +350,12 @@ fun BuildMonitorCard(
                     ) {
                       Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(16.dp))
                       Spacer(Modifier.width(6.dp))
-                      Text(stringResource(R.string.cloud_save_signed_apk))
+                      Text(
+                        stringResource(
+                          if (isLogOnlyArtifact) R.string.cloud_save_build_log
+                          else R.string.cloud_save_signed_apk
+                        )
+                      )
                     }
                   }
                 }
@@ -358,6 +378,16 @@ fun BuildMonitorCard(
             htmlUrl = null,
             onOpenBrowserUrl = onOpenBrowserUrl,
           )
+          Spacer(Modifier.height(10.dp))
+          Button(
+            onClick = { (onRetryError ?: onRefreshMonitor).invoke() },
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("build_monitor_retry_btn"),
+          ) {
+            Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Retry")
+          }
         }
       }
     }

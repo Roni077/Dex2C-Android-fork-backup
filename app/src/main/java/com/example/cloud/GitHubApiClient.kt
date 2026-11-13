@@ -447,6 +447,8 @@ class GitHubApiClient(
 
     private fun defaultClient(): OkHttpClient =
       OkHttpClient.Builder()
+        .dns(ResilientGitHubDns())
+        .retryOnConnectionFailure(true)
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(90, TimeUnit.SECONDS)

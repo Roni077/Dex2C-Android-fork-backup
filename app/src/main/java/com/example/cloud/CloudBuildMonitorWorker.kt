@@ -42,8 +42,10 @@ class CloudBuildMonitorWorker(
       val runs =
         runCatching {
           client.listWorkflowRuns(settings.accessToken, owner, repo)
-        }.getOrElse {
-          if (attempt < 2) return Result.retry()
+        }.getOrElse { err ->
+          if (NetworkResilience.isTransientNetworkError(err) || attempt < 2) {
+            return Result.retry()
+          }
           return Result.failure()
         }
 
@@ -120,11 +122,15 @@ object CloudBuildMonitorScheduler {
         .setInitialDelay(initialDelaySec.coerceAtLeast(0L), TimeUnit.SECONDS)
         .build()
 
-    WorkManager.getInstance(context)
-      .enqueueUniqueWork(UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, request)
+    runCatching {
+      WorkManager.getInstance(context)
+        .enqueueUniqueWork(UNIQUE_WORK_NAME, ExistingWorkPolicy.REPLACE, request)
+    }
   }
 
   fun cancelMonitor(context: Context) {
-    WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
+    runCatching {
+      WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
+    }
   }
 }

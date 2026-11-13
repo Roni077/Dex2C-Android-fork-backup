@@ -1,0 +1,330 @@
+﻿2026-11-13T11:27:34.7472313Z Current runner version: '2.338.2'
+2026-11-13T11:27:34.7550989Z ##[group]Runner Image Provisioner
+2026-11-13T11:27:34.7552423Z Hosted Compute Agent
+2026-11-13T11:27:34.7553724Z Version: 20261103.629
+2026-11-13T11:27:34.7555060Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-13T11:27:34.7556441Z Build Date: 2026-11-03T17:26:59Z
+2026-11-13T11:27:34.7558124Z Worker ID: {9eee02d6-6030-4849-8c0a-a3f2910a7a21}
+2026-11-13T11:27:34.7559472Z Region: eastus
+2026-11-13T11:27:34.7560462Z Cloud: Azure
+2026-11-13T11:27:34.7561436Z ##[endgroup]
+2026-11-13T11:27:34.7584193Z ##[group]Operating System
+2026-11-13T11:27:34.7585366Z Ubuntu
+2026-11-13T11:27:34.7586316Z 26.04.1
+2026-11-13T11:27:34.7587408Z LTS
+2026-11-13T11:27:34.7588323Z ##[endgroup]
+2026-11-13T11:27:34.7589239Z ##[group]Runner Image
+2026-11-13T11:27:34.7590359Z Image: ubuntu-26.04
+2026-11-13T11:27:34.7591294Z Version: 20261111.196.1
+2026-11-13T11:27:34.7593833Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-13T11:27:34.7596567Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-13T11:27:34.7598389Z ##[endgroup]
+2026-11-13T11:27:34.7600399Z ##[group]GITHUB_TOKEN Permissions
+2026-11-13T11:27:34.7623925Z Contents: read
+2026-11-13T11:27:34.7625153Z Metadata: read
+2026-11-13T11:27:34.7626207Z Packages: read
+2026-11-13T11:27:34.7627644Z ##[endgroup]
+2026-11-13T11:27:34.7630937Z Secret source: Actions
+2026-11-13T11:27:34.7632639Z Cache mode: write
+2026-11-13T11:27:34.7634381Z Prepare workflow directory
+2026-11-13T11:27:34.8668630Z Prepare all required actions
+2026-11-13T11:27:34.8824948Z Getting action download info
+2026-11-13T11:27:35.0817819Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-13T11:27:35.2154327Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-13T11:27:35.2863228Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-11-13T11:27:35.4756347Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-13T11:27:35.6864601Z Complete job name: dex2c-apk
+2026-11-13T11:27:35.7809934Z ##[group]Run actions/checkout@v4
+2026-11-13T11:27:35.7810834Z with:
+2026-11-13T11:27:35.7811309Z   repository: userio12/dex2c-cloud-workspace
+2026-11-13T11:27:35.7815546Z   token: ***
+2026-11-13T11:27:35.7815995Z   ssh-strict: true
+2026-11-13T11:27:35.7816433Z   ssh-user: git
+2026-11-13T11:27:35.7816873Z   persist-credentials: true
+2026-11-13T11:27:35.7817358Z   clean: true
+2026-11-13T11:27:35.7817796Z   sparse-checkout-cone-mode: true
+2026-11-13T11:27:35.7818321Z   fetch-depth: 1
+2026-11-13T11:27:35.7818750Z   fetch-tags: false
+2026-11-13T11:27:35.7819183Z   show-progress: true
+2026-11-13T11:27:35.7819620Z   lfs: false
+2026-11-13T11:27:35.7820027Z   submodules: false
+2026-11-13T11:27:35.7820469Z   set-safe-directory: true
+2026-11-13T11:27:35.7820995Z   allow-unsafe-pr-checkout: false
+2026-11-13T11:27:35.7821747Z ##[endgroup]
+2026-11-13T11:27:36.0620699Z Syncing repository: userio12/dex2c-cloud-workspace
+2026-11-13T11:27:36.0626914Z ##[group]Getting Git version info
+2026-11-13T11:27:36.0629012Z Working directory is '/home/runner/work/dex2c-cloud-workspace/dex2c-cloud-workspace'
+2026-11-13T11:27:36.0635520Z [command]/usr/bin/git version
+2026-11-13T11:27:36.0696731Z git version 2.56.1
+2026-11-13T11:27:36.0717738Z ##[endgroup]
+2026-11-13T11:27:36.0736597Z Temporarily overriding HOME='/home/runner/work/_temp/628d60f5-5cca-4f96-a8ee-a561f49a0441' before making global git config changes
+2026-11-13T11:27:36.0756524Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-13T11:27:36.0760800Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/dex2c-cloud-workspace/dex2c-cloud-workspace
+2026-11-13T11:27:36.0873568Z Deleting the contents of '/home/runner/work/dex2c-cloud-workspace/dex2c-cloud-workspace'
+2026-11-13T11:27:36.0878384Z ##[group]Initializing the repository
+2026-11-13T11:27:36.0881519Z [command]/usr/bin/git init /home/runner/work/dex2c-cloud-workspace/dex2c-cloud-workspace
+2026-11-13T11:27:36.1012368Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-13T11:27:36.1016381Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-13T11:27:36.1020414Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-13T11:27:36.1039807Z hint: call:
+2026-11-13T11:27:36.1043659Z hint:
+2026-11-13T11:27:36.1054400Z hint: 	git config --global init.defaultBranch <name>
+2026-11-13T11:27:36.1056890Z hint:
+2026-11-13T11:27:36.1059262Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-13T11:27:36.1062779Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-13T11:27:36.1066232Z hint:
+2026-11-13T11:27:36.1068103Z hint: 	git branch -m <name>
+2026-11-13T11:27:36.1073242Z hint:
+2026-11-13T11:27:36.1076055Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-13T11:27:36.1080839Z Initialized empty Git repository in /home/runner/work/dex2c-cloud-workspace/dex2c-cloud-workspace/.git/
+2026-11-13T11:27:36.1088640Z [command]/usr/bin/git remote add origin https://github.com/userio12/dex2c-cloud-workspace
+2026-11-13T11:27:36.1151559Z ##[endgroup]
+2026-11-13T11:27:36.1166292Z ##[group]Disabling automatic garbage collection
+2026-11-13T11:27:36.1187724Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-13T11:27:36.1270217Z ##[endgroup]
+2026-11-13T11:27:36.1281194Z ##[group]Setting up auth
+2026-11-13T11:27:36.1296971Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-13T11:27:36.1317767Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-13T11:27:36.1917489Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-13T11:27:36.1954145Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-13T11:27:36.2257121Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-13T11:27:36.2318030Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-13T11:27:36.2597324Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-13T11:27:36.2650666Z ##[endgroup]
+2026-11-13T11:27:36.2656670Z ##[group]Fetching the repository
+2026-11-13T11:27:36.2662299Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +eed197858983e8c496349991ff943292051445bd:refs/remotes/origin/main
+2026-11-13T11:27:36.6810431Z From https://github.com/userio12/dex2c-cloud-workspace
+2026-11-13T11:27:36.6952892Z  * [new ref]         eed197858983e8c496349991ff943292051445bd -> origin/main
+2026-11-13T11:27:36.6961051Z ##[endgroup]
+2026-11-13T11:27:36.6962124Z ##[group]Determining the checkout info
+2026-11-13T11:27:36.6963189Z ##[endgroup]
+2026-11-13T11:27:36.6964094Z [command]/usr/bin/git sparse-checkout disable
+2026-11-13T11:27:36.6965888Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-13T11:27:36.6968177Z ##[group]Checking out the ref
+2026-11-13T11:27:36.6969170Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-13T11:27:36.7109079Z Switched to a new branch 'main'
+2026-11-13T11:27:36.7406491Z branch 'main' set up to track 'origin/main'.
+2026-11-13T11:27:36.7428631Z ##[endgroup]
+2026-11-13T11:27:36.7513174Z [command]/usr/bin/git log -1 --format=%H
+2026-11-13T11:27:36.7515456Z eed197858983e8c496349991ff943292051445bd
+2026-11-13T11:27:36.7842393Z ##[group]Run actions/setup-python@v5
+2026-11-13T11:27:36.7843577Z with:
+2026-11-13T11:27:36.7844329Z   python-version: 3.11
+2026-11-13T11:27:36.7845129Z   check-latest: false
+2026-11-13T11:27:36.7850922Z   token: ***
+2026-11-13T11:27:36.7851725Z   update-environment: true
+2026-11-13T11:27:36.7852582Z   allow-prereleases: false
+2026-11-13T11:27:36.7853632Z   freethreaded: false
+2026-11-13T11:27:36.7854426Z ##[endgroup]
+2026-11-13T11:27:36.9538959Z ##[group]Installed versions
+2026-11-13T11:27:36.9636775Z Successfully set up CPython (3.11.18)
+2026-11-13T11:27:36.9638686Z ##[endgroup]
+2026-11-13T11:27:36.9664465Z (node:2185) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T11:27:36.9666252Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T11:27:37.0196998Z ##[group]Run actions/setup-java@v4
+2026-11-13T11:27:37.0197839Z with:
+2026-11-13T11:27:37.0198527Z   distribution: temurin
+2026-11-13T11:27:37.0199248Z   java-version: 17
+2026-11-13T11:27:37.0199944Z   java-package: jdk
+2026-11-13T11:27:37.0223800Z   check-latest: false
+2026-11-13T11:27:37.0224654Z   server-id: github
+2026-11-13T11:27:37.0225404Z   server-username: GITHUB_ACTOR
+2026-11-13T11:27:37.0226204Z   server-password: GITHUB_TOKEN
+2026-11-13T11:27:37.0227002Z   overwrite-settings: true
+2026-11-13T11:27:37.0227747Z   job-status: success
+2026-11-13T11:27:37.0233179Z   token: ***
+2026-11-13T11:27:37.0234039Z env:
+2026-11-13T11:27:37.0234919Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.0236192Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:37.0237445Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.0238584Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.0239766Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.0240924Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:37.0241962Z ##[endgroup]
+2026-11-13T11:27:37.2590561Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-11-13T11:27:37.2609514Z (node:2193) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T11:27:37.2611002Z ##[group]Installed distributions
+2026-11-13T11:27:37.2615925Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T11:27:37.2626983Z Resolved Java 17.0.21+9 from tool-cache
+2026-11-13T11:27:37.2628442Z Setting Java 17.0.21+9 as the default
+2026-11-13T11:27:37.2629488Z Creating toolchains.xml for JDK version 17 from temurin
+2026-11-13T11:27:37.2713797Z Writing to /home/runner/.m2/toolchains.xml
+2026-11-13T11:27:37.2745935Z 
+2026-11-13T11:27:37.2747190Z Java configuration:
+2026-11-13T11:27:37.2748036Z   Distribution: temurin
+2026-11-13T11:27:37.2749217Z   Version: 17.0.21+9
+2026-11-13T11:27:37.2750341Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:37.2751553Z 
+2026-11-13T11:27:37.2752359Z ##[endgroup]
+2026-11-13T11:27:37.2768635Z Creating settings.xml with server-id: github
+2026-11-13T11:27:37.2784510Z Writing to /home/runner/.m2/settings.xml
+2026-11-13T11:27:37.2999796Z ##[group]Run python3 -m pip install --upgrade pip
+2026-11-13T11:27:37.3000527Z [36;1mpython3 -m pip install --upgrade pip[0m
+2026-11-13T11:27:37.3001061Z [36;1mpip install "lxml>=4.3.0"[0m
+2026-11-13T11:27:37.3001930Z [36;1mwget -q "https://dl.google.com/android/repository/android-ndk-r25b-linux.zip" -O /tmp/ndk.zip[0m
+2026-11-13T11:27:37.3002825Z [36;1munzip -q /tmp/ndk.zip -d /opt/[0m
+2026-11-13T11:27:37.3003758Z [36;1mNDK_DIR=$(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)[0m
+2026-11-13T11:27:37.3004560Z [36;1mecho "ANDROID_NDK_HOME=$NDK_DIR" >> "$GITHUB_ENV"[0m
+2026-11-13T11:27:37.3121142Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:37.3121928Z env:
+2026-11-13T11:27:37.3122373Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.3123126Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:37.3124110Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.3124822Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.3125489Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:37.3126165Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:37.3126916Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:37.3127678Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:37.3128425Z ##[endgroup]
+2026-11-13T11:27:38.1125785Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages (26.3)
+2026-11-13T11:27:38.9093667Z Collecting lxml>=4.3.0
+2026-11-13T11:27:38.9329304Z   Downloading lxml-6.1.3-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+2026-11-13T11:27:38.9413271Z Downloading lxml-6.1.3-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+2026-11-13T11:27:38.9771472Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 194.9 MB/s  0:00:00
+2026-11-13T11:27:39.0086926Z Installing collected packages: lxml
+2026-11-13T11:27:39.1381537Z Successfully installed lxml-6.1.3
+2026-11-13T11:27:56.3928861Z ##[group]Run git clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c
+2026-11-13T11:27:56.3929451Z [36;1mgit clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c[0m
+2026-11-13T11:27:56.3929833Z [36;1mpython3 - <<'PY'[0m
+2026-11-13T11:27:56.3930076Z [36;1mimport json, os[0m
+2026-11-13T11:27:56.3930308Z [36;1mcfg_path = "dcc.cfg"[0m
+2026-11-13T11:27:56.3930601Z [36;1mwith open(cfg_path, "r", encoding="utf-8") as f:[0m
+2026-11-13T11:27:56.3930926Z [36;1m    cfg = json.load(f)[0m
+2026-11-13T11:27:56.3931254Z [36;1mcfg["ndk_dir"] = os.environ["ANDROID_NDK_HOME"][0m
+2026-11-13T11:27:56.3931651Z [36;1mwith open("/tmp/d2c/dcc.cfg", "w", encoding="utf-8") as f:[0m
+2026-11-13T11:27:56.3932026Z [36;1m    json.dump(cfg, f, indent=2)[0m
+2026-11-13T11:27:56.3932291Z [36;1mPY[0m
+2026-11-13T11:27:56.3932505Z [36;1mcp filter.txt /tmp/d2c/filter.txt[0m
+2026-11-13T11:27:56.3985137Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:56.3985387Z env:
+2026-11-13T11:27:56.3985693Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3986149Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:56.3986584Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3986962Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3987335Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3987708Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:56.3988146Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.3988638Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.3989035Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:56.3989307Z ##[endgroup]
+2026-11-13T11:27:56.4099339Z Cloning into '/tmp/d2c'...
+2026-11-13T11:27:56.9039736Z ##[group]Run mkdir -p /tmp/work
+2026-11-13T11:27:56.9040072Z [36;1mmkdir -p /tmp/work[0m
+2026-11-13T11:27:56.9040315Z [36;1mif [ -n "" ]; then[0m
+2026-11-13T11:27:56.9040598Z [36;1m  echo "Downloading APK from fallback URL..."[0m
+2026-11-13T11:27:56.9040967Z [36;1m  curl -fsSL "" -o /tmp/work/input.apk[0m
+2026-11-13T11:27:56.9041252Z [36;1melse[0m
+2026-11-13T11:27:56.9041496Z [36;1m  cp "input/target.apk" /tmp/work/input.apk[0m
+2026-11-13T11:27:56.9041780Z [36;1mfi[0m
+2026-11-13T11:27:56.9041990Z [36;1mls -lh /tmp/work/input.apk[0m
+2026-11-13T11:27:56.9092414Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:56.9092858Z env:
+2026-11-13T11:27:56.9093128Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9093818Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:56.9094269Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9094704Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9095102Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9095501Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:56.9095954Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9096441Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9096863Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:56.9097141Z ##[endgroup]
+2026-11-13T11:27:56.9261660Z -rw-r--r-- 1 runner runner 2.5M Nov 13 11:27 /tmp/work/input.apk
+2026-11-13T11:27:56.9296037Z ##[group]Run EXTRA_FLAGS=""
+2026-11-13T11:27:56.9296357Z [36;1mEXTRA_FLAGS=""[0m
+2026-11-13T11:27:56.9296594Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T11:27:56.9296901Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --allow-init"[0m
+2026-11-13T11:27:56.9297189Z [36;1mfi[0m
+2026-11-13T11:27:56.9297395Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T11:27:56.9297693Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --obfuscate"[0m
+2026-11-13T11:27:56.9297991Z [36;1mfi[0m
+2026-11-13T11:27:56.9298187Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T11:27:56.9298493Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --dynamic-register"[0m
+2026-11-13T11:27:56.9298792Z [36;1mfi[0m
+2026-11-13T11:27:56.9299024Z [36;1mif [ -n "amimo.dcc.DccApplication" ]; then[0m
+2026-11-13T11:27:56.9299449Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --custom-loader amimo.dcc.DccApplication"[0m
+2026-11-13T11:27:56.9299818Z [36;1mfi[0m
+2026-11-13T11:27:56.9300018Z [36;1mpython3 /tmp/d2c/dcc.py \[0m
+2026-11-13T11:27:56.9300314Z [36;1m  -a /tmp/work/input.apk \[0m
+2026-11-13T11:27:56.9300601Z [36;1m  -o /tmp/work/unsigned_dex2c.apk \[0m
+2026-11-13T11:27:56.9300901Z [36;1m  --filter /tmp/d2c/filter.txt \[0m
+2026-11-13T11:27:56.9301246Z [36;1m  $EXTRA_FLAGS 2>&1 | tee /tmp/work/dex2c_build.log[0m
+2026-11-13T11:27:56.9349018Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:56.9349262Z env:
+2026-11-13T11:27:56.9349527Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9349976Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:56.9350406Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9350822Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9351229Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9351628Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:56.9352071Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9352554Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9352960Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:56.9353226Z ##[endgroup]
+2026-11-13T11:27:57.0735070Z usage: dcc.py [-h] -i INPUT [-o OUTPUT] [-p] [-d] [-f FILTER]
+2026-11-13T11:27:57.0736181Z               [-c CUSTOM_LOADER] [-r] [-s] [-a] [-l LIB_NAME] [-b] [-k]
+2026-11-13T11:27:57.0737004Z               [-e SOURCE_DIR] [-z PROJECT_ARCHIVE]
+2026-11-13T11:27:57.0737858Z dcc.py: error: the following arguments are required: -i/--input
+2026-11-13T11:27:57.0879664Z ##[group]Run BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+2026-11-13T11:27:57.0880456Z [36;1mBUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)[0m
+2026-11-13T11:27:57.0881107Z [36;1m"$BUILD_TOOLS/zipalign" -p -f 4 /tmp/work/unsigned_dex2c.apk /tmp/work/aligned_dex2c.apk[0m
+2026-11-13T11:27:57.0881703Z [36;1mif [ "DEBUG_AUTO" = "REPO_KEYSTORE_SECRETS" ] && [ -n "$KEYSTORE_B64" ]; then[0m
+2026-11-13T11:27:57.0882380Z [36;1m  echo "$KEYSTORE_B64" | base64 --decode > /tmp/work/release.jks[0m
+2026-11-13T11:27:57.0882789Z [36;1m  "$BUILD_TOOLS/apksigner" sign \[0m
+2026-11-13T11:27:57.0883084Z [36;1m    --ks /tmp/work/release.jks \[0m
+2026-11-13T11:27:57.0883705Z [36;1m    --ks-pass "env:KEYSTORE_PASS" \[0m
+2026-11-13T11:27:57.0884032Z [36;1m    --ks-key-alias "$KEY_ALIAS" \[0m
+2026-11-13T11:27:57.0884371Z [36;1m    --key-pass "env:KEY_PASS" \[0m
+2026-11-13T11:27:57.0884724Z [36;1m    --out /tmp/work/dex2c-signed-output.apk \[0m
+2026-11-13T11:27:57.0885044Z [36;1m    /tmp/work/aligned_dex2c.apk[0m
+2026-11-13T11:27:57.0885298Z [36;1melse[0m
+2026-11-13T11:27:57.0885508Z [36;1m  keytool -genkeypair -v \[0m
+2026-11-13T11:27:57.0885799Z [36;1m    -keystore /tmp/work/debug.keystore \[0m
+2026-11-13T11:27:57.0886190Z [36;1m    -storepass android -alias androiddebugkey -keypass android \[0m
+2026-11-13T11:27:57.0886603Z [36;1m    -keyalg RSA -keysize 2048 -validity 10000 \[0m
+2026-11-13T11:27:57.0886957Z [36;1m    -dname "CN=Dex2C Cloud,O=Dex2C Studio,C=US"[0m
+2026-11-13T11:27:57.0887287Z [36;1m  "$BUILD_TOOLS/apksigner" sign \[0m
+2026-11-13T11:27:57.0887598Z [36;1m    --ks /tmp/work/debug.keystore \[0m
+2026-11-13T11:27:57.0887893Z [36;1m    --ks-pass pass:android \[0m
+2026-11-13T11:27:57.0888179Z [36;1m    --ks-key-alias androiddebugkey \[0m
+2026-11-13T11:27:57.0888487Z [36;1m    --key-pass pass:android \[0m
+2026-11-13T11:27:57.0888829Z [36;1m    --out /tmp/work/dex2c-signed-output.apk \[0m
+2026-11-13T11:27:57.0889155Z [36;1m    /tmp/work/aligned_dex2c.apk[0m
+2026-11-13T11:27:57.0889407Z [36;1mfi[0m
+2026-11-13T11:27:57.0940153Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:57.0940400Z env:
+2026-11-13T11:27:57.0940664Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0941103Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:57.0941530Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0941911Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0942286Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:57.0942670Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:57.0943098Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:57.0943808Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:57.0944214Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:57.0944482Z   KEYSTORE_B64: 
+2026-11-13T11:27:57.0944676Z   KEYSTORE_PASS: 
+2026-11-13T11:27:57.0944870Z   KEY_ALIAS: 
+2026-11-13T11:27:57.0945049Z   KEY_PASS: 
+2026-11-13T11:27:57.0945229Z ##[endgroup]
+2026-11-13T11:27:57.3351836Z Unable to open '/tmp/work/unsigned_dex2c.apk' as zip archive: No such file or directory
+2026-11-13T11:27:57.3369588Z ##[error]Process completed with exit code 1.
+2026-11-13T11:27:57.3521356Z Post job cleanup.
+2026-11-13T11:27:57.5011727Z (node:2287) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T11:27:57.5013109Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T11:27:57.5364011Z Post job cleanup.
+2026-11-13T11:27:57.7263910Z [command]/usr/bin/git version
+2026-11-13T11:27:57.7437366Z git version 2.56.1
+2026-11-13T11:27:57.8144841Z Temporarily overriding HOME='/home/runner/work/_temp/f3030017-d9b0-4614-b7a4-24ea6ad9ccc7' before making global git config changes
+2026-11-13T11:27:57.8167199Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-13T11:27:57.8335186Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/dex2c-cloud-workspace/dex2c-cloud-workspace
+2026-11-13T11:27:57.8504233Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-13T11:27:57.8984845Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-13T11:27:57.9031430Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-13T11:27:57.9032399Z http.https://github.com/.extraheader
+2026-11-13T11:27:57.9033982Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-13T11:27:57.9036380Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-13T11:27:57.9170589Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-13T11:27:57.9211678Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-13T11:27:57.9655866Z Cleaning up orphan processes
+2026-11-13T11:27:58.0024099Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

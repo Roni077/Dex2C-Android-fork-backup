@@ -76,6 +76,7 @@ import com.example.cloud.CloudSettings
 import com.example.cloud.DeviceAuthState
 import com.example.cloud.GITHUB_CLI_CLIENT_ID
 import com.example.cloud.GITHUB_DEVICE_VERIFICATION_URL
+import com.example.cloud.RepoSetupState
 import com.example.data.AppSettings
 import com.example.data.AppThemeMode
 import com.example.data.CURATED_ACCENT_PRESETS
@@ -107,6 +108,8 @@ fun OnboardingScreen(
   onFinish: () -> Unit,
   onDismissReplay: () -> Unit,
   modifier: Modifier = Modifier,
+  repoSetupState: RepoSetupState = RepoSetupState.NotConfigured,
+  onRetryRepoSetup: () -> Unit = {},
 ) {
   val pagerState = rememberPagerState(pageCount = { ONBOARDING_PAGE_COUNT })
   val scope = rememberCoroutineScope()
@@ -156,11 +159,13 @@ fun OnboardingScreen(
         OnboardingGitHubPage(
           cloudSettings = cloudSettings,
           deviceAuthState = deviceAuthState,
+          repoSetupState = repoSetupState,
           onUpdateCloudSettings = onUpdateCloudSettings,
           onStartDeviceLogin = onStartDeviceLogin,
           onCancelDeviceLogin = onCancelDeviceLogin,
           onCopyCode = onCopyCode,
           onOpenBrowserUrl = onOpenBrowserUrl,
+          onRetryRepoSetup = onRetryRepoSetup,
         )
       3 ->
         OnboardingThemePage(
@@ -297,11 +302,13 @@ private fun OnboardingAboutPage() {
 private fun OnboardingGitHubPage(
   cloudSettings: CloudSettings,
   deviceAuthState: DeviceAuthState,
+  repoSetupState: RepoSetupState,
   onUpdateCloudSettings: ((CloudSettings) -> CloudSettings) -> Unit,
   onStartDeviceLogin: () -> Unit,
   onCancelDeviceLogin: () -> Unit,
   onCopyCode: (String) -> Unit,
   onOpenBrowserUrl: (String) -> Unit,
+  onRetryRepoSetup: () -> Unit,
 ) {
   var showCustomClientId by rememberSaveable { mutableStateOf(cloudSettings.usingCustomClientId) }
 
@@ -315,6 +322,8 @@ private fun OnboardingGitHubPage(
     GitHubDeviceAuthCard(
       cloudSettings = cloudSettings,
       deviceAuthState = deviceAuthState,
+      repoSetupState = repoSetupState,
+      onRetryRepoSetup = onRetryRepoSetup,
       onStartDeviceLogin = onStartDeviceLogin,
       onCancelDeviceLogin = onCancelDeviceLogin,
       onCopyCode = onCopyCode,

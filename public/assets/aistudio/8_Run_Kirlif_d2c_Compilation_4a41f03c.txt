@@ -1,0 +1,35 @@
+﻿2026-11-13T11:27:56.9296028Z ##[group]Run EXTRA_FLAGS=""
+2026-11-13T11:27:56.9296354Z [36;1mEXTRA_FLAGS=""[0m
+2026-11-13T11:27:56.9296591Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T11:27:56.9296899Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --allow-init"[0m
+2026-11-13T11:27:56.9297187Z [36;1mfi[0m
+2026-11-13T11:27:56.9297392Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T11:27:56.9297691Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --obfuscate"[0m
+2026-11-13T11:27:56.9297989Z [36;1mfi[0m
+2026-11-13T11:27:56.9298185Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T11:27:56.9298491Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --dynamic-register"[0m
+2026-11-13T11:27:56.9298790Z [36;1mfi[0m
+2026-11-13T11:27:56.9299022Z [36;1mif [ -n "amimo.dcc.DccApplication" ]; then[0m
+2026-11-13T11:27:56.9299446Z [36;1m  EXTRA_FLAGS="$EXTRA_FLAGS --custom-loader amimo.dcc.DccApplication"[0m
+2026-11-13T11:27:56.9299816Z [36;1mfi[0m
+2026-11-13T11:27:56.9300016Z [36;1mpython3 /tmp/d2c/dcc.py \[0m
+2026-11-13T11:27:56.9300286Z [36;1m  -a /tmp/work/input.apk \[0m
+2026-11-13T11:27:56.9300598Z [36;1m  -o /tmp/work/unsigned_dex2c.apk \[0m
+2026-11-13T11:27:56.9300899Z [36;1m  --filter /tmp/d2c/filter.txt \[0m
+2026-11-13T11:27:56.9301244Z [36;1m  $EXTRA_FLAGS 2>&1 | tee /tmp/work/dex2c_build.log[0m
+2026-11-13T11:27:56.9349012Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:56.9349260Z env:
+2026-11-13T11:27:56.9349524Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9349973Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:56.9350403Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9350819Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9351227Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.9351625Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:56.9352057Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9352552Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.9352957Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:56.9353224Z ##[endgroup]
+2026-11-13T11:27:57.0735022Z usage: dcc.py [-h] -i INPUT [-o OUTPUT] [-p] [-d] [-f FILTER]
+2026-11-13T11:27:57.0736175Z               [-c CUSTOM_LOADER] [-r] [-s] [-a] [-l LIB_NAME] [-b] [-k]
+2026-11-13T11:27:57.0737000Z               [-e SOURCE_DIR] [-z PROJECT_ARCHIVE]
+2026-11-13T11:27:57.0737849Z dcc.py: error: the following arguments are required: -i/--input

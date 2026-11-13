@@ -106,6 +106,7 @@ fun CloudBuildScreen(
   onAttachToRun: (Long) -> Unit,
   onDownloadArtifact: (GitHubArtifactItem) -> Unit,
   modifier: Modifier = Modifier,
+  onRetryMonitor: (() -> Unit)? = null,
 ) {
   var lastAutoOpenedUserCode by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -188,6 +189,8 @@ fun CloudBuildScreen(
           GitHubDeviceAuthCard(
             cloudSettings = cloudSettings,
             deviceAuthState = deviceAuthState,
+            repoSetupState = repoSetupState,
+            onRetryRepoSetup = onInitializeRepoAndWorkflow,
             onStartDeviceLogin = onStartDeviceLogin,
             onCancelDeviceLogin = onCancelDeviceLogin,
             onCopyCode = onCopyCode,
@@ -231,7 +234,7 @@ fun CloudBuildScreen(
         ) {
           Text(
             text =
-              "First-time setup creates your private GitHub workspace repository and commits ${Dex2cWorkflowGenerator.WORKFLOW_PATH}, ${Dex2cWorkflowGenerator.DCC_CFG_PATH}, and ${Dex2cWorkflowGenerator.FILTER_TXT_PATH}.",
+              "Automatically initialized when you sign in with GitHub. Hosts ${Dex2cWorkflowGenerator.WORKFLOW_PATH}, ${Dex2cWorkflowGenerator.DCC_CFG_PATH}, and ${Dex2cWorkflowGenerator.FILTER_TXT_PATH}.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -462,6 +465,15 @@ fun CloudBuildScreen(
               containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             )
             TagPill(
+              text = if (transpilerConfig.forceCustomLoader) "Force -r: ON" else "Force -r: OFF",
+              containerColor =
+                if (transpilerConfig.forceCustomLoader) MaterialTheme.colorScheme.tertiaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerHigh,
+              contentColor =
+                if (transpilerConfig.forceCustomLoader) MaterialTheme.colorScheme.onTertiaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            TagPill(
               text = cloudSettings.signingMode.label,
               containerColor = MaterialTheme.colorScheme.primaryContainer,
               contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -496,6 +508,7 @@ fun CloudBuildScreen(
           isAutoPollEnabled = isAutoPollEnabled,
           onToggleAutoPoll = onToggleAutoPoll,
           onRefreshMonitor = onRefreshMonitor,
+          onRetryError = onRetryMonitor ?: onRefreshMonitor,
           onOpenBrowserUrl = onOpenBrowserUrl,
           onDownloadArtifact = onDownloadArtifact,
         )

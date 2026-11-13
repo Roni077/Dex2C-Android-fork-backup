@@ -120,6 +120,11 @@ data class GitHubArtifactItem(
   val expired: Boolean,
 )
 
+enum class CloudErrorAction {
+  RETRY_DISPATCH,
+  RETRY_POLL,
+}
+
 sealed interface CloudBuildRunState {
   data object Idle : CloudBuildRunState
   data class UploadingInputs(val message: String) : CloudBuildRunState
@@ -134,6 +139,7 @@ sealed interface CloudBuildRunState {
     val steps: List<GitHubWorkflowStep>,
     val startedAtMillis: Long?,
     val lastPolledAtMillis: Long,
+    val reconnectingNote: String? = null,
   ) : CloudBuildRunState
   data class Completed(
     val runId: Long,
@@ -146,7 +152,11 @@ sealed interface CloudBuildRunState {
     val completedAtMillis: Long? = null,
   ) : CloudBuildRunState
   data class SavingArtifact(val label: String) : CloudBuildRunState
-  data class Error(val message: String) : CloudBuildRunState
+  data class Error(
+    val message: String,
+    val retryAction: CloudErrorAction? = null,
+    val failedRunId: Long? = null,
+  ) : CloudBuildRunState
 }
 
 data class CloudDownloadedApk(

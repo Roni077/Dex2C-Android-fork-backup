@@ -23,6 +23,7 @@
     <string name="cloud_init_repo_btn">Setup Private Repo &amp; Init dex2c.yml</string>
     <string name="cloud_run_build_btn">Run Cloud Dex2C Build</string>
     <string name="cloud_save_signed_apk">Save Signed APK</string>
+    <string name="cloud_save_build_log">Save Build Log</string>
 
     <string name="settings_title">Detailed Settings</string>
     <string name="settings_subtitle">Configure GitHub OAuth Device Flow, private repo defaults, cloud NDK toolchain, and signing</string>
@@ -98,7 +99,9 @@
     <string name="config_allow_init">Allow &lt;init&gt; Constructors (--allow-init)</string>
     <string name="config_allow_init_desc">Skip &lt;init&gt; constructors by default for ART safety; enable to transpile constructors too</string>
     <string name="config_loader_mode">Application Loader Strategy</string>
-    <string name="config_custom_loader">Custom Loader Class (--custom-loader)</string>
+    <string name="config_custom_loader">Custom Loader Class (-c / --custom-loader)</string>
+    <string name="config_force_custom_loader">Force Custom Loader (-r)</string>
+    <string name="config_force_custom_loader_desc">Override existing Application class in APK with custom loader; keep off unless needed</string>
     <string name="config_target_abis">Target NDK ABIs (Application.mk)</string>
     <string name="config_filter_txt_label">filter.txt Rules (! prefix = exclude)</string>
     <string name="config_import_filter">Import filter.txt</string>

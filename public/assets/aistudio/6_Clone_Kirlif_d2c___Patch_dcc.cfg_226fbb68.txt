@@ -1,0 +1,25 @@
+﻿2026-11-13T11:27:56.3928846Z ##[group]Run git clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c
+2026-11-13T11:27:56.3929448Z [36;1mgit clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c[0m
+2026-11-13T11:27:56.3929831Z [36;1mpython3 - <<'PY'[0m
+2026-11-13T11:27:56.3930074Z [36;1mimport json, os[0m
+2026-11-13T11:27:56.3930306Z [36;1mcfg_path = "dcc.cfg"[0m
+2026-11-13T11:27:56.3930599Z [36;1mwith open(cfg_path, "r", encoding="utf-8") as f:[0m
+2026-11-13T11:27:56.3930923Z [36;1m    cfg = json.load(f)[0m
+2026-11-13T11:27:56.3931251Z [36;1mcfg["ndk_dir"] = os.environ["ANDROID_NDK_HOME"][0m
+2026-11-13T11:27:56.3931648Z [36;1mwith open("/tmp/d2c/dcc.cfg", "w", encoding="utf-8") as f:[0m
+2026-11-13T11:27:56.3932024Z [36;1m    json.dump(cfg, f, indent=2)[0m
+2026-11-13T11:27:56.3932289Z [36;1mPY[0m
+2026-11-13T11:27:56.3932502Z [36;1mcp filter.txt /tmp/d2c/filter.txt[0m
+2026-11-13T11:27:56.3985125Z shell: /usr/bin/bash -e {0}
+2026-11-13T11:27:56.3985385Z env:
+2026-11-13T11:27:56.3985650Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3986146Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+2026-11-13T11:27:56.3986582Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3986960Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3987333Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+2026-11-13T11:27:56.3987705Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+2026-11-13T11:27:56.3988144Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.3988635Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+2026-11-13T11:27:56.3989032Z   ANDROID_NDK_HOME: /opt/android-ndk-r25b
+2026-11-13T11:27:56.3989304Z ##[endgroup]
+2026-11-13T11:27:56.4099308Z Cloning into '/tmp/d2c'...

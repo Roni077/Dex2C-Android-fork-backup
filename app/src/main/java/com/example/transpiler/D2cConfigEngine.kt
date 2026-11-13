@@ -106,6 +106,7 @@ object DccConfigCodec {
       appendLine("  \"null_check_guards\": ${config.nullCheckGuards},")
       appendLine("  \"loader_mode\": \"${escapeJson(config.loaderMode.name.lowercase())}\",")
       appendLine("  \"custom_loader\": \"${escapeJson(customLoader)}\",")
+      appendLine("  \"force_custom_loader\": ${config.forceCustomLoader},")
       appendLine("  \"source_lang\": \"${escapeJson(config.targetLanguage.extension)}\",")
       appendLine("  \"filter_file\": \"filter.txt\",")
       appendLine("  \"abi_filters\": $abiJson")
@@ -149,6 +150,7 @@ object DccConfigCodec {
       nullCheckGuards = (map["null_check_guards"] as? Boolean) ?: base.nullCheckGuards,
       loaderMode = loaderMode,
       customLoaderClass = customLoader,
+      forceCustomLoader = (map["force_custom_loader"] as? Boolean) ?: base.forceCustomLoader,
       targetLanguage = lang,
       targetAbis = abis,
     )

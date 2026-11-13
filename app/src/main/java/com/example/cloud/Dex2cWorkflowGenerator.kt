@@ -35,19 +35,23 @@ object Dex2cWorkflowGenerator {
       |        required: false
       |        default: ''
       |      allow_init:
-      |        description: 'Transpile <init> constructors (--allow-init)'
+      |        description: 'Transpile <init> constructors (-a / --allow-init)'
       |        required: false
       |        default: '${transpilerConfig.allowInit}'
       |      custom_loader:
-      |        description: 'Application loader class'
+      |        description: 'Application loader class (-c / --custom-loader)'
       |        required: false
       |        default: '$defaultLoader'
+      |      force_custom_loader:
+      |        description: 'Force replace existing Application class with custom loader (-r)'
+      |        required: false
+      |        default: '${transpilerConfig.forceCustomLoader}'
       |      obfuscate:
-      |        description: 'Enable string & control-flow obfuscation'
+      |        description: 'Enable Kirlif/d2c obfuscation passes (-p)'
       |        required: false
       |        default: '$defaultObfuscate'
       |      dynamic_register:
-      |        description: 'Use RegisterNatives JNI_OnLoad binding'
+      |        description: 'Use RegisterNatives JNI_OnLoad binding (-d)'
       |        required: false
       |        default: '$defaultDynamicReg'
       |      signing_mode:
@@ -60,15 +64,15 @@ object Dex2cWorkflowGenerator {
       |    runs-on: ubuntu-latest
       |    steps:
       |      - name: Checkout Private Workspace
-      |        uses: actions/checkout@v4
+      |        uses: actions/checkout@v6
       |
       |      - name: Set up Python 3
-      |        uses: actions/setup-python@v5
+      |        uses: actions/setup-python@v6
       |        with:
       |          python-version: '3.11'
       |
       |      - name: Set up JDK $jdkVersion
-      |        uses: actions/setup-java@v4
+      |        uses: actions/setup-java@v5
       |        with:
       |          distribution: 'temurin'
       |          java-version: '$jdkVersion'
@@ -85,14 +89,25 @@ object Dex2cWorkflowGenerator {
       |      - name: Clone Kirlif/d2c & Patch dcc.cfg
       |        run: |
       |          git clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c
+      |          if [ -f /tmp/d2c/requirements.txt ]; then
+      |            pip install -r /tmp/d2c/requirements.txt
+      |          fi
       |          python3 - <<'PY'
       |          import json, os
-      |          cfg_path = "dcc.cfg"
-      |          with open(cfg_path, "r", encoding="utf-8") as f:
-      |              cfg = json.load(f)
-      |          cfg["ndk_dir"] = os.environ["ANDROID_NDK_HOME"]
-      |          with open("/tmp/d2c/dcc.cfg", "w", encoding="utf-8") as f:
-      |              json.dump(cfg, f, indent=2)
+      |          base_cfg = {}
+      |          upstream_cfg_path = "/tmp/d2c/dcc.cfg"
+      |          if os.path.exists(upstream_cfg_path):
+      |              with open(upstream_cfg_path, "r", encoding="utf-8") as f:
+      |                  base_cfg = json.load(f)
+      |          with open("dcc.cfg", "r", encoding="utf-8") as f:
+      |              workspace_cfg = json.load(f)
+      |          for k, v in workspace_cfg.items():
+      |              if k != "ndk_dir":
+      |                  base_cfg[k] = v
+      |          base_cfg["ndk_dir"] = os.environ["ANDROID_NDK_HOME"]
+      |          base_cfg["filter"] = "/tmp/d2c/filter.txt"
+      |          with open(upstream_cfg_path, "w", encoding="utf-8") as f:
+      |              json.dump(base_cfg, f, indent=2)
       |          PY
       |          cp filter.txt /tmp/d2c/filter.txt
       |
@@ -108,25 +123,34 @@ object Dex2cWorkflowGenerator {
       |          ls -lh /tmp/work/input.apk
       |
       |      - name: Run Kirlif/d2c Compilation
+      |        working-directory: /tmp/d2c
       |        run: |
-      |          EXTRA_FLAGS=""
+      |          set -o pipefail
+      |          ARGS=(
+      |            -i /tmp/work/input.apk
+      |            -o /tmp/work/unsigned_dex2c.apk
+      |            -f /tmp/d2c/filter.txt
+      |          )
       |          if [ "${'$'}{{ github.event.inputs.allow_init }}" = "true" ]; then
-      |            EXTRA_FLAGS="${'$'}EXTRA_FLAGS --allow-init"
+      |            ARGS+=(-a)
       |          fi
       |          if [ "${'$'}{{ github.event.inputs.obfuscate }}" = "true" ]; then
-      |            EXTRA_FLAGS="${'$'}EXTRA_FLAGS --obfuscate"
+      |            ARGS+=(-p)
       |          fi
       |          if [ "${'$'}{{ github.event.inputs.dynamic_register }}" = "true" ]; then
-      |            EXTRA_FLAGS="${'$'}EXTRA_FLAGS --dynamic-register"
+      |            ARGS+=(-d)
       |          fi
       |          if [ -n "${'$'}{{ github.event.inputs.custom_loader }}" ]; then
-      |            EXTRA_FLAGS="${'$'}EXTRA_FLAGS --custom-loader ${'$'}{{ github.event.inputs.custom_loader }}"
+      |            ARGS+=(-c "${'$'}{{ github.event.inputs.custom_loader }}")
       |          fi
-      |          python3 /tmp/d2c/dcc.py \
-      |            -a /tmp/work/input.apk \
-      |            -o /tmp/work/unsigned_dex2c.apk \
-      |            --filter /tmp/d2c/filter.txt \
-      |            ${'$'}EXTRA_FLAGS 2>&1 | tee /tmp/work/dex2c_build.log
+      |          if [ "${'$'}{{ github.event.inputs.force_custom_loader }}" = "true" ]; then
+      |            ARGS+=(-r)
+      |          fi
+      |          python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log
+      |          if [ ! -f /tmp/work/unsigned_dex2c.apk ]; then
+      |            echo "::error::dcc.py finished without producing /tmp/work/unsigned_dex2c.apk"
+      |            exit 1
+      |          fi
       |
       |      - name: Align & Auto-Sign Output APK
       |        env:
@@ -162,12 +186,22 @@ object Dex2cWorkflowGenerator {
       |          fi
       |
       |      - name: Upload Signed Dex2C APK Artifact
+      |        if: success()
       |        uses: actions/upload-artifact@v4
       |        with:
       |          name: dex2c-signed-apk
       |          path: |
       |            /tmp/work/dex2c-signed-output.apk
       |            /tmp/work/dex2c_build.log
+      |          retention-days: 14
+      |
+      |      - name: Upload Failure Build Log
+      |        if: failure()
+      |        uses: actions/upload-artifact@v4
+      |        with:
+      |          name: dex2c-build-log
+      |          path: /tmp/work/dex2c_build.log
+      |          if-no-files-found: ignore
       |          retention-days: 14
       """.trimMargin() + "\n"
   }

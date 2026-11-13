@@ -26,6 +26,7 @@ class TranspilerPreferences(private val context: Context) {
     val ALLOW_INIT = booleanPreferencesKey("allow_init")
     val LOADER_MODE = stringPreferencesKey("loader_mode")
     val CUSTOM_LOADER = stringPreferencesKey("custom_loader")
+    val FORCE_CUSTOM_LOADER = booleanPreferencesKey("force_custom_loader")
     val TARGET_ABIS = stringSetPreferencesKey("target_abis")
     val FILTER_RULES_TEXT = stringPreferencesKey("filter_rules_text")
     val MODULE_NAME = stringPreferencesKey("module_name")
@@ -43,6 +44,7 @@ class TranspilerPreferences(private val context: Context) {
         allowInit = prefs[Keys.ALLOW_INIT] ?: defaults.allowInit,
         loaderMode = prefs[Keys.LOADER_MODE]?.let { runCatching { LoaderMode.valueOf(it) }.getOrNull() } ?: defaults.loaderMode,
         customLoaderClass = prefs[Keys.CUSTOM_LOADER] ?: defaults.customLoaderClass,
+        forceCustomLoader = prefs[Keys.FORCE_CUSTOM_LOADER] ?: defaults.forceCustomLoader,
         targetAbis = prefs[Keys.TARGET_ABIS]?.takeIf { it.isNotEmpty() } ?: defaults.targetAbis,
         filterRulesText = prefs[Keys.FILTER_RULES_TEXT] ?: defaults.filterRulesText,
         moduleName = prefs[Keys.MODULE_NAME] ?: defaults.moduleName,
@@ -59,6 +61,7 @@ class TranspilerPreferences(private val context: Context) {
       prefs[Keys.ALLOW_INIT] = config.allowInit
       prefs[Keys.LOADER_MODE] = config.loaderMode.name
       prefs[Keys.CUSTOM_LOADER] = config.customLoaderClass
+      prefs[Keys.FORCE_CUSTOM_LOADER] = config.forceCustomLoader
       prefs[Keys.TARGET_ABIS] = config.targetAbis
       prefs[Keys.FILTER_RULES_TEXT] = config.filterRulesText
       prefs[Keys.MODULE_NAME] = config.moduleName

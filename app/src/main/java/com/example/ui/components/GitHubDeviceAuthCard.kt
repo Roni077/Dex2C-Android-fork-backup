@@ -55,6 +55,7 @@ import com.example.R
 import com.example.cloud.CloudSettings
 import com.example.cloud.DeviceAuthState
 import com.example.cloud.GITHUB_DEVICE_VERIFICATION_URL
+import com.example.cloud.RepoSetupState
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import kotlinx.coroutines.delay
 
@@ -71,6 +72,8 @@ fun GitHubDeviceAuthCard(
   tagPrefix: String = "github",
   compact: Boolean = false,
   animateTransitions: Boolean = true,
+  repoSetupState: RepoSetupState = RepoSetupState.NotConfigured,
+  onRetryRepoSetup: (() -> Unit)? = null,
   onSignOut: (() -> Unit)? = null,
 ) {
   val effectiveAuthState: DeviceAuthState =
@@ -178,12 +181,14 @@ fun GitHubDeviceAuthCard(
           DeviceAuthStateBody(
             state = state,
             cloudSettings = cloudSettings,
+            repoSetupState = repoSetupState,
             compact = compact,
             tagPrefix = tagPrefix,
             onStartDeviceLogin = onStartDeviceLogin,
             onCancelDeviceLogin = onCancelDeviceLogin,
             onCopyCode = onCopyCode,
             onOpenBrowserUrl = onOpenBrowserUrl,
+            onRetryRepoSetup = onRetryRepoSetup,
             onSignOut = onSignOut,
           )
         }
@@ -191,12 +196,14 @@ fun GitHubDeviceAuthCard(
         DeviceAuthStateBody(
           state = effectiveAuthState,
           cloudSettings = cloudSettings,
+          repoSetupState = repoSetupState,
           compact = compact,
           tagPrefix = tagPrefix,
           onStartDeviceLogin = onStartDeviceLogin,
           onCancelDeviceLogin = onCancelDeviceLogin,
           onCopyCode = onCopyCode,
           onOpenBrowserUrl = onOpenBrowserUrl,
+          onRetryRepoSetup = onRetryRepoSetup,
           onSignOut = onSignOut,
         )
       }
@@ -209,12 +216,14 @@ fun GitHubDeviceAuthCard(
 private fun DeviceAuthStateBody(
   state: DeviceAuthState,
   cloudSettings: CloudSettings,
+  repoSetupState: RepoSetupState,
   compact: Boolean,
   tagPrefix: String,
   onStartDeviceLogin: () -> Unit,
   onCancelDeviceLogin: () -> Unit,
   onCopyCode: (String) -> Unit,
   onOpenBrowserUrl: (String) -> Unit,
+  onRetryRepoSetup: (() -> Unit)?,
   onSignOut: (() -> Unit)?,
 ) {
   when (state) {
@@ -461,32 +470,40 @@ private fun DeviceAuthStateBody(
           }
 
           is DeviceAuthState.Authenticated -> {
-            Row(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Column(modifier = Modifier.weight(1f)) {
-                Text(
-                  text = "Signed in via Device Flow as @${state.username}",
-                  style = MaterialTheme.typography.bodyMedium,
-                  fontWeight = FontWeight.Medium,
-                )
-                Text(
-                  text = "Workspace: ${cloudSettings.effectiveOwner}/${cloudSettings.repoName}",
-                  style = MaterialTheme.typography.bodySmall,
-                  fontFamily = JetBrainsMonoFontFamily,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-              }
-              if (onSignOut != null) {
-                TextButton(
-                  onClick = onSignOut,
-                  modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_sign_out_btn"),
-                ) {
-                  Text("Sign Out")
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+              Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Column(modifier = Modifier.weight(1f)) {
+                  Text(
+                    text = "Signed in via Device Flow as @${state.username}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                  )
+                  Text(
+                    text = "Workspace: ${cloudSettings.effectiveOwner}/${cloudSettings.repoName}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = JetBrainsMonoFontFamily,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  )
+                }
+                if (onSignOut != null) {
+                  TextButton(
+                    onClick = onSignOut,
+                    modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_sign_out_btn"),
+                  ) {
+                    Text("Sign Out")
+                  }
                 }
               }
+
+              InlineRepoSetupStatusRow(
+                repoSetupState = repoSetupState,
+                tagPrefix = tagPrefix,
+                onRetryRepoSetup = onRetryRepoSetup,
+              )
             }
           }
 
@@ -520,3 +537,145 @@ private fun DeviceAuthStateBody(
           }
         }
       }
+
+@Composable
+private fun InlineRepoSetupStatusRow(
+  repoSetupState: RepoSetupState,
+  tagPrefix: String,
+  onRetryRepoSetup: (() -> Unit)?,
+) {
+  when (repoSetupState) {
+    is RepoSetupState.Working -> {
+      Surface(
+        modifier = Modifier.fillMaxWidth().testTag("${tagPrefix}_repo_init_working"),
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+          CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+          Text(
+            text = repoSetupState.stepLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+          )
+        }
+      }
+    }
+
+    is RepoSetupState.Ready -> {
+      Surface(
+        modifier = Modifier.fillMaxWidth().testTag("${tagPrefix}_repo_init_ready"),
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Icon(
+            imageVector = if (repoSetupState.hasWorkflow) Icons.Rounded.CheckCircle else Icons.Rounded.ErrorOutline,
+            contentDescription = null,
+            tint = if (repoSetupState.hasWorkflow) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(16.dp),
+          )
+          Text(
+            text =
+              if (repoSetupState.hasWorkflow) {
+                "${if (repoSetupState.isPrivate) "Private repo" else "Repo"} ready • dex2c.yml synced"
+              } else {
+                "Repo found • dex2c.yml not synced yet"
+              },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+          )
+          if (!repoSetupState.hasWorkflow && onRetryRepoSetup != null) {
+            TextButton(
+              onClick = onRetryRepoSetup,
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_repo_sync_now_btn"),
+            ) {
+              Text("Sync Now")
+            }
+          }
+        }
+      }
+    }
+
+    is RepoSetupState.Error -> {
+      Surface(
+        modifier = Modifier.fillMaxWidth().testTag("${tagPrefix}_repo_init_error"),
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.45f),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Icon(
+            imageVector = Icons.Rounded.ErrorOutline,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(16.dp),
+          )
+          Text(
+            text = repoSetupState.message,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+          )
+          if (onRetryRepoSetup != null) {
+            TextButton(
+              onClick = onRetryRepoSetup,
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_repo_retry_btn"),
+            ) {
+              Text("Retry")
+            }
+          }
+        }
+      }
+    }
+
+    is RepoSetupState.NotConfigured -> {
+      if (onRetryRepoSetup != null) {
+        Surface(
+          modifier = Modifier.fillMaxWidth().testTag("${tagPrefix}_repo_init_pending"),
+          shape = RoundedCornerShape(14.dp),
+          color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
+        ) {
+          Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+          ) {
+            Text(
+              text = "Private repo not initialized yet",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.weight(1f),
+            )
+            TextButton(
+              onClick = onRetryRepoSetup,
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_repo_init_now_btn"),
+            ) {
+              Text("Init Repo")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

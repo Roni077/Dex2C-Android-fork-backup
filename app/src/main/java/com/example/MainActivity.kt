@@ -585,6 +585,7 @@ fun Dex2cApp(
                 },
                 onToggleAutoPoll = { viewModel.toggleAutoPoll() },
                 onRefreshMonitor = { viewModel.refreshActiveCloudRun() },
+                onRetryMonitor = { viewModel.retryCloudMonitorError() },
                 onRefreshRuns = { viewModel.refreshCloudRuns() },
                 onAttachToRun = { viewModel.attachToCloudRun(it) },
                 onDownloadArtifact = { viewModel.downloadArtifactAndPromptSave(it) },
@@ -670,6 +671,7 @@ fun Dex2cApp(
                 appSettings = appSettings,
                 cloudSettings = cloudSettings,
                 deviceAuthState = deviceAuthState,
+                repoSetupState = repoSetupState,
                 hasNotificationPermission = hasNotificationPermission,
                 onUpdateAppSettings = { viewModel.updateAppSettings(it) },
                 onUpdateCloudSettings = { viewModel.updateCloudSettings(it) },
@@ -677,6 +679,7 @@ fun Dex2cApp(
                 onCancelDeviceLogin = { viewModel.cancelDeviceFlowLogin() },
                 onCopyCode = { copyText(it) },
                 onOpenBrowserUrl = { openBrowserUrl(it) },
+                onRetryRepoSetup = { viewModel.initializePrivateRepoAndWorkflow() },
                 onToggleNotifications = { enabled ->
                   viewModel.setNotificationsEnabled(enabled)
                   if (enabled) {

@@ -5,6 +5,11 @@ import com.example.cloud.CloudSigningMode
 import com.example.cloud.Dex2cWorkflowGenerator
 import com.example.cloud.GitHubApiClient
 import com.example.cloud.JsonMini
+import com.example.cloud.NetworkResilience
+import com.example.cloud.ResilientGitHubDns
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import com.example.transpiler.JniBindingStyle
 import com.example.transpiler.TranspilerConfig
 import java.io.ByteArrayOutputStream
@@ -20,6 +25,12 @@ class GitHubCloudWorkflowTest {
 
   @Test
   fun generateDex2cYaml_includesKirlifD2cAndSigningAndFallback() {
+    val defaultCfg = TranspilerConfig()
+    assertFalse(defaultCfg.forceCustomLoader)
+    val defaultYaml = Dex2cWorkflowGenerator.generateDex2cYaml(CloudSettings(), defaultCfg)
+    assertTrue(defaultYaml.contains("force_custom_loader:"))
+    assertTrue(defaultYaml.contains("default: 'false'"))
+
     val settings =
       CloudSettings(
         ndkVersion = "r26d",
@@ -30,6 +41,7 @@ class GitHubCloudWorkflowTest {
       TranspilerConfig(
         allowInit = true,
         customLoaderClass = "com.custom.LoaderApp",
+        forceCustomLoader = true,
         stringEncryption = true,
         jniStyle = JniBindingStyle.REGISTER_NATIVES,
       )
@@ -38,18 +50,39 @@ class GitHubCloudWorkflowTest {
 
     assertTrue(yaml.contains("workflow_dispatch:"))
     assertTrue(yaml.contains("apk_url:"))
+    assertTrue(yaml.contains("force_custom_loader:"))
+    assertTrue(yaml.contains("actions/checkout@v6"))
+    assertTrue(yaml.contains("actions/setup-python@v6"))
+    assertTrue(yaml.contains("actions/setup-java@v5"))
+    assertFalse(yaml.contains("actions/checkout@v4"))
+    assertFalse(yaml.contains("actions/setup-python@v5"))
+    assertFalse(yaml.contains("actions/setup-java@v4"))
     assertTrue(yaml.contains("android-ndk-r26d-linux.zip"))
     assertTrue(yaml.contains("java-version: '21'"))
     assertTrue(yaml.contains("https://github.com/Kirlif/d2c.git"))
+    assertTrue(yaml.contains("/tmp/d2c/requirements.txt"))
+    assertTrue(yaml.contains("base_cfg = json.load(f)"))
+    assertTrue(yaml.contains("working-directory: /tmp/d2c"))
+    assertTrue(yaml.contains("set -o pipefail"))
+    assertTrue(yaml.contains("-i /tmp/work/input.apk"))
+    assertTrue(yaml.contains("-o /tmp/work/unsigned_dex2c.apk"))
+    assertTrue(yaml.contains("-f /tmp/d2c/filter.txt"))
+    assertFalse(yaml.contains("-a /tmp/work/input.apk"))
     assertTrue(yaml.contains("python3 /tmp/d2c/dcc.py"))
-    assertTrue(yaml.contains("--allow-init"))
-    assertTrue(yaml.contains("--obfuscate"))
-    assertTrue(yaml.contains("--dynamic-register"))
+    assertTrue(yaml.contains("ARGS+=(-a)"))
+    assertTrue(yaml.contains("ARGS+=(-p)"))
+    assertTrue(yaml.contains("ARGS+=(-d)"))
+    assertTrue(yaml.contains("ARGS+=(-c"))
+    assertTrue(yaml.contains("ARGS+=(-r)"))
+    assertTrue(yaml.contains("if [ ! -f /tmp/work/unsigned_dex2c.apk ]"))
     assertTrue(yaml.contains("com.custom.LoaderApp"))
     assertTrue(yaml.contains("apksigner"))
     assertTrue(yaml.contains("REPO_KEYSTORE_SECRETS"))
     assertTrue(yaml.contains("actions/upload-artifact@v4"))
+    assertTrue(yaml.contains("dex2c-signed-apk"))
     assertTrue(yaml.contains("dex2c-signed-output.apk"))
+    assertTrue(yaml.contains("dex2c-build-log"))
+    assertTrue(yaml.contains("if: failure()"))
   }
 
   @Test
@@ -223,5 +256,34 @@ class GitHubCloudWorkflowTest {
     assertEquals("00:01", state.remainingFormattedAt(startMs + 899_500L))
     assertEquals("00:00", state.remainingFormattedAt(startMs + 900_000L))
     assertEquals("00:00", state.remainingFormattedAt(startMs + 950_000L))
+  }
+
+  @Test
+  fun networkResilience_parsesDohARecordsAndClassifiesTransientErrors() {
+    val dohJson =
+      """
+      {
+        "Status": 0,
+        "Answer": [
+          {"name": "api.github.com", "type": 5, "TTL": 60, "data": "github.map.fastly.net."},
+          {"name": "api.github.com", "type": 1, "TTL": 60, "data": "140.82.114.6"},
+          {"name": "api.github.com", "type": 1, "TTL": 60, "data": "not-an-ip"}
+        ]
+      }
+      """.trimIndent()
+    val ips = ResilientGitHubDns.parseDohARecords(dohJson)
+    assertEquals(1, ips.size)
+    assertEquals("140.82.114.6", ips.first().hostAddress)
+
+    val dnsErr = UnknownHostException("Unable to resolve host \"api.github.com\": No address associated with hostname")
+    assertTrue(NetworkResilience.isTransientNetworkError(dnsErr))
+    assertTrue(NetworkResilience.isTransientNetworkError(SocketTimeoutException("timeout")))
+    assertFalse(NetworkResilience.isTransientNetworkError(IOException("GitHub repo lookup failed (404): Not Found")))
+
+    val offlineMsg = NetworkResilience.formatUserFacingError(dnsErr, isOnline = false)
+    assertTrue(offlineMsg.contains("No internet connection"))
+    val dnsMsg = NetworkResilience.formatUserFacingError(dnsErr, isOnline = true)
+    assertTrue(dnsMsg.contains("DNS lookup failed"))
+    assertTrue(dnsMsg.contains("Retry"))
   }
 }

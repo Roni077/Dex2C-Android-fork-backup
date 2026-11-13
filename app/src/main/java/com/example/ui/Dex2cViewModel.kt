@@ -17,12 +17,14 @@ import com.example.cloud.CloudBuildMonitorScheduler
 import com.example.cloud.CloudBuildNotifier
 import com.example.cloud.CloudBuildRunState
 import com.example.cloud.CloudDownloadedApk
+import com.example.cloud.CloudErrorAction
 import com.example.cloud.CloudSettings
 import com.example.cloud.Dex2cWorkflowGenerator
 import com.example.cloud.DeviceAuthState
 import com.example.cloud.GitHubApiClient
 import com.example.cloud.GitHubArtifactItem
 import com.example.cloud.GitHubWorkflowRunSummary
+import com.example.cloud.NetworkResilience
 import com.example.cloud.RepoSetupState
 import com.example.cloud.TokenPollResult
 import com.example.data.AppPreferences
@@ -52,6 +54,7 @@ import com.example.transpiler.GeneratedBundle
 import com.example.transpiler.TranspilerConfig
 import com.example.transpiler.ZipBundleExporter
 import java.io.File
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -107,13 +110,15 @@ data class CloudApkChoice(
   val filePath: String? = null,
 )
 
-class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
+class Dex2cViewModel @JvmOverloads constructor(
+  application: Application,
+  private val gitHubClient: GitHubApiClient = GitHubApiClient(),
+) : AndroidViewModel(application) {
 
   private val prefs = TranspilerPreferences(application)
   private val appPrefs = AppPreferences(application)
   private val cloudPrefs = CloudPreferences(application)
   private val recentStore = RecentFilesStore(application)
-  private val gitHubClient = GitHubApiClient()
 
   private val _loadState = MutableStateFlow<DexLoadState>(DexLoadState.Empty)
   val loadState: StateFlow<DexLoadState> = _loadState.asStateFlow()
@@ -208,6 +213,7 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
   private var currentSourceLabel: String = ""
   private var bundleJob: Job? = null
   private var devicePollJob: Job? = null
+  private var repoSetupJob: Job? = null
   private var cloudRunPollJob: Job? = null
 
   val filteredClasses: StateFlow<List<DexClassInfo>> =
@@ -857,10 +863,14 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
     devicePollJob =
       viewModelScope.launch {
         try {
-          val codeResp = withContext(Dispatchers.IO) { gitHubClient.requestDeviceCode(clientId) }
+          val codeResp =
+            NetworkResilience.retryTransient(maxAttempts = 2) {
+              withContext(Dispatchers.IO) { gitHubClient.requestDeviceCode(clientId) }
+            }
           var intervalSec = codeResp.intervalSec
           val safeExpiresInSec = codeResp.expiresInSec.coerceAtLeast(60)
           val deadlineMs = System.currentTimeMillis() + safeExpiresInSec * 1000L
+          val defaultStatusNote = "Waiting for authorization at github.com/login/device…"
 
           _deviceAuthState.value =
             DeviceAuthState.AwaitingUser(
@@ -869,22 +879,42 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
               expiresInSec = safeExpiresInSec,
               intervalSec = intervalSec,
               expiresAtMillis = deadlineMs,
+              statusNote = defaultStatusNote,
             )
 
           while (isActive && System.currentTimeMillis() < deadlineMs) {
             delay(intervalSec * 1000L)
             if (System.currentTimeMillis() >= deadlineMs) break
             val pollResult =
-              withContext(Dispatchers.IO) {
-                gitHubClient.pollAccessTokenOnce(clientId, codeResp.deviceCode, intervalSec)
+              try {
+                withContext(Dispatchers.IO) {
+                  gitHubClient.pollAccessTokenOnce(clientId, codeResp.deviceCode, intervalSec)
+                }
+              } catch (t: Throwable) {
+                if (t is CancellationException) throw t
+                if (NetworkResilience.isTransientNetworkError(t)) {
+                  val cur = _deviceAuthState.value as? DeviceAuthState.AwaitingUser
+                  if (cur != null) {
+                    _deviceAuthState.value =
+                      cur.copy(statusNote = "Network unreachable — retrying authorization check…")
+                  }
+                  continue
+                }
+                throw t
               }
             when (pollResult) {
-              is TokenPollResult.Pending -> Unit
+              is TokenPollResult.Pending -> {
+                val cur = _deviceAuthState.value as? DeviceAuthState.AwaitingUser
+                if (cur != null && cur.statusNote != defaultStatusNote) {
+                  _deviceAuthState.value = cur.copy(statusNote = defaultStatusNote)
+                }
+              }
               is TokenPollResult.SlowDown -> {
                 intervalSec = pollResult.nextIntervalSec
                 val cur = _deviceAuthState.value as? DeviceAuthState.AwaitingUser
                 if (cur != null) {
-                  _deviceAuthState.value = cur.copy(intervalSec = intervalSec)
+                  _deviceAuthState.value =
+                    cur.copy(intervalSec = intervalSec, statusNote = defaultStatusNote)
                 }
               }
               is TokenPollResult.Expired -> {
@@ -901,8 +931,10 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
               }
               is TokenPollResult.Success -> {
                 val username =
-                  withContext(Dispatchers.IO) {
-                    gitHubClient.getAuthenticatedUsername(pollResult.accessToken)
+                  NetworkResilience.retryTransient(maxAttempts = 3) {
+                    withContext(Dispatchers.IO) {
+                      gitHubClient.getAuthenticatedUsername(pollResult.accessToken)
+                    }
                   }
                 val updated =
                   _cloudSettings.value.copy(
@@ -913,16 +945,22 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
                 _cloudSettings.value = updated
                 cloudPrefs.saveSettings(updated)
                 _deviceAuthState.value = DeviceAuthState.Authenticated(username)
-                _statusBanner.value = "Signed in to GitHub as @$username"
-                verifyOrLoadRepoState()
+                _statusBanner.value = "Signed in as @$username — setting up workspace repo…"
+                initializePrivateRepoAndWorkflow(autoTriggered = true)
                 return@launch
               }
             }
           }
           _deviceAuthState.value = DeviceAuthState.Error("Device code expired (15:00 limit reached). Start login again.")
         } catch (t: Throwable) {
+          if (t is CancellationException) throw t
           _deviceAuthState.value =
-            DeviceAuthState.Error(t.message ?: "Failed to initiate GitHub Device Flow.")
+            DeviceAuthState.Error(
+              NetworkResilience.formatUserFacingError(
+                t = t,
+                isOnline = NetworkResilience.isNetworkAvailable(getApplication()),
+              )
+            )
         }
       }
   }
@@ -937,6 +975,7 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
 
   fun signOutGitHub() {
     devicePollJob?.cancel()
+    repoSetupJob?.cancel()
     cloudRunPollJob?.cancel()
     CloudBuildMonitorScheduler.cancelMonitor(getApplication())
     viewModelScope.launch {
@@ -956,19 +995,23 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
       try {
         val owner = cfg.effectiveOwner
         val repoInfo =
-          withContext(Dispatchers.IO) {
-            gitHubClient.getRepository(cfg.accessToken, owner, cfg.repoName)
+          NetworkResilience.retryTransient(maxAttempts = 2) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.getRepository(cfg.accessToken, owner, cfg.repoName)
+            }
           }
         if (repoInfo != null) {
           val wfSha =
-            withContext(Dispatchers.IO) {
-              gitHubClient.getContentSha(
-                cfg.accessToken,
-                repoInfo.owner,
-                repoInfo.name,
-                Dex2cWorkflowGenerator.WORKFLOW_PATH,
-                repoInfo.defaultBranch,
-              )
+            NetworkResilience.retryTransient(maxAttempts = 2) {
+              withContext(Dispatchers.IO) {
+                gitHubClient.getContentSha(
+                  cfg.accessToken,
+                  repoInfo.owner,
+                  repoInfo.name,
+                  Dex2cWorkflowGenerator.WORKFLOW_PATH,
+                  repoInfo.defaultBranch,
+                )
+              }
             }
           val hasWf = !wfSha.isNullOrBlank()
           updateCloudSettings {
@@ -991,101 +1034,148 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
           _repoSetupState.value = RepoSetupState.NotConfigured
         }
       } catch (t: Throwable) {
-        _repoSetupState.value = RepoSetupState.Error(t.message ?: "Repo verification failed.")
+        if (t is CancellationException) throw t
+        _repoSetupState.value =
+          RepoSetupState.Error(
+            NetworkResilience.formatUserFacingError(
+              t = t,
+              isOnline = NetworkResilience.isNetworkAvailable(getApplication()),
+            )
+          )
       }
     }
   }
 
-  fun initializePrivateRepoAndWorkflow() {
+  fun initializePrivateRepoAndWorkflow(autoTriggered: Boolean = false) {
     val settings = _cloudSettings.value
     if (!settings.isAuthenticated) {
       _repoSetupState.value = RepoSetupState.Error("Sign in via GitHub Device Flow first.")
       return
     }
     val repoName = settings.repoName.trim().ifBlank { "dex2c-cloud-workspace" }
-    viewModelScope.launch {
-      try {
-        _repoSetupState.value = RepoSetupState.Working("Checking / creating private repo \"$repoName\"…")
-        val owner = settings.effectiveOwner
-        val existing =
-          withContext(Dispatchers.IO) {
-            gitHubClient.getRepository(settings.accessToken, owner, repoName)
-          }
-        val repoInfo =
-          existing
-            ?: withContext(Dispatchers.IO) {
-              gitHubClient.createRepository(
+    repoSetupJob?.cancel()
+    repoSetupJob =
+      viewModelScope.launch {
+        try {
+          _repoSetupState.value =
+            RepoSetupState.Working(
+              if (autoTriggered) "Auto-initializing private repo \"$repoName\"…"
+              else "Checking / creating private repo \"$repoName\"…"
+            )
+          val owner = settings.effectiveOwner
+          val existing =
+            NetworkResilience.retryTransient(maxAttempts = 3) {
+              withContext(Dispatchers.IO) {
+                gitHubClient.getRepository(settings.accessToken, owner, repoName)
+              }
+            }
+          val repoInfo =
+            existing
+              ?: try {
+                NetworkResilience.retryTransient(maxAttempts = 3) {
+                  withContext(Dispatchers.IO) {
+                    gitHubClient.createRepository(
+                      token = settings.accessToken,
+                      name = repoName,
+                      isPrivate = settings.privateRepo,
+                    )
+                  }
+                }
+              } catch (createErr: Throwable) {
+                if (createErr is CancellationException) throw createErr
+                // Guard against race where repository was created concurrently (HTTP 422)
+                val recovered =
+                  runCatching {
+                    withContext(Dispatchers.IO) {
+                      gitHubClient.getRepository(settings.accessToken, owner, repoName)
+                    }
+                  }.getOrNull()
+                recovered ?: throw createErr
+              }
+
+          val branch = repoInfo.defaultBranch.ifBlank { settings.defaultBranch.ifBlank { "main" } }
+          _repoSetupState.value =
+            RepoSetupState.Working("Syncing dex2c.yml, dcc.cfg & filter.txt…")
+
+          val transCfg = _config.value
+          val yaml = Dex2cWorkflowGenerator.generateDex2cYaml(settings, transCfg)
+          val dccCfg = DccConfigCodec.encodeDccCfg(transCfg)
+          val filterTxt = transCfg.filterRulesText.trimEnd() + "\n"
+
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.upsertRepoFile(
                 token = settings.accessToken,
-                name = repoName,
-                isPrivate = settings.privateRepo,
+                owner = repoInfo.owner,
+                repo = repoInfo.name,
+                path = Dex2cWorkflowGenerator.WORKFLOW_PATH,
+                branch = branch,
+                commitMessage = "Initialize Dex2C Studio cloud workflow (dex2c.yml)",
+                contentBytes = yaml.toByteArray(Charsets.UTF_8),
               )
             }
+          }
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.upsertRepoFile(
+                token = settings.accessToken,
+                owner = repoInfo.owner,
+                repo = repoInfo.name,
+                path = Dex2cWorkflowGenerator.DCC_CFG_PATH,
+                branch = branch,
+                commitMessage = "Sync dcc.cfg transpiler configuration",
+                contentBytes = dccCfg.toByteArray(Charsets.UTF_8),
+              )
+            }
+          }
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.upsertRepoFile(
+                token = settings.accessToken,
+                owner = repoInfo.owner,
+                repo = repoInfo.name,
+                path = Dex2cWorkflowGenerator.FILTER_TXT_PATH,
+                branch = branch,
+                commitMessage = "Sync filter.txt rules",
+                contentBytes = filterTxt.toByteArray(Charsets.UTF_8),
+              )
+            }
+          }
 
-        val branch = repoInfo.defaultBranch.ifBlank { settings.defaultBranch.ifBlank { "main" } }
-        _repoSetupState.value =
-          RepoSetupState.Working("Committing dex2c.yml, dcc.cfg & filter.txt…")
+          val savedSettings =
+            _cloudSettings.value.copy(
+              repoOwner = repoInfo.owner,
+              repoName = repoInfo.name,
+              defaultBranch = branch,
+              privateRepo = repoInfo.isPrivate,
+              workflowInitialized = true,
+            )
+          _cloudSettings.value = savedSettings
+          cloudPrefs.saveSettings(savedSettings)
 
-        val transCfg = _config.value
-        val yaml = Dex2cWorkflowGenerator.generateDex2cYaml(settings, transCfg)
-        val dccCfg = DccConfigCodec.encodeDccCfg(transCfg)
-        val filterTxt = transCfg.filterRulesText.trimEnd() + "\n"
-
-        withContext(Dispatchers.IO) {
-          gitHubClient.upsertRepoFile(
-            token = settings.accessToken,
-            owner = repoInfo.owner,
-            repo = repoInfo.name,
-            path = Dex2cWorkflowGenerator.WORKFLOW_PATH,
-            branch = branch,
-            commitMessage = "Initialize Dex2C Studio cloud workflow (dex2c.yml)",
-            contentBytes = yaml.toByteArray(Charsets.UTF_8),
-          )
-          gitHubClient.upsertRepoFile(
-            token = settings.accessToken,
-            owner = repoInfo.owner,
-            repo = repoInfo.name,
-            path = Dex2cWorkflowGenerator.DCC_CFG_PATH,
-            branch = branch,
-            commitMessage = "Sync dcc.cfg transpiler configuration",
-            contentBytes = dccCfg.toByteArray(Charsets.UTF_8),
-          )
-          gitHubClient.upsertRepoFile(
-            token = settings.accessToken,
-            owner = repoInfo.owner,
-            repo = repoInfo.name,
-            path = Dex2cWorkflowGenerator.FILTER_TXT_PATH,
-            branch = branch,
-            commitMessage = "Sync filter.txt rules",
-            contentBytes = filterTxt.toByteArray(Charsets.UTF_8),
-          )
+          _repoSetupState.value =
+            RepoSetupState.Ready(
+              owner = repoInfo.owner,
+              repo = repoInfo.name,
+              htmlUrl = repoInfo.htmlUrl,
+              isPrivate = repoInfo.isPrivate,
+              hasWorkflow = true,
+            )
+          _statusBanner.value =
+            if (autoTriggered) "GitHub connected & ${repoInfo.fullName} initialized!"
+            else "Initialized ${repoInfo.fullName} with dex2c.yml!"
+          refreshCloudRuns()
+        } catch (t: Throwable) {
+          if (t is CancellationException) throw t
+          _repoSetupState.value =
+            RepoSetupState.Error(
+              NetworkResilience.formatUserFacingError(
+                t = t,
+                isOnline = NetworkResilience.isNetworkAvailable(getApplication()),
+              )
+            )
         }
-
-        val savedSettings =
-          settings.copy(
-            repoOwner = repoInfo.owner,
-            repoName = repoInfo.name,
-            defaultBranch = branch,
-            privateRepo = repoInfo.isPrivate,
-            workflowInitialized = true,
-          )
-        _cloudSettings.value = savedSettings
-        cloudPrefs.saveSettings(savedSettings)
-
-        _repoSetupState.value =
-          RepoSetupState.Ready(
-            owner = repoInfo.owner,
-            repo = repoInfo.name,
-            htmlUrl = repoInfo.htmlUrl,
-            isPrivate = repoInfo.isPrivate,
-            hasWorkflow = true,
-          )
-        _statusBanner.value = "Initialized ${repoInfo.fullName} with dex2c.yml!"
-        refreshCloudRuns()
-      } catch (t: Throwable) {
-        _repoSetupState.value =
-          RepoSetupState.Error(t.message ?: "Failed to setup repository & dex2c.yml.")
       }
-    }
   }
 
   fun dispatchCloudDex2cBuild() {
@@ -1117,35 +1207,45 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
           val branch = settings.defaultBranch.ifBlank { "main" }
           val transCfg = _config.value
 
-          _cloudRunState.value = CloudBuildRunState.UploadingInputs("Syncing dex2c.yml, dcc.cfg & filter.txt…")
-          withContext(Dispatchers.IO) {
-            gitHubClient.upsertRepoFile(
-              token = settings.accessToken,
-              owner = owner,
-              repo = repo,
-              path = Dex2cWorkflowGenerator.WORKFLOW_PATH,
-              branch = branch,
-              commitMessage = "Update dex2c.yml workflow parameters",
-              contentBytes = Dex2cWorkflowGenerator.generateDex2cYaml(settings, transCfg).toByteArray(Charsets.UTF_8),
-            )
-            gitHubClient.upsertRepoFile(
-              token = settings.accessToken,
-              owner = owner,
-              repo = repo,
-              path = Dex2cWorkflowGenerator.DCC_CFG_PATH,
-              branch = branch,
-              commitMessage = "Update dcc.cfg for cloud run",
-              contentBytes = DccConfigCodec.encodeDccCfg(transCfg).toByteArray(Charsets.UTF_8),
-            )
-            gitHubClient.upsertRepoFile(
-              token = settings.accessToken,
-              owner = owner,
-              repo = repo,
-              path = Dex2cWorkflowGenerator.FILTER_TXT_PATH,
-              branch = branch,
-              commitMessage = "Update filter.txt for cloud run",
-              contentBytes = (transCfg.filterRulesText.trimEnd() + "\n").toByteArray(Charsets.UTF_8),
-            )
+          _cloudRunState.value = CloudBuildRunState.UploadingInputs("Auto-syncing dex2c.yml, dcc.cfg & filter.txt…")
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.upsertRepoFile(
+                token = settings.accessToken,
+                owner = owner,
+                repo = repo,
+                path = Dex2cWorkflowGenerator.WORKFLOW_PATH,
+                branch = branch,
+                commitMessage = "Update dex2c.yml workflow parameters",
+                contentBytes = Dex2cWorkflowGenerator.generateDex2cYaml(settings, transCfg).toByteArray(Charsets.UTF_8),
+              )
+            }
+          }
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.upsertRepoFile(
+                token = settings.accessToken,
+                owner = owner,
+                repo = repo,
+                path = Dex2cWorkflowGenerator.DCC_CFG_PATH,
+                branch = branch,
+                commitMessage = "Update dcc.cfg for cloud run",
+                contentBytes = DccConfigCodec.encodeDccCfg(transCfg).toByteArray(Charsets.UTF_8),
+              )
+            }
+          }
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.upsertRepoFile(
+                token = settings.accessToken,
+                owner = owner,
+                repo = repo,
+                path = Dex2cWorkflowGenerator.FILTER_TXT_PATH,
+                branch = branch,
+                commitMessage = "Update filter.txt for cloud run",
+                contentBytes = (transCfg.filterRulesText.trimEnd() + "\n").toByteArray(Charsets.UTF_8),
+              )
+            }
           }
 
           if (urlFallback.isEmpty() && apkChoice != null) {
@@ -1169,16 +1269,18 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
                 )
               return@launch
             }
-            withContext(Dispatchers.IO) {
-              gitHubClient.upsertRepoFile(
-                token = settings.accessToken,
-                owner = owner,
-                repo = repo,
-                path = Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
-                branch = branch,
-                commitMessage = "Upload target APK (${apkChoice.label}) for Dex2C build",
-                contentBytes = apkBytes,
-              )
+            NetworkResilience.retryTransient(maxAttempts = 3) {
+              withContext(Dispatchers.IO) {
+                gitHubClient.upsertRepoFile(
+                  token = settings.accessToken,
+                  owner = owner,
+                  repo = repo,
+                  path = Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
+                  branch = branch,
+                  commitMessage = "Upload target APK (${apkChoice.label}) for Dex2C build",
+                  contentBytes = apkBytes,
+                )
+              }
             }
           }
 
@@ -1189,39 +1291,52 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
             }
 
           _cloudRunState.value = CloudBuildRunState.Dispatching
-          withContext(Dispatchers.IO) {
-            gitHubClient.dispatchWorkflow(
-              token = settings.accessToken,
-              owner = owner,
-              repo = repo,
-              ref = branch,
-              inputs =
-                mapOf(
-                  "apk_path" to Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
-                  "apk_url" to urlFallback,
-                  "allow_init" to transCfg.allowInit.toString(),
-                  "custom_loader" to transCfg.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" },
-                  "obfuscate" to (transCfg.stringEncryption || transCfg.controlFlowFlattening).toString(),
-                  "dynamic_register" to (transCfg.jniStyle == com.example.transpiler.JniBindingStyle.REGISTER_NATIVES).toString(),
-                  "signing_mode" to settings.signingMode.name,
-                ),
-            )
+          NetworkResilience.retryTransient(maxAttempts = 3) {
+            withContext(Dispatchers.IO) {
+              gitHubClient.dispatchWorkflow(
+                token = settings.accessToken,
+                owner = owner,
+                repo = repo,
+                ref = branch,
+                inputs =
+                  mapOf(
+                    "apk_path" to Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
+                    "apk_url" to urlFallback,
+                    "allow_init" to transCfg.allowInit.toString(),
+                    "custom_loader" to transCfg.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" },
+                    "force_custom_loader" to transCfg.forceCustomLoader.toString(),
+                    "obfuscate" to (transCfg.stringEncryption || transCfg.controlFlowFlattening).toString(),
+                    "dynamic_register" to (transCfg.jniStyle == com.example.transpiler.JniBindingStyle.REGISTER_NATIVES).toString(),
+                    "signing_mode" to settings.signingMode.name,
+                  ),
+              )
+            }
           }
 
-          // Wait briefly for GitHub to register the new workflow run
+          // Wait briefly for GitHub to register the new workflow run, tolerating transient DNS/IO blips
           var activeRun: GitHubWorkflowRunSummary? = null
+          var lastDiscoveryError: Throwable? = null
           repeat(8) {
             delay(2500L)
-            val runs =
-              withContext(Dispatchers.IO) {
-                gitHubClient.listWorkflowRuns(settings.accessToken, owner, repo)
+            val runsResult =
+              runCatching {
+                withContext(Dispatchers.IO) {
+                  gitHubClient.listWorkflowRuns(settings.accessToken, owner, repo)
+                }
               }
-            _recentCloudRuns.value = runs
-            val candidate = runs.firstOrNull { it.id != prevTopRunId } ?: runs.firstOrNull()
-            if (candidate != null && (prevTopRunId == null || candidate.id != prevTopRunId)) {
-              activeRun = candidate
-              return@repeat
+            runsResult.onSuccess { runs ->
+              lastDiscoveryError = null
+              _recentCloudRuns.value = runs
+              val candidate = runs.firstOrNull { it.id != prevTopRunId } ?: runs.firstOrNull()
+              if (candidate != null && (prevTopRunId == null || candidate.id != prevTopRunId)) {
+                activeRun = candidate
+              }
+            }.onFailure { err ->
+              if (err is CancellationException) throw err
+              lastDiscoveryError = err
+              if (!NetworkResilience.isTransientNetworkError(err)) throw err
             }
+            if (activeRun != null) return@repeat
           }
 
           val initialRun = activeRun ?: _recentCloudRuns.value.firstOrNull()
@@ -1229,8 +1344,15 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
             if (_cloudSettings.value.notificationsEnabled) {
               CloudBuildMonitorScheduler.scheduleMonitor(getApplication(), -1L, initialDelaySec = 10L)
             }
+            val msg =
+              lastDiscoveryError?.let {
+                NetworkResilience.formatUserFacingError(it, NetworkResilience.isNetworkAvailable(getApplication()))
+              } ?: "Workflow dispatched; tap Retry or refresh runs shortly to track progress."
             _cloudRunState.value =
-              CloudBuildRunState.Error("Workflow dispatched; refresh runs shortly to track progress.")
+              CloudBuildRunState.Error(
+                message = msg,
+                retryAction = CloudErrorAction.RETRY_POLL,
+              )
             return@launch
           }
           if (_cloudSettings.value.notificationsEnabled) {
@@ -1238,8 +1360,16 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
           }
           pollWorkflowRunUntilDone(settings, owner, repo, initialRun.id, notifyIfCompleted = true)
         } catch (t: Throwable) {
+          if (t is CancellationException) throw t
           _cloudRunState.value =
-            CloudBuildRunState.Error(t.message ?: "Cloud Dex2C workflow dispatch failed.")
+            CloudBuildRunState.Error(
+              message =
+                NetworkResilience.formatUserFacingError(
+                  t = t,
+                  isOnline = NetworkResilience.isNetworkAvailable(getApplication()),
+                ),
+              retryAction = CloudErrorAction.RETRY_DISPATCH,
+            )
         }
       }
   }
@@ -1267,34 +1397,61 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
       cloudRunPollJob?.cancel()
     } else {
       val polling = _cloudRunState.value as? CloudBuildRunState.Polling
-      val runId = polling?.runId ?: _recentCloudRuns.value.firstOrNull { it.status != "completed" }?.id
+      val errState = _cloudRunState.value as? CloudBuildRunState.Error
+      val runId =
+        polling?.runId
+          ?: errState?.failedRunId
+          ?: _recentCloudRuns.value.firstOrNull { it.status != "completed" }?.id
       if (runId != null) {
         attachToCloudRun(runId)
       }
     }
   }
 
+  fun retryCloudMonitorError() {
+    val err = _cloudRunState.value as? CloudBuildRunState.Error
+    when {
+      err?.retryAction == CloudErrorAction.RETRY_DISPATCH -> dispatchCloudDex2cBuild()
+      err?.failedRunId != null -> attachToCloudRun(err.failedRunId)
+      else -> refreshActiveCloudRun()
+    }
+  }
+
   fun refreshActiveCloudRun() {
     val settings = _cloudSettings.value
     if (!settings.isRepoConfigured) return
+    val currentState = _cloudRunState.value
+    if (currentState is CloudBuildRunState.Error && currentState.retryAction == CloudErrorAction.RETRY_DISPATCH) {
+      dispatchCloudDex2cBuild()
+      return
+    }
     val activeRunId =
-      when (val state = _cloudRunState.value) {
-        is CloudBuildRunState.Polling -> state.runId
-        is CloudBuildRunState.Completed -> state.runId
+      when (currentState) {
+        is CloudBuildRunState.Polling -> currentState.runId
+        is CloudBuildRunState.Completed -> currentState.runId
+        is CloudBuildRunState.Error -> currentState.failedRunId
         else -> null
       }
-    val wasPolling = _cloudRunState.value is CloudBuildRunState.Polling
+    val wasPolling = currentState is CloudBuildRunState.Polling ||
+      (currentState is CloudBuildRunState.Error && currentState.retryAction == CloudErrorAction.RETRY_POLL)
     viewModelScope.launch {
       runCatching {
-        fetchAndApplyRunSnapshot(
-          settings = settings,
-          owner = settings.effectiveOwner,
-          repo = settings.repoName,
-          targetRunId = activeRunId,
-          notifyOnCompletion = wasPolling,
-        )
+        NetworkResilience.retryTransient(maxAttempts = 2) {
+          fetchAndApplyRunSnapshot(
+            settings = settings,
+            owner = settings.effectiveOwner,
+            repo = settings.repoName,
+            targetRunId = activeRunId,
+            notifyOnCompletion = wasPolling,
+          )
+        }
       }.onFailure { t ->
-        _statusBanner.value = "Monitor refresh failed: ${t.message}"
+        if (t is CancellationException) throw t
+        _statusBanner.value =
+          NetworkResilience.formatUserFacingError(
+            t = t,
+            isOnline = NetworkResilience.isNetworkAvailable(getApplication()),
+          )
       }
     }
   }
@@ -1308,23 +1465,67 @@ class Dex2cViewModel(application: Application) : AndroidViewModel(application) {
   ) {
     val pollMs = settings.pollIntervalSeconds.coerceIn(4, 30) * 1000L
     var shouldNotifyWhenDone = notifyIfCompleted
+    var consecutiveTransientFailures = 0
+
     while (true) {
-      val isDone =
-        fetchAndApplyRunSnapshot(
-          settings = settings,
-          owner = owner,
-          repo = repo,
-          targetRunId = runId,
-          notifyOnCompletion = shouldNotifyWhenDone,
-        )
-      if (isDone) return
-      // Once observed active in-progress/queued, schedule background monitor & allow completion alert
-      shouldNotifyWhenDone = true
-      if (_cloudSettings.value.notificationsEnabled) {
-        CloudBuildMonitorScheduler.scheduleMonitor(getApplication(), runId)
+      val pollSucceeded =
+        try {
+          val isDone =
+            fetchAndApplyRunSnapshot(
+              settings = settings,
+              owner = owner,
+              repo = repo,
+              targetRunId = runId,
+              notifyOnCompletion = shouldNotifyWhenDone,
+            )
+          consecutiveTransientFailures = 0
+          if (isDone) return
+          true
+        } catch (t: Throwable) {
+          if (t is CancellationException) throw t
+          if (NetworkResilience.isTransientNetworkError(t) && consecutiveTransientFailures < 12) {
+            consecutiveTransientFailures++
+            val curPolling = _cloudRunState.value as? CloudBuildRunState.Polling
+            if (curPolling != null) {
+              val note =
+                if (NetworkResilience.isNetworkAvailable(getApplication())) {
+                  "Temporary DNS/network issue — retrying automatically (attempt $consecutiveTransientFailures)…"
+                } else {
+                  "Waiting for internet connection — retrying automatically (attempt $consecutiveTransientFailures)…"
+                }
+              _cloudRunState.value = curPolling.copy(reconnectingNote = note)
+            }
+            false
+          } else {
+            _cloudRunState.value =
+              CloudBuildRunState.Error(
+                message =
+                  NetworkResilience.formatUserFacingError(
+                    t = t,
+                    isOnline = NetworkResilience.isNetworkAvailable(getApplication()),
+                  ),
+                retryAction = CloudErrorAction.RETRY_POLL,
+                failedRunId = runId,
+              )
+            return
+          }
+        }
+
+      if (pollSucceeded) {
+        // Once observed active in-progress/queued, schedule background monitor & allow completion alert
+        shouldNotifyWhenDone = true
+        if (_cloudSettings.value.notificationsEnabled) {
+          CloudBuildMonitorScheduler.scheduleMonitor(getApplication(), runId)
+        }
       }
       if (!_isAutoPollEnabled.value) return
-      delay(pollMs)
+      val waitMs =
+        if (consecutiveTransientFailures > 0) {
+          (pollMs * (1L shl (consecutiveTransientFailures - 1).coerceAtMost(2))).coerceAtMost(30_000L)
+        } else {
+          pollMs
+        }
+      delay(waitMs)
     }
   }
 

@@ -34,6 +34,7 @@ data class TranspilerConfig(
   val allowInit: Boolean = false,
   val loaderMode: LoaderMode = LoaderMode.AUTO_APP_OR_CUSTOM,
   val customLoaderClass: String = "amimo.dcc.DccApplication",
+  val forceCustomLoader: Boolean = false,
   val targetAbis: Set<String> = setOf("arm64-v8a", "armeabi-v7a"),
   val filterRulesText: String = DEFAULT_FILTER_RULES,
   val moduleName: String = "dex2c_native",
