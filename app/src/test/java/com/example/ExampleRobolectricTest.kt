@@ -1392,4 +1392,63 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("output_preview_truncated_banner").assertIsDisplayed()
     composeTestRule.onNodeWithTag("output_file_tab_dex2c_bridge_part_01.cpp").assertIsDisplayed()
   }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `floating bottom navigation bar and settings 2-column bento grid render with quick status strip`() {
+    var pipelineShortcutClicked by mutableStateOf(false)
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.SettingsScreen(
+          appSettings = AppSettings(),
+          cloudSettings = CloudSettings(accessToken = "gho_test", githubUsername = "userio12"),
+          transpilerConfig = com.example.transpiler.TranspilerConfig(),
+          recentHistoryCount = 2,
+          hasNotificationPermission = true,
+          onUpdateAppSettings = {},
+          onUpdateCloudSettings = {},
+          onToggleNotifications = {},
+          onRequestNotificationPermission = {},
+          onSendTestNotification = {},
+          onSyncWorkflowToRepo = {},
+          onStartDeviceLogin = {},
+          onSignOutGitHub = {},
+          onOpenGitHubAppSettings = {},
+          onGoToPipelineConfig = { pipelineShortcutClicked = true },
+          onOpenRustBridge = {},
+          onClearRecentHistory = {},
+          onResetAllSettings = {},
+          onReplayOnboarding = {},
+          onCopyText = {},
+          onBack = {},
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("settings_quick_status_strip").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_code_editor").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_dex_parser").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_pipeline_shortcut").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_github_cloud").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_ndk_signing").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_notifications").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_storage_reset").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_about").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("settings_hub_row_pipeline_shortcut").performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(pipelineShortcutClicked)
+
+    // Open Appearance subscreen and return to hub via back button
+    composeTestRule.onNodeWithTag("settings_hub_row_appearance").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("settings_theme_DARK").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_back_btn").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("settings_quick_status_strip").assertIsDisplayed()
+  }
 }
+

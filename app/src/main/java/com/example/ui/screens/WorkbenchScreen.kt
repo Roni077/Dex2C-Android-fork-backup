@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Android
@@ -91,102 +94,31 @@ fun WorkbenchScreen(
   modifier: Modifier = Modifier,
   onFocusHeaderDex: (String) -> Unit = {},
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-    LazyColumn(
-      modifier = Modifier.fillMaxSize().widthIn(max = 840.dp),
-      contentPadding = PaddingValues(16.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      item {
-        HeroWorkbenchBanner(
-          onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
-          onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
-        )
-      }
+  BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    val isWide = maxWidth >= 680.dp
+    val needsCompactScroll = maxHeight < 540.dp
 
-      if (recentFiles.isNotEmpty() && loadState is DexLoadState.Empty) {
-        item {
-          RecentQuickStrip(
-            recentFiles = recentFiles.take(5),
-            onSelectRecent = onSelectRecent,
-            onViewAll = { onOpenPicker(PickerTab.RECENT) },
-          )
-        }
-      }
+    when (loadState) {
+      is DexLoadState.Ready -> {
+        val dex = loadState.parsedDex
+        val loadedDexList = loadState.loadedDexes.values.toList()
+        val totalClasses = loadedDexList.sumOf { it.header.classDefsSize }
+        val totalMethods = loadedDexList.sumOf { it.header.methodIdsSize }
+        val totalStrings = loadedDexList.sumOf { it.header.stringIdsSize }
+        val totalSizeBytes = loadedDexList.sumOf { it.header.fileSize }
 
-      when (loadState) {
-        is DexLoadState.Empty -> {
+        LazyColumn(
+          modifier = Modifier.fillMaxSize().widthIn(max = 840.dp),
+          contentPadding = PaddingValues(16.dp),
+          verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
           item {
-            EmptyWorkspaceCard(
+            HeroWorkbenchBanner(
               onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
-              onInspectSelfApk = onInspectSelfApk,
+              onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
             )
           }
-        }
 
-        is DexLoadState.Loading -> {
-          item {
-            Surface(
-              modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
-              shape = RoundedCornerShape(24.dp),
-              color = MaterialTheme.colorScheme.surfaceContainer,
-              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
-            ) {
-              Row(
-                modifier = Modifier.padding(24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-              ) {
-                CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
-                Column {
-                  Text(
-                    text = stringResource(R.string.msg_loading_dex),
-                    style = MaterialTheme.typography.titleMedium,
-                  )
-                  Text(
-                    text = loadState.label,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                  )
-                }
-              }
-            }
-          }
-        }
-
-        is DexLoadState.Error -> {
-          item {
-            Surface(
-              modifier = Modifier.fillMaxWidth(),
-              shape = RoundedCornerShape(24.dp),
-              color = MaterialTheme.colorScheme.errorContainer,
-            ) {
-              Row(
-                modifier = Modifier.padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-              ) {
-                Icon(
-                  imageVector = Icons.Rounded.ErrorOutline,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.error,
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                  Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
-                  Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
-                }
-              }
-            }
-          }
-        }
-
-        is DexLoadState.Ready -> {
-          val dex = loadState.parsedDex
-          val loadedDexList = loadState.loadedDexes.values.toList()
-          val totalClasses = loadedDexList.sumOf { it.header.classDefsSize }
-          val totalMethods = loadedDexList.sumOf { it.header.methodIdsSize }
-          val totalStrings = loadedDexList.sumOf { it.header.stringIdsSize }
-          val totalSizeBytes = loadedDexList.sumOf { it.header.fileSize }
 
           if (loadState.dexEntries.size > 1) {
             item {
@@ -337,6 +269,122 @@ fun WorkbenchScreen(
               dex = dex,
               onOpenRustBridge = onOpenRustBridge,
             )
+          }
+        }
+      }
+
+      else -> {
+        val scrollState = rememberScrollState()
+        Column(
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .widthIn(max = 840.dp)
+              .then(if (needsCompactScroll) Modifier.verticalScroll(scrollState) else Modifier)
+              .padding(horizontal = 16.dp, vertical = 12.dp),
+          verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+          val stateContent: @Composable () -> Unit = {
+            when (loadState) {
+              is DexLoadState.Empty -> {
+                EmptyWorkspaceCard(
+                  onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
+                  onInspectSelfApk = onInspectSelfApk,
+                )
+              }
+
+              is DexLoadState.Loading -> {
+                Surface(
+                  modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+                  shape = RoundedCornerShape(24.dp),
+                  color = MaterialTheme.colorScheme.surfaceContainer,
+                  border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
+                ) {
+                  Row(
+                    modifier = Modifier.padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                  ) {
+                    CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
+                    Column {
+                      Text(
+                        text = stringResource(R.string.msg_loading_dex),
+                        style = MaterialTheme.typography.titleMedium,
+                      )
+                      Text(
+                        text = loadState.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      )
+                    }
+                  }
+                }
+              }
+
+              is DexLoadState.Error -> {
+                Surface(
+                  modifier = Modifier.fillMaxWidth(),
+                  shape = RoundedCornerShape(24.dp),
+                  color = MaterialTheme.colorScheme.errorContainer,
+                ) {
+                  Row(
+                    modifier = Modifier.padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                  ) {
+                    Icon(
+                      imageVector = Icons.Rounded.ErrorOutline,
+                      contentDescription = null,
+                      tint = MaterialTheme.colorScheme.error,
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                      Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
+                      Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
+                    }
+                  }
+                }
+              }
+
+              is DexLoadState.Ready -> Unit
+            }
+          }
+
+          if (isWide) {
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.spacedBy(14.dp),
+              verticalAlignment = Alignment.Top,
+            ) {
+              Column(modifier = Modifier.weight(1.1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                HeroWorkbenchBanner(
+                  onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
+                  onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+                )
+              }
+              Column(modifier = Modifier.weight(0.9f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                stateContent()
+              }
+            }
+            if (recentFiles.isNotEmpty() && loadState is DexLoadState.Empty) {
+              RecentQuickStrip(
+                recentFiles = recentFiles.take(5),
+                onSelectRecent = onSelectRecent,
+                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+              )
+            }
+          } else {
+            HeroWorkbenchBanner(
+              onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
+              onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+            )
+            if (recentFiles.isNotEmpty() && loadState is DexLoadState.Empty) {
+              RecentQuickStrip(
+                recentFiles = recentFiles.take(5),
+                onSelectRecent = onSelectRecent,
+                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+              )
+            }
+            stateContent()
           }
         }
       }

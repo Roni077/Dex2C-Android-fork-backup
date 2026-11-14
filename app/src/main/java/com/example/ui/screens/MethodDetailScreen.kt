@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,6 +65,7 @@ fun MethodDetailScreen(
 
   Column(modifier = modifier.fillMaxSize()) {
     TopAppBar(
+      windowInsets = WindowInsets(0, 0, 0, 0),
       title = {
         Column {
           Text(

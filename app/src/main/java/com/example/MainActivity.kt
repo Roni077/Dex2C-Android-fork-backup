@@ -16,16 +16,35 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.CloudQueue
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.CloudQueue
 import androidx.compose.material.icons.rounded.Code
@@ -38,16 +57,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -57,11 +76,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -312,10 +338,10 @@ fun Dex2cApp(
 
   val navItems =
     listOf(
-      NavDestinationItem(ROUTE_WORKBENCH, R.string.nav_workbench, Icons.Rounded.Build, Icons.Rounded.Build, "nav_workbench"),
-      NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Rounded.DataObject, "nav_classes"),
-      NavDestinationItem(ROUTE_BUILD, R.string.nav_build, Icons.Rounded.Code, Icons.Rounded.Code, "nav_build"),
-      NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Rounded.CloudQueue, "nav_cloud"),
+      NavDestinationItem(ROUTE_WORKBENCH, R.string.nav_workbench, Icons.Rounded.Build, Icons.Outlined.Build, "nav_workbench"),
+      NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Outlined.DataObject, "nav_classes"),
+      NavDestinationItem(ROUTE_BUILD, R.string.nav_build, Icons.Rounded.Code, Icons.Outlined.Code, "nav_build"),
+      NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Outlined.CloudQueue, "nav_cloud"),
     )
 
   val backStackEntry by navController.currentBackStackEntryAsState()
@@ -388,35 +414,12 @@ fun Dex2cApp(
       },
       bottomBar = {
         if (showTopBarAndNav && !useRail) {
-          NavigationBar(
-            windowInsets = WindowInsets.navigationBars,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-          ) {
-            navItems.forEach { item ->
-              val selected = currentRoute == item.route
-              NavigationBarItem(
-                selected = selected,
-                onClick = { navigateTopLevel(item.route) },
-                modifier = Modifier.testTag(item.testTag),
-                icon = {
-                  if (item.route == ROUTE_BUILD && selectedMethodIds.isNotEmpty()) {
-                    BadgedBox(badge = { Badge { Text("${selectedMethodIds.size}") } }) {
-                      Icon(
-                        imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = stringResource(item.labelRes),
-                      )
-                    }
-                  } else {
-                    Icon(
-                      imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
-                      contentDescription = stringResource(item.labelRes),
-                    )
-                  }
-                },
-                label = { Text(stringResource(item.labelRes)) },
-              )
-            }
-          }
+          Dex2cFloatingBottomBar(
+            navItems = navItems,
+            currentRoute = currentRoute,
+            queuedMethodCount = selectedMethodIds.size,
+            onNavigate = ::navigateTopLevel,
+          )
         }
       },
     ) { innerPadding ->
@@ -776,3 +779,164 @@ fun Dex2cApp(
     )
   }
 }
+
+@Composable
+private fun Dex2cFloatingBottomBar(
+  navItems: List<NavDestinationItem>,
+  currentRoute: String,
+  queuedMethodCount: Int,
+  onNavigate: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Box(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .windowInsetsPadding(WindowInsets.navigationBars)
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+    contentAlignment = Alignment.Center,
+  ) {
+    Surface(
+      modifier =
+        Modifier
+          .widthIn(max = 500.dp)
+          .fillMaxWidth()
+          .testTag("dex2c_floating_bottom_bar"),
+      shape = RoundedCornerShape(28.dp),
+      color = MaterialTheme.colorScheme.surfaceContainerHigh,
+      tonalElevation = 6.dp,
+      shadowElevation = 8.dp,
+      border =
+        BorderStroke(
+          width = 1.dp,
+          color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.65f),
+        ),
+    ) {
+      Row(
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 6.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        navItems.forEach { item ->
+          val selected = currentRoute == item.route
+          val pillColor by
+            animateColorAsState(
+              targetValue =
+                if (selected) {
+                  MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.88f)
+                } else {
+                  Color.Transparent
+                },
+              animationSpec = ExpressiveMotion.effectsSpring(),
+              label = "navPillColor_${item.route}",
+            )
+          val contentColor by
+            animateColorAsState(
+              targetValue =
+                if (selected) {
+                  MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                  MaterialTheme.colorScheme.onSurfaceVariant
+                },
+              animationSpec = ExpressiveMotion.effectsSpring(),
+              label = "navContentColor_${item.route}",
+            )
+          val iconScale by
+            animateFloatAsState(
+              targetValue = if (selected) 1.08f else 1.0f,
+              animationSpec = ExpressiveMotion.spatialSpring(),
+              label = "navIconScale_${item.route}",
+            )
+          val dotAlpha by
+            animateFloatAsState(
+              targetValue = if (selected) 1f else 0f,
+              animationSpec = ExpressiveMotion.effectsSpring(),
+              label = "navDotAlpha_${item.route}",
+            )
+
+          val label = stringResource(item.labelRes)
+          Column(
+            modifier =
+              Modifier
+                .weight(1f)
+                .minimumInteractiveComponentSize()
+                .clip(RoundedCornerShape(22.dp))
+                .background(pillColor, RoundedCornerShape(22.dp))
+                .selectable(
+                  selected = selected,
+                  onClick = { onNavigate(item.route) },
+                  role = Role.Tab,
+                )
+                .padding(horizontal = 6.dp, vertical = 6.dp)
+                .testTag(item.testTag),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+          ) {
+            Box(
+              modifier = Modifier.graphicsLayer {
+                scaleX = iconScale
+                scaleY = iconScale
+              },
+              contentAlignment = Alignment.Center,
+            ) {
+              val iconVector = if (selected) item.selectedIcon else item.unselectedIcon
+              if (item.route == ROUTE_BUILD && queuedMethodCount > 0) {
+                BadgedBox(
+                  badge = {
+                    Badge(
+                      containerColor = MaterialTheme.colorScheme.primary,
+                      contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ) {
+                      Text(
+                        text = if (queuedMethodCount > 999) "999+" else "$queuedMethodCount",
+                        style = MaterialTheme.typography.labelSmall,
+                      )
+                    }
+                  }
+                ) {
+                  Icon(
+                    imageVector = iconVector,
+                    contentDescription = label,
+                    tint = contentColor,
+                    modifier = Modifier.size(20.dp),
+                  )
+                }
+              } else {
+                Icon(
+                  imageVector = iconVector,
+                  contentDescription = label,
+                  tint = contentColor,
+                  modifier = Modifier.size(20.dp),
+                )
+              }
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+              text = label,
+              style = MaterialTheme.typography.labelSmall,
+              fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+              color = contentColor,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Box(
+              modifier =
+                Modifier
+                  .size(width = if (selected) 14.dp else 4.dp, height = 3.dp)
+                  .graphicsLayer { alpha = dotAlpha }
+                  .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape,
+                  )
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
