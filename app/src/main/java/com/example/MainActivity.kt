@@ -677,8 +677,17 @@ fun Dex2cApp(
             }
 
             composable(ROUTE_ONBOARDING) {
+              val isReplay = navController.previousBackStackEntry != null
+              LaunchedEffect(appSettings.hasCompletedOnboarding, isReplay) {
+                if (appSettings.hasCompletedOnboarding && !isReplay) {
+                  navController.navigate(ROUTE_WORKBENCH) {
+                    popUpTo(ROUTE_ONBOARDING) { inclusive = true }
+                    launchSingleTop = true
+                  }
+                }
+              }
               OnboardingScreen(
-                isReplayMode = appSettings.hasCompletedOnboarding,
+                isReplayMode = isReplay || appSettings.hasCompletedOnboarding,
                 appSettings = appSettings,
                 cloudSettings = cloudSettings,
                 deviceAuthState = deviceAuthState,

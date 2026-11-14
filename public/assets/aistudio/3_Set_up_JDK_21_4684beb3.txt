@@ -1,0 +1,31 @@
+﻿2026-11-14T02:16:31.5339331Z ##[group]Run actions/setup-java@v5
+2026-11-14T02:16:31.5339868Z with:
+2026-11-14T02:16:31.5340032Z   distribution: temurin
+2026-11-14T02:16:31.5340206Z   java-version: 21
+2026-11-14T02:16:31.5340366Z   java-package: jdk
+2026-11-14T02:16:31.5340527Z   check-latest: false
+2026-11-14T02:16:31.5340690Z   set-default: true
+2026-11-14T02:16:31.5340850Z   verify-signature: false
+2026-11-14T02:16:31.5341027Z   server-id: github
+2026-11-14T02:16:31.5341239Z   server-username: GITHUB_ACTOR
+2026-11-14T02:16:31.5341435Z   server-password: GITHUB_TOKEN
+2026-11-14T02:16:31.5341630Z   overwrite-settings: true
+2026-11-14T02:16:31.5341869Z   job-status: success
+2026-11-14T02:16:31.5343785Z   token: ***
+2026-11-14T02:16:31.5344047Z   show-download-progress: false
+2026-11-14T02:16:31.5344275Z ##[endgroup]
+2026-11-14T02:16:31.6609277Z ##[group]Installed distributions
+2026-11-14T02:16:31.6665891Z Resolved Java 21.0.13+9 from tool-cache
+2026-11-14T02:16:31.6666569Z Setting Java 21.0.13+9 as the default
+2026-11-14T02:16:31.6673911Z Creating toolchains.xml for JDK version 21 from temurin
+2026-11-14T02:16:31.6725525Z Writing to /home/runner/.m2/toolchains.xml
+2026-11-14T02:16:31.6736237Z 
+2026-11-14T02:16:31.6746809Z Java configuration:
+2026-11-14T02:16:31.6747281Z   Distribution: temurin
+2026-11-14T02:16:31.6747685Z   Version: 21.0.13+9
+2026-11-14T02:16:31.6748155Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-14T02:16:31.6748537Z 
+2026-11-14T02:16:31.6749028Z ##[endgroup]
+2026-11-14T02:16:31.6787875Z Creating settings.xml with server-id: github
+2026-11-14T02:16:31.6789301Z Writing to /home/runner/.m2/settings.xml
+2026-11-14T02:16:31.6790386Z Configured MAVEN_ARGS to include -ntp to suppress Maven transfer progress logs. Set 'show-download-progress: true' to keep the download progress output.

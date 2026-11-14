@@ -1,0 +1,35 @@
+﻿2026-11-14T02:19:02.9023878Z ##[group]Run actions/upload-artifact@v6
+2026-11-14T02:19:02.9024229Z with:
+2026-11-14T02:19:02.9024458Z   name: unit-test-reports
+2026-11-14T02:19:02.9024855Z   path: app/build/reports/tests/testDebugUnitTest/
+app/build/test-results/testDebugUnitTest/
+
+2026-11-14T02:19:02.9025289Z   if-no-files-found: warn
+2026-11-14T02:19:02.9025548Z   retention-days: 14
+2026-11-14T02:19:02.9025820Z   compression-level: 6
+2026-11-14T02:19:02.9026057Z   overwrite: false
+2026-11-14T02:19:02.9026325Z   include-hidden-files: false
+2026-11-14T02:19:02.9026574Z env:
+2026-11-14T02:19:02.9026887Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-14T02:19:02.9027352Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-14T02:19:02.9027756Z   MAVEN_ARGS: -ntp
+2026-11-14T02:19:02.9028173Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-14T02:19:02.9028491Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-14T02:19:02.9028774Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-14T02:19:02.9029295Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-14T02:19:02.9030133Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-14T02:19:02.9030482Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-14T02:19:02.9030768Z ##[endgroup]
+2026-11-14T02:19:03.0488543Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-14T02:19:03.0491251Z The least common ancestor is /home/runner/work/Dex2c-Android/Dex2c-Android/app/build. This will be the root directory of the artifact
+2026-11-14T02:19:03.0492134Z With the provided path, there will be 19 files uploaded
+2026-11-14T02:19:03.0493088Z Artifact name is valid!
+2026-11-14T02:19:03.0493511Z Root directory input is valid!
+2026-11-14T02:19:03.5990299Z Beginning upload of artifact content to blob storage
+2026-11-14T02:19:04.0424959Z Uploaded bytes 23842
+2026-11-14T02:19:04.1291281Z Finished uploading artifact content to blob storage!
+2026-11-14T02:19:04.1312684Z SHA256 digest of uploaded artifact zip is c077e2387ce821b563fa59a324a036be2aad65bc0fa72f06c326f45f7a514392
+2026-11-14T02:19:04.1317359Z Finalizing artifact upload
+2026-11-14T02:19:04.6488622Z Artifact unit-test-reports.zip successfully finalized. Artifact ID 14093607779
+2026-11-14T02:19:04.6489953Z Artifact unit-test-reports has been successfully uploaded! Final size is 23842 bytes. Artifact ID is 14093607779
+2026-11-14T02:19:04.6493656Z Artifact download URL: https://github.com/userio12/Dex2c-Android/actions/runs/43545352815/artifacts/14093607779

@@ -1,0 +1,35 @@
+﻿2026-11-14T02:16:25.1699784Z Current runner version: '2.338.2'
+2026-11-14T02:16:25.1727692Z ##[group]Runner Image Provisioner
+2026-11-14T02:16:25.1728691Z Hosted Compute Agent
+2026-11-14T02:16:25.1729259Z Version: 20261103.629
+2026-11-14T02:16:25.1730159Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-14T02:16:25.1730914Z Build Date: 2026-11-03T17:26:59Z
+2026-11-14T02:16:25.1731607Z Worker ID: {c9413d27-78d8-41e2-a9f1-7c3a33d8cbf8}
+2026-11-14T02:16:25.1732336Z Region: us-west-2
+2026-11-14T02:16:25.1732859Z Cloud: AWS
+2026-11-14T02:16:25.1733351Z ##[endgroup]
+2026-11-14T02:16:25.1734928Z ##[group]Operating System
+2026-11-14T02:16:25.1735548Z Ubuntu
+2026-11-14T02:16:25.1736383Z 26.04.1
+2026-11-14T02:16:25.1736853Z LTS
+2026-11-14T02:16:25.1737302Z ##[endgroup]
+2026-11-14T02:16:25.1737854Z ##[group]Runner Image
+2026-11-14T02:16:25.1738446Z Image: ubuntu-26.04
+2026-11-14T02:16:25.1739018Z Version: 20261111.82.6
+2026-11-14T02:16:25.1740422Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.82/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-14T02:16:25.1742249Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.82
+2026-11-14T02:16:25.1743177Z ##[endgroup]
+2026-11-14T02:16:25.1744317Z ##[group]GITHUB_TOKEN Permissions
+2026-11-14T02:16:25.1746530Z Contents: read
+2026-11-14T02:16:25.1747145Z Metadata: read
+2026-11-14T02:16:25.1747704Z ##[endgroup]
+2026-11-14T02:16:25.1750378Z Secret source: Actions
+2026-11-14T02:16:25.1751366Z Cache mode: write
+2026-11-14T02:16:25.1752159Z Prepare workflow directory
+2026-11-14T02:16:25.2238445Z Prepare all required actions
+2026-11-14T02:16:25.2292153Z Getting action download info
+2026-11-14T02:16:25.6380687Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-14T02:16:26.9625623Z Download action repository 'actions/setup-java@v5' (SHA:b6effb05e454b25005698d916606bdc6ffcbf961)
+2026-11-14T02:16:27.3641258Z Download action repository 'gradle/actions@v6' (SHA:8da46b539cd8fe6ab27ca75128919a18d757604c)
+2026-11-14T02:16:28.0794643Z Download action repository 'actions/upload-artifact@v6' (SHA:b7c566a772e6b6bfb58ed0dc250532a479d7789f)
+2026-11-14T02:16:28.3302094Z Complete job name: Verify Tests & Debug APK

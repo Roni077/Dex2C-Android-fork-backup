@@ -1053,12 +1053,14 @@ class Dex2cViewModel @JvmOverloads constructor(
   fun updateAppSettings(transform: (AppSettings) -> AppSettings) {
     val updated = transform(_appSettings.value)
     _appSettings.value = updated
+    hasInitializedFilterDefaults = true
     _filterState.update {
       it.copy(
         hideFramework = updated.defaultHideFramework,
         onlyWithBytecode = updated.defaultOnlyBytecode,
       )
     }
+    _appSettingsHydrated.value = true
     pendingAppSettingsWrites++
     viewModelScope.launch {
       try {
@@ -1066,15 +1068,6 @@ class Dex2cViewModel @JvmOverloads constructor(
         pendingAppSettingsWrites = (pendingAppSettingsWrites - 1).coerceAtLeast(0)
         if (pendingAppSettingsWrites == 0) {
           _appSettings.value = persisted
-          if (!hasInitializedFilterDefaults) {
-            hasInitializedFilterDefaults = true
-            _filterState.update {
-              it.copy(
-                hideFramework = persisted.defaultHideFramework,
-                onlyWithBytecode = persisted.defaultOnlyBytecode,
-              )
-            }
-          }
           _appSettingsHydrated.value = true
         }
       } catch (t: Throwable) {

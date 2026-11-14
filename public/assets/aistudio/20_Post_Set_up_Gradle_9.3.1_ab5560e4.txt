@@ -1,0 +1,53 @@
+﻿2026-11-14T02:19:04.6794298Z Post job cleanup.
+2026-11-14T02:19:04.9051165Z In post-action step
+2026-11-14T02:19:04.9070054Z Basic Caching: This build uses the basic open-source caching provider. For faster builds and advanced features, consider switching to the Enhanced Caching provider. See https://github.com/gradle/actions/blob/main/DISTRIBUTION.md for details.
+2026-11-14T02:19:04.9072329Z Basic caching restored entry with key `setup-java-Linux-x64-gradle-55cf855c15c929c61f3d5b04ac2b6ad59bfc2a6052ddcb569fab576473e9106b`. Save was skipped.
+2026-11-14T02:19:04.9074297Z ##[group]Generating Job Summary
+2026-11-14T02:19:04.9074648Z 
+2026-11-14T02:19:04.9074744Z 
+2026-11-14T02:19:04.9074967Z <table>
+2026-11-14T02:19:04.9075378Z     <tr>
+2026-11-14T02:19:04.9075859Z         <th>Gradle Root Project</th>
+2026-11-14T02:19:04.9076415Z         <th>Requested Tasks</th>
+2026-11-14T02:19:04.9076876Z         <th>Gradle Version</th>
+2026-11-14T02:19:04.9077378Z         <th>Build Outcome</th>
+2026-11-14T02:19:04.9078103Z         <th>Build&nbsp;Scan®</th>
+2026-11-14T02:19:04.9078735Z     </tr>
+2026-11-14T02:19:04.9079106Z     <tr>
+2026-11-14T02:19:04.9088931Z         <td>Dex2C Studio</td>
+2026-11-14T02:19:04.9115115Z         <td>:app:testDebugUnitTest</td>
+2026-11-14T02:19:04.9146865Z         <td align='center'>9.3.1 :information_source:</td>
+2026-11-14T02:19:04.9147733Z         <td align='center'>:x:</td>
+2026-11-14T02:19:04.9169650Z         <td><a href="https://scans.gradle.com" rel="nofollow" target="_blank"><img src="https://img.shields.io/badge/Not%20published-lightgrey" alt="Build Scan not published" /></a></td>
+2026-11-14T02:19:04.9208096Z     </tr>
+2026-11-14T02:19:04.9241025Z </table>
+2026-11-14T02:19:04.9274725Z 
+2026-11-14T02:19:04.9291620Z <p>:information_source: Gradle version is out of date — consider upgrading. See <a href="https://docs.gradle.org/current/userguide/feature_lifecycle.html#eol_support">Gradle release lifecycle</a></p>
+2026-11-14T02:19:04.9339890Z 
+2026-11-14T02:19:04.9380317Z ============================
+2026-11-14T02:19:04.9381046Z <h4>Gradle State Caching - 🛡️ Basic</h4>
+2026-11-14T02:19:04.9381366Z 
+2026-11-14T02:19:04.9382502Z **[Basic Caching](https://github.com/gradle/actions/blob/main/docs/setup-gradle.md#basic-caching)** uses the basic open-source caching provider. For faster builds and advanced features, consider the **[Enhanced Caching](https://github.com/gradle/actions/blob/main/docs/setup-gradle.md#enhanced-caching)** provider.
+2026-11-14T02:19:04.9383803Z 
+2026-11-14T02:19:04.9384010Z <details>
+2026-11-14T02:19:04.9384467Z <summary>Entries: 1 restored, 0 saved - Expand for more details</summary>
+2026-11-14T02:19:04.9384840Z 
+2026-11-14T02:19:04.9385769Z [Cache was enabled](https://github.com/gradle/actions/blob/main/docs/setup-gradle.md#caching-build-state-between-jobs) — Gradle User Home was restored from the cache and saved for use by subsequent jobs.
+2026-11-14T02:19:04.9386620Z 
+2026-11-14T02:19:04.9386782Z <pre>
+2026-11-14T02:19:04.9387079Z Entry: Gradle User Home
+2026-11-14T02:19:04.9387808Z     Requested Key : setup-java-Linux-x64-gradle-55cf855c15c929c61f3d5b04ac2b6ad59bfc2a6052ddcb569fab576473e9106b
+2026-11-14T02:19:04.9388861Z     Restored  Key : setup-java-Linux-x64-gradle-55cf855c15c929c61f3d5b04ac2b6ad59bfc2a6052ddcb569fab576473e9106b
+2026-11-14T02:19:04.9389735Z               Size: 
+2026-11-14T02:19:04.9390063Z               Time: 
+2026-11-14T02:19:04.9390430Z               (Entry restored: exact match found)
+2026-11-14T02:19:04.9390827Z     Saved     Key : 
+2026-11-14T02:19:04.9391165Z               Size: 
+2026-11-14T02:19:04.9391494Z               Time: 
+2026-11-14T02:19:04.9391851Z               (Entry not saved: entry with key already exists)
+2026-11-14T02:19:04.9392409Z </pre>
+2026-11-14T02:19:04.9392703Z </details>
+2026-11-14T02:19:04.9392875Z 
+2026-11-14T02:19:04.9393397Z ##[endgroup]
+2026-11-14T02:19:04.9406053Z ##[notice]Gradle 9.3.1 is out of date: consider updating to the latest Gradle version. See https://docs.gradle.org/current/userguide/feature_lifecycle.html#eol_support
+2026-11-14T02:19:04.9408245Z Completed post-action step

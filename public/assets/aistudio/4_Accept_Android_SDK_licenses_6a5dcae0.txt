@@ -1,0 +1,11 @@
+﻿2026-11-14T02:16:31.6940288Z ##[group]Run if [ -d "${ANDROID_HOME:-}" ]; then
+2026-11-14T02:16:31.6940846Z [36;1mif [ -d "${ANDROID_HOME:-}" ]; then[0m
+2026-11-14T02:16:31.6941384Z [36;1m  yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true[0m
+2026-11-14T02:16:31.6941877Z [36;1mfi[0m
+2026-11-14T02:16:31.6973122Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-14T02:16:31.6973565Z env:
+2026-11-14T02:16:31.6973989Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-14T02:16:31.6974650Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-14T02:16:31.6975426Z   MAVEN_ARGS: -ntp
+2026-11-14T02:16:31.6976522Z ##[endgroup]
+2026-11-14T02:16:43.9042400Z yes: standard output: Broken pipe

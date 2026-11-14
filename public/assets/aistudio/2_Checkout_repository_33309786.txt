@@ -1,0 +1,86 @@
+﻿2026-11-14T02:16:28.3877414Z ##[group]Run actions/checkout@v6
+2026-11-14T02:16:28.3877949Z with:
+2026-11-14T02:16:28.3878237Z   repository: userio12/Dex2c-Android
+2026-11-14T02:16:28.3880673Z   token: ***
+2026-11-14T02:16:28.3880945Z   ssh-strict: true
+2026-11-14T02:16:28.3881306Z   ssh-user: git
+2026-11-14T02:16:28.3881572Z   persist-credentials: true
+2026-11-14T02:16:28.3881870Z   clean: true
+2026-11-14T02:16:28.3882136Z   sparse-checkout-cone-mode: true
+2026-11-14T02:16:28.3882442Z   fetch-depth: 1
+2026-11-14T02:16:28.3882723Z   fetch-tags: false
+2026-11-14T02:16:28.3882974Z   show-progress: true
+2026-11-14T02:16:28.3883217Z   lfs: false
+2026-11-14T02:16:28.3883478Z   submodules: false
+2026-11-14T02:16:28.3883733Z   set-safe-directory: true
+2026-11-14T02:16:28.3884080Z   allow-unsafe-pr-checkout: false
+2026-11-14T02:16:28.3884541Z ##[endgroup]
+2026-11-14T02:16:30.1120104Z Syncing repository: userio12/Dex2c-Android
+2026-11-14T02:16:30.1121942Z ##[group]Getting Git version info
+2026-11-14T02:16:30.1122411Z Working directory is '/home/runner/work/Dex2c-Android/Dex2c-Android'
+2026-11-14T02:16:30.1138271Z [command]/usr/bin/git version
+2026-11-14T02:16:30.1191165Z git version 2.56.1
+2026-11-14T02:16:30.1194033Z ##[endgroup]
+2026-11-14T02:16:30.1212190Z Temporarily overriding HOME='/home/runner/work/_temp/8969b00d-738d-4586-96db-919268b70fe9' before making global git config changes
+2026-11-14T02:16:30.1215016Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-14T02:16:30.1216125Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Dex2c-Android/Dex2c-Android
+2026-11-14T02:16:30.1342359Z Deleting the contents of '/home/runner/work/Dex2c-Android/Dex2c-Android'
+2026-11-14T02:16:30.1360752Z ##[group]Determining repository object format
+2026-11-14T02:16:30.1362477Z ##[endgroup]
+2026-11-14T02:16:30.1370578Z ##[group]Initializing the repository
+2026-11-14T02:16:30.1371259Z [command]/usr/bin/git init /home/runner/work/Dex2c-Android/Dex2c-Android
+2026-11-14T02:16:30.2041857Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-14T02:16:30.2042689Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-14T02:16:30.2043205Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-14T02:16:30.2043541Z hint: call:
+2026-11-14T02:16:30.2043712Z hint:
+2026-11-14T02:16:30.2043970Z hint: 	git config --global init.defaultBranch <name>
+2026-11-14T02:16:30.2044219Z hint:
+2026-11-14T02:16:30.2044468Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-14T02:16:30.2044854Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-14T02:16:30.2045172Z hint:
+2026-11-14T02:16:30.2045351Z hint: 	git branch -m <name>
+2026-11-14T02:16:30.2045569Z hint:
+2026-11-14T02:16:30.2045862Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-14T02:16:30.2067716Z Initialized empty Git repository in /home/runner/work/Dex2c-Android/Dex2c-Android/.git/
+2026-11-14T02:16:30.2078590Z [command]/usr/bin/git remote add origin https://github.com/userio12/Dex2c-Android
+2026-11-14T02:16:30.2160889Z ##[endgroup]
+2026-11-14T02:16:30.2163135Z ##[group]Disabling automatic garbage collection
+2026-11-14T02:16:30.2163724Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-14T02:16:30.2173027Z ##[endgroup]
+2026-11-14T02:16:30.2173916Z ##[group]Setting up auth
+2026-11-14T02:16:30.2174364Z Removing SSH command configuration
+2026-11-14T02:16:30.2178705Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-14T02:16:30.2203296Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-14T02:16:30.5020338Z Removing HTTP extra header
+2026-11-14T02:16:30.5021187Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-14T02:16:30.5100874Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-14T02:16:30.5270614Z Removing includeIf entries pointing to credentials config files
+2026-11-14T02:16:30.5271202Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-14T02:16:30.5298966Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-14T02:16:30.5475234Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-78e93c69-df7a-4aa3-965f-e19a98e5d2ba.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-14T02:16:30.5500377Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Dex2c-Android/Dex2c-Android/.git.path /home/runner/work/_temp/git-credentials-78e93c69-df7a-4aa3-965f-e19a98e5d2ba.config
+2026-11-14T02:16:30.5524494Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Dex2c-Android/Dex2c-Android/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-78e93c69-df7a-4aa3-965f-e19a98e5d2ba.config
+2026-11-14T02:16:30.5550006Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-78e93c69-df7a-4aa3-965f-e19a98e5d2ba.config
+2026-11-14T02:16:30.5582093Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-78e93c69-df7a-4aa3-965f-e19a98e5d2ba.config
+2026-11-14T02:16:30.5654098Z ##[endgroup]
+2026-11-14T02:16:30.5654595Z ##[group]Fetching the repository
+2026-11-14T02:16:30.5655450Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6f08a71d2a973cfb4ecd7da699d5328ab2a8663d:refs/remotes/origin/main
+2026-11-14T02:16:31.4609078Z From https://github.com/userio12/Dex2c-Android
+2026-11-14T02:16:31.4610252Z  * [new ref]         6f08a71d2a973cfb4ecd7da699d5328ab2a8663d -> origin/main
+2026-11-14T02:16:31.4618668Z [command]/usr/bin/git branch --list --remote origin/main
+2026-11-14T02:16:31.4645598Z   origin/main
+2026-11-14T02:16:31.4680237Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-11-14T02:16:31.4700351Z 6f08a71d2a973cfb4ecd7da699d5328ab2a8663d
+2026-11-14T02:16:31.4720957Z ##[endgroup]
+2026-11-14T02:16:31.4721440Z ##[group]Determining the checkout info
+2026-11-14T02:16:31.4721920Z ##[endgroup]
+2026-11-14T02:16:31.4722212Z [command]/usr/bin/git sparse-checkout disable
+2026-11-14T02:16:31.4770223Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-14T02:16:31.4772364Z ##[group]Checking out the ref
+2026-11-14T02:16:31.4775242Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-14T02:16:31.5035064Z Switched to a new branch 'main'
+2026-11-14T02:16:31.5043492Z branch 'main' set up to track 'origin/main'.
+2026-11-14T02:16:31.5051387Z ##[endgroup]
+2026-11-14T02:16:31.5092852Z [command]/usr/bin/git log -1 --format=%H
+2026-11-14T02:16:31.5110006Z 6f08a71d2a973cfb4ecd7da699d5328ab2a8663d

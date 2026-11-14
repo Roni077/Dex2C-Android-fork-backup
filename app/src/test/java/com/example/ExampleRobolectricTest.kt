@@ -1085,13 +1085,9 @@ class ExampleRobolectricTest {
   @Test
   fun `dex2cApp displays 4 bottom navigation tabs and opens Build hub`() {
     val app = ApplicationProvider.getApplicationContext<Application>()
-    kotlinx.coroutines.runBlocking {
-      com.example.data.AppPreferences(app).saveSettings(
-        AppSettings(hasCompletedOnboarding = false)
-      )
-    }
     val vm = Dex2cViewModel(app)
     vm.completeOnboarding()
+    ShadowLooper.idleMainLooper()
 
     composeTestRule.setContent {
       Dex2cTheme {
@@ -1100,12 +1096,8 @@ class ExampleRobolectricTest {
     }
 
     composeTestRule.waitUntil(timeoutMillis = 5_000L) {
-      vm.appSettingsHydrated.value &&
-        vm.appSettings.value.hasCompletedOnboarding &&
-        runCatching {
-          composeTestRule.onNodeWithTag("nav_workbench").assertExists()
-          true
-        }.getOrDefault(false)
+      ShadowLooper.idleMainLooper()
+      vm.appSettingsHydrated.value && vm.appSettings.value.hasCompletedOnboarding
     }
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("nav_workbench").assertIsDisplayed()
