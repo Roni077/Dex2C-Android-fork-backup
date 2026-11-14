@@ -353,19 +353,22 @@ class Dex2cViewModel @JvmOverloads constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
   private var hasInitializedFilterDefaults = false
+  private var pendingAppSettingsWrites = 0
 
   init {
     viewModelScope.launch {
       appPrefs.settingsFlow.collect { savedApp ->
-        _appSettings.value = savedApp
-        _appSettingsHydrated.value = true
-        if (!hasInitializedFilterDefaults) {
-          hasInitializedFilterDefaults = true
-          _filterState.update {
-            it.copy(
-              hideFramework = savedApp.defaultHideFramework,
-              onlyWithBytecode = savedApp.defaultOnlyBytecode,
-            )
+        if (pendingAppSettingsWrites == 0) {
+          _appSettings.value = savedApp
+          _appSettingsHydrated.value = true
+          if (!hasInitializedFilterDefaults) {
+            hasInitializedFilterDefaults = true
+            _filterState.update {
+              it.copy(
+                hideFramework = savedApp.defaultHideFramework,
+                onlyWithBytecode = savedApp.defaultOnlyBytecode,
+              )
+            }
           }
         }
       }
@@ -1056,11 +1059,33 @@ class Dex2cViewModel @JvmOverloads constructor(
         onlyWithBytecode = updated.defaultOnlyBytecode,
       )
     }
-    viewModelScope.launch { appPrefs.saveSettings(updated) }
+    pendingAppSettingsWrites++
+    viewModelScope.launch {
+      try {
+        val persisted = appPrefs.updateSettings(transform)
+        pendingAppSettingsWrites = (pendingAppSettingsWrites - 1).coerceAtLeast(0)
+        if (pendingAppSettingsWrites == 0) {
+          _appSettings.value = persisted
+          if (!hasInitializedFilterDefaults) {
+            hasInitializedFilterDefaults = true
+            _filterState.update {
+              it.copy(
+                hideFramework = persisted.defaultHideFramework,
+                onlyWithBytecode = persisted.defaultOnlyBytecode,
+              )
+            }
+          }
+          _appSettingsHydrated.value = true
+        }
+      } catch (t: Throwable) {
+        pendingAppSettingsWrites = (pendingAppSettingsWrites - 1).coerceAtLeast(0)
+        throw t
+      }
+    }
   }
 
   fun completeOnboarding() {
-    if (_appSettings.value.hasCompletedOnboarding) return
+    if (_appSettings.value.hasCompletedOnboarding && pendingAppSettingsWrites == 0) return
     updateAppSettings { it.copy(hasCompletedOnboarding = true) }
   }
 

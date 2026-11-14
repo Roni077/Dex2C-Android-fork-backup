@@ -1,0 +1,57 @@
+﻿2026-11-13T15:07:55.2452625Z ##[group]Run gradle/actions/setup-gradle@v6
+2026-11-13T15:07:55.2452975Z with:
+2026-11-13T15:07:55.2453191Z   gradle-version: 9.3.1
+2026-11-13T15:07:55.2453441Z   cache-provider: basic
+2026-11-13T15:07:55.2453676Z   cache-disabled: false
+2026-11-13T15:07:55.2453902Z   cache-read-only: false
+2026-11-13T15:07:55.2454138Z   cache-write-only: false
+2026-11-13T15:07:55.2454386Z   cache-overwrite-existing: false
+2026-11-13T15:07:55.2454649Z   cache-cleanup: on-success
+2026-11-13T15:07:55.2454936Z   gradle-home-cache-includes: caches
+notifications
+
+2026-11-13T15:07:55.2455273Z   add-job-summary: always
+2026-11-13T15:07:55.2456092Z   add-job-summary-as-pr-comment: never
+2026-11-13T15:07:55.2456387Z   dependency-graph: disabled
+2026-11-13T15:07:55.2456707Z   dependency-graph-report-dir: dependency-graph-reports
+2026-11-13T15:07:55.2457113Z   dependency-graph-continue-on-failure: true
+2026-11-13T15:07:55.2457407Z   build-scan-publish: false
+2026-11-13T15:07:55.2457646Z   validate-wrappers: true
+2026-11-13T15:07:55.2457940Z   allow-snapshot-wrappers: false
+2026-11-13T15:07:55.2458204Z   gradle-home-cache-strict-match: false
+2026-11-13T15:07:55.2458478Z   workflow-job-context: null
+2026-11-13T15:07:55.2460765Z   github-token: ***
+2026-11-13T15:07:55.2460980Z env:
+2026-11-13T15:07:55.2461282Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T15:07:55.2461752Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T15:07:55.2462123Z   MAVEN_ARGS: -ntp
+2026-11-13T15:07:55.2462329Z ##[endgroup]
+2026-11-13T15:07:55.7780139Z Merged default JDK locations into /home/runner/.m2/toolchains.xml
+2026-11-13T15:07:55.7801685Z Basic Caching: This build uses the basic open-source caching provider. For faster builds and advanced features, consider switching to the Enhanced Caching provider. See https://github.com/gradle/actions/blob/main/DISTRIBUTION.md for details.
+2026-11-13T15:07:55.9727917Z Cache hit for: setup-java-Linux-x64-gradle-55cf855c15c929c61f3d5b04ac2b6ad59bfc2a6052ddcb569fab576473e9106b
+2026-11-13T15:07:57.0996008Z Received 121634816 of 1025972955 (11.9%), 115.9 MBs/sec
+2026-11-13T15:07:58.1004885Z Received 268435456 of 1025972955 (26.2%), 127.9 MBs/sec
+2026-11-13T15:07:59.1090215Z Received 432013312 of 1025972955 (42.1%), 137.2 MBs/sec
+2026-11-13T15:08:00.1099889Z Received 536870912 of 1025972955 (52.3%), 127.7 MBs/sec
+2026-11-13T15:08:01.1090151Z Received 671088640 of 1025972955 (65.4%), 127.8 MBs/sec
+2026-11-13T15:08:02.1113758Z Received 826277888 of 1025972955 (80.5%), 131.0 MBs/sec
+2026-11-13T15:08:03.1078344Z Received 1025972955 of 1025972955 (100.0%), 139.6 MBs/sec
+2026-11-13T15:08:03.1081675Z Cache Size: ~978 MB (1025972955 B)
+2026-11-13T15:08:03.1212659Z [command]/usr/bin/tar -xf /home/runner/work/_temp/1058d4f3-1860-4f31-b47f-f55d3ede7b79/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T15:08:20.7682960Z Cache restored successfully
+2026-11-13T15:08:20.8057116Z Basic caching restored from cache key: setup-java-Linux-x64-gradle-55cf855c15c929c61f3d5b04ac2b6ad59bfc2a6052ddcb569fab576473e9106b
+2026-11-13T15:08:20.8111182Z ##[group]All Gradle Wrapper jars are valid
+2026-11-13T15:08:20.8112270Z 
+2026-11-13T15:08:20.8112638Z ##[endgroup]
+2026-11-13T15:08:20.8621199Z ##[group]Provision Gradle 9.3.1
+2026-11-13T15:08:34.5613546Z Cache hit for: gradle-9.3.1
+2026-11-13T15:08:35.6794012Z Received 134217728 of 136943103 (98.0%), 126.7 MBs/sec
+2026-11-13T15:08:35.7424581Z Received 136943103 of 136943103 (100.0%), 121.7 MBs/sec
+2026-11-13T15:08:35.7425695Z Cache Size: ~131 MB (136943103 B)
+2026-11-13T15:08:35.7460741Z [command]/usr/bin/tar -xf /home/runner/work/_temp/bcfe16ea-00ca-46c7-8779-1098008c531c/cache.tzst -P -C /home/runner/work/Dex2c-Android/Dex2c-Android --use-compress-program unzstd
+2026-11-13T15:08:35.9090503Z Cache restored successfully
+2026-11-13T15:08:35.9140504Z Restored Gradle distribution gradle-9.3.1 from cache to /home/runner/work/_temp/.gradle-actions/gradle-installations/downloads/gradle-9.3.1-bin.zip
+2026-11-13T15:08:35.9154797Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/.gradle-actions/gradle-installations/downloads/gradle-9.3.1-bin.zip
+2026-11-13T15:08:36.9860934Z Extracted Gradle 9.3.1 to /home/runner/work/_temp/.gradle-actions/gradle-installations/installs/gradle-9.3.1
+2026-11-13T15:08:36.9862125Z Provisioned Gradle executable /home/runner/work/_temp/.gradle-actions/gradle-installations/installs/gradle-9.3.1/bin/gradle
+2026-11-13T15:08:36.9863359Z ##[endgroup]

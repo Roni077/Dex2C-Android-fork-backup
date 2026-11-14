@@ -1,0 +1,8 @@
+2026-11-13T15:07:37.5830000Z Evaluating verify-and-debug.if
+2026-11-13T15:07:37.5830000Z Evaluating: success()
+2026-11-13T15:07:37.5830000Z Result: true
+2026-11-13T15:07:37.5840000Z Requested labels: ubuntu-latest
+2026-11-13T15:07:37.5840000Z Job defined at: userio12/Dex2c-Android/.github/workflows/build.yml@refs/heads/main
+2026-11-13T15:07:37.5840000Z Waiting for a runner to pick up this job...
+2026-11-13T15:07:37.9750000Z Job is waiting for a hosted runner to come online.
+2026-11-13T15:07:37.9760000Z Job is about to start running on the hosted runner: GitHub Actions 1000000977

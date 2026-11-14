@@ -63,45 +63,61 @@ class AppPreferences(private val context: Context) {
     val HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
   }
 
+  private fun readSettings(prefs: androidx.datastore.preferences.core.Preferences): AppSettings {
+    val defaults = AppSettings()
+    return AppSettings(
+      themeMode =
+        prefs[Keys.THEME_MODE]?.let { runCatching { AppThemeMode.valueOf(it) }.getOrNull() }
+          ?: defaults.themeMode,
+      dynamicColor = prefs[Keys.DYNAMIC_COLOR] ?: defaults.dynamicColor,
+      accentSeedHex =
+        prefs[Keys.ACCENT_SEED_HEX]?.takeIf { isValidHexColor(it) } ?: defaults.accentSeedHex,
+      codeFontSizeSp = (prefs[Keys.CODE_FONT_SIZE_SP] ?: defaults.codeFontSizeSp).coerceIn(10, 18),
+      showLineNumbers = prefs[Keys.SHOW_LINE_NUMBERS] ?: defaults.showLineNumbers,
+      maxCodePreviewLines =
+        (prefs[Keys.MAX_CODE_PREVIEW_LINES] ?: defaults.maxCodePreviewLines).coerceIn(500, 10000),
+      defaultHideFramework = prefs[Keys.DEFAULT_HIDE_FRAMEWORK] ?: defaults.defaultHideFramework,
+      defaultOnlyBytecode = prefs[Keys.DEFAULT_ONLY_BYTECODE] ?: defaults.defaultOnlyBytecode,
+      autoSelectMethodLimit =
+        (prefs[Keys.AUTO_SELECT_METHOD_LIMIT] ?: defaults.autoSelectMethodLimit).coerceIn(8, 256),
+      preferRustJniBridge = prefs[Keys.PREFER_RUST_JNI_BRIDGE] ?: defaults.preferRustJniBridge,
+      hasCompletedOnboarding = prefs[Keys.HAS_COMPLETED_ONBOARDING] ?: defaults.hasCompletedOnboarding,
+    )
+  }
+
+  private fun writeSettings(
+    prefs: androidx.datastore.preferences.core.MutablePreferences,
+    settings: AppSettings,
+  ) {
+    prefs[Keys.THEME_MODE] = settings.themeMode.name
+    prefs[Keys.DYNAMIC_COLOR] = settings.dynamicColor
+    prefs[Keys.ACCENT_SEED_HEX] =
+      if (isValidHexColor(settings.accentSeedHex)) normalizeHexColor(settings.accentSeedHex)
+      else "#2EE59D"
+    prefs[Keys.CODE_FONT_SIZE_SP] = settings.codeFontSizeSp
+    prefs[Keys.SHOW_LINE_NUMBERS] = settings.showLineNumbers
+    prefs[Keys.MAX_CODE_PREVIEW_LINES] = settings.maxCodePreviewLines
+    prefs[Keys.DEFAULT_HIDE_FRAMEWORK] = settings.defaultHideFramework
+    prefs[Keys.DEFAULT_ONLY_BYTECODE] = settings.defaultOnlyBytecode
+    prefs[Keys.AUTO_SELECT_METHOD_LIMIT] = settings.autoSelectMethodLimit
+    prefs[Keys.PREFER_RUST_JNI_BRIDGE] = settings.preferRustJniBridge
+    prefs[Keys.HAS_COMPLETED_ONBOARDING] = settings.hasCompletedOnboarding
+  }
+
   val settingsFlow: Flow<AppSettings> =
-    context.appDataStore.data.map { prefs ->
-      val defaults = AppSettings()
-      AppSettings(
-        themeMode =
-          prefs[Keys.THEME_MODE]?.let { runCatching { AppThemeMode.valueOf(it) }.getOrNull() }
-            ?: defaults.themeMode,
-        dynamicColor = prefs[Keys.DYNAMIC_COLOR] ?: defaults.dynamicColor,
-        accentSeedHex =
-          prefs[Keys.ACCENT_SEED_HEX]?.takeIf { isValidHexColor(it) } ?: defaults.accentSeedHex,
-        codeFontSizeSp = (prefs[Keys.CODE_FONT_SIZE_SP] ?: defaults.codeFontSizeSp).coerceIn(10, 18),
-        showLineNumbers = prefs[Keys.SHOW_LINE_NUMBERS] ?: defaults.showLineNumbers,
-        maxCodePreviewLines =
-          (prefs[Keys.MAX_CODE_PREVIEW_LINES] ?: defaults.maxCodePreviewLines).coerceIn(500, 10000),
-        defaultHideFramework = prefs[Keys.DEFAULT_HIDE_FRAMEWORK] ?: defaults.defaultHideFramework,
-        defaultOnlyBytecode = prefs[Keys.DEFAULT_ONLY_BYTECODE] ?: defaults.defaultOnlyBytecode,
-        autoSelectMethodLimit =
-          (prefs[Keys.AUTO_SELECT_METHOD_LIMIT] ?: defaults.autoSelectMethodLimit).coerceIn(8, 256),
-        preferRustJniBridge = prefs[Keys.PREFER_RUST_JNI_BRIDGE] ?: defaults.preferRustJniBridge,
-        hasCompletedOnboarding = prefs[Keys.HAS_COMPLETED_ONBOARDING] ?: defaults.hasCompletedOnboarding,
-      )
-    }
+    context.appDataStore.data.map { prefs -> readSettings(prefs) }
 
   suspend fun saveSettings(settings: AppSettings) {
+    context.appDataStore.edit { prefs -> writeSettings(prefs, settings) }
+  }
+
+  suspend fun updateSettings(transform: (AppSettings) -> AppSettings): AppSettings {
+    var updated = AppSettings()
     context.appDataStore.edit { prefs ->
-      prefs[Keys.THEME_MODE] = settings.themeMode.name
-      prefs[Keys.DYNAMIC_COLOR] = settings.dynamicColor
-      prefs[Keys.ACCENT_SEED_HEX] =
-        if (isValidHexColor(settings.accentSeedHex)) normalizeHexColor(settings.accentSeedHex)
-        else "#2EE59D"
-      prefs[Keys.CODE_FONT_SIZE_SP] = settings.codeFontSizeSp
-      prefs[Keys.SHOW_LINE_NUMBERS] = settings.showLineNumbers
-      prefs[Keys.MAX_CODE_PREVIEW_LINES] = settings.maxCodePreviewLines
-      prefs[Keys.DEFAULT_HIDE_FRAMEWORK] = settings.defaultHideFramework
-      prefs[Keys.DEFAULT_ONLY_BYTECODE] = settings.defaultOnlyBytecode
-      prefs[Keys.AUTO_SELECT_METHOD_LIMIT] = settings.autoSelectMethodLimit
-      prefs[Keys.PREFER_RUST_JNI_BRIDGE] = settings.preferRustJniBridge
-      prefs[Keys.HAS_COMPLETED_ONBOARDING] = settings.hasCompletedOnboarding
+      updated = transform(readSettings(prefs))
+      writeSettings(prefs, updated)
     }
+    return updated
   }
 
   suspend fun resetToDefaults(preserveOnboarding: Boolean = true) {

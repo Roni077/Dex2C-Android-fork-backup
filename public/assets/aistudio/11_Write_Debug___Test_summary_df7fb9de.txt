@@ -1,0 +1,25 @@
+﻿2026-11-13T15:10:55.4884160Z ##[group]Run if [ "true" = "true" ]; then
+2026-11-13T15:10:55.4884553Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-13T15:10:55.4884910Z [36;1m  TEST_STATUS='Executed (:app:testDebugUnitTest)'[0m
+2026-11-13T15:10:55.4885244Z [36;1melse[0m
+2026-11-13T15:10:55.4885486Z [36;1m  TEST_STATUS='Skipped'[0m
+2026-11-13T15:10:55.4885749Z [36;1mfi[0m
+2026-11-13T15:10:55.4885956Z [36;1m{[0m
+2026-11-13T15:10:55.4886180Z [36;1m  echo "### Debug & Test Stage"[0m
+2026-11-13T15:10:55.4886476Z [36;1m  echo "- **JDK**: 21 (Temurin)"[0m
+2026-11-13T15:10:55.4886762Z [36;1m  echo "- **Gradle**: 9.3.1"[0m
+2026-11-13T15:10:55.4887085Z [36;1m  echo "- **Unit Tests**: ${TEST_STATUS}"[0m
+2026-11-13T15:10:55.4887500Z [36;1m  echo "- **Debug APK**: :app:assembleDebug -> dex2c-studio-debug-apk"[0m
+2026-11-13T15:10:55.4887896Z [36;1m} >> "$GITHUB_STEP_SUMMARY"[0m
+2026-11-13T15:10:55.4920499Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-13T15:10:55.4920868Z env:
+2026-11-13T15:10:55.4921199Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T15:10:55.4921738Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-9/x64
+2026-11-13T15:10:55.4922124Z   MAVEN_ARGS: -ntp
+2026-11-13T15:10:55.4922398Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-13T15:10:55.4922729Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-13T15:10:55.4923187Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-13T15:10:55.4923643Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-13T15:10:55.4924127Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-13T15:10:55.4924465Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-13T15:10:55.4924746Z ##[endgroup]
