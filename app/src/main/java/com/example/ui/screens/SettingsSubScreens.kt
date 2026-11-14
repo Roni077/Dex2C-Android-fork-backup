@@ -5,11 +5,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Code
@@ -56,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.BuildConfig
 import com.example.R
@@ -77,42 +74,23 @@ import com.example.ui.theme.JetBrainsMonoFontFamily
 import kotlin.math.roundToInt
 
 @Composable
-private fun ResponsiveSubScreenColumn(
-  minViewportHeightWithoutScroll: Dp = 560.dp,
-  forceScroll: Boolean = false,
-  content: @Composable ColumnScope.(isWide: Boolean) -> Unit,
-) {
-  BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-    val isWide = maxWidth >= 660.dp
-    val needsScroll = forceScroll || maxHeight < minViewportHeightWithoutScroll
-    val scrollState = rememberScrollState()
-    Column(
-      modifier =
-        Modifier
-          .fillMaxSize()
-          .then(if (needsScroll) Modifier.verticalScroll(scrollState) else Modifier)
-          .padding(horizontal = 16.dp, vertical = 8.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      content(isWide)
-    }
-  }
-}
-
-@Composable
 fun SettingsAppearanceSubScreen(
   appSettings: AppSettings,
   onUpdateAppSettings: ((AppSettings) -> AppSettings) -> Unit,
 ) {
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 580.dp) { isWide ->
-    val postureCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "Theme Posture") {
         AppThemeMode.entries.forEach { mode ->
           Row(
             modifier =
               Modifier.fillMaxWidth()
                 .clickable { onUpdateAppSettings { it.copy(themeMode = mode) } }
-                .padding(vertical = 3.dp),
+                .padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
           ) {
             RadioButton(
@@ -133,43 +111,30 @@ fun SettingsAppearanceSubScreen(
       }
     }
 
-    val paletteCards: @Composable () -> Unit = {
-      Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        SubScreenCard(title = "Dynamic Wallpaper Colors") {
-          val supportsDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-          SettingsToggleRow(
-            title = "Wallpaper-Based Palette",
-            subtitle =
-              if (supportsDynamic) "Extract personalized Material 3 tonal roles from your Android wallpaper"
-              else "Available on Android 12+ (custom accent seed used below)",
-            checked = appSettings.dynamicColor,
-            enabled = supportsDynamic,
-            onCheckedChange = { enabled -> onUpdateAppSettings { it.copy(dynamicColor = enabled) } },
-            testTag = "settings_dynamic_color_switch",
-          )
-        }
-
-        SubScreenCard(title = "Custom Accent Color") {
-          AccentColorPickerSection(
-            selectedHex = appSettings.accentSeedHex,
-            enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
-            onSelectHex = { hex -> onUpdateAppSettings { it.copy(accentSeedHex = hex, dynamicColor = false) } },
-          )
-        }
+    item {
+      SubScreenCard(title = "Dynamic Wallpaper Colors") {
+        val supportsDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        SettingsToggleRow(
+          title = "Wallpaper-Based Palette",
+          subtitle =
+            if (supportsDynamic) "Extract personalized Material 3 tonal roles from your Android wallpaper (works with AMOLED Black too)"
+            else "Available on Android 12+ (custom accent seed used below)",
+          checked = appSettings.dynamicColor,
+          enabled = supportsDynamic,
+          onCheckedChange = { enabled -> onUpdateAppSettings { it.copy(dynamicColor = enabled) } },
+          testTag = "settings_dynamic_color_switch",
+        )
       }
     }
 
-    if (isWide) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { postureCard() }
-        Column(modifier = Modifier.weight(1f)) { paletteCards() }
+    item {
+      SubScreenCard(title = "Custom Accent Color") {
+        AccentColorPickerSection(
+          selectedHex = appSettings.accentSeedHex,
+          enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
+          onSelectHex = { hex -> onUpdateAppSettings { it.copy(accentSeedHex = hex, dynamicColor = false) } },
+        )
       }
-    } else {
-      postureCard()
-      paletteCards()
     }
   }
 }
@@ -190,8 +155,12 @@ fun SettingsCodeEditorSubScreen(
     |}
     """.trimMargin()
 
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 540.dp) { isWide ->
-    val controlsCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "Typography & Line Gutter") {
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -208,7 +177,7 @@ fun SettingsCodeEditorSubScreen(
           steps = 7,
           modifier = Modifier.fillMaxWidth().testTag("settings_code_font_slider"),
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         SettingsToggleRow(
           title = "Show Line Numbers & Hex Offsets",
           subtitle = "Display left gutter line indices in C/C++ and Dalvik instruction viewers",
@@ -216,13 +185,13 @@ fun SettingsCodeEditorSubScreen(
           onCheckedChange = { show -> onUpdateAppSettings { it.copy(showLineNumbers = show) } },
           testTag = "settings_show_line_numbers_switch",
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         Text(
           text = "Code Viewer Line Cap",
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           listOf(1000, 2500, 5000).forEach { cap ->
             FilterChip(
@@ -236,26 +205,13 @@ fun SettingsCodeEditorSubScreen(
       }
     }
 
-    val previewCard: @Composable () -> Unit = {
+    item {
       SubScreenCard(title = "Live Code Preview") {
         SyntaxCodeViewer(
           code = sampleSnippet,
-          modifier = Modifier.fillMaxWidth().height(148.dp),
+          modifier = Modifier.fillMaxWidth().height(160.dp),
         )
       }
-    }
-
-    if (isWide) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { controlsCard() }
-        Column(modifier = Modifier.weight(1f)) { previewCard() }
-      }
-    } else {
-      controlsCard()
-      previewCard()
     }
   }
 }
@@ -269,8 +225,12 @@ fun SettingsDexParserSubScreen(
   onGoToPipelineConfig: () -> Unit,
   onOpenRustBridge: () -> Unit,
 ) {
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 540.dp) { isWide ->
-    val filterCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "Default Class Explorer Filters") {
         SettingsToggleRow(
           title = "Hide Android & Support Frameworks",
@@ -279,7 +239,7 @@ fun SettingsDexParserSubScreen(
           onCheckedChange = { hide -> onUpdateAppSettings { it.copy(defaultHideFramework = hide) } },
           testTag = "settings_default_hide_framework_switch",
         )
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(8.dp))
         SettingsToggleRow(
           title = "Only Methods with Dalvik Bytecode",
           subtitle = "Hide abstract and native stubs lacking DEX code_item payloads",
@@ -287,13 +247,13 @@ fun SettingsDexParserSubScreen(
           onCheckedChange = { only -> onUpdateAppSettings { it.copy(defaultOnlyBytecode = only) } },
           testTag = "settings_default_only_bytecode_switch",
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         Text(
           text = "Auto-Select App Methods Cap",
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           listOf(16, 32, 64, 96).forEach { limit ->
             FilterChip(
@@ -307,7 +267,7 @@ fun SettingsDexParserSubScreen(
       }
     }
 
-    val bridgeCard: @Composable () -> Unit = {
+    item {
       SubScreenCard(title = "Native Parser & Kirlif/d2c Integration") {
         SettingsToggleRow(
           title = "Prefer Rust dexparser-rs JNI Bridge",
@@ -316,16 +276,16 @@ fun SettingsDexParserSubScreen(
           onCheckedChange = { pref -> onUpdateAppSettings { it.copy(preferRustJniBridge = pref) } },
           testTag = "settings_prefer_rust_switch",
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         FlowRow(
           horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalArrangement = Arrangement.spacedBy(6.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           TagPill(text = "allow-init: ${transpilerConfig.allowInit}")
           TagPill(text = "Loader: ${transpilerConfig.customLoaderClass.substringAfterLast('.')}")
           TagPill(text = "ABIs: ${transpilerConfig.targetAbis.joinToString(",")}")
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -349,19 +309,6 @@ fun SettingsDexParserSubScreen(
         }
       }
     }
-
-    if (isWide) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { filterCard() }
-        Column(modifier = Modifier.weight(1f)) { bridgeCard() }
-      }
-    } else {
-      filterCard()
-      bridgeCard()
-    }
   }
 }
 
@@ -383,11 +330,12 @@ fun SettingsGitHubCloudSubScreen(
       Dex2cWorkflowGenerator.generateDex2cYaml(cloudSettings, transpilerConfig)
     }
 
-  ResponsiveSubScreenColumn(
-    minViewportHeightWithoutScroll = 640.dp,
-    forceScroll = showYamlPreview,
-  ) { isWide ->
-    val oauthCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "GitHub OAuth Device Flow (github.com/login/device)") {
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -416,7 +364,7 @@ fun SettingsGitHubCloudSubScreen(
             }
           }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         OutlinedTextField(
           value = cloudSettings.githubClientId,
           onValueChange = { id -> onUpdateCloudSettings { it.copy(githubClientId = id.trim()) } },
@@ -427,13 +375,13 @@ fun SettingsGitHubCloudSubScreen(
           textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = JetBrainsMonoFontFamily),
           modifier = Modifier.fillMaxWidth().testTag("settings_client_id_input"),
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         Text(
           text = "Leave blank to use GitHub CLI's built-in Client ID (${com.example.cloud.GITHUB_CLI_CLIENT_ID}), or enter your own GitHub OAuth App Client ID.",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         FlowRow(
           horizontalArrangement = Arrangement.spacedBy(8.dp),
           verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -470,7 +418,7 @@ fun SettingsGitHubCloudSubScreen(
       }
     }
 
-    val repoCard: @Composable () -> Unit = {
+    item {
       SubScreenCard(title = "Private Workspace Repository & dex2c.yml") {
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -494,7 +442,7 @@ fun SettingsGitHubCloudSubScreen(
             modifier = Modifier.weight(1.4f).testTag("settings_repo_name_input"),
           )
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         OutlinedTextField(
           value = cloudSettings.defaultBranch,
           onValueChange = { v -> onUpdateCloudSettings { it.copy(defaultBranch = v.trim()) } },
@@ -503,7 +451,7 @@ fun SettingsGitHubCloudSubScreen(
           textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
           modifier = Modifier.fillMaxWidth().testTag("settings_repo_branch_input"),
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         SettingsToggleRow(
           title = "Create as Private Repository",
           subtitle = "Keeps uploaded APKs, dcc.cfg, and filter.txt private to your account",
@@ -511,7 +459,7 @@ fun SettingsGitHubCloudSubScreen(
           onCheckedChange = { priv -> onUpdateCloudSettings { it.copy(privateRepo = priv) } },
           testTag = "settings_private_repo_switch",
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         FlowRow(
           horizontalArrangement = Arrangement.spacedBy(8.dp),
           verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -543,26 +491,13 @@ fun SettingsGitHubCloudSubScreen(
           }
         }
         if (showYamlPreview) {
-          Spacer(Modifier.height(8.dp))
+          Spacer(Modifier.height(10.dp))
           SyntaxCodeViewer(
             code = generatedYaml,
-            modifier = Modifier.fillMaxWidth().height(240.dp),
+            modifier = Modifier.fillMaxWidth().height(260.dp),
           )
         }
       }
-    }
-
-    if (isWide && !showYamlPreview) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { oauthCard() }
-        Column(modifier = Modifier.weight(1f)) { repoCard() }
-      }
-    } else {
-      oauthCard()
-      repoCard()
     }
   }
 }
@@ -573,15 +508,19 @@ fun SettingsNdkSigningSubScreen(
   cloudSettings: CloudSettings,
   onUpdateCloudSettings: ((CloudSettings) -> CloudSettings) -> Unit,
 ) {
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 540.dp) { isWide ->
-    val runnersCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "Android NDK & JDK Runners") {
         Text(
           text = "Android NDK Revision (ubuntu-latest)",
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           SUPPORTED_NDK_VERSIONS.forEach { ndk ->
             FilterChip(
@@ -592,13 +531,13 @@ fun SettingsNdkSigningSubScreen(
             )
           }
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         Text(
           text = "Temurin JDK Version",
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           SUPPORTED_JDK_VERSIONS.forEach { jdk ->
             FilterChip(
@@ -612,14 +551,14 @@ fun SettingsNdkSigningSubScreen(
       }
     }
 
-    val signingCard: @Composable () -> Unit = {
+    item {
       SubScreenCard(title = "APK Signing & Upload Policy") {
         CloudSigningMode.entries.forEach { mode ->
           Row(
             modifier =
               Modifier.fillMaxWidth()
                 .clickable { onUpdateCloudSettings { it.copy(signingMode = mode) } }
-                .padding(vertical = 3.dp),
+                .padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
           ) {
             RadioButton(
@@ -637,13 +576,13 @@ fun SettingsNdkSigningSubScreen(
             }
           }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         Text(
           text = "Direct Repo APK Upload Threshold",
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           listOf(25, 45, 75).forEach { mb ->
             FilterChip(
@@ -654,13 +593,13 @@ fun SettingsNdkSigningSubScreen(
             )
           }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         Text(
           text = "Workflow Poll Interval",
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           listOf(5, 6, 10, 15).forEach { sec ->
             FilterChip(
@@ -673,19 +612,6 @@ fun SettingsNdkSigningSubScreen(
         }
       }
     }
-
-    if (isWide) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { runnersCard() }
-        Column(modifier = Modifier.weight(1f)) { signingCard() }
-      }
-    } else {
-      runnersCard()
-      signingCard()
-    }
   }
 }
 
@@ -697,66 +623,72 @@ fun SettingsNotificationsSubScreen(
   onRequestPermission: () -> Unit,
   onSendTestNotification: () -> Unit,
 ) {
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 360.dp) {
-    SubScreenCard(title = "Background Cloud Build Push Alerts") {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Text("Build Completion Alerts", style = MaterialTheme.typography.titleSmall)
-            TagPill(
-              text = if (hasNotificationPermission) "Allowed" else "Permission Needed",
-              containerColor =
-                if (hasNotificationPermission) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.secondaryContainer,
-              contentColor =
-                if (hasNotificationPermission) MaterialTheme.colorScheme.onPrimaryContainer
-                else MaterialTheme.colorScheme.onSecondaryContainer,
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
+      SubScreenCard(title = "Background Cloud Build Push Alerts") {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              Text("Build Completion Alerts", style = MaterialTheme.typography.titleSmall)
+              TagPill(
+                text = if (hasNotificationPermission) "Allowed" else "Permission Needed",
+                containerColor =
+                  if (hasNotificationPermission) MaterialTheme.colorScheme.primaryContainer
+                  else MaterialTheme.colorScheme.secondaryContainer,
+                contentColor =
+                  if (hasNotificationPermission) MaterialTheme.colorScheme.onPrimaryContainer
+                  else MaterialTheme.colorScheme.onSecondaryContainer,
+              )
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+              text = "Uses WorkManager with network constraints to alert you when cloud APK builds finish or fail, even while backgrounded.",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
           }
-          Spacer(Modifier.height(4.dp))
-          Text(
-            text = "Uses WorkManager with network constraints to alert you when cloud APK builds finish or fail, even while backgrounded.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          Switch(
+            checked = cloudSettings.notificationsEnabled,
+            onCheckedChange = onToggleNotifications,
+            modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_notifications_switch"),
           )
         }
-        Switch(
-          checked = cloudSettings.notificationsEnabled,
-          onCheckedChange = onToggleNotifications,
-          modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_notifications_switch"),
-        )
-      }
 
-      Spacer(Modifier.height(10.dp))
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        if (!hasNotificationPermission) {
-          Button(
-            onClick = onRequestPermission,
-            modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_request_notif_btn"),
+        Spacer(Modifier.height(12.dp))
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          if (!hasNotificationPermission) {
+            Button(
+              onClick = onRequestPermission,
+              modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_request_notif_btn"),
+            ) {
+              Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
+              Spacer(Modifier.width(6.dp))
+              Text("Allow Permission")
+            }
+          }
+          OutlinedButton(
+            onClick = onSendTestNotification,
+            enabled = hasNotificationPermission,
+            modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_test_notif_btn"),
           ) {
             Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Allow Permission")
+            Text("Send Test Alert")
           }
-        }
-        OutlinedButton(
-          onClick = onSendTestNotification,
-          enabled = hasNotificationPermission,
-          modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_test_notif_btn"),
-        ) {
-          Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(6.dp))
-          Text("Send Test Alert")
         }
       }
     }
@@ -774,8 +706,12 @@ fun SettingsStorageResetSubScreen(
   var showResetDialog by remember { mutableStateOf(false) }
   var alsoSignOutOnReset by remember { mutableStateOf(false) }
 
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 420.dp) { isWide ->
-    val historyCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "Workspace History & Binary Cache") {
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -792,7 +728,7 @@ fun SettingsStorageResetSubScreen(
           }
           TagPill(text = "$recentHistoryCount items")
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         OutlinedButton(
           onClick = { showClearHistoryDialog = true },
           enabled = recentHistoryCount > 0,
@@ -805,14 +741,14 @@ fun SettingsStorageResetSubScreen(
       }
     }
 
-    val resetCard: @Composable () -> Unit = {
+    item {
       SubScreenCard(title = "Restore Defaults") {
         Text(
           text = "Reset Appearance, Code Editor formatting, DEX Parser defaults, Transpiler Pipeline options, and NDK/Signing settings.",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         Button(
           onClick = {
             alsoSignOutOnReset = false
@@ -830,19 +766,6 @@ fun SettingsStorageResetSubScreen(
           Text("Reset All Settings to Defaults")
         }
       }
-    }
-
-    if (isWide) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { historyCard() }
-        Column(modifier = Modifier.weight(1f)) { resetCard() }
-      }
-    } else {
-      historyCard()
-      resetCard()
     }
   }
 
@@ -918,8 +841,12 @@ fun SettingsAboutSubScreen(
   transpilerConfig: TranspilerConfig,
   onReplayOnboarding: () -> Unit,
 ) {
-  ResponsiveSubScreenColumn(minViewportHeightWithoutScroll = 500.dp) { isWide ->
-    val infoCard: @Composable () -> Unit = {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    item {
       SubScreenCard(title = "Dex2C Studio") {
         AboutRow("App Name", stringResource(R.string.app_name))
         AboutRow("Version", "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
@@ -930,48 +857,35 @@ fun SettingsAboutSubScreen(
       }
     }
 
-    val tourAndToolchains: @Composable () -> Unit = {
-      Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        SubScreenCard(title = "Getting Started & Guided Setup") {
-          Text(
-            text = "Revisit the Dex2C Studio tour, live theme & code editor setup, GitHub Cloud OAuth wizard, and notification setup.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-          Spacer(Modifier.height(10.dp))
-          OutlinedButton(
-            onClick = onReplayOnboarding,
-            modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_replay_onboarding_btn"),
-          ) {
-            Icon(Icons.Rounded.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.settings_replay_onboarding))
-          }
-        }
-
-        SubScreenCard(title = "Bundled Toolchains & Integrations") {
-          Text(
-            text = "• Kirlif/d2c & codehasan/dex2c transpiler parity (dcc.cfg, filter.txt, allow-init, custom loader)\n" +
-              "• androguard/dex-parser structural map_list + Rust dexparser-rs JNI bridge scaffolding\n" +
-              "• GitHub OAuth Device Flow + Private Workspace dex2c.yml Actions + WorkManager push alerts",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
+    item {
+      SubScreenCard(title = "Getting Started & Guided Setup") {
+        Text(
+          text = "Revisit the 4-step Dex2C Studio tour, live theme & code editor setup, GitHub Cloud OAuth wizard, and notification setup.",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(12.dp))
+        OutlinedButton(
+          onClick = onReplayOnboarding,
+          modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_replay_onboarding_btn"),
+        ) {
+          Icon(Icons.Rounded.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
+          Spacer(Modifier.width(8.dp))
+          Text(stringResource(R.string.settings_replay_onboarding))
         }
       }
     }
 
-    if (isWide) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
-        Column(modifier = Modifier.weight(1f)) { infoCard() }
-        Column(modifier = Modifier.weight(1f)) { tourAndToolchains() }
+    item {
+      SubScreenCard(title = "Bundled Toolchains & Integrations") {
+        Text(
+          text = "• Kirlif/d2c & codehasan/dex2c transpiler parity (dcc.cfg, filter.txt, allow-init, custom loader)\n" +
+            "• androguard/dex-parser structural map_list + Rust dexparser-rs JNI bridge scaffolding\n" +
+            "• GitHub OAuth Device Flow + Private Workspace dex2c.yml Actions + WorkManager push alerts",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
       }
-    } else {
-      infoCard()
-      tourAndToolchains()
     }
   }
 }
@@ -979,7 +893,7 @@ fun SettingsAboutSubScreen(
 @Composable
 private fun AboutRow(label: String, value: String) {
   Row(
-    modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
+    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -1000,11 +914,11 @@ fun SubScreenCard(
 ) {
   Surface(
     modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
-    shape = RoundedCornerShape(22.dp),
+    shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(14.dp)) {
+    Column(modifier = Modifier.padding(18.dp)) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -1021,7 +935,7 @@ fun SubScreenCard(
           color = MaterialTheme.colorScheme.primary,
         )
       }
-      Spacer(Modifier.height(10.dp))
+      Spacer(Modifier.height(12.dp))
       content()
     }
   }

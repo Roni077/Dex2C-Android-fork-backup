@@ -1395,7 +1395,7 @@ class ExampleRobolectricTest {
 
   @Test
   @Config(sdk = [36], qualifiers = "w412dp-h892dp")
-  fun `floating bottom navigation bar and settings 2-column bento grid render with quick status strip`() {
+  fun `settingsScreen renders grouped list cards and navigates to subscreen`() {
     var pipelineShortcutClicked by mutableStateOf(false)
 
     composeTestRule.setContent {
@@ -1427,7 +1427,6 @@ class ExampleRobolectricTest {
     }
 
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("settings_quick_status_strip").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_code_editor").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_dex_parser").assertIsDisplayed()
@@ -1435,8 +1434,6 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("settings_hub_row_github_cloud").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_ndk_signing").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_notifications").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("settings_hub_row_storage_reset").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("settings_hub_row_about").assertIsDisplayed()
 
     composeTestRule.onNodeWithTag("settings_hub_row_pipeline_shortcut").performClick()
     composeTestRule.waitForIdle()
@@ -1448,7 +1445,7 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("settings_theme_DARK").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_back_btn").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("settings_quick_status_strip").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
   }
 }
 
