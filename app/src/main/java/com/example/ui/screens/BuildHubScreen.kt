@@ -63,97 +63,102 @@ fun BuildHubScreen(
   transpileProgress: TranspileProgress? = null,
   isBundleDirty: Boolean = false,
   onEnsureBundleBuilt: () -> Unit = {},
+  showOutputScreen: Boolean = true,
 ) {
-  LaunchedEffect(activeTab, selectedMethodCount, isBundleDirty) {
-    if (activeTab == BuildHubTab.OUTPUT && selectedMethodCount > 0) {
+  val effectiveTab = if (showOutputScreen) activeTab else BuildHubTab.PIPELINE
+
+  LaunchedEffect(effectiveTab, selectedMethodCount, isBundleDirty, showOutputScreen) {
+    if (showOutputScreen && effectiveTab == BuildHubTab.OUTPUT && selectedMethodCount > 0) {
       onEnsureBundleBuilt()
     }
   }
 
   Column(modifier = modifier.fillMaxSize()) {
-    Surface(
-      color = MaterialTheme.colorScheme.surfaceContainerLow,
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Box(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center,
+    if (showOutputScreen) {
+      Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = Modifier.fillMaxWidth(),
       ) {
-        SingleChoiceSegmentedButtonRow(
-          modifier = Modifier.fillMaxWidth().widthIn(max = 520.dp),
+        Box(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+          contentAlignment = Alignment.Center,
         ) {
-          SegmentedButton(
-            selected = activeTab == BuildHubTab.PIPELINE,
-            onClick = { onSelectTab(BuildHubTab.PIPELINE) },
-            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-            modifier = Modifier.minimumInteractiveComponentSize().testTag("build_tab_pipeline"),
-            icon = {
-              SegmentedButtonDefaults.Icon(active = activeTab == BuildHubTab.PIPELINE) {
-                Icon(
-                  imageVector = Icons.Rounded.Tune,
-                  contentDescription = null,
-                  modifier = Modifier.size(18.dp),
-                )
-              }
-            },
+          SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth().widthIn(max = 520.dp),
           ) {
-            Text(
-              text = stringResource(R.string.nav_config),
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-            )
-          }
-
-          SegmentedButton(
-            selected = activeTab == BuildHubTab.OUTPUT,
-            onClick = { onSelectTab(BuildHubTab.OUTPUT) },
-            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-            modifier = Modifier.minimumInteractiveComponentSize().testTag("build_tab_output"),
-            icon = {
-              SegmentedButtonDefaults.Icon(active = activeTab == BuildHubTab.OUTPUT) {
-                Icon(
-                  imageVector = Icons.Rounded.Code,
-                  contentDescription = null,
-                  modifier = Modifier.size(18.dp),
-                )
-              }
-            },
-          ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            SegmentedButton(
+              selected = effectiveTab == BuildHubTab.PIPELINE,
+              onClick = { onSelectTab(BuildHubTab.PIPELINE) },
+              shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("build_tab_pipeline"),
+              icon = {
+                SegmentedButtonDefaults.Icon(active = effectiveTab == BuildHubTab.PIPELINE) {
+                  Icon(
+                    imageVector = Icons.Rounded.Tune,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                  )
+                }
+              },
+            ) {
               Text(
-                text = stringResource(R.string.nav_export),
+                text = stringResource(R.string.nav_config),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
               )
-              if (selectedMethodCount > 0) {
-                Spacer(Modifier.width(6.dp))
-                Badge(
-                  containerColor =
-                    if (activeTab == BuildHubTab.OUTPUT) {
-                      MaterialTheme.colorScheme.primary
-                    } else {
-                      MaterialTheme.colorScheme.secondaryContainer
-                    },
-                  contentColor =
-                    if (activeTab == BuildHubTab.OUTPUT) {
-                      MaterialTheme.colorScheme.onPrimary
-                    } else {
-                      MaterialTheme.colorScheme.onSecondaryContainer
-                    },
-                ) {
-                  Text("$selectedMethodCount")
+            }
+
+            SegmentedButton(
+              selected = effectiveTab == BuildHubTab.OUTPUT,
+              onClick = { onSelectTab(BuildHubTab.OUTPUT) },
+              shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("build_tab_output"),
+              icon = {
+                SegmentedButtonDefaults.Icon(active = effectiveTab == BuildHubTab.OUTPUT) {
+                  Icon(
+                    imageVector = Icons.Rounded.Code,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                  )
+                }
+              },
+            ) {
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                  text = stringResource(R.string.nav_export),
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                )
+                if (selectedMethodCount > 0) {
+                  Spacer(Modifier.width(6.dp))
+                  Badge(
+                    containerColor =
+                      if (effectiveTab == BuildHubTab.OUTPUT) {
+                        MaterialTheme.colorScheme.primary
+                      } else {
+                        MaterialTheme.colorScheme.secondaryContainer
+                      },
+                    contentColor =
+                      if (effectiveTab == BuildHubTab.OUTPUT) {
+                        MaterialTheme.colorScheme.onPrimary
+                      } else {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                      },
+                  ) {
+                    Text("$selectedMethodCount")
+                  }
                 }
               }
             }
           }
         }
       }
+
+      HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
     }
 
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
-
     Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-      when (activeTab) {
+      when (effectiveTab) {
         BuildHubTab.PIPELINE -> {
           PipelineConfigScreen(
             config = config,
@@ -164,7 +169,9 @@ fun BuildHubScreen(
             onImportDccCfg = onImportDccCfg,
             onApplyFilterRules = {
               onApplyFilterRules()
-              onSelectTab(BuildHubTab.OUTPUT)
+              if (showOutputScreen) {
+                onSelectTab(BuildHubTab.OUTPUT)
+              }
             },
           )
         }

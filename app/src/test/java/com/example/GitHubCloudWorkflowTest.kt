@@ -256,8 +256,9 @@ class GitHubCloudWorkflowTest {
   @Test
   fun appSettings_defaultsAndThemeModesAreConsistent() {
     val defaults = com.example.data.AppSettings()
-    assertEquals(com.example.data.AppThemeMode.DARK, defaults.themeMode)
-    assertFalse(defaults.dynamicColor)
+    assertEquals(com.example.data.AppThemeMode.SYSTEM, defaults.themeMode)
+    assertEquals(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S, defaults.dynamicColor)
+    assertTrue(defaults.showOutputScreen)
     assertEquals("#2EE59D", defaults.accentSeedHex)
     assertEquals(12, defaults.codeFontSizeSp)
     assertTrue(defaults.showLineNumbers)

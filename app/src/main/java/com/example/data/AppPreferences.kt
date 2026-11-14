@@ -1,6 +1,7 @@
 package com.example.data
 
 import android.content.Context
+import android.os.Build
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -31,9 +32,11 @@ val CURATED_ACCENT_PRESETS =
     AccentPreset("Coral Crimson", "#F43F5E"),
   )
 
+fun defaultDynamicColorForDevice(sdkInt: Int = Build.VERSION.SDK_INT): Boolean = sdkInt >= Build.VERSION_CODES.S
+
 data class AppSettings(
-  val themeMode: AppThemeMode = AppThemeMode.DARK,
-  val dynamicColor: Boolean = false,
+  val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
+  val dynamicColor: Boolean = defaultDynamicColorForDevice(),
   val accentSeedHex: String = "#2EE59D",
   val codeFontSizeSp: Int = 12,
   val showLineNumbers: Boolean = true,
@@ -42,6 +45,7 @@ data class AppSettings(
   val defaultOnlyBytecode: Boolean = true,
   val autoSelectMethodLimit: Int = 32,
   val preferRustJniBridge: Boolean = true,
+  val showOutputScreen: Boolean = true,
   val hasCompletedOnboarding: Boolean = false,
 )
 
@@ -60,6 +64,7 @@ class AppPreferences(private val context: Context) {
     val DEFAULT_ONLY_BYTECODE = booleanPreferencesKey("default_only_bytecode")
     val AUTO_SELECT_METHOD_LIMIT = intPreferencesKey("auto_select_method_limit")
     val PREFER_RUST_JNI_BRIDGE = booleanPreferencesKey("prefer_rust_jni_bridge")
+    val SHOW_OUTPUT_SCREEN = booleanPreferencesKey("show_output_screen")
     val HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
   }
 
@@ -81,6 +86,7 @@ class AppPreferences(private val context: Context) {
       autoSelectMethodLimit =
         (prefs[Keys.AUTO_SELECT_METHOD_LIMIT] ?: defaults.autoSelectMethodLimit).coerceIn(8, 256),
       preferRustJniBridge = prefs[Keys.PREFER_RUST_JNI_BRIDGE] ?: defaults.preferRustJniBridge,
+      showOutputScreen = prefs[Keys.SHOW_OUTPUT_SCREEN] ?: defaults.showOutputScreen,
       hasCompletedOnboarding = prefs[Keys.HAS_COMPLETED_ONBOARDING] ?: defaults.hasCompletedOnboarding,
     )
   }
@@ -101,6 +107,7 @@ class AppPreferences(private val context: Context) {
     prefs[Keys.DEFAULT_ONLY_BYTECODE] = settings.defaultOnlyBytecode
     prefs[Keys.AUTO_SELECT_METHOD_LIMIT] = settings.autoSelectMethodLimit
     prefs[Keys.PREFER_RUST_JNI_BRIDGE] = settings.preferRustJniBridge
+    prefs[Keys.SHOW_OUTPUT_SCREEN] = settings.showOutputScreen
     prefs[Keys.HAS_COMPLETED_ONBOARDING] = settings.hasCompletedOnboarding
   }
 

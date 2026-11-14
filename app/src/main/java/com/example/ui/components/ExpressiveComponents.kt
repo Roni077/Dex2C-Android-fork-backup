@@ -215,10 +215,17 @@ fun AccentColorPickerSection(
       }
     }
 
+    val activePresetName =
+      CURATED_ACCENT_PRESETS.firstOrNull { it.hex.equals(selectedHex, ignoreCase = true) }?.name
     Text(
       text =
-        if (enabled) "Active seed: ${normalizeHexColor(selectedHex)}"
-        else "Disable Dynamic Wallpaper Colors above to use a custom accent seed",
+        if (enabled) {
+          val normalized = normalizeHexColor(selectedHex)
+          if (activePresetName != null) "Active seed: $activePresetName ($normalized)"
+          else "Active seed: $normalized"
+        } else {
+          "Disable Dynamic Wallpaper Colors above to use a custom accent seed"
+        },
       style = MaterialTheme.typography.bodySmall,
       fontFamily = if (enabled) JetBrainsMonoFontFamily else MaterialTheme.typography.bodySmall.fontFamily,
       color = MaterialTheme.colorScheme.onSurfaceVariant,

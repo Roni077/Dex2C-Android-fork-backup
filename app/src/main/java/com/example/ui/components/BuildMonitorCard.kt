@@ -588,10 +588,24 @@ private fun MonitorGaugeBlock(
 
 @Composable
 private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
-  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    steps.forEach { step ->
+  val visibleSteps =
+    if (steps.size <= 5) {
+      steps
+    } else {
+      val activeIdx = steps.indexOfFirst { it.status == "in_progress" || it.conclusion == "failure" }
+      if (activeIdx >= 0) {
+        val start = (activeIdx - 2).coerceIn(0, (steps.size - 5).coerceAtLeast(0))
+        steps.subList(start, (start + 5).coerceAtMost(steps.size))
+      } else {
+        steps.takeLast(5)
+      }
+    }
+  val hiddenCount = (steps.size - visibleSteps.size).coerceAtLeast(0)
+
+  Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+    visibleSteps.forEach { step ->
       Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
@@ -601,23 +615,23 @@ private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
               Icons.Rounded.CheckCircle,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.primary,
-              modifier = Modifier.size(15.dp),
+              modifier = Modifier.size(14.dp),
             )
           step.conclusion == "failure" ->
             Icon(
               Icons.Rounded.ErrorOutline,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.error,
-              modifier = Modifier.size(15.dp),
+              modifier = Modifier.size(14.dp),
             )
           step.status == "in_progress" ->
-            CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
+            CircularProgressIndicator(modifier = Modifier.size(13.dp), strokeWidth = 2.dp)
           else ->
             Icon(
               Icons.Rounded.Schedule,
               contentDescription = null,
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(15.dp),
+              modifier = Modifier.size(14.dp),
             )
         }
         Text(
@@ -634,6 +648,13 @@ private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
+    }
+    if (hiddenCount > 0) {
+      Text(
+        text = "+$hiddenCount earlier workflow steps (tap Logs for full trace)",
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
     }
   }
 }

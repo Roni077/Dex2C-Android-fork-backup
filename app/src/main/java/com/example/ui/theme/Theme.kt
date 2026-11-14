@@ -41,8 +41,8 @@ val LocalEditorSettings = staticCompositionLocalOf { EditorDisplaySettings() }
 
 @Composable
 fun Dex2cTheme(
-  themeMode: AppThemeMode = AppThemeMode.DARK,
-  dynamicColor: Boolean = false,
+  themeMode: AppThemeMode = AppThemeMode.SYSTEM,
+  dynamicColor: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
   accentSeedHex: String = "#2EE59D",
   editorSettings: EditorDisplaySettings = EditorDisplaySettings(),
   content: @Composable () -> Unit,

@@ -1,10 +1,12 @@
 package com.example.ui.screens
 
 import android.os.Build
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -20,20 +22,34 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.BrightnessAuto
 import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.CloudQueue
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.ColorLens
+import androidx.compose.material.icons.rounded.Contrast
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.FormatSize
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -52,8 +68,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.BuildConfig
 import com.example.R
@@ -64,6 +85,8 @@ import com.example.cloud.SUPPORTED_JDK_VERSIONS
 import com.example.cloud.SUPPORTED_NDK_VERSIONS
 import com.example.data.AppSettings
 import com.example.data.AppThemeMode
+import com.example.data.CURATED_ACCENT_PRESETS
+import com.example.data.normalizeHexColor
 import com.example.dex.NativeDexParserBridge
 import com.example.transpiler.TranspilerConfig
 import com.example.ui.components.AccentColorPickerSection
@@ -71,6 +94,7 @@ import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
+import com.example.ui.theme.LocalSyntaxPalette
 import kotlin.math.roundToInt
 
 @Composable
@@ -84,20 +108,42 @@ fun SettingsAppearanceSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Theme Posture") {
-        AppThemeMode.entries.forEach { mode ->
+      LiveThemePreviewCard(appSettings = appSettings)
+    }
+
+    item {
+      SubScreenCard(title = "Theme Posture", icon = Icons.Rounded.Palette) {
+        AppThemeMode.entries.forEachIndexed { index, mode ->
+          val modeIcon =
+            when (mode) {
+              AppThemeMode.SYSTEM -> Icons.Rounded.BrightnessAuto
+              AppThemeMode.LIGHT -> Icons.Rounded.LightMode
+              AppThemeMode.DARK -> Icons.Rounded.DarkMode
+              AppThemeMode.AMOLED -> Icons.Rounded.Contrast
+            }
+          val isSelected = appSettings.themeMode == mode
           Row(
             modifier =
               Modifier.fillMaxWidth()
                 .clickable { onUpdateAppSettings { it.copy(themeMode = mode) } }
-                .padding(vertical = 6.dp),
+                .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
           ) {
-            RadioButton(
-              selected = appSettings.themeMode == mode,
-              onClick = { onUpdateAppSettings { it.copy(themeMode = mode) } },
-              modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_theme_${mode.name}"),
-            )
+            Surface(
+              shape = RoundedCornerShape(10.dp),
+              color =
+                if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerHigh,
+              contentColor =
+                if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.size(34.dp),
+            ) {
+              Box(contentAlignment = Alignment.Center) {
+                Icon(imageVector = modeIcon, contentDescription = null, modifier = Modifier.size(18.dp))
+              }
+            }
             Column(modifier = Modifier.weight(1f)) {
               Text(mode.label, style = MaterialTheme.typography.titleSmall)
               Text(
@@ -106,13 +152,21 @@ fun SettingsAppearanceSubScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
             }
+            RadioButton(
+              selected = isSelected,
+              onClick = { onUpdateAppSettings { it.copy(themeMode = mode) } },
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_theme_${mode.name}"),
+            )
+          }
+          if (index < AppThemeMode.entries.lastIndex) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
           }
         }
       }
     }
 
     item {
-      SubScreenCard(title = "Dynamic Wallpaper Colors") {
+      SubScreenCard(title = "Dynamic Wallpaper Colors", icon = Icons.Rounded.AutoAwesome) {
         val supportsDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         SettingsToggleRow(
           title = "Wallpaper-Based Palette",
@@ -128,12 +182,131 @@ fun SettingsAppearanceSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Custom Accent Color") {
+      SubScreenCard(title = "Custom Accent Color", icon = Icons.Rounded.ColorLens) {
         AccentColorPickerSection(
           selectedHex = appSettings.accentSeedHex,
           enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
           onSelectHex = { hex -> onUpdateAppSettings { it.copy(accentSeedHex = hex, dynamicColor = false) } },
         )
+      }
+    }
+  }
+}
+
+@Composable
+private fun LiveThemePreviewCard(appSettings: AppSettings) {
+  val palette = LocalSyntaxPalette.current
+  val surfacePreviewColor by animateColorAsState(
+    targetValue = MaterialTheme.colorScheme.surfaceContainerHigh,
+    label = "previewSurface",
+  )
+  val primaryColor by animateColorAsState(
+    targetValue = MaterialTheme.colorScheme.primary,
+    label = "previewPrimary",
+  )
+  val paletteName =
+    if (appSettings.dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      "Wallpaper Dynamic"
+    } else {
+      CURATED_ACCENT_PRESETS.firstOrNull {
+        it.hex.equals(appSettings.accentSeedHex, ignoreCase = true)
+      }?.name ?: normalizeHexColor(appSettings.accentSeedHex)
+    }
+
+  SubScreenCard(
+    title = "Live Theme Preview",
+    icon = Icons.Rounded.Palette,
+    modifier = Modifier.testTag("theme_live_preview_card"),
+  ) {
+    Surface(
+      shape = RoundedCornerShape(18.dp),
+      color = MaterialTheme.colorScheme.background,
+      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Column(
+        modifier = Modifier.padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+            text = "${appSettings.themeMode.label} • $paletteName",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+          )
+          TagPill(
+            text = "M3 Preview",
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+        }
+
+        Surface(
+          shape = RoundedCornerShape(14.dp),
+          color = surfacePreviewColor,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+          ) {
+            Surface(
+              shape = RoundedCornerShape(10.dp),
+              color = primaryColor,
+              contentColor = MaterialTheme.colorScheme.onPrimary,
+              modifier = Modifier.size(32.dp),
+            ) {
+              Box(contentAlignment = Alignment.Center) {
+                Icon(Icons.Rounded.Code, contentDescription = null, modifier = Modifier.size(18.dp))
+              }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+              Text("Native JNI Surface", style = MaterialTheme.typography.labelLarge)
+              Text(
+                text = "Tonal card, chip, and action contrast",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+            Surface(
+              shape = RoundedCornerShape(10.dp),
+              color = MaterialTheme.colorScheme.secondaryContainer,
+              contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ) {
+              Text(
+                text = "DEX 038",
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+              )
+            }
+          }
+        }
+
+        Surface(
+          shape = RoundedCornerShape(12.dp),
+          color = palette.codeBackground,
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Text(
+            text =
+              buildAnnotatedString {
+                withStyle(SpanStyle(color = palette.keyword)) { append("JNIEXPORT ") }
+                withStyle(SpanStyle(color = palette.typeName)) { append("jint ") }
+                withStyle(SpanStyle(color = palette.defaultText)) { append("verify(") }
+                withStyle(SpanStyle(color = palette.stringLiteral)) { append("\"ok\"") }
+                withStyle(SpanStyle(color = palette.defaultText)) { append(");") }
+              },
+            style = MaterialTheme.typography.bodySmall,
+            fontFamily = JetBrainsMonoFontFamily,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+          )
+        }
       }
     }
   }
@@ -161,7 +334,7 @@ fun SettingsCodeEditorSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Typography & Line Gutter") {
+      SubScreenCard(title = "Typography & Line Gutter", icon = Icons.Rounded.FormatSize) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -206,7 +379,7 @@ fun SettingsCodeEditorSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Live Code Preview") {
+      SubScreenCard(title = "Live Code Preview", icon = Icons.Rounded.Code) {
         SyntaxCodeViewer(
           code = sampleSnippet,
           modifier = Modifier.fillMaxWidth().height(160.dp),
@@ -231,7 +404,19 @@ fun SettingsDexParserSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Default Class Explorer Filters") {
+      SubScreenCard(title = "Workbench & Output", icon = Icons.Rounded.Visibility) {
+        SettingsToggleRow(
+          title = stringResource(R.string.settings_show_output_title),
+          subtitle = stringResource(R.string.settings_show_output_subtitle),
+          checked = appSettings.showOutputScreen,
+          onCheckedChange = { show -> onUpdateAppSettings { it.copy(showOutputScreen = show) } },
+          testTag = "settings_show_output_screen_switch",
+        )
+      }
+    }
+
+    item {
+      SubScreenCard(title = "Default Class Explorer Filters", icon = Icons.Rounded.Tune) {
         SettingsToggleRow(
           title = "Hide Android & Support Frameworks",
           subtitle = "Automatically filter androidx.*, android.*, java.* packages on DEX load",
@@ -268,7 +453,7 @@ fun SettingsDexParserSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Native Parser & Kirlif/d2c Integration") {
+      SubScreenCard(title = "Native Parser & Kirlif/d2c Integration", icon = Icons.Rounded.Memory) {
         SettingsToggleRow(
           title = "Prefer Rust dexparser-rs JNI Bridge",
           subtitle = "Current runtime: ${NativeDexParserBridge.activeEngineLabel()}",
@@ -336,7 +521,7 @@ fun SettingsGitHubCloudSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "GitHub OAuth Device Flow (github.com/login/device)") {
+      SubScreenCard(title = "GitHub OAuth Device Flow (github.com/login/device)", icon = Icons.Rounded.Key) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -419,7 +604,7 @@ fun SettingsGitHubCloudSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Private Workspace Repository & dex2c.yml") {
+      SubScreenCard(title = "Private Workspace Repository & dex2c.yml", icon = Icons.Rounded.CloudQueue) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -514,7 +699,7 @@ fun SettingsNdkSigningSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Android NDK & JDK Runners") {
+      SubScreenCard(title = "Android NDK & JDK Runners", icon = Icons.Rounded.Build) {
         Text(
           text = "Android NDK Revision (ubuntu-latest)",
           style = MaterialTheme.typography.labelLarge,
@@ -552,7 +737,7 @@ fun SettingsNdkSigningSubScreen(
     }
 
     item {
-      SubScreenCard(title = "APK Signing & Upload Policy") {
+      SubScreenCard(title = "APK Signing & Upload Policy", icon = Icons.Rounded.Lock) {
         CloudSigningMode.entries.forEach { mode ->
           Row(
             modifier =
@@ -629,7 +814,7 @@ fun SettingsNotificationsSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Background Cloud Build Push Alerts") {
+      SubScreenCard(title = "Background Cloud Build Push Alerts", icon = Icons.Rounded.Notifications) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -712,7 +897,7 @@ fun SettingsStorageResetSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Workspace History & Binary Cache") {
+      SubScreenCard(title = "Workspace History & Binary Cache", icon = Icons.Rounded.Storage) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -742,7 +927,7 @@ fun SettingsStorageResetSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Restore Defaults") {
+      SubScreenCard(title = "Restore Defaults", icon = Icons.Rounded.RestartAlt) {
         Text(
           text = "Reset Appearance, Code Editor formatting, DEX Parser defaults, Transpiler Pipeline options, and NDK/Signing settings.",
           style = MaterialTheme.typography.bodySmall,
@@ -847,7 +1032,7 @@ fun SettingsAboutSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Dex2C Studio") {
+      SubScreenCard(title = "Dex2C Studio", icon = Icons.Rounded.Info) {
         AboutRow("App Name", stringResource(R.string.app_name))
         AboutRow("Version", "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         AboutRow("Application ID", BuildConfig.APPLICATION_ID)
@@ -858,7 +1043,7 @@ fun SettingsAboutSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Getting Started & Guided Setup") {
+      SubScreenCard(title = "Getting Started & Guided Setup", icon = Icons.Rounded.AutoAwesome) {
         Text(
           text = "Revisit the 4-step Dex2C Studio tour, live theme & code editor setup, GitHub Cloud OAuth wizard, and notification setup.",
           style = MaterialTheme.typography.bodySmall,
@@ -877,7 +1062,7 @@ fun SettingsAboutSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Bundled Toolchains & Integrations") {
+      SubScreenCard(title = "Bundled Toolchains & Integrations", icon = Icons.Rounded.Build) {
         Text(
           text = "• Kirlif/d2c & codehasan/dex2c transpiler parity (dcc.cfg, filter.txt, allow-init, custom loader)\n" +
             "• androguard/dex-parser structural map_list + Rust dexparser-rs JNI bridge scaffolding\n" +
@@ -910,10 +1095,12 @@ private fun AboutRow(label: String, value: String) {
 @Composable
 fun SubScreenCard(
   title: String,
+  icon: ImageVector = Icons.Rounded.Tune,
+  modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
   Surface(
-    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+    modifier = modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
     shape = RoundedCornerShape(24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
@@ -921,18 +1108,26 @@ fun SubScreenCard(
     Column(modifier = Modifier.padding(18.dp)) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
       ) {
-        Icon(
-          imageVector = Icons.Rounded.Lock,
-          contentDescription = null,
-          tint = MaterialTheme.colorScheme.primary,
-          modifier = Modifier.size(16.dp),
-        )
+        Surface(
+          shape = RoundedCornerShape(8.dp),
+          color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f),
+          contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+          modifier = Modifier.size(28.dp),
+        ) {
+          Box(contentAlignment = Alignment.Center) {
+            Icon(
+              imageVector = icon,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        }
         Text(
           text = title,
           style = MaterialTheme.typography.titleMedium,
-          color = MaterialTheme.colorScheme.primary,
+          color = MaterialTheme.colorScheme.onSurface,
         )
       }
       Spacer(Modifier.height(12.dp))

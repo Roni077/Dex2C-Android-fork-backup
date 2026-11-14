@@ -50,6 +50,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.robolectric.shadows.ShadowLooper
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -1070,12 +1071,14 @@ class ExampleRobolectricTest {
     assertEquals(com.example.ui.screens.BuildHubTab.OUTPUT, activeTab)
     composeTestRule.onNodeWithTag("export_go_classes_btn").assertIsDisplayed()
 
-    // Switch back to Pipeline and trigger Apply Filter Rules -> switches in-place to Output
+    // Switch back to Pipeline and verify category pills fit without scrolling, then trigger Apply Filters -> switches in-place to Output
     composeTestRule.onNodeWithTag("build_tab_pipeline").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("pipeline_config_list")
-      .performScrollToNode(androidx.compose.ui.test.hasTestTag("apply_filter_rules_button"))
-    composeTestRule.onNodeWithTag("apply_filter_rules_button").performClick()
+    composeTestRule.onNodeWithTag("pipeline_tab_LOADER").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pipeline_tab_NDK_PASSES").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pipeline_tab_FILTERS").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("apply_filter_rules_button").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()
     assertTrue(appliedFilters)
     assertEquals(com.example.ui.screens.BuildHubTab.OUTPUT, activeTab)
@@ -1427,6 +1430,11 @@ class ExampleRobolectricTest {
     }
 
     composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Settings").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Detailed Settings").assertDoesNotExist()
+    composeTestRule.onNodeWithText("Theme, editor, DEX parser, and Cloud NDK").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Follow System • Dynamic").assertIsDisplayed()
+    composeTestRule.onNodeWithText("dex2c_native • RegisterNatives • C++17 (env->)").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_code_editor").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_dex_parser").assertIsDisplayed()
@@ -1439,13 +1447,292 @@ class ExampleRobolectricTest {
     composeTestRule.waitForIdle()
     assertTrue(pipelineShortcutClicked)
 
-    // Open Appearance subscreen and return to hub via back button
+    // Open Appearance subscreen, check Live Theme Preview + Theme Posture, and return via back button
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("settings_theme_DARK").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("theme_live_preview_card").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_theme_DARK").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_back_btn").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
   }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `workbenchScreen Ready state switches between Overview and Header & Map tabs without scrolling`() {
+    val mapItems =
+      (0 until 10).map { idx ->
+        com.example.dex.DexMapItem(
+          typeCode = idx,
+          typeName = "SECTION_$idx",
+          count = idx + 1,
+          offset = idx * 64,
+        )
+      }
+    val parsed =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "TargetApp.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(128),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n038\u0000",
+            version = "038",
+            checksum = 0x0CED6858L,
+            sha1Hex = "1edb6edd6871357b9a24abcdef",
+            fileSize = 1_500_000,
+            endianTag = 0x12345678L,
+            stringIdsSize = 12_345,
+            typeIdsSize = 900,
+            protoIdsSize = 1_200,
+            fieldIdsSize = 2_400,
+            methodIdsSize = 8_500,
+            classDefsSize = 1_100,
+            mapOff = 0x1000,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = emptyList(),
+        mapItems = mapItems,
+      )
+    val readyState =
+      com.example.ui.DexLoadState.Ready(
+        sourceLabel = "TargetApp.apk",
+        activeEntryName = "classes.dex",
+        parsedDex = parsed,
+        dexEntries = listOf(com.example.dex.ApkDexEntry("classes.dex", 1_500_000)),
+        loadedDexes = mapOf("classes.dex" to parsed),
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.WorkbenchScreen(
+          loadState = readyState,
+          selectedMethodCount = 12,
+          recentFiles = emptyList(),
+          onOpenPicker = {},
+          onInspectSelfApk = {},
+          onSelectRecent = {},
+          onSelectDexEntry = {},
+          onAutoSelectAppMethods = {},
+          onClearSelection = {},
+          onOpenRustBridge = {},
+          onNavigateToClasses = {},
+          onNavigateToExport = {},
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    // Overview tab shows hero, action buttons, and metric tiles on one screen
+    composeTestRule.onNodeWithTag("workbench_tab_OVERVIEW").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("workbench_tab_HEADER_AND_MAP").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("open_dex_apk_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_c_output_button").assertIsDisplayed()
+    composeTestRule.onNodeWithText("1,100").assertIsDisplayed()
+
+    // Switch to Header & Map tab and verify header + map_list render without scrolling
+    composeTestRule.onNodeWithTag("workbench_tab_HEADER_AND_MAP").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("DEX v038").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("open_rust_jni_bridge_btn").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("toggle_all_map_list_btn").assertIsDisplayed()
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `cloudBuildScreen separates Setup, Dispatch, and Monitor into stage tabs and opens Monitor on dispatch`() {
+    var dispatchCount = 0
+    val readyCloud =
+      CloudSettings(
+        accessToken = "gho_test_token",
+        githubUsername = "userio12",
+        repoOwner = "userio12",
+        repoName = "dex2c-cloud-workspace",
+        workflowInitialized = true,
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.CloudBuildScreen(
+          cloudSettings = readyCloud,
+          transpilerConfig = com.example.transpiler.TranspilerConfig(),
+          deviceAuthState = DeviceAuthState.Authenticated("userio12"),
+          repoSetupState = RepoSetupState.Ready("userio12", "dex2c-cloud-workspace", "https://github.com/userio12/dex2c-cloud-workspace", true, true),
+          cloudRunState = CloudBuildRunState.Idle,
+          isAutoPollEnabled = true,
+          recentRuns = emptyList(),
+          apkChoice = null,
+          apkUrlFallback = "https://example.com/target.apk",
+          onStartDeviceLogin = {},
+          onCancelDeviceLogin = {},
+          onSignOut = {},
+          onCopyCode = {},
+          onOpenBrowserUrl = {},
+          onUpdateRepoName = {},
+          onInitializeRepoAndWorkflow = {},
+          onVerifyRepo = {},
+          onPickApkFile = {},
+          onUseLiveApk = {},
+          onApkUrlChange = {},
+          onDispatchBuild = { dispatchCount++ },
+          onToggleAutoPoll = {},
+          onRefreshMonitor = {},
+          onRefreshRuns = {},
+          onAttachToRun = {},
+          onDownloadArtifact = {},
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    // Redundant Settings pill button is removed (TopAppBar holds the single Settings gear)
+    composeTestRule.onNodeWithTag("cloud_open_settings_btn").assertDoesNotExist()
+    // When already authenticated & repo initialized, Dispatch stage opens directly with all controls visible
+    composeTestRule.onNodeWithTag("cloud_tab_SETUP").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cloud_tab_DISPATCH").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cloud_tab_MONITOR").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cloud_run_build_btn").assertIsDisplayed().assertIsEnabled().performClick()
+    composeTestRule.waitForIdle()
+
+    assertEquals(1, dispatchCount)
+    // Auto-switches to Monitor stage after dispatch
+    composeTestRule.onNodeWithTag("build_monitor_card").assertIsDisplayed()
+
+    // Can also jump to Setup stage directly
+    composeTestRule.onNodeWithTag("cloud_tab_SETUP").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("cloud_repo_name_input").assertIsDisplayed()
+  }
+
+  @Test
+  fun `appSettings defaults to SYSTEM theme and enables Dynamic Color only on Android 12+`() {
+    val defaults = AppSettings()
+    assertEquals(com.example.data.AppThemeMode.SYSTEM, defaults.themeMode)
+    assertTrue(defaults.dynamicColor)
+    assertTrue(defaults.showOutputScreen)
+    assertTrue(com.example.data.defaultDynamicColorForDevice(android.os.Build.VERSION_CODES.S))
+    assertFalse(com.example.data.defaultDynamicColorForDevice(android.os.Build.VERSION_CODES.R))
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `output screen toggle under DEX Parser Settings hides Build Output tab and Workbench Build C Output button`() {
+    var settings by mutableStateOf(AppSettings())
+    var ensureBuildCalls by mutableStateOf(0)
+
+    val parsed =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "TargetApp.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(64),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n038\u0000",
+            version = "038",
+            checksum = 0x1L,
+            sha1Hex = "abcdef",
+            fileSize = 64,
+            endianTag = 0x12345678L,
+            stringIdsSize = 10,
+            typeIdsSize = 5,
+            protoIdsSize = 4,
+            fieldIdsSize = 3,
+            methodIdsSize = 8,
+            classDefsSize = 2,
+            mapOff = 0x20,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = emptyList(),
+        mapItems = emptyList(),
+      )
+    val readyState =
+      com.example.ui.DexLoadState.Ready(
+        sourceLabel = "TargetApp.apk",
+        activeEntryName = "classes.dex",
+        parsedDex = parsed,
+        dexEntries = listOf(com.example.dex.ApkDexEntry("classes.dex", 64)),
+        loadedDexes = mapOf("classes.dex" to parsed),
+      )
+
+    var screenStep by mutableStateOf(0)
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        when (screenStep) {
+          0 ->
+            com.example.ui.screens.SettingsDexParserSubScreen(
+              appSettings = settings,
+              transpilerConfig = com.example.transpiler.TranspilerConfig(),
+              onUpdateAppSettings = { transform -> settings = transform(settings) },
+              onGoToPipelineConfig = {},
+              onOpenRustBridge = {},
+            )
+          1 ->
+            com.example.ui.screens.BuildHubScreen(
+              activeTab = com.example.ui.screens.BuildHubTab.OUTPUT,
+              onSelectTab = {},
+              selectedMethodCount = 5,
+              config = com.example.transpiler.TranspilerConfig(),
+              hasLoadedDex = true,
+              filterMatchSummary = null,
+              onUpdateConfig = {},
+              onImportFilterTxt = {},
+              onImportDccCfg = {},
+              onApplyFilterRules = {},
+              bundle = null,
+              isTranspiling = false,
+              onCopyFile = {},
+              onExportZip = {},
+              onGoToClasses = {},
+              isBundleDirty = true,
+              onEnsureBundleBuilt = { ensureBuildCalls++ },
+              showOutputScreen = settings.showOutputScreen,
+            )
+          else ->
+            com.example.ui.screens.WorkbenchScreen(
+              loadState = readyState,
+              selectedMethodCount = 5,
+              recentFiles = emptyList(),
+              onOpenPicker = {},
+              onInspectSelfApk = {},
+              onSelectRecent = {},
+              onSelectDexEntry = {},
+              onAutoSelectAppMethods = {},
+              onClearSelection = {},
+              onOpenRustBridge = {},
+              onNavigateToClasses = {},
+              onNavigateToExport = {},
+              showOutputScreen = settings.showOutputScreen,
+            )
+        }
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    assertTrue(settings.showOutputScreen)
+    composeTestRule.onNodeWithTag("settings_show_output_screen_switch").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    assertFalse(settings.showOutputScreen)
+
+    screenStep = 1
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("build_tab_output").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("build_tab_pipeline").assertDoesNotExist()
+    assertEquals(0, ensureBuildCalls)
+
+    screenStep = 2
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("browse_classes_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("build_c_output_button").assertDoesNotExist()
+  }
 }
+
 

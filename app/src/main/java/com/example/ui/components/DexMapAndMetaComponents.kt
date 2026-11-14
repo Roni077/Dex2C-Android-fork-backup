@@ -66,15 +66,14 @@ import com.example.dex.RustJniScaffolding
 import com.example.dex.descriptorToJavaName
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DexMapListCard(
   dex: DexParsedFile,
   onOpenRustBridge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var showAllMapItems by remember { mutableStateOf(false) }
-  var showDex038Details by remember { mutableStateOf(false) }
+  var showAllSheet by remember { mutableStateOf(false) }
 
   Surface(
     modifier = modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
@@ -82,7 +81,7 @@ fun DexMapListCard(
     color = MaterialTheme.colorScheme.surfaceContainer,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -97,29 +96,34 @@ fun DexMapListCard(
             imageVector = Icons.Rounded.Schema,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(18.dp),
           )
           Column {
             Text(
               text = stringResource(R.string.label_map_list),
               style = MaterialTheme.typography.titleMedium,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
             )
             Text(
-              text = "${dex.parserEngine} • parsed in ${dex.parseDurationMs} ms",
+              text = "${dex.parserEngine} • ${dex.parseDurationMs} ms",
               style = MaterialTheme.typography.labelSmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
             )
           }
         }
+        Spacer(Modifier.width(6.dp))
         OutlinedButton(
           onClick = onOpenRustBridge,
           shape = RoundedCornerShape(20.dp),
-          contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
           modifier = Modifier.testTag("open_rust_jni_bridge_btn"),
         ) {
-          Icon(Icons.Rounded.Memory, contentDescription = null, modifier = Modifier.size(15.dp))
-          Spacer(Modifier.width(5.dp))
-          Text(stringResource(R.string.label_rust_jni_bridge), style = MaterialTheme.typography.labelMedium)
+          Icon(Icons.Rounded.Memory, contentDescription = null, modifier = Modifier.size(14.dp))
+          Spacer(Modifier.width(4.dp))
+          Text(stringResource(R.string.label_rust_jni_bridge), style = MaterialTheme.typography.labelSmall, maxLines = 1)
         }
       }
 
@@ -127,11 +131,11 @@ fun DexMapListCard(
       val debugCount = dex.mapItems.firstOrNull { it.typeCode == 0x2003 }?.count ?: 0
       val annotDirCount = dex.mapItems.firstOrNull { it.typeCode == 0x2006 }?.count ?: 0
       FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
       ) {
         TagPill(
-          text = "${dex.mapItems.size} map sections",
+          text = "${dex.mapItems.size} sections",
           containerColor = MaterialTheme.colorScheme.primaryContainer,
           contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         )
@@ -153,7 +157,7 @@ fun DexMapListCard(
         }
         dex.hiddenApiSummary?.let { hidden ->
           TagPill(
-            text = "HiddenAPI: ${hidden.classEntryCount} cls",
+            text = "HiddenAPI: ${hidden.classEntryCount}",
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
           )
@@ -167,15 +171,133 @@ fun DexMapListCard(
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       } else {
-        val visibleItems = if (showAllMapItems) dex.mapItems else dex.mapItems.take(6)
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-          visibleItems.forEach { item ->
+        val previewItems = dex.mapItems.take(4)
+        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+          previewItems.chunked(2).forEach { pair ->
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+              pair.forEach { item ->
+                Surface(
+                  modifier = Modifier.weight(1f),
+                  shape = RoundedCornerShape(10.dp),
+                  color = MaterialTheme.colorScheme.surfaceContainerLow,
+                ) {
+                  Column(
+                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
+                    verticalArrangement = Arrangement.spacedBy(1.dp),
+                  ) {
+                    Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                      Text(
+                        text = item.typeHex,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = JetBrainsMonoFontFamily,
+                        color = MaterialTheme.colorScheme.primary,
+                      )
+                      Text(
+                        text = "×${item.count}",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = JetBrainsMonoFontFamily,
+                        color = MaterialTheme.colorScheme.secondary,
+                      )
+                    }
+                    Text(
+                      text = item.typeName,
+                      style = MaterialTheme.typography.labelSmall,
+                      fontFamily = JetBrainsMonoFontFamily,
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                    )
+                  }
+                }
+              }
+              if (pair.size == 1) {
+                Spacer(Modifier.weight(1f))
+              }
+            }
+          }
+        }
+
+        if (dex.mapItems.size > 4 || dex.methodHandles.isNotEmpty() || dex.callSites.isNotEmpty()) {
+          Row(
+            modifier =
+              Modifier.fillMaxWidth()
+                .clickable { showAllSheet = true }
+                .padding(vertical = 4.dp)
+                .testTag("toggle_all_map_list_btn"),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.ExpandMore,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.primary,
+              modifier = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+              text = "Inspect all ${dex.mapItems.size} map_list sections",
+              style = MaterialTheme.typography.labelLarge,
+              color = MaterialTheme.colorScheme.primary,
+            )
+          }
+        }
+      }
+    }
+  }
+
+  if (showAllSheet) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+      onDismissRequest = { showAllSheet = false },
+      sheetState = sheetState,
+      shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
+      Column(
+        modifier =
+          Modifier.fillMaxWidth()
+            .height(520.dp)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Column(modifier = Modifier.weight(1f)) {
+            Text(
+              text = "${dex.entryName} • map_list (${dex.mapItems.size})",
+              style = MaterialTheme.typography.titleLarge,
+              fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+              text = "${dex.parserEngine} • parsed in ${dex.parseDurationMs} ms",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+          TextButton(onClick = { showAllSheet = false }) { Text("Close") }
+        }
+        LazyColumn(
+          modifier = Modifier.weight(1f).fillMaxWidth(),
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+          contentPadding = PaddingValues(bottom = 16.dp),
+        ) {
+          itemsIndexed(dex.mapItems) { _, item ->
             Surface(
-              shape = RoundedCornerShape(10.dp),
-              color = MaterialTheme.colorScheme.surfaceContainerLow,
+              shape = RoundedCornerShape(12.dp),
+              color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
               Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
               ) {
@@ -207,60 +329,16 @@ fun DexMapListCard(
               }
             }
           }
-        }
-
-        if (dex.mapItems.size > 6) {
-          Row(
-            modifier =
-              Modifier.fillMaxWidth()
-                .clickable { showAllMapItems = !showAllMapItems }
-                .padding(vertical = 4.dp)
-                .testTag("toggle_all_map_list_btn"),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Icon(
-              imageVector = if (showAllMapItems) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.primary,
-              modifier = Modifier.size(18.dp),
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-              text =
-                if (showAllMapItems) "Collapse map_list"
-                else "Show all ${dex.mapItems.size} map_list sections",
-              style = MaterialTheme.typography.labelLarge,
-              color = MaterialTheme.colorScheme.primary,
-            )
-          }
-        }
-      }
-
-      if (dex.methodHandles.isNotEmpty() || dex.callSites.isNotEmpty()) {
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        Row(
-          modifier =
-            Modifier.fillMaxWidth()
-              .clickable { showDex038Details = !showDex038Details }
-              .padding(vertical = 2.dp),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(
-            text = "DEX 038–041 CallSites (${dex.callSites.size}) & MethodHandles (${dex.methodHandles.size})",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.tertiary,
-          )
-          Icon(
-            imageVector = if (showDex038Details) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary,
-          )
-        }
-        AnimatedVisibility(visible = showDex038Details) {
-          Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            dex.methodHandles.take(12).forEach { mh ->
+          if (dex.methodHandles.isNotEmpty() || dex.callSites.isNotEmpty()) {
+            item {
+              Spacer(Modifier.height(6.dp))
+              Text(
+                text = "DEX 038–041 CallSites (${dex.callSites.size}) & MethodHandles (${dex.methodHandles.size})",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.tertiary,
+              )
+            }
+            itemsIndexed(dex.methodHandles.take(24)) { _, mh ->
               Text(
                 text = "handle[${mh.index}] ${mh.kindLabel} -> ${mh.memberSummary}",
                 style = MaterialTheme.typography.labelSmall,
@@ -268,7 +346,7 @@ fun DexMapListCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
             }
-            dex.callSites.take(12).forEach { cs ->
+            itemsIndexed(dex.callSites.take(24)) { _, cs ->
               val offHex = "0x%06X".format(cs.encodedArrayOffset)
               Text(
                 text = "call_site[${cs.index}] ${cs.methodName ?: "bootstrap"} ${cs.methodDescriptor ?: ""} @ $offHex",

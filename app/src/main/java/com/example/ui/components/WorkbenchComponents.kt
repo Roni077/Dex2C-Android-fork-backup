@@ -32,37 +32,39 @@ fun MetricTile(
   icon: ImageVector,
   accent: Color,
   modifier: Modifier = Modifier,
+  compact: Boolean = false,
 ) {
   Surface(
     modifier = modifier,
-    shape = RoundedCornerShape(24.dp),
+    shape = RoundedCornerShape(if (compact) 20.dp else 24.dp),
     color = MaterialTheme.colorScheme.surfaceContainer,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(if (compact) 12.dp else 16.dp)) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
           imageVector = icon,
           contentDescription = null,
           tint = accent,
-          modifier = Modifier.size(18.dp),
+          modifier = Modifier.size(if (compact) 16.dp else 18.dp),
         )
         Spacer(Modifier.width(6.dp))
         Text(
           text = label,
-          style = MaterialTheme.typography.labelLarge,
+          style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
         )
       }
-      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.height(if (compact) 4.dp else 8.dp))
       Text(
         text = value,
-        style = MaterialTheme.typography.headlineMedium,
+        style = if (compact) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.headlineMedium,
         fontFamily = JetBrainsMonoFontFamily,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
       )
     }
   }

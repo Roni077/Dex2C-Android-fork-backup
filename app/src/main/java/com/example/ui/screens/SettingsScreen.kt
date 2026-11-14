@@ -60,10 +60,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import android.os.Build
 import com.example.BuildConfig
 import com.example.R
 import com.example.cloud.CloudSettings
 import com.example.data.AppSettings
+import com.example.data.CURATED_ACCENT_PRESETS
+import com.example.data.normalizeHexColor
+import com.example.transpiler.JniBindingStyle
 import com.example.transpiler.TranspilerConfig
 import com.example.ui.components.ExpressiveMotion
 import com.example.ui.components.TagPill
@@ -341,10 +345,14 @@ private fun SettingsHubList(
                 }
               }
               if (groupTitle == "Analysis & Pipeline") {
+                val jniLabel =
+                  if (transpilerConfig.jniStyle == JniBindingStyle.REGISTER_NATIVES) "RegisterNatives"
+                  else "Java_* Exports"
+                val langLabel = transpilerConfig.targetLanguage.label
                 SettingsHubRow(
                   title = "Transpiler Pipeline Shortcut",
                   icon = Icons.Rounded.Tune,
-                  summary = "${transpilerConfig.moduleName} • ${transpilerConfig.jniStyle.name} • allow-init: ${transpilerConfig.allowInit}",
+                  summary = "${transpilerConfig.moduleName} • $jniLabel • $langLabel",
                   badgeText = "Open",
                   selected = false,
                   testTag = "settings_hub_row_pipeline_shortcut",
@@ -382,16 +390,26 @@ private fun SettingsHubRow(
         .testTag(testTag),
   ) {
     Row(
-      modifier = Modifier.padding(horizontal = 18.dp, vertical = 15.dp),
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
       verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
+      horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-      Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(22.dp),
-      )
+      Surface(
+        shape = RoundedCornerShape(12.dp),
+        color =
+          if (selected) MaterialTheme.colorScheme.primaryContainer
+          else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f),
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = Modifier.size(40.dp),
+      ) {
+        Box(contentAlignment = Alignment.Center) {
+          Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+          )
+        }
+      }
       Column(modifier = Modifier.weight(1f)) {
         Row(
           verticalAlignment = Alignment.CenterVertically,
@@ -516,12 +534,21 @@ private fun sectionSummary(
   hasNotificationPermission: Boolean,
 ): String =
   when (section) {
-    SettingsSection.APPEARANCE ->
-      "${appSettings.themeMode.label}${if (appSettings.dynamicColor) " • Wallpaper" else " • ${appSettings.accentSeedHex}"}"
+    SettingsSection.APPEARANCE -> {
+      val paletteLabel =
+        if (appSettings.dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          "Dynamic"
+        } else {
+          CURATED_ACCENT_PRESETS.firstOrNull {
+            it.hex.equals(appSettings.accentSeedHex, ignoreCase = true)
+          }?.name ?: normalizeHexColor(appSettings.accentSeedHex)
+        }
+      "${appSettings.themeMode.label} • $paletteLabel"
+    }
     SettingsSection.CODE_EDITOR ->
       "${appSettings.codeFontSizeSp}sp • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"
     SettingsSection.DEX_PARSER ->
-      "${if (appSettings.defaultHideFramework) "App-only default" else "All classes"} • Auto-select ${appSettings.autoSelectMethodLimit}"
+      "${if (appSettings.defaultHideFramework) "App-only default" else "All classes"} • Auto-select ${appSettings.autoSelectMethodLimit} • ${if (appSettings.showOutputScreen) "Output ON" else "Output OFF"}"
     SettingsSection.GITHUB_CLOUD ->
       if (cloudSettings.isAuthenticated) "@${cloudSettings.githubUsername} • ${cloudSettings.repoName}"
       else "Device Flow OAuth & private dex2c.yml workspace"
@@ -531,8 +558,10 @@ private fun sectionSummary(
       if (!cloudSettings.notificationsEnabled) "Build alerts disabled"
       else if (hasNotificationPermission) "Enabled • ${cloudSettings.pollIntervalSeconds}s background poll"
       else "Enabled • Notification permission needed"
-    SettingsSection.STORAGE_RESET ->
-      "$recentHistoryCount recent entries • Clear cache & factory reset"
+    SettingsSection.STORAGE_RESET -> {
+      val entryWord = if (recentHistoryCount == 1) "entry" else "entries"
+      "$recentHistoryCount recent $entryWord • Clear cache & reset"
+    }
     SettingsSection.ABOUT ->
       "v${BuildConfig.VERSION_NAME} • DEX 035–041 • Kirlif/d2c Cloud"
   }

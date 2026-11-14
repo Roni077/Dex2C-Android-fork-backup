@@ -335,6 +335,11 @@ fun Dex2cApp(
   }
 
   var buildHubTab by rememberSaveable { mutableStateOf(BuildHubTab.PIPELINE) }
+  LaunchedEffect(appSettings.showOutputScreen) {
+    if (!appSettings.showOutputScreen && buildHubTab == BuildHubTab.OUTPUT) {
+      buildHubTab = BuildHubTab.PIPELINE
+    }
+  }
 
   val navItems =
     listOf(
@@ -516,10 +521,13 @@ fun Dex2cApp(
                 onOpenRustBridge = { viewModel.openRustBridgeSheet() },
                 onNavigateToClasses = { navigateTopLevel(ROUTE_CLASSES) },
                 onNavigateToExport = {
-                  buildHubTab = BuildHubTab.OUTPUT
-                  navigateTopLevel(ROUTE_BUILD)
+                  if (appSettings.showOutputScreen) {
+                    buildHubTab = BuildHubTab.OUTPUT
+                    navigateTopLevel(ROUTE_BUILD)
+                  }
                 },
                 onFocusHeaderDex = { viewModel.focusHeaderDexEntry(it) },
+                showOutputScreen = appSettings.showOutputScreen,
               )
             }
 
@@ -555,7 +563,11 @@ fun Dex2cApp(
             composable(ROUTE_BUILD) {
               BuildHubScreen(
                 activeTab = buildHubTab,
-                onSelectTab = { buildHubTab = it },
+                onSelectTab = { tab ->
+                  if (appSettings.showOutputScreen || tab == BuildHubTab.PIPELINE) {
+                    buildHubTab = tab
+                  }
+                },
                 selectedMethodCount = selectedMethodIds.size,
                 config = config,
                 hasLoadedDex = loadState is DexLoadState.Ready,
@@ -565,7 +577,9 @@ fun Dex2cApp(
                 onImportDccCfg = { importDccCfgLauncher.launch(arrayOf("application/json", "text/*", "*/*")) },
                 onApplyFilterRules = {
                   viewModel.applyFilterRules()
-                  buildHubTab = BuildHubTab.OUTPUT
+                  if (appSettings.showOutputScreen) {
+                    buildHubTab = BuildHubTab.OUTPUT
+                  }
                 },
                 bundle = generatedBundle,
                 isTranspiling = isTranspiling,
@@ -578,6 +592,7 @@ fun Dex2cApp(
                 transpileProgress = transpileProgress,
                 isBundleDirty = isBundleDirty,
                 onEnsureBundleBuilt = { viewModel.ensureBundleBuilt() },
+                showOutputScreen = appSettings.showOutputScreen,
               )
             }
 
@@ -592,7 +607,6 @@ fun Dex2cApp(
                 recentRuns = recentCloudRuns,
                 apkChoice = cloudApkChoice,
                 apkUrlFallback = cloudApkUrl,
-                onOpenSettings = { navController.navigate(ROUTE_SETTINGS) },
                 onStartDeviceLogin = { viewModel.startDeviceFlowLogin() },
                 onCancelDeviceLogin = { viewModel.cancelDeviceFlowLogin() },
                 onSignOut = { viewModel.signOutGitHub() },

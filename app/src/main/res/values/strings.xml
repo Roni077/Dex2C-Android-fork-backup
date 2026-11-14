@@ -26,8 +26,10 @@
     <string name="cloud_save_signed_apk">Save Signed APK</string>
     <string name="cloud_save_build_log">Save Build Log</string>
 
-    <string name="settings_title">Detailed Settings</string>
-    <string name="settings_subtitle">Configure GitHub OAuth Device Flow, private repo defaults, cloud NDK toolchain, and signing</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Theme, editor, DEX parser, and Cloud NDK</string>
+    <string name="settings_show_output_title">Show Output Screen</string>
+    <string name="settings_show_output_subtitle">Display Output tab on Build and Build C Output button on Workbench</string>
 
     <string name="hero_title">Dex2C Native Workbench</string>
     <string name="hero_subtitle">Parse Dalvik DEX binaries, inspect bytecode, and transpile protected methods to JNI C/C++</string>
@@ -98,7 +100,15 @@
     <string name="config_module_name">NDK Library Name</string>
     <string name="config_include_regex">Include Prefix / Regex</string>
     <string name="config_exclude_regex">Exclude Prefix / Regex</string>
-    <string name="config_apply_filters">Apply Filter Rules to Loaded DEX</string>
+    <string name="config_apply_filters">Apply Filters</string>
+    <string name="workbench_tab_overview">Overview</string>
+    <string name="workbench_tab_header_map">Header &amp; Map</string>
+    <string name="pipeline_tab_loader">Loader</string>
+    <string name="pipeline_tab_ndk_passes">NDK &amp; Passes</string>
+    <string name="pipeline_tab_filters">Filters</string>
+    <string name="cloud_stage_setup">Setup</string>
+    <string name="cloud_stage_dispatch">Dispatch</string>
+    <string name="cloud_stage_monitor">Monitor</string>
     <string name="config_d2c_flags">Kirlif/d2c &amp; Loader Flags</string>
     <string name="config_allow_init">Allow &lt;init&gt; Constructors (--allow-init)</string>
     <string name="config_allow_init_desc">Skip &lt;init&gt; constructors by default for ART safety; enable to transpile constructors too</string>
