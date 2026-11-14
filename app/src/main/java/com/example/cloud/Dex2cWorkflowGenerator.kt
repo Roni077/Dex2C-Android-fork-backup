@@ -38,6 +38,10 @@ object Dex2cWorkflowGenerator {
       |        description: 'Transpile <init> constructors (-a / --allow-init)'
       |        required: false
       |        default: '${transpilerConfig.allowInit}'
+      |      skip_synthetic:
+      |        description: 'Skip synthetic bridge, lambda, and coroutine methods (--skip-synthetic)'
+      |        required: false
+      |        default: '${transpilerConfig.skipSynthetic}'
       |      custom_loader:
       |        description: 'Application loader class (-c / --custom-loader)'
       |        required: false
@@ -86,14 +90,14 @@ object Dex2cWorkflowGenerator {
       |          NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
       |          echo "ANDROID_NDK_HOME=${'$'}NDK_DIR" >> "${'$'}GITHUB_ENV"
       |
-      |      - name: Clone Kirlif/d2c & Patch dcc.cfg
+      |      - name: Clone Kirlif/d2c & Patch dcc.cfg + C++ Sanitizer
       |        run: |
       |          git clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c
       |          if [ -f /tmp/d2c/requirements.txt ]; then
       |            pip install -r /tmp/d2c/requirements.txt
       |          fi
       |          python3 - <<'PY'
-      |          import json, os
+      |          import json, os, re
       |          base_cfg = {}
       |          upstream_cfg_path = "/tmp/d2c/dcc.cfg"
       |          if os.path.exists(upstream_cfg_path):
@@ -108,6 +112,60 @@ object Dex2cWorkflowGenerator {
       |          base_cfg["filter"] = "/tmp/d2c/filter.txt"
       |          with open(upstream_cfg_path, "w", encoding="utf-8") as f:
       |              json.dump(base_cfg, f, indent=2)
+      |
+      |          # Patch template Android.mk to permit D8 register reuse casts in Clang++
+      |          android_mk = "/tmp/d2c/project/jni/Android.mk"
+      |          if os.path.exists(android_mk):
+      |              with open(android_mk, "r", encoding="utf-8") as f:
+      |                  mk_src = f.read()
+      |              if "-fpermissive" not in mk_src:
+      |                  mk_src += "\nLOCAL_CPPFLAGS += -fpermissive -Wno-int-conversion -Wno-error\nLOCAL_CFLAGS += -Wno-int-conversion -Wno-error\n"
+      |                  with open(android_mk, "w", encoding="utf-8") as f:
+      |                      f.write(mk_src)
+      |
+      |          # Inject pre-ndk-build C++ register-type sanitizer into /tmp/d2c/dcc.py
+      |          import textwrap
+      |          dcc_py = "/tmp/d2c/dcc.py"
+      |          if os.path.exists(dcc_py):
+      |              with open(dcc_py, "r", encoding="utf-8") as f:
+      |                  dcc_src = f.read()
+      |              sanitizer_fn = textwrap.dedent('''
+      |                  def _dex2c_sanitize_generated_cpp(project_dir):
+      |                      import glob, os, re
+      |                      nc_dir = os.path.join(project_dir, "jni", "nc")
+      |                      if not os.path.isdir(nc_dir):
+      |                          return
+      |                      decl_re = re.compile(r"\\b(jobject|jstring|jclass|jthrowable|jarray|\\w+Array)\\s+(v\\d+)\\b")
+      |                      assign_re = re.compile(r"^(\\s*)(v\\d+)\\s*=\\s*(-?(?:0x[0-9a-fA-F]+|\\d+))[uUlL]*\\s*;(\\s*)$", re.M)
+      |                      for cpp_path in glob.glob(os.path.join(nc_dir, "*.cpp")):
+      |                          try:
+      |                              with open(cpp_path, "r", encoding="utf-8", errors="ignore") as cf:
+      |                                  code = cf.read()
+      |                              obj_regs = {m.group(2): m.group(1) for m in decl_re.finditer(code)}
+      |                              if not obj_regs:
+      |                                  continue
+      |                              def _fix_assign(m):
+      |                                  indent, reg, lit, tail = m.group(1), m.group(2), m.group(3), m.group(4)
+      |                                  if reg in obj_regs and lit not in ("0", "0x0"):
+      |                                      jtype = obj_regs[reg]
+      |                                      return f"{indent}{reg} = reinterpret_cast<{jtype}>(static_cast<intptr_t>({lit}));{tail}"
+      |                                  return m.group(0)
+      |                              patched = assign_re.sub(_fix_assign, code)
+      |                              if patched != code:
+      |                                  with open(cpp_path, "w", encoding="utf-8") as cf:
+      |                                      cf.write(patched)
+      |                          except Exception as exc:
+      |                              print("Warning: sanitizer skipped", cpp_path, exc)
+      |              ''').strip()
+      |              if "subprocess.check_call([NDKBUILD" in dcc_src and "_dex2c_sanitize_generated_cpp" not in dcc_src:
+      |                  dcc_src = sanitizer_fn + "\n\n" + re.sub(
+      |                      r"^(\s*)(subprocess\.check_call\(\[NDKBUILD)",
+      |                      r"\1_dex2c_sanitize_generated_cpp(project_dir)\n\1\2",
+      |                      dcc_src,
+      |                      flags=re.M,
+      |                  )
+      |                  with open(dcc_py, "w", encoding="utf-8") as f:
+      |                      f.write(dcc_src)
       |          PY
       |          cp filter.txt /tmp/d2c/filter.txt
       |
@@ -134,6 +192,9 @@ object Dex2cWorkflowGenerator {
       |          if [ "${'$'}{{ github.event.inputs.allow_init }}" = "true" ]; then
       |            ARGS+=(-a)
       |          fi
+      |          if [ "${'$'}{{ github.event.inputs.skip_synthetic }}" != "false" ]; then
+      |            ARGS+=(--skip-synthetic)
+      |          fi
       |          if [ "${'$'}{{ github.event.inputs.obfuscate }}" = "true" ]; then
       |            ARGS+=(-p)
       |          fi
@@ -146,7 +207,46 @@ object Dex2cWorkflowGenerator {
       |          if [ "${'$'}{{ github.event.inputs.force_custom_loader }}" = "true" ]; then
       |            ARGS+=(-r)
       |          fi
-      |          python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log
+      |          MAX_ATTEMPTS=3
+      |          for ATTEMPT in ${'$'}(seq 1 ${'$'}MAX_ATTEMPTS); do
+      |            echo "=== Kirlif/d2c compilation attempt ${'$'}ATTEMPT/${'$'}MAX_ATTEMPTS ==="
+      |            rm -f /tmp/work/unsigned_dex2c.apk
+      |            if python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log; then
+      |              break
+      |            fi
+      |            if [ "${'$'}ATTEMPT" -lt "${'$'}MAX_ATTEMPTS" ]; then
+      |              python3 - <<'PY' || break
+      |          import re, sys
+      |          with open("/tmp/work/dex2c_build.log", "r", encoding="utf-8", errors="ignore") as f:
+      |              log_text = f.read()
+      |          failed_cpp = sorted(set(re.findall(r"jni/nc/([A-Za-z0-9_]+)\.cpp:\d+:\d+:\s*error:", log_text)))
+      |          if not failed_cpp:
+      |              sys.exit(1)
+      |          def jni_unescape(s):
+      |              s = re.sub(r"_0([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), s)
+      |              return s.replace("_1", "_")
+      |          new_excludes = []
+      |          for sym in failed_cpp:
+      |              body = sym[5:] if sym.startswith("Java_") else sym
+      |              if "__" in body:
+      |                  body = body.split("__", 1)[0]
+      |              parts = body.split("_")
+      |              if len(parts) >= 2:
+      |                  method_part = jni_unescape(parts[-1])
+      |                  cls_part = "/".join(jni_unescape(p) for p in parts[:-1])
+      |                  new_excludes.append(f"!^L{re.escape(cls_part)};{re.escape(method_part)}.*")
+      |                  new_excludes.append(f"!.*;{re.escape(method_part)}\\(.*")
+      |          if not new_excludes:
+      |              sys.exit(1)
+      |          with open("/tmp/d2c/filter.txt", "r", encoding="utf-8") as f:
+      |              existing = f.read()
+      |          prepended = "# Auto-excluded failing C++ method units\n" + "\n".join(dict.fromkeys(new_excludes)) + "\n" + existing
+      |          with open("/tmp/d2c/filter.txt", "w", encoding="utf-8") as f:
+      |              f.write(prepended)
+      |          print("Auto-excluded failing method units from filter.txt:", new_excludes)
+      |          PY
+      |            fi
+      |          done
       |          if [ ! -f /tmp/work/unsigned_dex2c.apk ]; then
       |            echo "::error::dcc.py finished without producing /tmp/work/unsigned_dex2c.apk"
       |            exit 1

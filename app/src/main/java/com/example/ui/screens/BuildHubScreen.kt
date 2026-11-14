@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.R
 import com.example.transpiler.FilterMatchSummary
 import com.example.transpiler.GeneratedBundle
+import com.example.transpiler.TranspileProgress
 import com.example.transpiler.TranspilerConfig
 
 enum class BuildHubTab {
@@ -58,7 +60,16 @@ fun BuildHubScreen(
   onExportZip: () -> Unit,
   onGoToClasses: () -> Unit,
   modifier: Modifier = Modifier,
+  transpileProgress: TranspileProgress? = null,
+  isBundleDirty: Boolean = false,
+  onEnsureBundleBuilt: () -> Unit = {},
 ) {
+  LaunchedEffect(activeTab, selectedMethodCount, isBundleDirty) {
+    if (activeTab == BuildHubTab.OUTPUT && selectedMethodCount > 0) {
+      onEnsureBundleBuilt()
+    }
+  }
+
   Column(modifier = modifier.fillMaxSize()) {
     Surface(
       color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -164,6 +175,7 @@ fun BuildHubScreen(
             onCopyFile = onCopyFile,
             onExportZip = onExportZip,
             onGoToClasses = onGoToClasses,
+            transpileProgress = transpileProgress,
           )
         }
       }

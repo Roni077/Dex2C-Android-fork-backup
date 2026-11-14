@@ -102,6 +102,8 @@
     <string name="config_d2c_flags">Kirlif/d2c &amp; Loader Flags</string>
     <string name="config_allow_init">Allow &lt;init&gt; Constructors (--allow-init)</string>
     <string name="config_allow_init_desc">Skip &lt;init&gt; constructors by default for ART safety; enable to transpile constructors too</string>
+    <string name="config_skip_synthetic">Skip Synthetics &amp; Coroutines (--skip-synthetic)</string>
+    <string name="config_skip_synthetic_desc">Exclude synthetic lambdas, Compose singletons, and invokeSuspend coroutine state machines to prevent NDK C++ register-type conflicts</string>
     <string name="config_loader_mode">Application Loader Strategy</string>
     <string name="config_custom_loader">Custom Loader Class (-c / --custom-loader)</string>
     <string name="config_force_custom_loader">Force Custom Loader (-r)</string>

@@ -111,6 +111,13 @@ fun PipelineConfigScreen(
             onCheckedChange = { v -> onUpdateConfig { it.copy(allowInit = v) } },
             testTag = "switch_allow_init",
           )
+          ToggleSettingRow(
+            title = stringResource(R.string.config_skip_synthetic),
+            subtitle = stringResource(R.string.config_skip_synthetic_desc),
+            checked = config.skipSynthetic,
+            onCheckedChange = { v -> onUpdateConfig { it.copy(skipSynthetic = v) } },
+            testTag = "switch_skip_synthetic",
+          )
           Spacer(Modifier.height(8.dp))
           Text(
             text = stringResource(R.string.config_loader_mode),

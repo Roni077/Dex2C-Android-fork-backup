@@ -186,6 +186,72 @@ class Dex2cTranspilerTest {
     assertTrue(multiBundle.sourceFile.content.contains("JNI_OnLoad"))
   }
 
+  @Test
+  fun multiChunkStreamingSplitsLargeMethodSelectionsAndStreamsToDisk() {
+    val baseDex = DexParser.parseDex(buildMinimalTestDex(), "huge.apk", "classes.dex")
+    val baseMethod = baseDex.classes.first().directMethods.first()
+
+    val syntheticEntries =
+      (0 until 60).map { idx ->
+        val m =
+          baseMethod.copy(
+            id = "classes.dex::Lcom/example/SecretCalc;#$idx",
+            methodIndex = idx,
+            methodRef = baseMethod.methodRef.copy(name = "compute_$idx"),
+          )
+        baseDex to m
+      }
+
+    val cfg =
+      TranspilerConfig(
+        jniStyle = JniBindingStyle.REGISTER_NATIVES,
+        targetLanguage = TargetCLanguage.CPP17,
+        controlFlowFlattening = true,
+      )
+    var lastProgressTotal = 0
+    var lastProgressChunks = 0
+    val bundle =
+      Dex2cTranspiler.transpileBundleMultiDex(
+        entries = syntheticEntries,
+        config = cfg,
+        sourceLabelHint = "huge.apk",
+        methodsPerChunk = 20,
+        onProgress = { progress ->
+          lastProgressTotal = progress.completedMethods
+          lastProgressChunks = progress.totalChunks
+        },
+      )
+
+    assertEquals(60, bundle.transpiledMethodCount)
+    assertEquals(60, lastProgressTotal)
+    assertEquals(3, lastProgressChunks)
+    // 1 coordinator (dex2c_bridge.cpp) + 3 modular parts (part_01..part_03) = 4 sourceFiles
+    assertEquals(4, bundle.sourceFiles.size)
+    assertEquals("dex2c_bridge.cpp", bundle.sourceFile.fileName)
+    assertEquals("dex2c_bridge_part_01.cpp", bundle.sourceFiles[1].fileName)
+    assertEquals("dex2c_bridge_part_02.cpp", bundle.sourceFiles[2].fileName)
+    assertEquals("dex2c_bridge_part_03.cpp", bundle.sourceFiles[3].fileName)
+
+    // Coordinator contains forward prototypes and JNI_OnLoad
+    val coordinatorDiskText = bundle.sourceFile.openInputStream().bufferedReader().readText()
+    assertTrue(coordinatorDiskText.contains("Forward prototypes for modular translation units"))
+    assertTrue(coordinatorDiskText.contains("JNI_OnLoad"))
+    assertTrue(coordinatorDiskText.contains("compute_0"))
+    assertTrue(coordinatorDiskText.contains("compute_59"))
+
+    // Build scripts include all modular part files
+    assertTrue(bundle.androidMkFile.content.contains("dex2c_bridge_part_01.cpp"))
+    assertTrue(bundle.androidMkFile.content.contains("dex2c_bridge_part_03.cpp"))
+    assertTrue(bundle.cmakeFile.content.contains("jni/dex2c_bridge_part_01.cpp"))
+    assertTrue(bundle.cmakeFile.content.contains("jni/dex2c_bridge_part_03.cpp"))
+
+    // Each source part is backed by an on-disk file with non-zero length
+    bundle.sourceFiles.forEach { sf ->
+      assertTrue(sf.backingFile != null && sf.backingFile!!.exists())
+      assertTrue(sf.totalByteSize > 0L)
+    }
+  }
+
   private fun buildMinimalTestDex(): ByteArray {
     val strings = listOf("I", "III", "Lcom/example/SecretCalc;", "Ljava/lang/Object;", "compute")
     val strDataStream = ByteArrayOutputStream()

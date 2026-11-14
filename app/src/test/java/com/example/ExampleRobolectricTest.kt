@@ -1311,4 +1311,85 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("class_row_classes2.dex_0").assertIsDisplayed()
     composeTestRule.onNodeWithTag("class_row_0").assertDoesNotExist()
   }
+
+  @Test
+  fun `buildHubScreen triggers onEnsureBundleBuilt on Output tab and renders modular chunks and truncated preview banner`() {
+    var activeTab by mutableStateOf(com.example.ui.screens.BuildHubTab.PIPELINE)
+    var ensureBuildCalls by mutableStateOf(0)
+
+    val coordinator =
+      com.example.transpiler.GeneratedFile(
+        fileName = "dex2c_bridge.cpp",
+        zipPath = "jni/dex2c_bridge.cpp",
+        description = "JNI coordinator & RegisterNatives dispatch across 2 C/C++ units",
+        content = "// Coordinator preview\nJNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) { return 0; }\n",
+        totalByteSize = 1_500_000L,
+        totalLineCount = 42_000,
+        isPreviewTruncated = true,
+      )
+    val part1 =
+      com.example.transpiler.GeneratedFile(
+        fileName = "dex2c_bridge_part_01.cpp",
+        zipPath = "jni/dex2c_bridge_part_01.cpp",
+        description = "Modular C/C++ translation unit #1",
+        content = "// Part 1 body\n",
+        totalByteSize = 820_000L,
+        totalLineCount = 21_000,
+        isPreviewTruncated = true,
+      )
+    val dummySmall =
+      com.example.transpiler.GeneratedFile("dex2c_runtime.h", "jni/dex2c_runtime.h", "Header", "#pragma once\n")
+    val bundle =
+      com.example.transpiler.GeneratedBundle(
+        sourceFile = coordinator,
+        headerFile = dummySmall,
+        androidMkFile = dummySmall.copy(fileName = "Android.mk"),
+        applicationMkFile = dummySmall.copy(fileName = "Application.mk"),
+        cmakeFile = dummySmall.copy(fileName = "CMakeLists.txt"),
+        dccCfgFile = dummySmall.copy(fileName = "dcc.cfg"),
+        filterTxtFile = dummySmall.copy(fileName = "filter.txt"),
+        loaderStubFile = dummySmall.copy(fileName = "DccApplicationLoader.java"),
+        transpiledMethodCount = 4236,
+        instructionCount = 68400,
+        warnings = emptyList(),
+        sourceFiles = listOf(coordinator, part1),
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.BuildHubScreen(
+          activeTab = activeTab,
+          onSelectTab = { activeTab = it },
+          selectedMethodCount = 4236,
+          config = com.example.transpiler.TranspilerConfig(),
+          hasLoadedDex = true,
+          filterMatchSummary = null,
+          onUpdateConfig = {},
+          onImportFilterTxt = {},
+          onImportDccCfg = {},
+          onApplyFilterRules = {},
+          bundle = bundle,
+          isTranspiling = false,
+          onCopyFile = {},
+          onExportZip = {},
+          onGoToClasses = {},
+          isBundleDirty = true,
+          onEnsureBundleBuilt = { ensureBuildCalls++ },
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    // While on PIPELINE tab, onEnsureBundleBuilt has not been triggered
+    assertEquals(0, ensureBuildCalls)
+
+    // Switch to OUTPUT tab -> triggers onEnsureBundleBuilt and displays modular C/C++ unit count + truncated banner
+    composeTestRule.onNodeWithTag("build_tab_output").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(1, ensureBuildCalls)
+    composeTestRule.onNodeWithText("4236 methods").assertIsDisplayed()
+    composeTestRule.onNodeWithText("2 C/C++ units").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("output_preview_truncated_banner").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("output_file_tab_dex2c_bridge_part_01.cpp").assertIsDisplayed()
+  }
 }

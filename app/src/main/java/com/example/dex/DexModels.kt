@@ -197,8 +197,17 @@ data class DexEncodedMethod(
   val isStatic: Boolean get() = (accessFlags and 0x0008) != 0
   val isNative: Boolean get() = (accessFlags and 0x0100) != 0
   val isAbstract: Boolean get() = (accessFlags and 0x0400) != 0
+  val isSynthetic: Boolean get() = (accessFlags and 0x1000) != 0 || (accessFlags and 0x0040) != 0
   val isConstructor: Boolean get() = methodRef.name == "<init>" || (accessFlags and 0x10000) != 0
   val isInitConstructor: Boolean get() = methodRef.name == "<init>"
+  val isCoroutineOrSyntheticArtifact: Boolean
+    get() =
+      isSynthetic ||
+        methodRef.name == "invokeSuspend" ||
+        methodRef.name == "<clinit>" ||
+        methodRef.definingClass.contains("\$\$ExternalSyntheticLambda") ||
+        methodRef.definingClass.contains("ComposableSingletons\$") ||
+        methodRef.definingClass.startsWith("L_COROUTINE/")
   val hasBytecode: Boolean get() = codeMeta != null && codeMeta.insnsCount > 0
 }
 
@@ -239,6 +248,9 @@ data class DexClassInfo(
         packageName.startsWith("java.") ||
         packageName.startsWith("javax.") ||
         packageName.startsWith("com.google.") ||
+        packageName.startsWith("okhttp3") ||
+        packageName.startsWith("okio") ||
+        packageName.startsWith("_COROUTINE") ||
         packageName.startsWith("org.intellij.") ||
         packageName.startsWith("org.jetbrains.")
 }

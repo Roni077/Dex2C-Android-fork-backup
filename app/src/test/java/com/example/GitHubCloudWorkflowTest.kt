@@ -70,6 +70,12 @@ class GitHubCloudWorkflowTest {
     assertFalse(yaml.contains("-a /tmp/work/input.apk"))
     assertTrue(yaml.contains("python3 /tmp/d2c/dcc.py"))
     assertTrue(yaml.contains("ARGS+=(-a)"))
+    assertTrue(yaml.contains("skip_synthetic:"))
+    assertTrue(yaml.contains("ARGS+=(--skip-synthetic)"))
+    assertTrue(yaml.contains("_dex2c_sanitize_generated_cpp"))
+    assertTrue(yaml.contains("-fpermissive -Wno-int-conversion"))
+    assertTrue(yaml.contains("MAX_ATTEMPTS=3"))
+    assertTrue(yaml.contains("Auto-excluded failing C++ method units"))
     assertTrue(yaml.contains("ARGS+=(-p)"))
     assertTrue(yaml.contains("ARGS+=(-d)"))
     assertTrue(yaml.contains("ARGS+=(-c"))
@@ -83,6 +89,63 @@ class GitHubCloudWorkflowTest {
     assertTrue(yaml.contains("dex2c-signed-output.apk"))
     assertTrue(yaml.contains("dex2c-build-log"))
     assertTrue(yaml.contains("if: failure()"))
+  }
+
+  @Test
+  fun filterRuleEngine_excludesCoroutinesSyntheticsAndThirdPartyAndScopesSelectedMethods() {
+    val cfg = TranspilerConfig()
+    assertTrue(cfg.skipSynthetic)
+    assertTrue(cfg.filterRulesText.contains("okhttp3"))
+    assertTrue(cfg.filterRulesText.contains("_COROUTINE"))
+    assertTrue(cfg.filterRulesText.contains("ExternalSyntheticLambda"))
+    assertTrue(cfg.filterRulesText.contains("invokeSuspend"))
+
+    val protoObj = com.example.dex.DexProto("LL", "Ljava/lang/Object;", listOf("Ljava/lang/Object;"))
+    val protoVoid = com.example.dex.DexProto("V", "V", emptyList())
+    val codeMeta = com.example.dex.DexCodeMeta(4, 1, 1, 0, 8, 128)
+
+    val appMethod =
+      com.example.dex.DexEncodedMethod(
+        id = "m_app",
+        methodIndex = 1,
+        methodRef = com.example.dex.DexMethodRef("Lcom/example/ui/Dex2cViewModel;", protoVoid, "refreshCloudRuns"),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta = codeMeta,
+      )
+    val coroutineMethod =
+      com.example.dex.DexEncodedMethod(
+        id = "m_coro",
+        methodIndex = 2,
+        methodRef = com.example.dex.DexMethodRef("Lcom/example/ui/Dex2cViewModel\$startDeviceFlowLogin\$1;", protoObj, "invokeSuspend"),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta = codeMeta,
+      )
+    val lambdaMethod =
+      com.example.dex.DexEncodedMethod(
+        id = "m_lambda",
+        methodIndex = 3,
+        methodRef = com.example.dex.DexMethodRef("Lcom/example/ui/Dex2cViewModel\$\$ExternalSyntheticLambda0;", protoVoid, "run"),
+        accessFlags = 0x1001,
+        isDirect = false,
+        codeMeta = codeMeta,
+      )
+
+    val scopedFilter =
+      com.example.transpiler.FilterRuleEngine.buildCloudFilterText(
+        config = cfg,
+        selectedMethods = listOf(appMethod, coroutineMethod, lambdaMethod),
+      )
+    assertTrue(scopedFilter.contains("!.*;(invokeSuspend|<clinit>).*"))
+    assertTrue(scopedFilter.contains("^Lcom/example/ui/Dex2cViewModel;refreshCloudRuns\\(.*"))
+    assertFalse(scopedFilter.contains("startDeviceFlowLogin"))
+    assertFalse(scopedFilter.contains("ExternalSyntheticLambda0;run"))
+
+    val encodedJson = com.example.transpiler.DccConfigCodec.encodeDccCfg(cfg.copy(skipSynthetic = false))
+    assertTrue(encodedJson.contains("\"skip_synthetic\": false"))
+    val decodedCfg = com.example.transpiler.DccConfigCodec.decodeDccCfg(encodedJson, cfg)
+    assertFalse(decodedCfg.skipSynthetic)
   }
 
   @Test

@@ -6,7 +6,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.transpiler.DEFAULT_FILTER_RULES
 import com.example.transpiler.JniBindingStyle
+import com.example.transpiler.LEGACY_DEFAULT_FILTER_RULES
 import com.example.transpiler.LoaderMode
 import com.example.transpiler.TargetCLanguage
 import com.example.transpiler.TranspilerConfig
@@ -24,6 +26,7 @@ class TranspilerPreferences(private val context: Context) {
     val CF_FLATTENING = booleanPreferencesKey("cf_flattening")
     val NULL_GUARDS = booleanPreferencesKey("null_guards")
     val ALLOW_INIT = booleanPreferencesKey("allow_init")
+    val SKIP_SYNTHETIC = booleanPreferencesKey("skip_synthetic")
     val LOADER_MODE = stringPreferencesKey("loader_mode")
     val CUSTOM_LOADER = stringPreferencesKey("custom_loader")
     val FORCE_CUSTOM_LOADER = booleanPreferencesKey("force_custom_loader")
@@ -35,6 +38,13 @@ class TranspilerPreferences(private val context: Context) {
   val configFlow: Flow<TranspilerConfig> =
     context.dataStore.data.map { prefs ->
       val defaults = TranspilerConfig()
+      val storedFilter = prefs[Keys.FILTER_RULES_TEXT]?.trim()
+      val resolvedFilter =
+        if (storedFilter.isNullOrEmpty() || storedFilter == LEGACY_DEFAULT_FILTER_RULES.trim()) {
+          DEFAULT_FILTER_RULES
+        } else {
+          prefs[Keys.FILTER_RULES_TEXT] ?: defaults.filterRulesText
+        }
       TranspilerConfig(
         jniStyle = prefs[Keys.JNI_STYLE]?.let { runCatching { JniBindingStyle.valueOf(it) }.getOrNull() } ?: defaults.jniStyle,
         targetLanguage = prefs[Keys.TARGET_LANG]?.let { runCatching { TargetCLanguage.valueOf(it) }.getOrNull() } ?: defaults.targetLanguage,
@@ -42,11 +52,12 @@ class TranspilerPreferences(private val context: Context) {
         controlFlowFlattening = prefs[Keys.CF_FLATTENING] ?: defaults.controlFlowFlattening,
         nullCheckGuards = prefs[Keys.NULL_GUARDS] ?: defaults.nullCheckGuards,
         allowInit = prefs[Keys.ALLOW_INIT] ?: defaults.allowInit,
+        skipSynthetic = prefs[Keys.SKIP_SYNTHETIC] ?: defaults.skipSynthetic,
         loaderMode = prefs[Keys.LOADER_MODE]?.let { runCatching { LoaderMode.valueOf(it) }.getOrNull() } ?: defaults.loaderMode,
         customLoaderClass = prefs[Keys.CUSTOM_LOADER] ?: defaults.customLoaderClass,
         forceCustomLoader = prefs[Keys.FORCE_CUSTOM_LOADER] ?: defaults.forceCustomLoader,
         targetAbis = prefs[Keys.TARGET_ABIS]?.takeIf { it.isNotEmpty() } ?: defaults.targetAbis,
-        filterRulesText = prefs[Keys.FILTER_RULES_TEXT] ?: defaults.filterRulesText,
+        filterRulesText = resolvedFilter,
         moduleName = prefs[Keys.MODULE_NAME] ?: defaults.moduleName,
       )
     }
@@ -59,6 +70,7 @@ class TranspilerPreferences(private val context: Context) {
       prefs[Keys.CF_FLATTENING] = config.controlFlowFlattening
       prefs[Keys.NULL_GUARDS] = config.nullCheckGuards
       prefs[Keys.ALLOW_INIT] = config.allowInit
+      prefs[Keys.SKIP_SYNTHETIC] = config.skipSynthetic
       prefs[Keys.LOADER_MODE] = config.loaderMode.name
       prefs[Keys.CUSTOM_LOADER] = config.customLoaderClass
       prefs[Keys.FORCE_CUSTOM_LOADER] = config.forceCustomLoader

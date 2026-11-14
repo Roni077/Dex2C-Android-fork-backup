@@ -21,10 +21,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Archive
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -41,8 +43,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.R
 import com.example.transpiler.GeneratedBundle
+import com.example.transpiler.TranspileProgress
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
+import java.util.Locale
 
 @Composable
 fun OutputExportScreen(
@@ -52,6 +56,7 @@ fun OutputExportScreen(
   onExportZip: () -> Unit,
   onGoToClasses: () -> Unit,
   modifier: Modifier = Modifier,
+  transpileProgress: TranspileProgress? = null,
 ) {
   var selectedFileIndex by rememberSaveable { mutableIntStateOf(0) }
 
@@ -62,10 +67,32 @@ fun OutputExportScreen(
     ) {
       if (isTranspiling) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Column(
+            modifier = Modifier.widthIn(max = 360.dp).padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+          ) {
             CircularProgressIndicator()
             Spacer(Modifier.height(12.dp))
             Text("Lowering Dalvik bytecode to C/JNI…", style = MaterialTheme.typography.titleMedium)
+            if (transpileProgress != null && transpileProgress.totalMethods > 0) {
+              Spacer(Modifier.height(10.dp))
+              LinearProgressIndicator(
+                progress = { transpileProgress.fraction },
+                modifier = Modifier.fillMaxWidth().testTag("transpile_progress_bar"),
+              )
+              Spacer(Modifier.height(6.dp))
+              val chunkNote =
+                if (transpileProgress.totalChunks > 1) {
+                  " • C/C++ Unit ${transpileProgress.activeChunkIndex}/${transpileProgress.totalChunks}"
+                } else {
+                  ""
+                }
+              Text(
+                text = "${transpileProgress.completedMethods} / ${transpileProgress.totalMethods} methods$chunkNote",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
           }
         }
       } else if (bundle == null) {
@@ -129,6 +156,13 @@ fun OutputExportScreen(
               containerColor = MaterialTheme.colorScheme.secondaryContainer,
               contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             )
+            if (bundle.sourceFiles.size > 1) {
+              TagPill(
+                text = "${bundle.sourceFiles.size} C/C++ units",
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+              )
+            }
           }
           if (bundle.warnings.isNotEmpty()) {
             TagPill(
@@ -139,7 +173,10 @@ fun OutputExportScreen(
           }
         }
 
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          modifier = Modifier.testTag("output_files_row"),
+        ) {
           itemsIndexed(files) { idx, file ->
             FilterChip(
               selected = idx == safeIdx,
@@ -150,11 +187,50 @@ fun OutputExportScreen(
           }
         }
 
-        Text(
-          text = activeFile.description,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+            text = activeFile.description,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+          )
+          Spacer(Modifier.width(8.dp))
+          TagPill(
+            text = formatOutputBytes(activeFile.totalByteSize),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+
+        if (activeFile.isPreviewTruncated) {
+          Surface(
+            modifier = Modifier.fillMaxWidth().testTag("output_preview_truncated_banner"),
+            shape = RoundedCornerShape(14.dp),
+            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.65f),
+          ) {
+            Row(
+              modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(16.dp),
+              )
+              Spacer(Modifier.width(8.dp))
+              Text(
+                text = "Streamed preview window (${activeFile.totalLineCount} lines • ${formatOutputBytes(activeFile.totalByteSize)} on disk). Full file exports in ZIP.",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+              )
+            }
+          }
+        }
 
         SyntaxCodeViewer(
           code = activeFile.content,
@@ -189,4 +265,12 @@ fun OutputExportScreen(
       }
     }
   }
+}
+
+private fun formatOutputBytes(bytes: Long): String {
+  if (bytes < 1024L) return "$bytes B"
+  val kb = bytes / 1024.0
+  if (kb < 1024.0) return String.format(Locale.US, "%.1f KB", kb)
+  val mb = kb / 1024.0
+  return String.format(Locale.US, "%.2f MB", mb)
 }

@@ -53,6 +53,7 @@ import com.example.transpiler.Dex2cTranspiler
 import com.example.transpiler.FilterMatchSummary
 import com.example.transpiler.FilterRuleEngine
 import com.example.transpiler.GeneratedBundle
+import com.example.transpiler.TranspileProgress
 import com.example.transpiler.TranspilerConfig
 import com.example.transpiler.ZipBundleExporter
 import java.io.File
@@ -202,6 +203,12 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   private val _isTranspiling = MutableStateFlow(false)
   val isTranspiling: StateFlow<Boolean> = _isTranspiling.asStateFlow()
+
+  private val _transpileProgress = MutableStateFlow<TranspileProgress?>(null)
+  val transpileProgress: StateFlow<TranspileProgress?> = _transpileProgress.asStateFlow()
+
+  private val _isBundleDirty = MutableStateFlow(false)
+  val isBundleDirty: StateFlow<Boolean> = _isBundleDirty.asStateFlow()
 
   private val _statusBanner = MutableStateFlow<String?>(null)
   val statusBanner: StateFlow<String?> = _statusBanner.asStateFlow()
@@ -377,7 +384,7 @@ class Dex2cViewModel @JvmOverloads constructor(
       prefs.configFlow.collect { saved ->
         _config.value = saved
         refreshInspectionIfActive()
-        rebuildBundle()
+        markBundleDirty()
       }
     }
     viewModelScope.launch {
@@ -676,7 +683,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           parsedDex = nextParsed,
           loadedDexes = updatedMap,
         )
-      rebuildBundle()
+      markBundleDirty()
       return
     }
 
@@ -731,6 +738,10 @@ class Dex2cViewModel @JvmOverloads constructor(
   ) {
     currentSourceLabel = label
     dexByteCache = byteMap
+    bundleJob?.cancel()
+    _isTranspiling.value = false
+    _transpileProgress.value = null
+    _isBundleDirty.value = false
     _selectedMethodIds.value = emptySet()
     _inspection.value = null
     _generatedBundle.value = null
@@ -790,56 +801,106 @@ class Dex2cViewModel @JvmOverloads constructor(
     }
   }
 
+  private fun markBundleDirty() {
+    bundleJob?.cancel()
+    _isTranspiling.value = false
+    _transpileProgress.value = null
+    if (_selectedMethodIds.value.isEmpty()) {
+      _generatedBundle.value = null
+      _isBundleDirty.value = false
+    } else {
+      _isBundleDirty.value = true
+    }
+  }
+
   fun toggleMethodSelection(methodId: String) {
     _selectedMethodIds.update { current ->
       if (methodId in current) current - methodId else current + methodId
     }
-    rebuildBundle()
+    markBundleDirty()
   }
 
   fun toggleClassSelection(dexClass: DexClassInfo) {
-    val allowInit = _config.value.allowInit
+    val cfg = _config.value
+    val allowInit = cfg.allowInit
+    val skipSynth = cfg.skipSynthetic
     val scope = _filterState.value.methodScopeFilter
     val scopedMethods = dexClass.allMethods.filter { matchesMethodScope(it, scope) }
     val bytecodeIds =
       scopedMethods
-        .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
+        .filter {
+          it.hasBytecode &&
+            (allowInit || !it.isInitConstructor) &&
+            (!skipSynth || !it.isCoroutineOrSyntheticArtifact)
+        }
         .map { it.id }
     val targetIds = bytecodeIds.ifEmpty { scopedMethods.map { it.id } }
     _selectedMethodIds.update { current ->
       val allSelected = targetIds.isNotEmpty() && targetIds.all { it in current }
       if (allSelected) current - targetIds.toSet() else current + targetIds
     }
-    rebuildBundle()
+    markBundleDirty()
   }
 
   fun togglePackageSelection(packageClasses: List<DexClassInfo>) {
-    val allowInit = _config.value.allowInit
+    val cfg = _config.value
+    val allowInit = cfg.allowInit
+    val skipSynth = cfg.skipSynthetic
     val scope = _filterState.value.methodScopeFilter
-    val scopedMethods = packageClasses.flatMap { cls -> cls.allMethods.filter { matchesMethodScope(it, scope) } }
-    val bytecodeIds =
-      scopedMethods
-        .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
-        .map { it.id }
-    val targetIds = bytecodeIds.ifEmpty { scopedMethods.map { it.id } }.toSet()
+    val bytecodeIds = LinkedHashSet<String>()
+    val fallbackIds = LinkedHashSet<String>()
+    for (cls in packageClasses) {
+      for (m in cls.directMethods) {
+        if (matchesMethodScope(m, scope)) {
+          fallbackIds.add(m.id)
+          if (
+            m.hasBytecode &&
+              (allowInit || !m.isInitConstructor) &&
+              (!skipSynth || !m.isCoroutineOrSyntheticArtifact)
+          ) {
+            bytecodeIds.add(m.id)
+          }
+        }
+      }
+      for (m in cls.virtualMethods) {
+        if (matchesMethodScope(m, scope)) {
+          fallbackIds.add(m.id)
+          if (
+            m.hasBytecode &&
+              (allowInit || !m.isInitConstructor) &&
+              (!skipSynth || !m.isCoroutineOrSyntheticArtifact)
+          ) {
+            bytecodeIds.add(m.id)
+          }
+        }
+      }
+    }
+    val targetIds: Set<String> = bytecodeIds.ifEmpty { fallbackIds }
     if (targetIds.isEmpty()) return
     _selectedMethodIds.update { current ->
       val allSelected = targetIds.all { it in current }
       if (allSelected) current - targetIds else current + targetIds
     }
-    rebuildBundle()
+    markBundleDirty()
   }
 
   fun autoSelectAppMethods() {
     val ready = _loadState.value as? DexLoadState.Ready ?: return
-    val allowInit = _config.value.allowInit
+    val cfg = _config.value
+    val allowInit = cfg.allowInit
+    val skipSynth = cfg.skipSynthetic
     val limit = _appSettings.value.autoSelectMethodLimit.coerceIn(8, 256)
     val allClasses = ready.mergedClasses
     val appMethods =
       allClasses
+        .asSequence()
         .filter { !it.isFrameworkClass }
-        .flatMap { it.allMethods }
-        .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
+        .flatMap { it.allMethods.asSequence() }
+        .filter {
+          it.hasBytecode &&
+            (allowInit || !it.isInitConstructor) &&
+            (!skipSynth || !it.isCoroutineOrSyntheticArtifact)
+        }
         .take(limit)
         .map { it.id }
         .toSet()
@@ -848,15 +909,20 @@ class Dex2cViewModel @JvmOverloads constructor(
         appMethods
       } else {
         allClasses
-          .flatMap { it.allMethods }
-          .filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
+          .asSequence()
+          .flatMap { it.allMethods.asSequence() }
+          .filter {
+            it.hasBytecode &&
+              (allowInit || !it.isInitConstructor) &&
+              (!skipSynth || !it.isCoroutineOrSyntheticArtifact)
+          }
           .take((limit / 2).coerceAtLeast(8))
           .map { it.id }
           .toSet()
       }
     _selectedMethodIds.value = fallback
     _statusBanner.value = "Selected ${fallback.size} bytecode methods for C transpilation."
-    rebuildBundle()
+    markBundleDirty()
   }
 
   fun applyFilterRules() {
@@ -864,13 +930,11 @@ class Dex2cViewModel @JvmOverloads constructor(
     val cfg = _config.value
     viewModelScope.launch {
       val summary = withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
-      val capped = summary.matchedMethodIds.take(96).toSet()
-      _selectedMethodIds.value = capped
-      val extra =
-        if (summary.matchedMethodIds.size > 96) " (capped at 96 for preview)"
-        else ""
-      _statusBanner.value = "filter.txt matched ${summary.matchedMethodIds.size} methods$extra."
-      rebuildBundle()
+      val matched = summary.matchedMethodIds
+      _selectedMethodIds.value = matched
+      _statusBanner.value = "filter.txt matched ${matched.size} methods."
+      markBundleDirty()
+      ensureBundleBuilt(force = true)
     }
   }
 
@@ -909,6 +973,10 @@ class Dex2cViewModel @JvmOverloads constructor(
   }
 
   fun clearSelection() {
+    bundleJob?.cancel()
+    _isTranspiling.value = false
+    _transpileProgress.value = null
+    _isBundleDirty.value = false
     _selectedMethodIds.value = emptySet()
     _generatedBundle.value = null
   }
@@ -969,7 +1037,7 @@ class Dex2cViewModel @JvmOverloads constructor(
     _config.value = updated
     viewModelScope.launch { prefs.saveConfig(updated) }
     refreshInspectionIfActive()
-    rebuildBundle()
+    markBundleDirty()
   }
 
   private fun refreshInspectionIfActive() {
@@ -994,51 +1062,103 @@ class Dex2cViewModel @JvmOverloads constructor(
     }
   }
 
+  fun ensureBundleBuilt(force: Boolean = false) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val selectedIds = _selectedMethodIds.value
+    if (selectedIds.isEmpty()) {
+      bundleJob?.cancel()
+      _isTranspiling.value = false
+      _transpileProgress.value = null
+      _isBundleDirty.value = false
+      _generatedBundle.value = null
+      return
+    }
+    if (!force && !_isBundleDirty.value && (_generatedBundle.value != null || _isTranspiling.value)) {
+      return
+    }
+    rebuildBundle()
+  }
+
+  private fun collectSelectedEntries(
+    ready: DexLoadState.Ready,
+    selectedIds: Set<String>,
+  ): List<Pair<DexParsedFile, DexEncodedMethod>> {
+    val pairs = ArrayList<Pair<DexParsedFile, DexEncodedMethod>>(selectedIds.size)
+    for (dex in ready.loadedDexes.values) {
+      for (cls in dex.classes) {
+        for (m in cls.directMethods) {
+          if (m.id in selectedIds) pairs.add(dex to m)
+        }
+        for (m in cls.virtualMethods) {
+          if (m.id in selectedIds) pairs.add(dex to m)
+        }
+      }
+    }
+    return pairs
+  }
+
   fun rebuildBundle() {
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val selectedIds = _selectedMethodIds.value
     if (selectedIds.isEmpty()) {
       _generatedBundle.value = null
+      _isBundleDirty.value = false
+      _transpileProgress.value = null
       return
     }
     val cfg = _config.value
+    val bundleCacheDir = File(getApplication<Application>().cacheDir, "dex2c_bundle")
     bundleJob?.cancel()
     bundleJob =
       viewModelScope.launch {
         _isTranspiling.value = true
+        _transpileProgress.value =
+          TranspileProgress(
+            completedMethods = 0,
+            totalMethods = selectedIds.size,
+            activeChunkIndex = 1,
+            totalChunks = ((selectedIds.size - 1) / Dex2cTranspiler.DEFAULT_METHODS_PER_CHUNK) + 1,
+          )
         try {
           val bundle =
             withContext(Dispatchers.Default) {
-              val dexMethodPairs =
-                ready.loadedDexes.values.flatMap { dex ->
-                  dex.classes.flatMap { cls ->
-                    cls.allMethods.filter { it.id in selectedIds }.map { dex to it }
-                  }
-                }
+              val dexMethodPairs = collectSelectedEntries(ready, selectedIds)
               Dex2cTranspiler.transpileBundleMultiDex(
                 entries = dexMethodPairs,
                 config = cfg,
                 sourceLabelHint = ready.sourceLabel,
+                outputDir = bundleCacheDir,
+                onProgress = { progress -> _transpileProgress.value = progress },
               )
             }
           _generatedBundle.value = bundle
+          _isBundleDirty.value = false
         } catch (t: Throwable) {
           if (t is CancellationException) throw t
           _statusBanner.value = "Transpilation failed: ${t.message ?: t::class.simpleName}"
         } finally {
           _isTranspiling.value = false
+          _transpileProgress.value = null
         }
       }
   }
 
   fun exportBundleToZip(uri: Uri) {
-    val bundle = _generatedBundle.value ?: return
+    val ready = _loadState.value as? DexLoadState.Ready
+    val selectedIds = _selectedMethodIds.value
+    if (_generatedBundle.value == null && (ready == null || selectedIds.isEmpty())) return
     val context = getApplication<Application>()
     viewModelScope.launch {
       try {
+        if (_generatedBundle.value == null || _isBundleDirty.value) {
+          ensureBundleBuilt(force = false)
+          bundleJob?.join()
+        }
+        val bundle = _generatedBundle.value ?: return@launch
         withContext(Dispatchers.IO) { ZipBundleExporter.exportToUri(context, uri, bundle) }
         _statusBanner.value = "Exported ${bundle.allFiles.size} NDK files to ZIP."
       } catch (t: Throwable) {
+        if (t is CancellationException) throw t
         _statusBanner.value = "Export failed: ${t.message}"
       }
     }
@@ -1364,6 +1484,18 @@ class Dex2cViewModel @JvmOverloads constructor(
     }
   }
 
+  private fun buildEffectiveCloudFilterText(transCfg: TranspilerConfig): String {
+    val ready = _loadState.value as? DexLoadState.Ready
+    val selectedIds = _selectedMethodIds.value
+    val selectedMethods =
+      if (ready != null && selectedIds.isNotEmpty()) {
+        collectSelectedEntries(ready, selectedIds).map { it.second }
+      } else {
+        emptyList()
+      }
+    return FilterRuleEngine.buildCloudFilterText(transCfg, selectedMethods).trimEnd() + "\n"
+  }
+
   fun initializePrivateRepoAndWorkflow(autoTriggered: Boolean = false) {
     val settings = _cloudSettings.value
     if (!settings.isAuthenticated) {
@@ -1418,7 +1550,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           val transCfg = _config.value
           val yaml = Dex2cWorkflowGenerator.generateDex2cYaml(settings, transCfg)
           val dccCfg = DccConfigCodec.encodeDccCfg(transCfg)
-          val filterTxt = transCfg.filterRulesText.trimEnd() + "\n"
+          val filterTxt = buildEffectiveCloudFilterText(transCfg)
 
           NetworkResilience.retryTransient(maxAttempts = 3) {
             withContext(Dispatchers.IO) {
@@ -1587,6 +1719,7 @@ class Dex2cViewModel @JvmOverloads constructor(
               progressFraction = 0.20f,
             )
           postLiveUploadNotification("Syncing filter.txt…", 0.20f)
+          val effectiveFilterTxt = buildEffectiveCloudFilterText(transCfg)
           NetworkResilience.retryTransient(maxAttempts = 3) {
             withContext(Dispatchers.IO) {
               gitHubClient.upsertRepoFile(
@@ -1596,7 +1729,7 @@ class Dex2cViewModel @JvmOverloads constructor(
                 path = Dex2cWorkflowGenerator.FILTER_TXT_PATH,
                 branch = branch,
                 commitMessage = "Update filter.txt for cloud run",
-                contentBytes = (transCfg.filterRulesText.trimEnd() + "\n").toByteArray(Charsets.UTF_8),
+                contentBytes = effectiveFilterTxt.toByteArray(Charsets.UTF_8),
               )
             }
           }
@@ -1691,6 +1824,7 @@ class Dex2cViewModel @JvmOverloads constructor(
                     "apk_path" to Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
                     "apk_url" to urlFallback,
                     "allow_init" to transCfg.allowInit.toString(),
+                    "skip_synthetic" to transCfg.skipSynthetic.toString(),
                     "custom_loader" to transCfg.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" },
                     "force_custom_loader" to transCfg.forceCustomLoader.toString(),
                     "obfuscate" to (transCfg.stringEncryption || transCfg.controlFlowFlattening).toString(),

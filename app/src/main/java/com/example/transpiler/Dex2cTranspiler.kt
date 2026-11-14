@@ -6,9 +6,135 @@ import com.example.dex.DexEncodedMethod
 import com.example.dex.DexParsedFile
 import com.example.dex.DexTryBlock
 import com.example.dex.descriptorToJavaName
+import java.io.BufferedWriter
+import java.io.Closeable
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.util.Locale
 
 object Dex2cTranspiler {
+
+  const val DEFAULT_METHODS_PER_CHUNK = 250
+  private const val MAX_PREVIEW_LINES = 450
+  private const val MAX_PREVIEW_CHARS = 48 * 1024
+  private const val MAX_WARNINGS = 150
+
+  private data class NativeRegRecord(
+    val definingClass: String,
+    val methodName: String,
+    val jniSignature: String,
+    val cFuncName: String,
+    val forwardPrototype: String,
+  )
+
+  private class StreamedFileBuilder(
+    val backingFile: File,
+    val fileName: String,
+    val zipPath: String,
+    val description: String,
+    private val maxPreviewLines: Int = MAX_PREVIEW_LINES,
+    private val maxPreviewChars: Int = MAX_PREVIEW_CHARS,
+  ) : Appendable, Closeable {
+    private val writer =
+      BufferedWriter(
+        OutputStreamWriter(FileOutputStream(backingFile), Charsets.UTF_8),
+        16 * 1024,
+      )
+    private val preview = StringBuilder(minOf(maxPreviewChars, 8192))
+    private var lineCount = 0
+    private var previewLines = 0
+    private var lastCharWasNewline = true
+    private var hasAnyChar = false
+    var isPreviewTruncated: Boolean = false
+      private set
+
+    override fun append(csq: CharSequence?): Appendable {
+      val text = csq ?: "null"
+      return append(text, 0, text.length)
+    }
+
+    override fun append(csq: CharSequence?, start: Int, end: Int): Appendable {
+      val text = csq ?: "null"
+      writer.write(text.toString(), start, end)
+      for (i in start until end) {
+        val ch = text[i]
+        hasAnyChar = true
+        if (ch == '\n') {
+          lineCount++
+          lastCharWasNewline = true
+        } else {
+          lastCharWasNewline = false
+        }
+        if (!isPreviewTruncated) {
+          if (previewLines < maxPreviewLines && preview.length < maxPreviewChars) {
+            preview.append(ch)
+            if (ch == '\n') {
+              previewLines++
+              if (previewLines >= maxPreviewLines) {
+                isPreviewTruncated = true
+              }
+            }
+          } else {
+            isPreviewTruncated = true
+          }
+        }
+      }
+      return this
+    }
+
+    override fun append(c: Char): Appendable {
+      writer.write(c.code)
+      hasAnyChar = true
+      if (c == '\n') {
+        lineCount++
+        lastCharWasNewline = true
+      } else {
+        lastCharWasNewline = false
+      }
+      if (!isPreviewTruncated) {
+        if (previewLines < maxPreviewLines && preview.length < maxPreviewChars) {
+          preview.append(c)
+          if (c == '\n') {
+            previewLines++
+            if (previewLines >= maxPreviewLines) {
+              isPreviewTruncated = true
+            }
+          }
+        } else {
+          isPreviewTruncated = true
+        }
+      }
+      return this
+    }
+
+    private var closed = false
+
+    override fun close() {
+      if (closed) return
+      closed = true
+      writer.flush()
+      writer.close()
+    }
+
+    fun finish(): GeneratedFile {
+      close()
+      val totalLines =
+        if (!hasAnyChar) 0
+        else if (lastCharWasNewline) lineCount
+        else lineCount + 1
+      return GeneratedFile(
+        fileName = fileName,
+        zipPath = zipPath,
+        description = description,
+        content = preview.toString(),
+        backingFile = backingFile,
+        totalByteSize = backingFile.length(),
+        totalLineCount = totalLines,
+        isPreviewTruncated = isPreviewTruncated,
+      )
+    }
+  }
 
   fun transpileMethodToC(
     dex: DexParsedFile,
@@ -18,7 +144,15 @@ object Dex2cTranspiler {
     val instructions = DalvikDisassembler.disassemble(dex, method)
     val tryBlocks = DalvikDisassembler.parseTryBlocks(dex, method)
     val sb = StringBuilder()
-    emitMethodBody(sb, method, instructions, tryBlocks, config, methodIndexHint = 0)
+    emitMethodBody(
+      out = sb,
+      method = method,
+      insns = instructions,
+      tryBlocks = tryBlocks,
+      config = config,
+      methodIndexHint = 0,
+      crossUnitLinkage = false,
+    )
     return sb.toString()
   }
 
@@ -26,135 +160,337 @@ object Dex2cTranspiler {
     dex: DexParsedFile,
     selectedMethods: List<DexEncodedMethod>,
     config: TranspilerConfig,
-  ): GeneratedBundle = transpileBundleMultiDex(selectedMethods.map { dex to it }, config, sourceLabelHint = dex.sourceLabel)
+    outputDir: File? = null,
+    methodsPerChunk: Int = DEFAULT_METHODS_PER_CHUNK,
+    onProgress: ((TranspileProgress) -> Unit)? = null,
+  ): GeneratedBundle =
+    transpileBundleMultiDex(
+      entries = selectedMethods.map { dex to it },
+      config = config,
+      sourceLabelHint = dex.sourceLabel,
+      outputDir = outputDir,
+      methodsPerChunk = methodsPerChunk,
+      onProgress = onProgress,
+    )
 
   fun transpileBundleMultiDex(
     entries: List<Pair<DexParsedFile, DexEncodedMethod>>,
     config: TranspilerConfig,
     sourceLabelHint: String? = null,
+    outputDir: File? = null,
+    methodsPerChunk: Int = DEFAULT_METHODS_PER_CHUNK,
+    onProgress: ((TranspileProgress) -> Unit)? = null,
   ): GeneratedBundle {
+    val safeChunkSize = methodsPerChunk.coerceAtLeast(1)
+    val bundleDir = resolveBundleOutputDir(outputDir)
     val moduleName = sanitizeModuleName(config.moduleName)
     val sourceExt = config.targetLanguage.extension
     val warnings = mutableListOf<String>()
+    var suppressedWarnings = 0
     var totalInstructions = 0
+
+    fun recordWarning(msg: String) {
+      if (warnings.size < MAX_WARNINGS) {
+        warnings += msg
+      } else {
+        suppressedWarnings++
+      }
+    }
 
     val filteredEntries =
       if (config.allowInit) {
         entries
       } else {
-        val skipped = entries.count { it.second.isInitConstructor }
-        if (skipped > 0) {
-          warnings += "Skipped $skipped <init> constructor(s) because --allow-init is disabled."
+        var skipped = 0
+        val list = ArrayList<Pair<DexParsedFile, DexEncodedMethod>>(entries.size)
+        for (pair in entries) {
+          if (pair.second.isInitConstructor) {
+            skipped++
+          } else {
+            list.add(pair)
+          }
         }
-        entries.filterNot { it.second.isInitConstructor }
+        if (skipped > 0) {
+          recordWarning("Skipped $skipped <init> constructor(s) because --allow-init is disabled.")
+        }
+        list
       }
-    val filteredMethods = filteredEntries.map { it.second }
 
     val distinctDexSummary =
-      entries.map { it.first }.distinctBy { it.entryName }.joinToString(", ") {
-        "${it.entryName} (v${it.header.version})"
-      }.ifBlank { "none" }
+      entries
+        .asSequence()
+        .map { it.first }
+        .distinctBy { it.entryName }
+        .joinToString(", ") { "${it.entryName} (v${it.header.version})" }
+        .ifBlank { "none" }
     val resolvedSourceLabel = sourceLabelHint ?: entries.firstOrNull()?.first?.sourceLabel ?: "multi-dex"
 
-    val header = buildRuntimeHeader(moduleName)
-    val src = StringBuilder()
-    src.appendLine("// Generated by Dex2C Studio (Kirlif/d2c & codehasan/dex2c compatible)")
-    src.appendLine("// Source DEX: $resolvedSourceLabel [$distinctDexSummary]")
-    src.appendLine("// Flags: allow_init=${config.allowInit}, dynamic_register=${config.jniStyle == JniBindingStyle.REGISTER_NATIVES}, lib=$moduleName")
-    src.appendLine("// Methods transpiled: ${filteredEntries.size}")
-    src.appendLine()
-    src.appendLine("#include \"dex2c_runtime.h\"")
-    src.appendLine()
+    val totalMethods = filteredEntries.size
+    val isMultiChunk = totalMethods > safeChunkSize
+    val chunks =
+      if (totalMethods == 0) listOf(emptyList())
+      else filteredEntries.chunked(safeChunkSize)
+    val totalChunks = chunks.size.coerceAtLeast(1)
 
-    val registrationEntries = mutableListOf<Pair<String, List<Pair<DexEncodedMethod, String>>>>()
-    var counter = 0
+    onProgress?.invoke(
+      TranspileProgress(
+        completedMethods = 0,
+        totalMethods = totalMethods,
+        activeChunkIndex = 1,
+        totalChunks = totalChunks,
+      )
+    )
 
-    filteredEntries.forEach { (dex, method) ->
-      if (!method.hasBytecode) {
-        warnings += "${descriptorToJavaName(method.methodRef.definingClass)}.${method.methodRef.name} has no Dalvik code_item (abstract/native)."
-      }
-      val insns = DalvikDisassembler.disassemble(dex, method)
-      val tries = DalvikDisassembler.parseTryBlocks(dex, method)
-      totalInstructions += insns.size
-      val cFuncName = emitMethodBody(src, method, insns, tries, config, counter++)
-      src.appendLine()
-      registrationEntries.add(method.methodRef.definingClass to listOf(method to cFuncName))
-    }
+    val registrationRecords = ArrayList<NativeRegRecord>(totalMethods)
+    var globalMethodCounter = 0
 
-    if (config.jniStyle == JniBindingStyle.REGISTER_NATIVES) {
-      val merged = linkedMapOf<String, MutableList<Pair<DexEncodedMethod, String>>>()
-      for ((cls, list) in registrationEntries) {
-        merged.getOrPut(cls) { mutableListOf() }.addAll(list)
-      }
+    val generatedSourceFiles = mutableListOf<GeneratedFile>()
 
-      val tableNames = mutableListOf<Triple<String, String, Int>>()
-      merged.entries.forEachIndexed { idx, (clsDesc, pairs) ->
-        val jniCls = clsDesc.removePrefix("L").removeSuffix(";")
-        val tableVar = "g_dex2c_methods_$idx"
-        src.appendLine("static const JNINativeMethod $tableVar[] = {")
-        pairs.forEach { (m, fn) ->
-          src.appendLine("    {\"${escapeC(m.methodRef.name)}\", \"${escapeC(m.methodRef.jniSignature())}\", (void *)$fn},")
+    if (!isMultiChunk) {
+      val singleFileName = "dex2c_bridge.$sourceExt"
+      val builder =
+        StreamedFileBuilder(
+          backingFile = File(bundleDir, singleFileName),
+          fileName = singleFileName,
+          zipPath = "jni/$singleFileName",
+          description = "Transpiled C/C++ methods & JNI registration",
+        )
+      builder.use { out ->
+        out.appendLine("// Generated by Dex2C Studio (Kirlif/d2c & codehasan/dex2c compatible)")
+        out.appendLine("// Source DEX: $resolvedSourceLabel [$distinctDexSummary]")
+        out.appendLine("// Flags: allow_init=${config.allowInit}, dynamic_register=${config.jniStyle == JniBindingStyle.REGISTER_NATIVES}, lib=$moduleName")
+        out.appendLine("// Methods transpiled: $totalMethods")
+        out.appendLine()
+        out.appendLine("#include \"dex2c_runtime.h\"")
+        out.appendLine()
+
+        filteredEntries.forEachIndexed { idx, (dex, method) ->
+          if (!method.hasBytecode) {
+            recordWarning("${descriptorToJavaName(method.methodRef.definingClass)}.${method.methodRef.name} has no Dalvik code_item (abstract/native).")
+          }
+          val insns = DalvikDisassembler.disassemble(dex, method)
+          val tries = DalvikDisassembler.parseTryBlocks(dex, method)
+          totalInstructions += insns.size
+          val regRecord =
+            emitMethodBody(
+              out = out,
+              method = method,
+              insns = insns,
+              tryBlocks = tries,
+              config = config,
+              methodIndexHint = globalMethodCounter++,
+              crossUnitLinkage = false,
+            )
+          out.appendLine()
+          registrationRecords.add(regRecord)
+          if ((idx + 1) % 25 == 0 || idx + 1 == totalMethods) {
+            onProgress?.invoke(
+              TranspileProgress(
+                completedMethods = idx + 1,
+                totalMethods = totalMethods,
+                activeChunkIndex = 1,
+                totalChunks = 1,
+              )
+            )
+          }
         }
-        src.appendLine("};")
-        src.appendLine()
-        tableNames += Triple(jniCls, tableVar, pairs.size)
+
+        if (config.jniStyle == JniBindingStyle.REGISTER_NATIVES) {
+          emitJniOnLoadRegistration(out, registrationRecords, config, emitForwardPrototypes = false)
+        }
+      }
+      generatedSourceFiles += builder.finish()
+    } else {
+      val partFiles = mutableListOf<GeneratedFile>()
+      chunks.forEachIndexed { chunkIdx, chunkEntries ->
+        val partNumber = chunkIdx + 1
+        val partFileName = String.format(Locale.US, "dex2c_bridge_part_%02d.%s", partNumber, sourceExt)
+        val firstIndex = chunkIdx * safeChunkSize + 1
+        val lastIndex = firstIndex + chunkEntries.size - 1
+        val partBuilder =
+          StreamedFileBuilder(
+            backingFile = File(bundleDir, partFileName),
+            fileName = partFileName,
+            zipPath = "jni/$partFileName",
+            description = "Modular C/C++ translation unit #$partNumber (methods $firstIndex–$lastIndex of $totalMethods)",
+          )
+        partBuilder.use { out ->
+          out.appendLine("// Generated by Dex2C Studio — Modular Part $partNumber / $totalChunks")
+          out.appendLine("// Source DEX: $resolvedSourceLabel [$distinctDexSummary]")
+          out.appendLine("// Methods in unit: ${chunkEntries.size} (range $firstIndex..$lastIndex of $totalMethods)")
+          out.appendLine()
+          out.appendLine("#include \"dex2c_runtime.h\"")
+          out.appendLine()
+
+          chunkEntries.forEach { (dex, method) ->
+            if (!method.hasBytecode) {
+              recordWarning("${descriptorToJavaName(method.methodRef.definingClass)}.${method.methodRef.name} has no Dalvik code_item (abstract/native).")
+            }
+            val insns = DalvikDisassembler.disassemble(dex, method)
+            val tries = DalvikDisassembler.parseTryBlocks(dex, method)
+            totalInstructions += insns.size
+            val regRecord =
+              emitMethodBody(
+                out = out,
+                method = method,
+                insns = insns,
+                tryBlocks = tries,
+                config = config,
+                methodIndexHint = globalMethodCounter++,
+                crossUnitLinkage = true,
+              )
+            out.appendLine()
+            registrationRecords.add(regRecord)
+            if (globalMethodCounter % 32 == 0 || globalMethodCounter == totalMethods) {
+              onProgress?.invoke(
+                TranspileProgress(
+                  completedMethods = globalMethodCounter,
+                  totalMethods = totalMethods,
+                  activeChunkIndex = partNumber,
+                  totalChunks = totalChunks,
+                )
+              )
+            }
+          }
+        }
+        partFiles += partBuilder.finish()
       }
 
-      src.appendLine("JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {")
-      src.appendLine("    (void)reserved;")
-      src.appendLine("    JNIEnv *env = NULL;")
-      if (config.targetLanguage == TargetCLanguage.C11) {
-        src.appendLine("    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_6) != JNI_OK || env == NULL) {")
-      } else {
-        src.appendLine("    if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK || env == NULL) {")
+      val coordinatorName = "dex2c_bridge.$sourceExt"
+      val coordinatorBuilder =
+        StreamedFileBuilder(
+          backingFile = File(bundleDir, coordinatorName),
+          fileName = coordinatorName,
+          zipPath = "jni/$coordinatorName",
+          description = "JNI coordinator & RegisterNatives dispatch across $totalChunks C/C++ units",
+        )
+      coordinatorBuilder.use { out ->
+        out.appendLine("// Generated by Dex2C Studio (Kirlif/d2c & codehasan/dex2c compatible)")
+        out.appendLine("// Source DEX: $resolvedSourceLabel [$distinctDexSummary]")
+        out.appendLine("// Flags: allow_init=${config.allowInit}, dynamic_register=${config.jniStyle == JniBindingStyle.REGISTER_NATIVES}, lib=$moduleName")
+        out.appendLine("// Methods transpiled: $totalMethods across $totalChunks modular C/C++ translation units")
+        out.appendLine()
+        out.appendLine("#include \"dex2c_runtime.h\"")
+        out.appendLine()
+
+        if (config.jniStyle == JniBindingStyle.REGISTER_NATIVES) {
+          emitJniOnLoadRegistration(out, registrationRecords, config, emitForwardPrototypes = true)
+        } else {
+          out.appendLine("// Static JNI symbols are exported across ${partFiles.size} part files:")
+          partFiles.forEach { pf ->
+            out.appendLine("//   - ${pf.fileName}")
+          }
+        }
       }
-      src.appendLine("        return JNI_ERR;")
-      src.appendLine("    }")
-      tableNames.forEach { (jniCls, tableVar, count) ->
-        src.appendLine("    {")
-        src.appendLine("        jclass cls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
-        src.appendLine("        if (cls == NULL) return JNI_ERR;")
-        src.appendLine("        if (${jniCall(config, "RegisterNatives", "cls, $tableVar, $count")} < 0) {")
-        src.appendLine("            ${jniCall(config, "DeleteLocalRef", "cls")};")
-        src.appendLine("            return JNI_ERR;")
-        src.appendLine("        }")
-        src.appendLine("        ${jniCall(config, "DeleteLocalRef", "cls")};")
-        src.appendLine("    }")
-      }
-      src.appendLine("    return JNI_VERSION_1_6;")
-      src.appendLine("}")
+      generatedSourceFiles += coordinatorBuilder.finish()
+      generatedSourceFiles.addAll(partFiles)
     }
 
-    val androidMk = buildAndroidMk(moduleName, sourceExt, config)
+    if (suppressedWarnings > 0) {
+      warnings += "...and $suppressedWarnings additional warning(s) omitted for memory safety."
+    }
+
+    val allSourceFileNames = generatedSourceFiles.map { it.fileName }
+    val header = buildRuntimeHeader(moduleName)
+    val androidMk = buildAndroidMk(moduleName, allSourceFileNames, sourceExt, config)
     val applicationMk = buildApplicationMk(config)
-    val cmake = buildCMake(moduleName, sourceExt)
+    val cmake = buildCMake(moduleName, allSourceFileNames)
     val dccCfg = DccConfigCodec.encodeDccCfg(config)
     val filterTxt = config.filterRulesText.trimEnd() + "\n"
-    val loaderStub = buildLoaderStub(config, moduleName, filteredMethods.groupBy { it.methodRef.definingClass })
+    val loaderStubFile = streamLoaderStubFile(bundleDir, config, moduleName, filteredEntries)
 
     return GeneratedBundle(
-      sourceFile = GeneratedFile("dex2c_bridge.$sourceExt", "jni/dex2c_bridge.$sourceExt", "Transpiled C/C++ methods & JNI registration", src.toString()),
+      sourceFile = generatedSourceFiles.first(),
       headerFile = GeneratedFile("dex2c_runtime.h", "jni/dex2c_runtime.h", "JNI runtime macros & string decoder", header),
       androidMkFile = GeneratedFile("Android.mk", "jni/Android.mk", "Kirlif/d2c ndk-build Android.mk script", androidMk),
       applicationMkFile = GeneratedFile("Application.mk", "jni/Application.mk", "NDK ABI & STL target configuration", applicationMk),
       cmakeFile = GeneratedFile("CMakeLists.txt", "CMakeLists.txt", "Android NDK CMake build script", cmake),
       dccCfgFile = GeneratedFile("dcc.cfg", "dcc.cfg", "d2c / dex2c JSON compiler configuration", dccCfg),
       filterTxtFile = GeneratedFile("filter.txt", "filter.txt", "Method & class inclusion/exclusion rules", filterTxt),
-      loaderStubFile = GeneratedFile("DccApplicationLoader.java", "loader/DccApplicationLoader.java", "Application loader & native declarations", loaderStub),
-      transpiledMethodCount = filteredMethods.size,
+      loaderStubFile = loaderStubFile,
+      transpiledMethodCount = totalMethods,
       instructionCount = totalInstructions,
       warnings = warnings,
+      sourceFiles = generatedSourceFiles,
     )
   }
 
+  private fun resolveBundleOutputDir(explicitDir: File?): File {
+    val dir =
+      explicitDir
+        ?: File(System.getProperty("java.io.tmpdir", "."), "dex2c_bundle_stream")
+    if (!dir.exists()) {
+      dir.mkdirs()
+    }
+    return dir
+  }
+
+  private fun emitJniOnLoadRegistration(
+    out: Appendable,
+    registrationRecords: List<NativeRegRecord>,
+    config: TranspilerConfig,
+    emitForwardPrototypes: Boolean,
+  ) {
+    if (emitForwardPrototypes && registrationRecords.isNotEmpty()) {
+      out.appendLine("// Forward prototypes for modular translation units")
+      registrationRecords.forEach { rec ->
+        out.appendLine(rec.forwardPrototype)
+      }
+      out.appendLine()
+    }
+
+    val merged = linkedMapOf<String, MutableList<NativeRegRecord>>()
+    for (rec in registrationRecords) {
+      merged.getOrPut(rec.definingClass) { mutableListOf() }.add(rec)
+    }
+
+    val tableNames = mutableListOf<Triple<String, String, Int>>()
+    merged.entries.forEachIndexed { idx, (clsDesc, records) ->
+      val jniCls = clsDesc.removePrefix("L").removeSuffix(";")
+      val tableVar = "g_dex2c_methods_$idx"
+      out.appendLine("static const JNINativeMethod $tableVar[] = {")
+      records.forEach { rec ->
+        out.appendLine("    {\"${escapeC(rec.methodName)}\", \"${escapeC(rec.jniSignature)}\", (void *)${rec.cFuncName}},")
+      }
+      out.appendLine("};")
+      out.appendLine()
+      tableNames += Triple(jniCls, tableVar, records.size)
+    }
+
+    out.appendLine("JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {")
+    out.appendLine("    (void)reserved;")
+    out.appendLine("    JNIEnv *env = NULL;")
+    if (config.targetLanguage == TargetCLanguage.C11) {
+      out.appendLine("    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_6) != JNI_OK || env == NULL) {")
+    } else {
+      out.appendLine("    if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK || env == NULL) {")
+    }
+    out.appendLine("        return JNI_ERR;")
+    out.appendLine("    }")
+    tableNames.forEach { (jniCls, tableVar, count) ->
+      out.appendLine("    {")
+      out.appendLine("        jclass cls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
+      out.appendLine("        if (cls == NULL) return JNI_ERR;")
+      out.appendLine("        if (${jniCall(config, "RegisterNatives", "cls, $tableVar, $count")} < 0) {")
+      out.appendLine("            ${jniCall(config, "DeleteLocalRef", "cls")};")
+      out.appendLine("            return JNI_ERR;")
+      out.appendLine("        }")
+      out.appendLine("        ${jniCall(config, "DeleteLocalRef", "cls")};")
+      out.appendLine("    }")
+    }
+    out.appendLine("    return JNI_VERSION_1_6;")
+    out.appendLine("}")
+  }
+
   private fun emitMethodBody(
-    sb: StringBuilder,
+    out: Appendable,
     method: DexEncodedMethod,
     insns: List<DalvikInstruction>,
     tryBlocks: List<DexTryBlock>,
     config: TranspilerConfig,
     methodIndexHint: Int,
-  ): String {
+    crossUnitLinkage: Boolean,
+  ): NativeRegRecord {
     val ref = method.methodRef
     val returnJniType = descriptorToJniType(ref.proto.returnType)
     val paramJniTypes = ref.proto.parameterTypes.map { descriptorToJniType(it) }
@@ -170,49 +506,71 @@ object Dex2cTranspiler {
       add(if (method.isStatic) "jclass clazz" else "jobject thiz")
       paramJniTypes.forEachIndexed { idx, t -> add("$t arg$idx") }
     }
+    val paramsJoined = signatureParams.joinToString(", ")
 
-    val linkage = if (config.jniStyle == JniBindingStyle.STATIC_SYMBOLS) "JNIEXPORT $returnJniType JNICALL" else "static $returnJniType"
-    sb.appendLine("// ${descriptorToJavaName(ref.definingClass)}.${ref.prettySignature()}")
+    val externPrefix =
+      if (config.targetLanguage == TargetCLanguage.CPP17 &&
+        (config.jniStyle == JniBindingStyle.STATIC_SYMBOLS || crossUnitLinkage)
+      ) {
+        "extern \"C\" "
+      } else {
+        ""
+      }
+
+    val linkage =
+      when {
+        config.jniStyle == JniBindingStyle.STATIC_SYMBOLS -> "JNIEXPORT $returnJniType JNICALL"
+        crossUnitLinkage -> returnJniType
+        else -> "static $returnJniType"
+      }
+
+    val forwardProto = "${externPrefix}$returnJniType $cFuncName($paramsJoined);"
+
+    out.appendLine("// ${descriptorToJavaName(ref.definingClass)}.${ref.prettySignature()}")
     if (method.isInitConstructor) {
-      sb.appendLine("// NOTE: Constructor (<init>) transpiled via --allow-init")
+      out.appendLine("// NOTE: Constructor (<init>) transpiled via --allow-init")
     }
-    if (config.jniStyle == JniBindingStyle.STATIC_SYMBOLS && config.targetLanguage == TargetCLanguage.CPP17) {
-      sb.append("extern \"C\" ")
-    }
-    sb.appendLine("$linkage $cFuncName(${signatureParams.joinToString(", ")}) {")
+    out.append(externPrefix)
+    out.appendLine("$linkage $cFuncName($paramsJoined) {")
 
     val meta = method.codeMeta
     if (meta == null || insns.isEmpty()) {
-      sb.appendLine("    // No Dalvik bytecode present in DEX (abstract/native stub)")
-      if (!method.isStatic) sb.appendLine("    (void)thiz;") else sb.appendLine("    (void)clazz;")
-      paramJniTypes.indices.forEach { sb.appendLine("    (void)arg$it;") }
-      sb.appendLine(defaultReturnStmt(ref.proto.returnType))
-      sb.appendLine("}")
-      return cFuncName
+      out.appendLine("    // No Dalvik bytecode present in DEX (abstract/native stub)")
+      if (!method.isStatic) out.appendLine("    (void)thiz;") else out.appendLine("    (void)clazz;")
+      paramJniTypes.indices.forEach { out.appendLine("    (void)arg$it;") }
+      out.appendLine(defaultReturnStmt(ref.proto.returnType))
+      out.appendLine("}")
+      return NativeRegRecord(
+        definingClass = ref.definingClass,
+        methodName = ref.name,
+        jniSignature = ref.jniSignature(),
+        cFuncName = cFuncName,
+        forwardPrototype = forwardProto,
+      )
     }
 
     val regCount = maxOf(meta.registersSize, 1)
-    sb.appendLine("    jvalue v[$regCount];")
-    sb.appendLine("    memset(v, 0, sizeof(v));")
-    sb.appendLine("    jvalue __res;")
-    sb.appendLine("    memset(&__res, 0, sizeof(__res));")
-    sb.appendLine("    jthrowable __exc = NULL;")
-    sb.appendLine("    (void)__exc;")
-    if (method.isStatic) sb.appendLine("    (void)clazz;")
+    out.appendLine("    jvalue v[$regCount];")
+    out.appendLine("    memset(v, 0, sizeof(v));")
+    out.appendLine("    jvalue __res;")
+    out.appendLine("    memset(&__res, 0, sizeof(__res));")
+    out.appendLine("    jthrowable __exc = NULL;")
+    out.appendLine("    (void)__exc;")
+    if (method.isStatic) out.appendLine("    (void)clazz;")
 
     var regCursor = (meta.registersSize - meta.insSize).coerceAtLeast(0)
     if (!method.isStatic && regCursor < regCount) {
-      sb.appendLine("    v[$regCursor].l = thiz;")
+      out.appendLine("    v[$regCursor].l = thiz;")
       regCursor++
     }
     ref.proto.parameterTypes.forEachIndexed { idx, typeDesc ->
       if (regCursor < regCount) {
         val field = jvalueFieldForDescriptor(typeDesc)
-        sb.appendLine("    v[$regCursor].$field = arg$idx;")
+        out.appendLine("    v[$regCursor].$field = arg$idx;")
         regCursor += if (typeDesc == "J" || typeDesc == "D") 2 else 1
       }
     }
-    sb.appendLine()
+    out.appendLine()
 
     val branchTargets = buildSet {
       insns.mapNotNullTo(this) { it.targetOffset }
@@ -221,52 +579,58 @@ object Dex2cTranspiler {
 
     if (config.controlFlowFlattening && insns.isNotEmpty()) {
       val firstOffset = insns.first().offsetWords
-      sb.appendLine("    uint32_t __cf_pc = ${formatHex4u(firstOffset)};")
-      sb.appendLine("    while (1) {")
-      sb.appendLine("        switch (__cf_pc) {")
+      out.appendLine("    uint32_t __cf_pc = ${formatHex4u(firstOffset)};")
+      out.appendLine("    while (1) {")
+      out.appendLine("        switch (__cf_pc) {")
       insns.forEachIndexed { idx, insn ->
         val nextOffset = insns.getOrNull(idx + 1)?.offsetWords ?: -1
         val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
-        sb.appendLine("        case ${formatHex4u(insn.offsetWords)}: { /* $commentText */")
-        emitInstructionC(sb, insn, config, indent = "            ", flattened = true, returnType = ref.proto.returnType)
-        emitTryCatchDispatchIfApplicable(sb, insn, tryBlocks, config, indent = "            ", flattened = true)
+        out.appendLine("        case ${formatHex4u(insn.offsetWords)}: { /* $commentText */")
+        emitInstructionC(out, insn, config, indent = "            ", flattened = true, returnType = ref.proto.returnType)
+        emitTryCatchDispatchIfApplicable(out, insn, tryBlocks, config, indent = "            ", flattened = true)
         if (insn.mnemonic != "return-void" && !insn.mnemonic.startsWith("return") && insn.mnemonic != "throw" && !insn.mnemonic.startsWith("goto")) {
           if (nextOffset >= 0) {
-            sb.appendLine("            __cf_pc = ${formatHex4u(nextOffset)};")
-            sb.appendLine("            break;")
+            out.appendLine("            __cf_pc = ${formatHex4u(nextOffset)};")
+            out.appendLine("            break;")
           } else {
-            sb.appendLine("            goto __dex2c_exit;")
+            out.appendLine("            goto __dex2c_exit;")
           }
         } else if (insn.mnemonic.startsWith("goto")) {
-          sb.appendLine("            break;")
+          out.appendLine("            break;")
         }
-        sb.appendLine("        }")
+        out.appendLine("        }")
       }
-      sb.appendLine("        default:")
-      sb.appendLine("            goto __dex2c_exit;")
-      sb.appendLine("        }")
-      sb.appendLine("    }")
-      sb.appendLine("__dex2c_exit:")
-      sb.appendLine(defaultReturnStmt(ref.proto.returnType))
+      out.appendLine("        default:")
+      out.appendLine("            goto __dex2c_exit;")
+      out.appendLine("        }")
+      out.appendLine("    }")
+      out.appendLine("__dex2c_exit:")
+      out.appendLine(defaultReturnStmt(ref.proto.returnType))
     } else {
       insns.forEach { insn ->
         if (insn.offsetWords in branchTargets) {
-          sb.appendLine("${formatLabelOffset(insn.offsetWords)}:")
+          out.appendLine("${formatLabelOffset(insn.offsetWords)}:")
         }
-        emitInstructionC(sb, insn, config, indent = "    ", flattened = false, returnType = ref.proto.returnType)
-        emitTryCatchDispatchIfApplicable(sb, insn, tryBlocks, config, indent = "    ", flattened = false)
+        emitInstructionC(out, insn, config, indent = "    ", flattened = false, returnType = ref.proto.returnType)
+        emitTryCatchDispatchIfApplicable(out, insn, tryBlocks, config, indent = "    ", flattened = false)
       }
       if (insns.none { it.mnemonic.startsWith("return") || it.mnemonic == "throw" }) {
-        sb.appendLine(defaultReturnStmt(ref.proto.returnType))
+        out.appendLine(defaultReturnStmt(ref.proto.returnType))
       }
     }
 
-    sb.appendLine("}")
-    return cFuncName
+    out.appendLine("}")
+    return NativeRegRecord(
+      definingClass = ref.definingClass,
+      methodName = ref.name,
+      jniSignature = ref.jniSignature(),
+      cFuncName = cFuncName,
+      forwardPrototype = forwardProto,
+    )
   }
 
   private fun emitTryCatchDispatchIfApplicable(
-    sb: StringBuilder,
+    out: Appendable,
     insn: DalvikInstruction,
     tryBlocks: List<DexTryBlock>,
     config: TranspilerConfig,
@@ -288,24 +652,24 @@ object Dex2cTranspiler {
       tryBlocks.filter { insn.offsetWords >= it.startOffsetWord && insn.offsetWords < it.endOffsetWord }
     if (activeTries.isEmpty()) return
 
-    sb.appendLine("${indent}if (${jniCall(config, "ExceptionCheck", "")}) {")
-    sb.appendLine("${indent}    __exc = ${jniCall(config, "ExceptionOccurred", "")};")
+    out.appendLine("${indent}if (${jniCall(config, "ExceptionCheck", "")}) {")
+    out.appendLine("${indent}    __exc = ${jniCall(config, "ExceptionOccurred", "")};")
     activeTries.flatMap { it.handlers }.forEach { handler ->
       val jump =
         if (flattened) "{ __cf_pc = ${formatHex4u(handler.handlerOffsetWord)}; break; }"
         else "goto ${formatLabelOffset(handler.handlerOffsetWord)};"
       if (handler.typeDescriptor == null) {
-        sb.appendLine("${indent}    $jump /* catch-all */")
+        out.appendLine("${indent}    $jump /* catch-all */")
       } else {
         val jniCls = handler.typeDescriptor.removePrefix("L").removeSuffix(";")
-        sb.appendLine("${indent}    { jclass __hc = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; jboolean __match = (__hc != NULL && ${jniCall(config, "IsInstanceOf", "__exc, __hc")}); if (__hc != NULL) ${jniCall(config, "DeleteLocalRef", "__hc")}; if (__match) $jump }")
+        out.appendLine("${indent}    { jclass __hc = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; jboolean __match = (__hc != NULL && ${jniCall(config, "IsInstanceOf", "__exc, __hc")}); if (__hc != NULL) ${jniCall(config, "DeleteLocalRef", "__hc")}; if (__match) $jump }")
       }
     }
-    sb.appendLine("${indent}}")
+    out.appendLine("${indent}}")
   }
 
   private fun emitInstructionC(
-    sb: StringBuilder,
+    out: Appendable,
     insn: DalvikInstruction,
     config: TranspilerConfig,
     indent: String,
@@ -323,20 +687,20 @@ object Dex2cTranspiler {
     }
 
     when (insn.mnemonic) {
-      "nop" -> sb.appendLine("${indent}/* nop */")
-      "move", "move/from16", "move/16" -> sb.appendLine("${indent}v[$a].i = v[$b].i;")
-      "move-wide", "move-wide/from16", "move-wide/16" -> sb.appendLine("${indent}v[$a].j = v[$b].j;")
-      "move-object", "move-object/from16", "move-object/16" -> sb.appendLine("${indent}v[$a].l = v[$b].l;")
-      "move-result" -> sb.appendLine("${indent}v[$a].i = __res.i;")
-      "move-result-wide" -> sb.appendLine("${indent}v[$a].j = __res.j;")
-      "move-result-object" -> sb.appendLine("${indent}v[$a].l = __res.l;")
+      "nop" -> out.appendLine("${indent}/* nop */")
+      "move", "move/from16", "move/16" -> out.appendLine("${indent}v[$a].i = v[$b].i;")
+      "move-wide", "move-wide/from16", "move-wide/16" -> out.appendLine("${indent}v[$a].j = v[$b].j;")
+      "move-object", "move-object/from16", "move-object/16" -> out.appendLine("${indent}v[$a].l = v[$b].l;")
+      "move-result" -> out.appendLine("${indent}v[$a].i = __res.i;")
+      "move-result-wide" -> out.appendLine("${indent}v[$a].j = __res.j;")
+      "move-result-object" -> out.appendLine("${indent}v[$a].l = __res.l;")
       "move-exception" -> {
-        sb.appendLine("${indent}__exc = ${jniCall(config, "ExceptionOccurred", "")};")
-        sb.appendLine("${indent}${jniCall(config, "ExceptionClear", "")};")
-        sb.appendLine("${indent}v[$a].l = __exc;")
+        out.appendLine("${indent}__exc = ${jniCall(config, "ExceptionOccurred", "")};")
+        out.appendLine("${indent}${jniCall(config, "ExceptionClear", "")};")
+        out.appendLine("${indent}v[$a].l = __exc;")
       }
 
-      "return-void" -> sb.appendLine("${indent}return;")
+      "return-void" -> out.appendLine("${indent}return;")
       "return" -> {
         val cast =
           when (returnType) {
@@ -347,18 +711,18 @@ object Dex2cTranspiler {
             "F" -> "v[$a].f"
             else -> "v[$a].i"
           }
-        sb.appendLine("${indent}return $cast;")
+        out.appendLine("${indent}return $cast;")
       }
       "return-wide" -> {
         val cast = if (returnType == "D") "v[$a].d" else "v[$a].j"
-        sb.appendLine("${indent}return $cast;")
+        out.appendLine("${indent}return $cast;")
       }
-      "return-object" -> sb.appendLine("${indent}return (${descriptorToJniType(returnType)})v[$a].l;")
+      "return-object" -> out.appendLine("${indent}return (${descriptorToJniType(returnType)})v[$a].l;")
 
       "const/4", "const/16", "const", "const/high16" ->
-        sb.appendLine("${indent}v[$a].i = (jint)(${lit}LL);")
+        out.appendLine("${indent}v[$a].i = (jint)(${lit}LL);")
       "const-wide/16", "const-wide/32", "const-wide", "const-wide/high16" ->
-        sb.appendLine("${indent}v[$a].j = (jlong)(${lit}LL);")
+        out.appendLine("${indent}v[$a].j = (jlong)(${lit}LL);")
 
       "const-string", "const-string/jumbo" -> {
         val rawStr = insn.stringRef ?: ""
@@ -366,112 +730,112 @@ object Dex2cTranspiler {
           val bytes = rawStr.toByteArray(Charsets.UTF_8)
           val key = 0x5A
           val encHex = bytes.joinToString(", ") { "0x%02X".format((it.toInt() and 0xFF) xor key) }
-          sb.appendLine("${indent}{")
+          out.appendLine("${indent}{")
           if (bytes.isEmpty()) {
-            sb.appendLine("${indent}    v[$a].l = ${jniCall(config, "NewStringUTF", "\"\"")};")
+            out.appendLine("${indent}    v[$a].l = ${jniCall(config, "NewStringUTF", "\"\"")};")
           } else {
-            sb.appendLine("${indent}    static const uint8_t __enc_${insn.offsetWords}[] = {$encHex};")
-            sb.appendLine("${indent}    char __dec_${insn.offsetWords}[${bytes.size + 1}];")
-            sb.appendLine("${indent}    dex2c_xor_decode(__dec_${insn.offsetWords}, __enc_${insn.offsetWords}, ${bytes.size}, 0x%02X);".format(key))
-            sb.appendLine("${indent}    v[$a].l = ${jniCall(config, "NewStringUTF", "__dec_${insn.offsetWords}")};")
+            out.appendLine("${indent}    static const uint8_t __enc_${insn.offsetWords}[] = {$encHex};")
+            out.appendLine("${indent}    char __dec_${insn.offsetWords}[${bytes.size + 1}];")
+            out.appendLine("${indent}    dex2c_xor_decode(__dec_${insn.offsetWords}, __enc_${insn.offsetWords}, ${bytes.size}, 0x%02X);".format(key))
+            out.appendLine("${indent}    v[$a].l = ${jniCall(config, "NewStringUTF", "__dec_${insn.offsetWords}")};")
           }
-          sb.appendLine("${indent}}")
+          out.appendLine("${indent}}")
         } else {
-          sb.appendLine("${indent}v[$a].l = ${jniCall(config, "NewStringUTF", "\"${escapeC(rawStr)}\"")};")
+          out.appendLine("${indent}v[$a].l = ${jniCall(config, "NewStringUTF", "\"${escapeC(rawStr)}\"")};")
         }
       }
 
       "const-class" -> {
         val jniCls = (insn.typeRef ?: "Ljava/lang/Object;").removePrefix("L").removeSuffix(";")
-        sb.appendLine("${indent}v[$a].l = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
+        out.appendLine("${indent}v[$a].l = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
       }
 
-      "monitor-enter" -> sb.appendLine("${indent}${jniCall(config, "MonitorEnter", "v[$a].l")};")
-      "monitor-exit" -> sb.appendLine("${indent}${jniCall(config, "MonitorExit", "v[$a].l")};")
+      "monitor-enter" -> out.appendLine("${indent}${jniCall(config, "MonitorEnter", "v[$a].l")};")
+      "monitor-exit" -> out.appendLine("${indent}${jniCall(config, "MonitorExit", "v[$a].l")};")
       "throw" -> {
-        sb.appendLine("${indent}${jniCall(config, "Throw", "(jthrowable)v[$a].l")};")
-        sb.appendLine("${indent}${defaultReturnStmt(returnType).trim()}")
+        out.appendLine("${indent}${jniCall(config, "Throw", "(jthrowable)v[$a].l")};")
+        out.appendLine("${indent}${defaultReturnStmt(returnType).trim()}")
       }
 
       "check-cast" -> {
         val jniCls = (insn.typeRef ?: "Ljava/lang/Object;").removePrefix("L").removeSuffix(";")
-        sb.appendLine("${indent}{ jclass __t = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; if (v[$a].l != NULL && !${jniCall(config, "IsInstanceOf", "v[$a].l, __t")}) { DEX2C_THROW_CCE(env); } ${jniCall(config, "DeleteLocalRef", "__t")}; }")
+        out.appendLine("${indent}{ jclass __t = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; if (v[$a].l != NULL && !${jniCall(config, "IsInstanceOf", "v[$a].l, __t")}) { DEX2C_THROW_CCE(env); } ${jniCall(config, "DeleteLocalRef", "__t")}; }")
       }
       "instance-of" -> {
         val jniCls = (insn.typeRef ?: "Ljava/lang/Object;").removePrefix("L").removeSuffix(";")
-        sb.appendLine("${indent}{ jclass __t = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].i = ${jniCall(config, "IsInstanceOf", "v[$b].l, __t")}; ${jniCall(config, "DeleteLocalRef", "__t")}; }")
+        out.appendLine("${indent}{ jclass __t = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].i = ${jniCall(config, "IsInstanceOf", "v[$b].l, __t")}; ${jniCall(config, "DeleteLocalRef", "__t")}; }")
       }
 
       "array-length" -> {
-        if (config.nullCheckGuards) sb.appendLine("${indent}DEX2C_CHECK_NULL(env, v[$b].l);")
-        sb.appendLine("${indent}v[$a].i = ${jniCall(config, "GetArrayLength", "(jarray)v[$b].l")};")
+        if (config.nullCheckGuards) out.appendLine("${indent}DEX2C_CHECK_NULL(env, v[$b].l);")
+        out.appendLine("${indent}v[$a].i = ${jniCall(config, "GetArrayLength", "(jarray)v[$b].l")};")
       }
 
       "new-instance" -> {
         val jniCls = (insn.typeRef ?: "Ljava/lang/Object;").removePrefix("L").removeSuffix(";")
-        sb.appendLine("${indent}{ jclass __c = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].l = ${jniCall(config, "AllocObject", "__c")}; ${jniCall(config, "DeleteLocalRef", "__c")}; }")
+        out.appendLine("${indent}{ jclass __c = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].l = ${jniCall(config, "AllocObject", "__c")}; ${jniCall(config, "DeleteLocalRef", "__c")}; }")
       }
 
       "new-array" -> {
         val elemDesc = (insn.typeRef ?: "[Ljava/lang/Object;").removePrefix("[")
         val fn = newArrayJniFunc(elemDesc)
         if (fn != null) {
-          sb.appendLine("${indent}v[$a].l = ${jniCall(config, fn, "v[$b].i")};")
+          out.appendLine("${indent}v[$a].l = ${jniCall(config, fn, "v[$b].i")};")
         } else {
           val jniCls = elemDesc.removePrefix("L").removeSuffix(";")
-          sb.appendLine("${indent}{ jclass __c = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].l = ${jniCall(config, "NewObjectArray", "v[$b].i, __c, NULL")}; ${jniCall(config, "DeleteLocalRef", "__c")}; }")
+          out.appendLine("${indent}{ jclass __c = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].l = ${jniCall(config, "NewObjectArray", "v[$b].i, __c, NULL")}; ${jniCall(config, "DeleteLocalRef", "__c")}; }")
         }
       }
 
-      "goto", "goto/16", "goto/32" -> sb.appendLine("${indent}${jumpTo(insn.targetOffset)}")
-      "if-eq" -> sb.appendLine("${indent}if (v[$a].i == v[$b].i) ${jumpTo(insn.targetOffset)}")
-      "if-ne" -> sb.appendLine("${indent}if (v[$a].i != v[$b].i) ${jumpTo(insn.targetOffset)}")
-      "if-lt" -> sb.appendLine("${indent}if (v[$a].i < v[$b].i) ${jumpTo(insn.targetOffset)}")
-      "if-ge" -> sb.appendLine("${indent}if (v[$a].i >= v[$b].i) ${jumpTo(insn.targetOffset)}")
-      "if-gt" -> sb.appendLine("${indent}if (v[$a].i > v[$b].i) ${jumpTo(insn.targetOffset)}")
-      "if-le" -> sb.appendLine("${indent}if (v[$a].i <= v[$b].i) ${jumpTo(insn.targetOffset)}")
-      "if-eqz" -> sb.appendLine("${indent}if (v[$a].i == 0) ${jumpTo(insn.targetOffset)}")
-      "if-nez" -> sb.appendLine("${indent}if (v[$a].i != 0) ${jumpTo(insn.targetOffset)}")
-      "if-ltz" -> sb.appendLine("${indent}if (v[$a].i < 0) ${jumpTo(insn.targetOffset)}")
-      "if-gez" -> sb.appendLine("${indent}if (v[$a].i >= 0) ${jumpTo(insn.targetOffset)}")
-      "if-gtz" -> sb.appendLine("${indent}if (v[$a].i > 0) ${jumpTo(insn.targetOffset)}")
-      "if-lez" -> sb.appendLine("${indent}if (v[$a].i <= 0) ${jumpTo(insn.targetOffset)}")
+      "goto", "goto/16", "goto/32" -> out.appendLine("${indent}${jumpTo(insn.targetOffset)}")
+      "if-eq" -> out.appendLine("${indent}if (v[$a].i == v[$b].i) ${jumpTo(insn.targetOffset)}")
+      "if-ne" -> out.appendLine("${indent}if (v[$a].i != v[$b].i) ${jumpTo(insn.targetOffset)}")
+      "if-lt" -> out.appendLine("${indent}if (v[$a].i < v[$b].i) ${jumpTo(insn.targetOffset)}")
+      "if-ge" -> out.appendLine("${indent}if (v[$a].i >= v[$b].i) ${jumpTo(insn.targetOffset)}")
+      "if-gt" -> out.appendLine("${indent}if (v[$a].i > v[$b].i) ${jumpTo(insn.targetOffset)}")
+      "if-le" -> out.appendLine("${indent}if (v[$a].i <= v[$b].i) ${jumpTo(insn.targetOffset)}")
+      "if-eqz" -> out.appendLine("${indent}if (v[$a].i == 0) ${jumpTo(insn.targetOffset)}")
+      "if-nez" -> out.appendLine("${indent}if (v[$a].i != 0) ${jumpTo(insn.targetOffset)}")
+      "if-ltz" -> out.appendLine("${indent}if (v[$a].i < 0) ${jumpTo(insn.targetOffset)}")
+      "if-gez" -> out.appendLine("${indent}if (v[$a].i >= 0) ${jumpTo(insn.targetOffset)}")
+      "if-gtz" -> out.appendLine("${indent}if (v[$a].i > 0) ${jumpTo(insn.targetOffset)}")
+      "if-lez" -> out.appendLine("${indent}if (v[$a].i <= 0) ${jumpTo(insn.targetOffset)}")
 
-      "cmp-long" -> sb.appendLine("${indent}v[$a].i = (v[$b].j > v[$c].j) ? 1 : ((v[$b].j < v[$c].j) ? -1 : 0);")
-      "cmpl-float", "cmpg-float" -> sb.appendLine("${indent}v[$a].i = (v[$b].f > v[$c].f) ? 1 : ((v[$b].f < v[$c].f) ? -1 : 0);")
-      "cmpl-double", "cmpg-double" -> sb.appendLine("${indent}v[$a].i = (v[$b].d > v[$c].d) ? 1 : ((v[$b].d < v[$c].d) ? -1 : 0);")
+      "cmp-long" -> out.appendLine("${indent}v[$a].i = (v[$b].j > v[$c].j) ? 1 : ((v[$b].j < v[$c].j) ? -1 : 0);")
+      "cmpl-float", "cmpg-float" -> out.appendLine("${indent}v[$a].i = (v[$b].f > v[$c].f) ? 1 : ((v[$b].f < v[$c].f) ? -1 : 0);")
+      "cmpl-double", "cmpg-double" -> out.appendLine("${indent}v[$a].i = (v[$b].d > v[$c].d) ? 1 : ((v[$b].d < v[$c].d) ? -1 : 0);")
 
-      "neg-int" -> sb.appendLine("${indent}v[$a].i = -v[$b].i;")
-      "not-int" -> sb.appendLine("${indent}v[$a].i = ~v[$b].i;")
-      "neg-long" -> sb.appendLine("${indent}v[$a].j = -v[$b].j;")
-      "not-long" -> sb.appendLine("${indent}v[$a].j = ~v[$b].j;")
-      "neg-float" -> sb.appendLine("${indent}v[$a].f = -v[$b].f;")
-      "neg-double" -> sb.appendLine("${indent}v[$a].d = -v[$b].d;")
-      "int-to-long" -> sb.appendLine("${indent}v[$a].j = (jlong)v[$b].i;")
-      "int-to-float" -> sb.appendLine("${indent}v[$a].f = (jfloat)v[$b].i;")
-      "int-to-double" -> sb.appendLine("${indent}v[$a].d = (jdouble)v[$b].i;")
-      "long-to-int" -> sb.appendLine("${indent}v[$a].i = (jint)v[$b].j;")
-      "long-to-float" -> sb.appendLine("${indent}v[$a].f = (jfloat)v[$b].j;")
-      "long-to-double" -> sb.appendLine("${indent}v[$a].d = (jdouble)v[$b].j;")
-      "float-to-int" -> sb.appendLine("${indent}v[$a].i = (jint)v[$b].f;")
-      "float-to-long" -> sb.appendLine("${indent}v[$a].j = (jlong)v[$b].f;")
-      "float-to-double" -> sb.appendLine("${indent}v[$a].d = (jdouble)v[$b].f;")
-      "double-to-int" -> sb.appendLine("${indent}v[$a].i = (jint)v[$b].d;")
-      "double-to-long" -> sb.appendLine("${indent}v[$a].j = (jlong)v[$b].d;")
-      "double-to-float" -> sb.appendLine("${indent}v[$a].f = (jfloat)v[$b].d;")
-      "int-to-byte" -> sb.appendLine("${indent}v[$a].i = (jbyte)v[$b].i;")
-      "int-to-char" -> sb.appendLine("${indent}v[$a].i = (jchar)v[$b].i;")
-      "int-to-short" -> sb.appendLine("${indent}v[$a].i = (jshort)v[$b].i;")
+      "neg-int" -> out.appendLine("${indent}v[$a].i = -v[$b].i;")
+      "not-int" -> out.appendLine("${indent}v[$a].i = ~v[$b].i;")
+      "neg-long" -> out.appendLine("${indent}v[$a].j = -v[$b].j;")
+      "not-long" -> out.appendLine("${indent}v[$a].j = ~v[$b].j;")
+      "neg-float" -> out.appendLine("${indent}v[$a].f = -v[$b].f;")
+      "neg-double" -> out.appendLine("${indent}v[$a].d = -v[$b].d;")
+      "int-to-long" -> out.appendLine("${indent}v[$a].j = (jlong)v[$b].i;")
+      "int-to-float" -> out.appendLine("${indent}v[$a].f = (jfloat)v[$b].i;")
+      "int-to-double" -> out.appendLine("${indent}v[$a].d = (jdouble)v[$b].i;")
+      "long-to-int" -> out.appendLine("${indent}v[$a].i = (jint)v[$b].j;")
+      "long-to-float" -> out.appendLine("${indent}v[$a].f = (jfloat)v[$b].j;")
+      "long-to-double" -> out.appendLine("${indent}v[$a].d = (jdouble)v[$b].j;")
+      "float-to-int" -> out.appendLine("${indent}v[$a].i = (jint)v[$b].f;")
+      "float-to-long" -> out.appendLine("${indent}v[$a].j = (jlong)v[$b].f;")
+      "float-to-double" -> out.appendLine("${indent}v[$a].d = (jdouble)v[$b].f;")
+      "double-to-int" -> out.appendLine("${indent}v[$a].i = (jint)v[$b].d;")
+      "double-to-long" -> out.appendLine("${indent}v[$a].j = (jlong)v[$b].d;")
+      "double-to-float" -> out.appendLine("${indent}v[$a].f = (jfloat)v[$b].d;")
+      "int-to-byte" -> out.appendLine("${indent}v[$a].i = (jbyte)v[$b].i;")
+      "int-to-char" -> out.appendLine("${indent}v[$a].i = (jchar)v[$b].i;")
+      "int-to-short" -> out.appendLine("${indent}v[$a].i = (jshort)v[$b].i;")
 
       else -> {
         when {
-          emitMathInstruction(sb, insn, indent, a, b, c, lit) -> Unit
-          emitArrayAccessInstruction(sb, insn, config, indent, a, b, c) -> Unit
-          emitFieldInstruction(sb, insn, config, indent, a, b) -> Unit
-          emitInvokeInstruction(sb, insn, config, indent) -> Unit
+          emitMathInstruction(out, insn, indent, a, b, c, lit) -> Unit
+          emitArrayAccessInstruction(out, insn, config, indent, a, b, c) -> Unit
+          emitFieldInstruction(out, insn, config, indent, a, b) -> Unit
+          emitInvokeInstruction(out, insn, config, indent) -> Unit
           else -> {
             val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
-            sb.appendLine("${indent}/* $commentText */")
+            out.appendLine("${indent}/* $commentText */")
           }
         }
       }
@@ -479,7 +843,7 @@ object Dex2cTranspiler {
   }
 
   private fun emitMathInstruction(
-    sb: StringBuilder,
+    out: Appendable,
     insn: DalvikInstruction,
     indent: String,
     a: Int,
@@ -540,12 +904,12 @@ object Dex2cTranspiler {
         "rem-double" -> "v[$a].d = fmod(${lhs}.d, ${rhs}.d);"
         else -> return false
       }
-    sb.appendLine("$indent$stmt")
+    out.appendLine("$indent$stmt")
     return true
   }
 
   private fun emitArrayAccessInstruction(
-    sb: StringBuilder,
+    out: Appendable,
     insn: DalvikInstruction,
     config: TranspilerConfig,
     indent: String,
@@ -555,26 +919,26 @@ object Dex2cTranspiler {
   ): Boolean {
     val m = insn.mnemonic
     if (!m.startsWith("aget") && !m.startsWith("aput")) return false
-    if (config.nullCheckGuards) sb.appendLine("${indent}DEX2C_CHECK_NULL(env, v[$b].l);")
+    if (config.nullCheckGuards) out.appendLine("${indent}DEX2C_CHECK_NULL(env, v[$b].l);")
     when (m) {
       "aget-object" ->
-        sb.appendLine("${indent}v[$a].l = ${jniCall(config, "GetObjectArrayElement", "(jobjectArray)v[$b].l, v[$c].i")};")
+        out.appendLine("${indent}v[$a].l = ${jniCall(config, "GetObjectArrayElement", "(jobjectArray)v[$b].l, v[$c].i")};")
       "aput-object" ->
-        sb.appendLine("${indent}${jniCall(config, "SetObjectArrayElement", "(jobjectArray)v[$b].l, v[$c].i, v[$a].l")};")
+        out.appendLine("${indent}${jniCall(config, "SetObjectArrayElement", "(jobjectArray)v[$b].l, v[$c].i, v[$a].l")};")
       "aget", "aget-boolean", "aget-byte", "aget-char", "aget-short", "aget-wide" -> {
         val (arrType, cType, jniGet, field) = arrayMeta(m)
-        sb.appendLine("${indent}{ $cType __tmp; ${jniCall(config, jniGet, "($arrType)v[$b].l, v[$c].i, 1, &__tmp")}; v[$a].$field = __tmp; }")
+        out.appendLine("${indent}{ $cType __tmp; ${jniCall(config, jniGet, "($arrType)v[$b].l, v[$c].i, 1, &__tmp")}; v[$a].$field = __tmp; }")
       }
       "aput", "aput-boolean", "aput-byte", "aput-char", "aput-short", "aput-wide" -> {
         val (arrType, cType, jniSet, field) = arrayMeta(m, isPut = true)
-        sb.appendLine("${indent}{ $cType __tmp = ($cType)v[$a].$field; ${jniCall(config, jniSet, "($arrType)v[$b].l, v[$c].i, 1, &__tmp")}; }")
+        out.appendLine("${indent}{ $cType __tmp = ($cType)v[$a].$field; ${jniCall(config, jniSet, "($arrType)v[$b].l, v[$c].i, 1, &__tmp")}; }")
       }
     }
     return true
   }
 
   private fun emitFieldInstruction(
-    sb: StringBuilder,
+    out: Appendable,
     insn: DalvikInstruction,
     config: TranspilerConfig,
     indent: String,
@@ -591,31 +955,31 @@ object Dex2cTranspiler {
     val jniCls = f.definingClass.removePrefix("L").removeSuffix(";")
     val (suffix, valField) = jniTypeSuffixAndField(f.type)
 
-    sb.appendLine("${indent}{")
+    out.appendLine("${indent}{")
     if (!isStatic && config.nullCheckGuards) {
-      sb.appendLine("${indent}    DEX2C_CHECK_NULL(env, v[$b].l);")
+      out.appendLine("${indent}    DEX2C_CHECK_NULL(env, v[$b].l);")
     }
-    sb.appendLine("${indent}    jclass __fcls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
+    out.appendLine("${indent}    jclass __fcls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
     val idCall = if (isStatic) "GetStaticFieldID" else "GetFieldID"
-    sb.appendLine("${indent}    jfieldID __fid = ${jniCall(config, idCall, "__fcls, \"${escapeC(f.name)}\", \"${escapeC(f.type)}\"")};")
+    out.appendLine("${indent}    jfieldID __fid = ${jniCall(config, idCall, "__fcls, \"${escapeC(f.name)}\", \"${escapeC(f.type)}\"")};")
 
     if (isGet) {
       val opCall = if (isStatic) "GetStatic${suffix}Field" else "Get${suffix}Field"
       val target = if (isStatic) "__fcls" else "v[$b].l"
-      sb.appendLine("${indent}    v[$a].$valField = ${jniCall(config, opCall, "$target, __fid")};")
+      out.appendLine("${indent}    v[$a].$valField = ${jniCall(config, opCall, "$target, __fid")};")
     } else {
       val opCall = if (isStatic) "SetStatic${suffix}Field" else "Set${suffix}Field"
       val target = if (isStatic) "__fcls" else "v[$b].l"
       val cast = if (suffix == "Object") "v[$a].l" else "(${descriptorToJniType(f.type)})v[$a].$valField"
-      sb.appendLine("${indent}    ${jniCall(config, opCall, "$target, __fid, $cast")};")
+      out.appendLine("${indent}    ${jniCall(config, opCall, "$target, __fid, $cast")};")
     }
-    sb.appendLine("${indent}    ${jniCall(config, "DeleteLocalRef", "__fcls")};")
-    sb.appendLine("${indent}}")
+    out.appendLine("${indent}    ${jniCall(config, "DeleteLocalRef", "__fcls")};")
+    out.appendLine("${indent}}")
     return true
   }
 
   private fun emitInvokeInstruction(
-    sb: StringBuilder,
+    out: Appendable,
     insn: DalvikInstruction,
     config: TranspilerConfig,
     indent: String,
@@ -639,14 +1003,14 @@ object Dex2cTranspiler {
       regIdx += if (pType == "J" || pType == "D") 2 else 1
     }
 
-    sb.appendLine("${indent}{")
+    out.appendLine("${indent}{")
     if (!isStatic && config.nullCheckGuards) {
       val recv = insn.regList.firstOrNull() ?: 0
-      sb.appendLine("${indent}    DEX2C_CHECK_NULL(env, v[$recv].l);")
+      out.appendLine("${indent}    DEX2C_CHECK_NULL(env, v[$recv].l);")
     }
-    sb.appendLine("${indent}    jclass __mcls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
+    out.appendLine("${indent}    jclass __mcls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
     val getMid = if (isStatic) "GetStaticMethodID" else "GetMethodID"
-    sb.appendLine("${indent}    jmethodID __mid = ${jniCall(config, getMid, "__mcls, \"${escapeC(ref.name)}\", \"${escapeC(ref.jniSignature())}\"")};")
+    out.appendLine("${indent}    jmethodID __mid = ${jniCall(config, getMid, "__mcls, \"${escapeC(ref.name)}\", \"${escapeC(ref.jniSignature())}\"")};")
 
     val argsTail = if (args.isEmpty()) "" else ", ${args.joinToString(", ")}"
     val recvReg = insn.regList.firstOrNull() ?: 0
@@ -659,12 +1023,12 @@ object Dex2cTranspiler {
       }
 
     if (ref.proto.returnType == "V") {
-      sb.appendLine("${indent}    $callExpr;")
+      out.appendLine("${indent}    $callExpr;")
     } else {
-      sb.appendLine("${indent}    __res.$retField = $callExpr;")
+      out.appendLine("${indent}    __res.$retField = $callExpr;")
     }
-    sb.appendLine("${indent}    ${jniCall(config, "DeleteLocalRef", "__mcls")};")
-    sb.appendLine("${indent}}")
+    out.appendLine("${indent}    ${jniCall(config, "DeleteLocalRef", "__mcls")};")
+    out.appendLine("${indent}}")
     return true
   }
 
@@ -718,15 +1082,16 @@ object Dex2cTranspiler {
     |#endif // DEX2C_RUNTIME_H
     """.trimMargin() + "\n"
 
-  private fun buildCMake(moduleName: String, ext: String): String =
-    """
+  private fun buildCMake(moduleName: String, sourceFileNames: List<String>): String {
+    val sourcesLines = sourceFileNames.joinToString("\n    ") { "jni/$it" }
+    return """
     |cmake_minimum_required(VERSION 3.22.1)
     |project($moduleName)
     |
     |add_library(
     |    $moduleName
     |    SHARED
-    |    jni/dex2c_bridge.$ext
+    |    $sourcesLines
     |)
     |
     |find_library(log-lib log)
@@ -737,20 +1102,29 @@ object Dex2cTranspiler {
     |    m
     |)
     """.trimMargin() + "\n"
+  }
 
-  private fun buildAndroidMk(moduleName: String, ext: String, config: TranspilerConfig): String {
+  private fun buildAndroidMk(
+    moduleName: String,
+    sourceFileNames: List<String>,
+    ext: String,
+    config: TranspilerConfig,
+  ): String {
     val visibilityFlag =
       if (config.jniStyle == JniBindingStyle.REGISTER_NATIVES) "-fvisibility=hidden -O2"
       else "-O2"
     val flagsLine =
       if (config.targetLanguage == TargetCLanguage.CPP17) "LOCAL_CPPFLAGS  := -std=c++17 $visibilityFlag"
       else "LOCAL_CFLAGS    := -std=c11 $visibilityFlag"
+    val srcFilesJoined =
+      if (sourceFileNames.isEmpty()) "dex2c_bridge.$ext"
+      else sourceFileNames.joinToString(" \\\n                   ")
     return """
       |LOCAL_PATH := $(call my-dir)
       |include $(CLEAR_VARS)
       |
       |LOCAL_MODULE    := $moduleName
-      |LOCAL_SRC_FILES := dex2c_bridge.$ext
+      |LOCAL_SRC_FILES := $srcFilesJoined
       |$flagsLine
       |LOCAL_LDLIBS    := -llog -lm
       |
@@ -774,43 +1148,56 @@ object Dex2cTranspiler {
       """.trimMargin() + "\n"
   }
 
-  private fun buildLoaderStub(
+  private fun streamLoaderStubFile(
+    bundleDir: File,
     config: TranspilerConfig,
     moduleName: String,
-    byClass: Map<String, List<DexEncodedMethod>>,
-  ): String {
+    filteredEntries: List<Pair<DexParsedFile, DexEncodedMethod>>,
+  ): GeneratedFile {
     val loaderFull = config.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" }
     val lastDot = loaderFull.lastIndexOf('.')
     val pkg = if (lastDot > 0) loaderFull.substring(0, lastDot) else "amimo.dcc"
     val clsName = if (lastDot > 0) loaderFull.substring(lastDot + 1) else loaderFull
 
-    val sb = StringBuilder()
-    sb.appendLine("// Loader Strategy: ${config.loaderMode.label}")
-    sb.appendLine("package $pkg;")
-    sb.appendLine()
-    sb.appendLine("import android.app.Application;")
-    sb.appendLine()
-    sb.appendLine("public class $clsName extends Application {")
-    sb.appendLine("    static {")
-    sb.appendLine("        System.loadLibrary(\"$moduleName\");")
-    sb.appendLine("    }")
-    sb.appendLine("}")
-    sb.appendLine()
-    sb.appendLine("/* Protected method native declarations:")
-    byClass.forEach { (clsDesc, methods) ->
-      sb.appendLine(" * Class: ${descriptorToJavaName(clsDesc)}")
-      methods.forEach { m ->
-        val params =
-          m.methodRef.proto.parameterTypes.mapIndexed { idx, p ->
-            "${descriptorToJavaType(p)} p$idx"
-          }.joinToString(", ")
-        val ret = descriptorToJavaType(m.methodRef.proto.returnType)
-        val staticMod = if (m.isStatic) "static " else ""
-        sb.appendLine(" *   public ${staticMod}native $ret ${m.methodRef.name}($params);")
+    val builder =
+      StreamedFileBuilder(
+        backingFile = File(bundleDir, "DccApplicationLoader.java"),
+        fileName = "DccApplicationLoader.java",
+        zipPath = "loader/DccApplicationLoader.java",
+        description = "Application loader & native declarations",
+      )
+    builder.use { out ->
+      out.appendLine("// Loader Strategy: ${config.loaderMode.label}")
+      out.appendLine("package $pkg;")
+      out.appendLine()
+      out.appendLine("import android.app.Application;")
+      out.appendLine()
+      out.appendLine("public class $clsName extends Application {")
+      out.appendLine("    static {")
+      out.appendLine("        System.loadLibrary(\"$moduleName\");")
+      out.appendLine("    }")
+      out.appendLine("}")
+      out.appendLine()
+      out.appendLine("/* Protected method native declarations:")
+      val byClass = linkedMapOf<String, MutableList<DexEncodedMethod>>()
+      for ((_, m) in filteredEntries) {
+        byClass.getOrPut(m.methodRef.definingClass) { mutableListOf() }.add(m)
       }
+      byClass.forEach { (clsDesc, methods) ->
+        out.appendLine(" * Class: ${descriptorToJavaName(clsDesc)}")
+        methods.forEach { m ->
+          val params =
+            m.methodRef.proto.parameterTypes.mapIndexed { idx, p ->
+              "${descriptorToJavaType(p)} p$idx"
+            }.joinToString(", ")
+          val ret = descriptorToJavaType(m.methodRef.proto.returnType)
+          val staticMod = if (m.isStatic) "static " else ""
+          out.appendLine(" *   public ${staticMod}native $ret ${m.methodRef.name}($params);")
+        }
+      }
+      out.appendLine(" */")
     }
-    sb.appendLine(" */")
-    return sb.toString()
+    return builder.finish()
   }
 
   private fun arrayMeta(mnemonic: String, isPut: Boolean = false): ArrayMeta {

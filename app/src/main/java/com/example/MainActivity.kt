@@ -187,6 +187,8 @@ fun Dex2cApp(
   val inspection by viewModel.inspection.collectAsStateWithLifecycle()
   val generatedBundle by viewModel.generatedBundle.collectAsStateWithLifecycle()
   val isTranspiling by viewModel.isTranspiling.collectAsStateWithLifecycle()
+  val transpileProgress by viewModel.transpileProgress.collectAsStateWithLifecycle()
+  val isBundleDirty by viewModel.isBundleDirty.collectAsStateWithLifecycle()
   val statusBanner by viewModel.statusBanner.collectAsStateWithLifecycle()
 
   val isPickerOpen by viewModel.isPickerOpen.collectAsStateWithLifecycle()
@@ -570,6 +572,9 @@ fun Dex2cApp(
                   exportZipLauncher.launch(name)
                 },
                 onGoToClasses = { navigateTopLevel(ROUTE_CLASSES) },
+                transpileProgress = transpileProgress,
+                isBundleDirty = isBundleDirty,
+                onEnsureBundleBuilt = { viewModel.ensureBundleBuilt() },
               )
             }
 
