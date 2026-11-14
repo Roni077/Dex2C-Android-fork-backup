@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.BrightnessAuto
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CloudQueue
@@ -67,7 +67,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -81,7 +80,12 @@ import com.example.data.AppSettings
 import com.example.data.AppThemeMode
 import com.example.data.CURATED_ACCENT_PRESETS
 import com.example.ui.components.GitHubDeviceAuthCard
+import com.example.ui.components.OnboardingCloudStepsCard
+import com.example.ui.components.OnboardingDalvikCppPeekCard
 import com.example.ui.components.OnboardingHorizontalPager
+import com.example.ui.components.OnboardingLiveThemePreviewCard
+import com.example.ui.components.OnboardingPipelineFlowCard
+import com.example.ui.components.OnboardingSetupChecklistCard
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.ui.theme.M3TonalColorEngine
@@ -150,6 +154,7 @@ fun OnboardingScreen(
     isReplayMode = isReplayMode,
     onDismissReplay = onDismissReplay,
     onFinish = onFinish,
+    stepLabels = listOf("Welcome", "Overview", "Cloud CI", "Appearance", "Notifications"),
     modifier = modifier,
   ) { page ->
     when (page) {
@@ -179,6 +184,8 @@ fun OnboardingScreen(
           hasNotificationPermission = hasNotificationPermission,
           onToggleNotifications = onToggleNotifications,
           onRequestNotificationPermission = onRequestNotificationPermission,
+          onJumpToCloudStep = { scope.launch { pagerState.animateScrollToPage(2) } },
+          onJumpToThemeStep = { scope.launch { pagerState.animateScrollToPage(3) } },
         )
     }
   }
@@ -186,7 +193,7 @@ fun OnboardingScreen(
 
 @Composable
 private fun OnboardingBalancedPage(
-  verticalSpacing: Dp = 18.dp,
+  verticalSpacing: Dp = 16.dp,
   content: @Composable ColumnScope.(availableHeight: Dp) -> Unit,
 ) {
   BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -196,9 +203,8 @@ private fun OnboardingBalancedPage(
         Modifier
           .fillMaxWidth()
           .verticalScroll(rememberScrollState())
-          .heightIn(min = availableHeight)
-          .padding(vertical = 8.dp),
-      verticalArrangement = Arrangement.spacedBy(verticalSpacing, Alignment.CenterVertically),
+          .padding(top = 12.dp, bottom = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(verticalSpacing, Alignment.Top),
     ) {
       content(availableHeight)
     }
@@ -207,8 +213,8 @@ private fun OnboardingBalancedPage(
 
 @Composable
 private fun OnboardingIntroPage() {
-  OnboardingBalancedPage(verticalSpacing = 20.dp) { availableHeight ->
-    val heroHeight = (availableHeight * 0.42f).coerceIn(170.dp, 260.dp)
+  OnboardingBalancedPage(verticalSpacing = 14.dp) { availableHeight ->
+    val heroHeight = (availableHeight * 0.34f).coerceIn(160.dp, 240.dp)
     Surface(
       modifier = Modifier.fillMaxWidth().height(heroHeight),
       shape = RoundedCornerShape(26.dp),
@@ -242,7 +248,7 @@ private fun OnboardingIntroPage() {
       }
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Text(
         text = stringResource(R.string.app_name),
         style = MaterialTheme.typography.headlineLarge,
@@ -260,19 +266,41 @@ private fun OnboardingIntroPage() {
       color = MaterialTheme.colorScheme.surfaceContainer,
       border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
     ) {
-      Text(
-        text = "Swipe left to see what Dex2C Studio does, connect GitHub, pick your theme, and enable alerts.",
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-      )
+      Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Surface(
+          shape = RoundedCornerShape(10.dp),
+          color = MaterialTheme.colorScheme.primaryContainer,
+          modifier = Modifier.size(36.dp),
+        ) {
+          Box(contentAlignment = Alignment.Center) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.onPrimaryContainer,
+              modifier = Modifier.size(18.dp),
+            )
+          }
+        }
+        Text(
+          text = "Swipe left to explore Dex2C Studio, connect GitHub, customize your theme, and enable alerts.",
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.weight(1f),
+        )
+      }
     }
+
+    OnboardingPipelineFlowCard()
   }
 }
 
 @Composable
 private fun OnboardingAboutPage() {
-  OnboardingBalancedPage(verticalSpacing = 14.dp) {
+  OnboardingBalancedPage(verticalSpacing = 12.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.Info,
       title = "About Dex2C Studio",
@@ -294,6 +322,8 @@ private fun OnboardingAboutPage() {
       title = "Cloud NDK",
       description = "Dispatch remote GitHub Actions native builds and receive instant completion alerts.",
     )
+
+    OnboardingDalvikCppPeekCard()
   }
 }
 
@@ -348,14 +378,15 @@ private fun OnboardingGitHubPage(
         ) {
           Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
             Text("Custom OAuth Client ID", style = MaterialTheme.typography.titleSmall)
+            Spacer(Modifier.height(2.dp))
             Text(
               text =
                 if (cloudSettings.usingCustomClientId) "Override: ${cloudSettings.effectiveClientId}"
-                else "Default: built-in gh CLI ID ($GITHUB_CLI_CLIENT_ID)",
+                else "Built-in gh CLI · $GITHUB_CLI_CLIENT_ID",
               style = MaterialTheme.typography.bodySmall,
               fontFamily = JetBrainsMonoFontFamily,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
-              maxLines = 1,
+              maxLines = 2,
               overflow = TextOverflow.Ellipsis,
             )
           }
@@ -406,16 +437,17 @@ private fun OnboardingGitHubPage(
         }
       }
     }
+
+    OnboardingCloudStepsCard(cloudSettings = cloudSettings)
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun OnboardingThemePage(
   appSettings: AppSettings,
   onUpdateAppSettings: ((AppSettings) -> AppSettings) -> Unit,
 ) {
-  OnboardingBalancedPage(verticalSpacing = 16.dp) {
+  OnboardingBalancedPage(verticalSpacing = 14.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.Palette,
       title = "Theme & Palette",
@@ -507,51 +539,72 @@ private fun OnboardingThemePage(
 
       Text("Accent Seed", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
       Spacer(Modifier.height(10.dp))
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+      val swatchesEnabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+      Row(
+        modifier = Modifier.fillMaxWidth().testTag("onboarding_accent_row"),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
       ) {
-        val swatchesEnabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S
         CURATED_ACCENT_PRESETS.forEach { preset ->
           val swatchColor = M3TonalColorEngine.parseHexOrDefault(preset.hex)
           val selected = appSettings.accentSeedHex.equals(preset.hex, ignoreCase = true)
-          Surface(
-            shape = CircleShape,
-            color = if (swatchesEnabled) swatchColor else swatchColor.copy(alpha = 0.35f),
-            border =
-              BorderStroke(
-                width = if (selected) 2.5.dp else 1.dp,
-                color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant,
-              ),
-            modifier =
-              Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .clickable(enabled = swatchesEnabled) {
-                  onUpdateAppSettings { it.copy(accentSeedHex = preset.hex, dynamicColor = false) }
-                }
-                .testTag("onboarding_accent_${preset.name.lowercase().replace(' ', '_')}"),
+          Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center,
           ) {
-            if (selected) {
-              Box(contentAlignment = Alignment.Center) {
-                val iconTint =
-                  if (swatchColor.red * 0.299f + swatchColor.green * 0.587f + swatchColor.blue * 0.114f > 0.55f) {
-                    Color.Black
-                  } else {
-                    Color.White
+            Box(
+              modifier =
+                Modifier
+                  .size(48.dp)
+                  .clip(CircleShape)
+                  .clickable(enabled = swatchesEnabled) {
+                    onUpdateAppSettings { it.copy(accentSeedHex = preset.hex, dynamicColor = false) }
                   }
-                Icon(
-                  imageVector = Icons.Rounded.Check,
-                  contentDescription = preset.name,
-                  tint = iconTint,
-                  modifier = Modifier.size(18.dp),
-                )
+                  .testTag("onboarding_accent_${preset.name.lowercase().replace(' ', '_')}"),
+              contentAlignment = Alignment.Center,
+            ) {
+              Surface(
+                shape = CircleShape,
+                color = if (swatchesEnabled) swatchColor else swatchColor.copy(alpha = 0.35f),
+                border =
+                  BorderStroke(
+                    width = if (selected) 2.5.dp else 1.dp,
+                    color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant,
+                  ),
+                modifier = Modifier.size(44.dp),
+              ) {
+                if (selected) {
+                  Box(contentAlignment = Alignment.Center) {
+                    val iconTint =
+                      if (swatchColor.red * 0.299f + swatchColor.green * 0.587f + swatchColor.blue * 0.114f > 0.55f) {
+                        Color.Black
+                      } else {
+                        Color.White
+                      }
+                    Icon(
+                      imageVector = Icons.Rounded.Check,
+                      contentDescription = preset.name,
+                      tint = iconTint,
+                      modifier = Modifier.size(18.dp),
+                    )
+                  }
+                }
               }
             }
           }
         }
       }
+      Spacer(Modifier.height(10.dp))
+      Text(
+        text =
+          if (!swatchesEnabled) "Dynamic colors active — toggle off above to pick a custom accent seed"
+          else "Tap any seed swatch to preview your studio palette",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
     }
+
+    OnboardingLiveThemePreviewCard(appSettings = appSettings)
   }
 }
 
@@ -562,8 +615,10 @@ private fun OnboardingAlertsPage(
   hasNotificationPermission: Boolean,
   onToggleNotifications: (Boolean) -> Unit,
   onRequestNotificationPermission: () -> Unit,
+  onJumpToCloudStep: () -> Unit,
+  onJumpToThemeStep: () -> Unit,
 ) {
-  OnboardingBalancedPage(verticalSpacing = 16.dp) {
+  OnboardingBalancedPage(verticalSpacing = 14.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.NotificationsActive,
       title = "Build Alerts",
@@ -576,23 +631,21 @@ private fun OnboardingAlertsPage(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Text("Build Completion Alerts", style = MaterialTheme.typography.titleSmall)
-            TagPill(
-              text = if (hasNotificationPermission) "Allowed" else "Permission Needed",
-              containerColor =
-                if (hasNotificationPermission) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.secondaryContainer,
-              contentColor =
-                if (hasNotificationPermission) MaterialTheme.colorScheme.onPrimaryContainer
-                else MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-          }
-          Spacer(Modifier.height(4.dp))
+        Column(
+          modifier = Modifier.weight(1f).padding(end = 12.dp),
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+          Text("Build Completion Alerts", style = MaterialTheme.typography.titleSmall)
+          TagPill(
+            text = if (hasNotificationPermission) "Allowed" else "Permission Needed",
+            containerColor =
+              if (hasNotificationPermission) MaterialTheme.colorScheme.primaryContainer
+              else MaterialTheme.colorScheme.secondaryContainer,
+            contentColor =
+              if (hasNotificationPermission) MaterialTheme.colorScheme.onPrimaryContainer
+              else MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.testTag("onboarding_notification_status_pill"),
+          )
           Text(
             text = "Background checks run automatically for dispatched workflows.",
             style = MaterialTheme.typography.bodySmall,
@@ -619,31 +672,13 @@ private fun OnboardingAlertsPage(
       }
     }
 
-    Surface(
-      modifier = Modifier.fillMaxWidth(),
-      shape = RoundedCornerShape(20.dp),
-      color = MaterialTheme.colorScheme.surfaceContainer,
-      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
-    ) {
-      Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = "Ready: ${appSettings.themeMode.label}",
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-          text = if (cloudSettings.isAuthenticated) "@${cloudSettings.githubUsername}" else "Local Mode",
-          style = MaterialTheme.typography.bodyMedium,
-          fontWeight = FontWeight.Medium,
-          fontFamily = JetBrainsMonoFontFamily,
-          color = MaterialTheme.colorScheme.primary,
-        )
-      }
-    }
+    OnboardingSetupChecklistCard(
+      appSettings = appSettings,
+      cloudSettings = cloudSettings,
+      hasNotificationPermission = hasNotificationPermission,
+      onJumpToCloudStep = onJumpToCloudStep,
+      onJumpToThemeStep = onJumpToThemeStep,
+    )
   }
 }
 
@@ -653,17 +688,25 @@ private fun OnboardingPageHeader(
   title: String,
   subtitle: String,
 ) {
-  Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(10.dp),
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(26.dp),
-      )
+      Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.size(40.dp),
+      ) {
+        Box(contentAlignment = Alignment.Center) {
+          Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(22.dp),
+          )
+        }
+      }
       Text(
         text = title,
         style = MaterialTheme.typography.headlineMedium,
@@ -691,15 +734,23 @@ private fun OnboardingHighlightCard(
   ) {
     Row(
       modifier = Modifier.padding(16.dp),
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
+      horizontalArrangement = Arrangement.spacedBy(14.dp),
       verticalAlignment = Alignment.Top,
     ) {
-      Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(22.dp),
-      )
+      Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.size(40.dp),
+      ) {
+        Box(contentAlignment = Alignment.Center) {
+          Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(22.dp),
+          )
+        }
+      }
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(title, style = MaterialTheme.typography.titleSmall)
         Text(

@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,12 +27,14 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -45,6 +48,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.example.R
@@ -59,9 +64,20 @@ fun OnboardingHorizontalPager(
   onDismissReplay: () -> Unit,
   onFinish: () -> Unit,
   modifier: Modifier = Modifier,
+  stepLabels: List<String> = emptyList(),
   pageContent: @Composable (page: Int) -> Unit,
 ) {
   val scope = rememberCoroutineScope()
+  val safeCount = pageCount.coerceAtLeast(1)
+  val stepLabel = stepLabels.getOrNull(pagerState.currentPage).orEmpty()
+  val stepHeaderText =
+    if (stepLabel.isNotBlank()) "Step ${pagerState.currentPage + 1} of $safeCount · $stepLabel"
+    else "Step ${pagerState.currentPage + 1} of $safeCount"
+  val stepProgress by
+    animateFloatAsState(
+      targetValue = (pagerState.currentPage + 1f) / safeCount.toFloat(),
+      label = "onboarding_step_progress",
+    )
 
   Column(
     modifier =
@@ -70,16 +86,21 @@ fun OnboardingHorizontalPager(
         .background(MaterialTheme.colorScheme.background),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    if (isReplayMode) {
-      Row(
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .widthIn(max = 680.dp)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
+    Row(
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .widthIn(max = 680.dp)
+          .padding(
+            start = if (isReplayMode) 8.dp else 20.dp,
+            end = 20.dp,
+            top = 4.dp,
+            bottom = 4.dp,
+          ),
+      horizontalArrangement = Arrangement.spacedBy(10.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (isReplayMode) {
         IconButton(
           onClick = onDismissReplay,
           modifier = Modifier.minimumInteractiveComponentSize().testTag("onboarding_close_btn"),
@@ -90,8 +111,35 @@ fun OnboardingHorizontalPager(
           )
         }
       }
-    } else {
-      Spacer(Modifier.height(8.dp))
+      Surface(
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.72f),
+        modifier =
+          Modifier
+            .semantics(mergeDescendants = true) {}
+            .testTag("onboarding_step_header"),
+      ) {
+        Text(
+          text = stepHeaderText,
+          style = MaterialTheme.typography.labelMedium,
+          fontWeight = FontWeight.SemiBold,
+          color = MaterialTheme.colorScheme.onSecondaryContainer,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+        )
+      }
+      LinearProgressIndicator(
+        progress = { stepProgress },
+        modifier =
+          Modifier
+            .weight(1f)
+            .height(4.dp)
+            .clip(CircleShape)
+            .testTag("onboarding_step_progress"),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+      )
     }
 
     HorizontalPager(
@@ -100,7 +148,7 @@ fun OnboardingHorizontalPager(
     ) { page ->
       Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
       ) {
         Box(
           modifier =

@@ -479,7 +479,7 @@ private fun InstalledAppRow(
 }
 
 @Composable
-private fun RecentBinariesTab(
+internal fun RecentBinariesTab(
   items: List<RecentBinaryItem>,
   onSelectRecent: (RecentBinaryItem) -> Unit,
   onRemoveRecent: (String) -> Unit,
@@ -522,64 +522,91 @@ private fun RecentBinariesTab(
         )
       }
     } else {
+      val countSummary =
+        if (displayedItems.size == items.size) {
+          "${items.size} saved ${if (items.size == 1) "binary" else "binaries"}"
+        } else {
+          "${displayedItems.size} of ${items.size} shown"
+        }
       Row(
         modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        LazyRow(
-          modifier = Modifier.weight(1f).testTag("picker_recent_filter_row"),
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
+        Text(
+          text = countSummary,
+          style = MaterialTheme.typography.labelLarge,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.testTag("picker_recent_count_label"),
+        )
+        TextButton(
+          onClick = onClearRecent,
+          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+          modifier = Modifier.minimumInteractiveComponentSize().testTag("clear_recent_history_btn"),
         ) {
-          item {
-            Box {
-              FilterChip(
-                selected = sortOrder != PickerSortOrder.RECENT,
-                onClick = { showSortMenu = true },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.Sort,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = { Text("Sort: ${sortOrder.label}") },
-                modifier = Modifier.testTag("picker_recent_sort_chip"),
-              )
-              DropdownMenu(
-                expanded = showSortMenu,
-                onDismissRequest = { showSortMenu = false },
-              ) {
-                PickerSortOrder.entries.forEach { order ->
-                  DropdownMenuItem(
-                    text = { Text(order.label) },
-                    trailingIcon = {
-                      if (sortOrder == order) {
-                        Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                      }
-                    },
-                    onClick = {
-                      sortOrder = order
-                      showSortMenu = false
-                    },
-                    modifier = Modifier.testTag("picker_recent_sort_${order.name}"),
-                  )
-                }
+          Icon(
+            imageVector = Icons.Rounded.DeleteOutline,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+          )
+          Spacer(Modifier.width(4.dp))
+          Text(
+            text = stringResource(R.string.picker_clear_recent),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
+      }
+      LazyRow(
+        modifier = Modifier.fillMaxWidth().testTag("picker_recent_filter_row"),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        item {
+          Box {
+            FilterChip(
+              selected = sortOrder != PickerSortOrder.RECENT,
+              onClick = { showSortMenu = true },
+              leadingIcon = {
+                Icon(
+                  imageVector = Icons.AutoMirrored.Rounded.Sort,
+                  contentDescription = null,
+                  modifier = Modifier.size(16.dp),
+                )
+              },
+              label = { Text("Sort: ${sortOrder.label}") },
+              modifier = Modifier.testTag("picker_recent_sort_chip"),
+            )
+            DropdownMenu(
+              expanded = showSortMenu,
+              onDismissRequest = { showSortMenu = false },
+            ) {
+              PickerSortOrder.entries.forEach { order ->
+                DropdownMenuItem(
+                  text = { Text(order.label) },
+                  trailingIcon = {
+                    if (sortOrder == order) {
+                      Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                    }
+                  },
+                  onClick = {
+                    sortOrder = order
+                    showSortMenu = false
+                  },
+                  modifier = Modifier.testTag("picker_recent_sort_${order.name}"),
+                )
               }
             }
           }
-          RecentSourceFilter.entries.forEach { src ->
-            item {
-              FilterChip(
-                selected = sourceFilter == src,
-                onClick = { sourceFilter = src },
-                label = { Text(src.label) },
-                modifier = Modifier.testTag("picker_recent_filter_${src.name}"),
-              )
-            }
-          }
         }
-        TextButton(onClick = onClearRecent, modifier = Modifier.testTag("clear_recent_history_btn")) {
-          Text(stringResource(R.string.picker_clear_recent))
+        RecentSourceFilter.entries.forEach { src ->
+          item {
+            FilterChip(
+              selected = sourceFilter == src,
+              onClick = { sourceFilter = src },
+              label = { Text(src.label) },
+              modifier = Modifier.testTag("picker_recent_filter_${src.name}"),
+            )
+          }
         }
       }
       if (displayedItems.isEmpty()) {

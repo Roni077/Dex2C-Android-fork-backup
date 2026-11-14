@@ -176,7 +176,7 @@ class ExampleRobolectricTest {
   }
 
   @Test
-  fun `onboarding removes step tracking and swipes across Intro, About, GitHub, Theme, Alerts in order`() {
+  fun `onboarding shows step header progress and swipes across Intro, About, GitHub, Theme, Alerts in order`() {
     var finished = false
 
     composeTestRule.setContent {
@@ -201,7 +201,8 @@ class ExampleRobolectricTest {
       }
     }
 
-    composeTestRule.onNodeWithText("Step 1", substring = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("onboarding_step_header").assertIsDisplayed().assertTextContains("Step 1 of 5", substring = true)
+    composeTestRule.onNodeWithTag("onboarding_step_progress").assertIsDisplayed()
     composeTestRule.onNodeWithTag("onboarding_page_dots").assertIsDisplayed()
     repeat(5) { idx ->
       composeTestRule.onNodeWithTag("onboarding_page_dot_$idx").assertIsDisplayed()
@@ -211,6 +212,7 @@ class ExampleRobolectricTest {
     // Tap dot 1 -> About screen
     composeTestRule.onNodeWithTag("onboarding_page_dot_1").performClick()
     composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_step_header").assertTextContains("Step 2 of 5", substring = true)
     composeTestRule.onNodeWithText("About Dex2C Studio").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithText("DEX Inspector").performScrollTo().assertIsDisplayed()
     composeTestRule.onNodeWithText("JNI Transpiler").performScrollTo().assertIsDisplayed()
@@ -224,10 +226,12 @@ class ExampleRobolectricTest {
     // Tap dot 3 -> Theme screen, then tap dot 2 -> GitHub screen, then swipe left through Theme -> Alerts
     composeTestRule.onNodeWithTag("onboarding_page_dot_3").performClick()
     composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_step_header").assertTextContains("Step 4 of 5", substring = true)
     composeTestRule.onNodeWithText("Theme & Palette").performScrollTo().assertIsDisplayed()
 
     composeTestRule.onNodeWithTag("onboarding_page_dot_2").performClick()
     composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_step_header").assertTextContains("Step 3 of 5", substring = true)
     composeTestRule.onNodeWithText("GitHub Cloud CI").performScrollTo().assertIsDisplayed()
 
     composeTestRule.onNodeWithTag("onboarding_pager").performTouchInput { swipeLeft() }
@@ -236,6 +240,7 @@ class ExampleRobolectricTest {
 
     composeTestRule.onNodeWithTag("onboarding_pager").performTouchInput { swipeLeft() }
     composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_step_header").assertTextContains("Step 5 of 5", substring = true)
     composeTestRule.onNodeWithText("Build Alerts").performScrollTo().assertIsDisplayed()
 
     composeTestRule.onNodeWithTag("onboarding_finish_btn").performClick()
@@ -1732,6 +1737,186 @@ class ExampleRobolectricTest {
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("browse_classes_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("build_c_output_button").assertDoesNotExist()
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `recentBinariesTab places Clear History in dedicated header above full-width filter chips without overlap`() {
+    var clearClicks = 0
+    val sampleRecent =
+      listOf(
+        com.example.apk.RecentBinaryItem(
+          id = "app_1",
+          displayName = "Dex2C Studio",
+          sourceType = com.example.apk.BinarySourceType.INSTALLED_APK,
+          uriOrPath = "/data/app/base.apk",
+          packageName = "com.aistudio.dex2cstudio.vxrkmp",
+          byteSize = 23_170_000L,
+          lastOpenedMillis = 1_700_000_000_000L,
+        )
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.components.RecentBinariesTab(
+          items = sampleRecent,
+          onSelectRecent = {},
+          onRemoveRecent = {},
+          onClearRecent = { clearClicks++ },
+        )
+      }
+    }
+
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("picker_recent_count_label").assertIsDisplayed().assertTextContains("1 saved binary")
+    composeTestRule.onNodeWithTag("clear_recent_history_btn").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("picker_recent_sort_chip").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("picker_recent_filter_ALL").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("picker_recent_filter_STORAGE").assertIsDisplayed()
+
+    val clearBounds = composeTestRule.onNodeWithTag("clear_recent_history_btn").fetchSemanticsNode().boundsInRoot
+    val filterRowBounds = composeTestRule.onNodeWithTag("picker_recent_filter_row").fetchSemanticsNode().boundsInRoot
+    assertTrue(
+      "Expected Clear History (${clearBounds.bottom}) above filter chip row (${filterRowBounds.top})",
+      clearBounds.bottom <= filterRowBounds.top + 1f,
+    )
+
+    composeTestRule.onNodeWithTag("clear_recent_history_btn").performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(1, clearClicks)
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `onboarding page 4 renders all 6 accent swatches in one row and page 5 places unclipped permission pill below title`() {
+    composeTestRule.setContent {
+      Dex2cTheme {
+        OnboardingScreen(
+          isReplayMode = false,
+          appSettings = AppSettings(),
+          cloudSettings = CloudSettings(),
+          deviceAuthState = DeviceAuthState.Idle,
+          hasNotificationPermission = false,
+          onUpdateAppSettings = {},
+          onUpdateCloudSettings = {},
+          onStartDeviceLogin = {},
+          onCancelDeviceLogin = {},
+          onCopyCode = {},
+          onOpenBrowserUrl = {},
+          onToggleNotifications = {},
+          onRequestNotificationPermission = {},
+          onFinish = {},
+          onDismissReplay = {},
+        )
+      }
+    }
+
+    // Navigate to Page 4 (Theme & Palette)
+    composeTestRule.onNodeWithTag("onboarding_page_dot_3").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_accent_row").performScrollTo().assertIsDisplayed()
+
+    val swatchTags =
+      com.example.data.CURATED_ACCENT_PRESETS.map {
+        "onboarding_accent_${it.name.lowercase().replace(' ', '_')}"
+      }
+    val swatchBounds =
+      swatchTags.map { tag ->
+        composeTestRule.onNodeWithTag(tag).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+      }
+    val firstTop = swatchBounds.first().top
+    val firstBottom = swatchBounds.first().bottom
+    swatchBounds.forEachIndexed { idx, bounds ->
+      assertEquals("Expected swatch $idx on row 1 (top)", firstTop, bounds.top, 2f)
+      assertEquals("Expected swatch $idx on row 1 (bottom)", firstBottom, bounds.bottom, 2f)
+    }
+
+    // Navigate to Page 5 (Build Alerts)
+    composeTestRule.onNodeWithTag("onboarding_page_dot_4").performClick()
+    composeTestRule.waitForIdle()
+    val titleBounds =
+      composeTestRule.onNodeWithText("Build Completion Alerts").performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+    val pillNode =
+      composeTestRule.onNodeWithTag("onboarding_notification_status_pill").assertIsDisplayed().assertTextContains("Permission Needed")
+    val pillBounds = pillNode.fetchSemanticsNode().boundsInRoot
+    val switchBounds =
+      composeTestRule.onNodeWithTag("onboarding_notifications_switch").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+
+    assertTrue(
+      "Expected status pill (${pillBounds.top}) below title (${titleBounds.bottom})",
+      pillBounds.top >= titleBounds.bottom - 1f,
+    )
+    assertTrue(
+      "Expected status pill (${pillBounds.right}) left of switch (${switchBounds.left})",
+      pillBounds.right <= switchBounds.left + 1f,
+    )
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `onboarding showcase cards fill all 5 pages with interactive code peek, live theme preview, and checklist quick jump`() {
+    composeTestRule.setContent {
+      Dex2cTheme {
+        OnboardingScreen(
+          isReplayMode = false,
+          appSettings = AppSettings(),
+          cloudSettings = CloudSettings(),
+          deviceAuthState = DeviceAuthState.Idle,
+          hasNotificationPermission = false,
+          onUpdateAppSettings = {},
+          onUpdateCloudSettings = {},
+          onStartDeviceLogin = {},
+          onCancelDeviceLogin = {},
+          onCopyCode = {},
+          onOpenBrowserUrl = {},
+          onToggleNotifications = {},
+          onRequestNotificationPermission = {},
+          onFinish = {},
+          onDismissReplay = {},
+        )
+      }
+    }
+
+    // Page 1: Pipeline flow card
+    composeTestRule.onNodeWithTag("onboarding_pipeline_flow_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithText("Native Pipeline Flow").assertIsDisplayed()
+
+    // Page 2: Interactive Dalvik <-> JNI C++ peek
+    composeTestRule.onNodeWithTag("onboarding_page_dot_1").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_code_peek_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("onboarding_peek_tab_dalvik").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("const-string", substring = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("onboarding_peek_tab_cpp").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("JNIEXPORT", substring = true).assertIsDisplayed()
+
+    // Page 3: Cloud workspace steps
+    composeTestRule.onNodeWithTag("onboarding_page_dot_2").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_cloud_steps_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithText("How Private Cloud Sync Works").assertIsDisplayed()
+
+    // Page 4: Live Studio Preview
+    composeTestRule.onNodeWithTag("onboarding_page_dot_3").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_live_theme_preview_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithText("Live Studio Preview").assertIsDisplayed()
+
+    // Page 5: Setup Checklist + quick jump back to Theme & Cloud
+    composeTestRule.onNodeWithTag("onboarding_page_dot_4").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_setup_checklist_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("onboarding_review_theme_btn").performScrollTo().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Theme & Palette").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("onboarding_page_dot_4").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("onboarding_review_cloud_btn").performScrollTo().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("GitHub Cloud CI").assertIsDisplayed()
   }
 }
 
