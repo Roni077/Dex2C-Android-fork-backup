@@ -404,7 +404,7 @@ fun SettingsDexParserSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Workbench & Output", icon = Icons.Rounded.Visibility) {
+      SubScreenCard(title = "Home & Output", icon = Icons.Rounded.Visibility) {
         SettingsToggleRow(
           title = stringResource(R.string.settings_show_output_title),
           subtitle = stringResource(R.string.settings_show_output_subtitle),

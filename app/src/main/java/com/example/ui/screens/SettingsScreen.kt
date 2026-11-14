@@ -80,7 +80,7 @@ enum class SettingsSection(
 ) {
   APPEARANCE("Appearance & Theme", "General & Editor", Icons.Rounded.Palette),
   CODE_EDITOR("Code Editor & Viewer", "General & Editor", Icons.Rounded.Code),
-  DEX_PARSER("DEX Parser & Workbench", "Analysis & Pipeline", Icons.Rounded.Memory),
+  DEX_PARSER("DEX Parser & Home", "Analysis & Pipeline", Icons.Rounded.Memory),
   GITHUB_CLOUD("GitHub Cloud & Workspace Repo", "Cloud Build & Alerts", Icons.Rounded.CloudQueue),
   NDK_SIGNING("NDK Toolchain & APK Signing", "Cloud Build & Alerts", Icons.Rounded.Build),
   NOTIFICATIONS("Notifications & Alerts", "Cloud Build & Alerts", Icons.Rounded.NotificationsActive),

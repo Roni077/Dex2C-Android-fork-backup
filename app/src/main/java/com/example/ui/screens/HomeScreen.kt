@@ -87,13 +87,13 @@ import com.example.ui.components.expressivePressScale
 import com.example.ui.components.formatApkSize
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
-enum class WorkbenchTab {
+enum class HomeTab {
   OVERVIEW,
   HEADER_AND_MAP,
 }
 
 @Composable
-fun WorkbenchScreen(
+fun HomeScreen(
   loadState: DexLoadState,
   selectedMethodCount: Int,
   recentFiles: List<RecentBinaryItem>,
@@ -110,7 +110,7 @@ fun WorkbenchScreen(
   onFocusHeaderDex: (String) -> Unit = {},
   showOutputScreen: Boolean = true,
 ) {
-  var activeTab by rememberSaveable { mutableStateOf(WorkbenchTab.OVERVIEW) }
+  var activeTab by rememberSaveable { mutableStateOf(HomeTab.OVERVIEW) }
 
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val isWide = maxWidth >= 680.dp
@@ -138,35 +138,35 @@ fun WorkbenchScreen(
               modifier = Modifier.fillMaxWidth().widthIn(max = 520.dp),
             ) {
               SegmentedButton(
-                selected = activeTab == WorkbenchTab.OVERVIEW,
-                onClick = { activeTab = WorkbenchTab.OVERVIEW },
+                selected = activeTab == HomeTab.OVERVIEW,
+                onClick = { activeTab = HomeTab.OVERVIEW },
                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-                modifier = Modifier.minimumInteractiveComponentSize().testTag("workbench_tab_OVERVIEW"),
+                modifier = Modifier.minimumInteractiveComponentSize().testTag("home_tab_OVERVIEW"),
                 icon = {
-                  SegmentedButtonDefaults.Icon(active = activeTab == WorkbenchTab.OVERVIEW) {
+                  SegmentedButtonDefaults.Icon(active = activeTab == HomeTab.OVERVIEW) {
                     Icon(Icons.Rounded.Dashboard, contentDescription = null, modifier = Modifier.size(16.dp))
                   }
                 },
               ) {
                 Text(
-                  text = stringResource(R.string.workbench_tab_overview),
+                  text = stringResource(R.string.home_tab_overview),
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
                 )
               }
               SegmentedButton(
-                selected = activeTab == WorkbenchTab.HEADER_AND_MAP,
-                onClick = { activeTab = WorkbenchTab.HEADER_AND_MAP },
+                selected = activeTab == HomeTab.HEADER_AND_MAP,
+                onClick = { activeTab = HomeTab.HEADER_AND_MAP },
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-                modifier = Modifier.minimumInteractiveComponentSize().testTag("workbench_tab_HEADER_AND_MAP"),
+                modifier = Modifier.minimumInteractiveComponentSize().testTag("home_tab_HEADER_AND_MAP"),
                 icon = {
-                  SegmentedButtonDefaults.Icon(active = activeTab == WorkbenchTab.HEADER_AND_MAP) {
+                  SegmentedButtonDefaults.Icon(active = activeTab == HomeTab.HEADER_AND_MAP) {
                     Icon(Icons.Rounded.Schema, contentDescription = null, modifier = Modifier.size(16.dp))
                   }
                 },
               ) {
                 Text(
-                  text = stringResource(R.string.workbench_tab_header_map),
+                  text = stringResource(R.string.home_tab_header_map),
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
                 )
@@ -187,10 +187,10 @@ fun WorkbenchScreen(
               transitionSpec = {
                 ExpressiveMotion.sharedAxisHorizontal(forward = targetState.ordinal >= initialState.ordinal)
               },
-              label = "workbench_ready_tab",
+              label = "home_ready_tab",
             ) { tab ->
               when (tab) {
-                WorkbenchTab.OVERVIEW -> {
+                HomeTab.OVERVIEW -> {
                   val bannerSummary =
                     if (loadedDexList.size > 1) "${loadedDexList.size} DEXes merged"
                     else loadState.activeEntryName
@@ -205,7 +205,7 @@ fun WorkbenchScreen(
                         modifier = Modifier.weight(1.05f),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                       ) {
-                        HeroWorkbenchBanner(
+                        HeroHomeBanner(
                           onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                           onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
                           compact = true,
@@ -233,7 +233,7 @@ fun WorkbenchScreen(
                             onSelectDexEntry = onSelectDexEntry,
                           )
                         }
-                        WorkbenchMetricsGrid(
+                        HomeMetricsGrid(
                           totalClasses = totalClasses,
                           totalMethods = totalMethods,
                           totalStrings = totalStrings,
@@ -247,7 +247,7 @@ fun WorkbenchScreen(
                       modifier = Modifier.fillMaxWidth(),
                       verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                      HeroWorkbenchBanner(
+                      HeroHomeBanner(
                         onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                         onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
                         compact = true,
@@ -270,7 +270,7 @@ fun WorkbenchScreen(
                         showOutputScreen = showOutputScreen,
                         compact = true,
                       )
-                      WorkbenchMetricsGrid(
+                      HomeMetricsGrid(
                         totalClasses = totalClasses,
                         totalMethods = totalMethods,
                         totalStrings = totalStrings,
@@ -281,7 +281,7 @@ fun WorkbenchScreen(
                   }
                 }
 
-                WorkbenchTab.HEADER_AND_MAP -> {
+                HomeTab.HEADER_AND_MAP -> {
                   if (isWide) {
                     Row(
                       modifier = Modifier.fillMaxSize(),
@@ -408,7 +408,7 @@ fun WorkbenchScreen(
               verticalAlignment = Alignment.Top,
             ) {
               Column(modifier = Modifier.weight(1.1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                HeroWorkbenchBanner(
+                HeroHomeBanner(
                   onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                   onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
                 )
@@ -425,7 +425,7 @@ fun WorkbenchScreen(
               )
             }
           } else {
-            HeroWorkbenchBanner(
+            HeroHomeBanner(
               onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
               onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
             )
@@ -483,7 +483,7 @@ private fun DexContainersStrip(
 }
 
 @Composable
-private fun WorkbenchMetricsGrid(
+private fun HomeMetricsGrid(
   totalClasses: Int,
   totalMethods: Int,
   totalStrings: Int,
@@ -644,7 +644,7 @@ private fun CompactHeaderCell(
 }
 
 @Composable
-private fun HeroWorkbenchBanner(
+private fun HeroHomeBanner(
   onOpenPicker: () -> Unit,
   onOpenInstalledApps: () -> Unit,
   compact: Boolean = false,

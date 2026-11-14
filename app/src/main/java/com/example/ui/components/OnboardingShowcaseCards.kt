@@ -468,7 +468,7 @@ fun OnboardingLiveThemePreviewCard(
             }
           }
           Column(modifier = Modifier.weight(1f)) {
-            Text("Workbench & JNI Surface", style = MaterialTheme.typography.labelMedium)
+            Text("Home & JNI Surface", style = MaterialTheme.typography.labelMedium)
             Text(
               text = "Tonal elevation & button accent contrast",
               style = MaterialTheme.typography.bodySmall,

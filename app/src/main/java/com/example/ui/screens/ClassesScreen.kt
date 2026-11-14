@@ -567,7 +567,7 @@ fun ClassesScreen(
         ) {
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-              text = "Load a DEX or APK on the Workbench first",
+              text = "Load a DEX or APK on Home first",
               style = MaterialTheme.typography.titleMedium,
             )
             Spacer(Modifier.height(10.dp))

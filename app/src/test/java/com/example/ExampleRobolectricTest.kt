@@ -1108,7 +1108,7 @@ class ExampleRobolectricTest {
       vm.appSettingsHydrated.value && vm.appSettings.value.hasCompletedOnboarding
     }
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("nav_workbench").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nav_home").assertIsDisplayed()
     composeTestRule.onNodeWithTag("nav_classes").assertIsDisplayed()
     composeTestRule.onNodeWithTag("nav_build").assertIsDisplayed()
     composeTestRule.onNodeWithTag("nav_cloud").assertIsDisplayed()
@@ -1464,7 +1464,7 @@ class ExampleRobolectricTest {
 
   @Test
   @Config(sdk = [36], qualifiers = "w412dp-h892dp")
-  fun `workbenchScreen Ready state switches between Overview and Header & Map tabs without scrolling`() {
+  fun `homeScreen Ready state switches between Overview and Header & Map tabs without scrolling`() {
     val mapItems =
       (0 until 10).map { idx ->
         com.example.dex.DexMapItem(
@@ -1514,7 +1514,7 @@ class ExampleRobolectricTest {
 
     composeTestRule.setContent {
       Dex2cTheme {
-        com.example.ui.screens.WorkbenchScreen(
+        com.example.ui.screens.HomeScreen(
           loadState = readyState,
           selectedMethodCount = 12,
           recentFiles = emptyList(),
@@ -1533,14 +1533,14 @@ class ExampleRobolectricTest {
 
     composeTestRule.waitForIdle()
     // Overview tab shows hero, action buttons, and metric tiles on one screen
-    composeTestRule.onNodeWithTag("workbench_tab_OVERVIEW").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("workbench_tab_HEADER_AND_MAP").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("home_tab_OVERVIEW").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("home_tab_HEADER_AND_MAP").assertIsDisplayed()
     composeTestRule.onNodeWithTag("open_dex_apk_button").assertIsDisplayed()
     composeTestRule.onNodeWithTag("build_c_output_button").assertIsDisplayed()
     composeTestRule.onNodeWithText("1,100").assertIsDisplayed()
 
     // Switch to Header & Map tab and verify header + map_list render without scrolling
-    composeTestRule.onNodeWithTag("workbench_tab_HEADER_AND_MAP").performClick()
+    composeTestRule.onNodeWithTag("home_tab_HEADER_AND_MAP").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithText("DEX v038").assertIsDisplayed()
     composeTestRule.onNodeWithTag("open_rust_jni_bridge_btn").assertIsDisplayed()
@@ -1625,7 +1625,7 @@ class ExampleRobolectricTest {
 
   @Test
   @Config(sdk = [36], qualifiers = "w412dp-h892dp")
-  fun `output screen toggle under DEX Parser Settings hides Build Output tab and Workbench Build C Output button`() {
+  fun `output screen toggle under DEX Parser Settings hides Build Output tab and Home Build C Output button`() {
     var settings by mutableStateOf(AppSettings())
     var ensureBuildCalls by mutableStateOf(0)
 
@@ -1702,7 +1702,7 @@ class ExampleRobolectricTest {
               showOutputScreen = settings.showOutputScreen,
             )
           else ->
-            com.example.ui.screens.WorkbenchScreen(
+            com.example.ui.screens.HomeScreen(
               loadState = readyState,
               selectedMethodCount = 5,
               recentFiles = emptyList(),

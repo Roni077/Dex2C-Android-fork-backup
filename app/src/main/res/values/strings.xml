@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Dex2C Studio</string>
-    <string name="nav_workbench">Workbench</string>
+    <string name="nav_home">Home</string>
     <string name="nav_classes">Classes</string>
     <string name="nav_build">Build</string>
     <string name="nav_config">Pipeline</string>
@@ -29,11 +29,11 @@
     <string name="settings_title">Settings</string>
     <string name="settings_subtitle">Theme, editor, DEX parser, and Cloud NDK</string>
     <string name="settings_show_output_title">Show Output Screen</string>
-    <string name="settings_show_output_subtitle">Display Output tab on Build and Build C Output button on Workbench</string>
+    <string name="settings_show_output_subtitle">Display Output tab on Build and Build C Output button on Home</string>
 
-    <string name="hero_title">Dex2C Native Workbench</string>
+    <string name="hero_title">Dex2C Native Home</string>
     <string name="hero_subtitle">Parse Dalvik DEX binaries, inspect bytecode, and transpile protected methods to JNI C/C++</string>
-    <string name="hero_banner_desc">Dex2C bytecode to C silicon workbench banner</string>
+    <string name="hero_banner_desc">Dex2C bytecode to C silicon home banner</string>
 
     <string name="action_open_file">Pick APK / DEX</string>
     <string name="action_browse_storage">Browse Device Storage</string>
@@ -101,8 +101,8 @@
     <string name="config_include_regex">Include Prefix / Regex</string>
     <string name="config_exclude_regex">Exclude Prefix / Regex</string>
     <string name="config_apply_filters">Apply Filters</string>
-    <string name="workbench_tab_overview">Overview</string>
-    <string name="workbench_tab_header_map">Header &amp; Map</string>
+    <string name="home_tab_overview">Overview</string>
+    <string name="home_tab_header_map">Header &amp; Map</string>
     <string name="pipeline_tab_loader">Loader</string>
     <string name="pipeline_tab_ndk_passes">NDK &amp; Passes</string>
     <string name="pipeline_tab_filters">Filters</string>
@@ -124,7 +124,7 @@
     <string name="config_import_dcc_cfg">Import dcc.cfg</string>
 
     <string name="export_empty_title">No Methods Selected</string>
-    <string name="export_empty_body">Select one or more classes or methods in the Classes tab (or use Auto-Select on the Workbench) to generate C/C++ JNI source and CMake build scripts.</string>
+    <string name="export_empty_body">Select one or more classes or methods in the Classes tab (or use Auto-Select on Home) to generate C/C++ JNI source and CMake build scripts.</string>
     <string name="msg_copied_clipboard">Copied to clipboard</string>
     <string name="msg_zip_exported">Exported NDK bundle successfully</string>
     <string name="msg_loading_dex">Parsing DEX binary tables…</string>

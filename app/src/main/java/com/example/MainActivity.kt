@@ -41,15 +41,15 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.CloudQueue
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DataObject
-import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.rounded.CloudQueue
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DataObject
 import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -110,15 +110,15 @@ import com.example.ui.screens.BuildHubScreen
 import com.example.ui.screens.BuildHubTab
 import com.example.ui.screens.ClassesScreen
 import com.example.ui.screens.CloudBuildScreen
+import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.MethodDetailScreen
 import com.example.ui.screens.OnboardingScreen
 import com.example.ui.screens.SettingsScreen
-import com.example.ui.screens.WorkbenchScreen
 import com.example.ui.theme.Dex2cTheme
 import com.example.ui.theme.EditorDisplaySettings
 import kotlinx.coroutines.launch
 
-const val ROUTE_WORKBENCH = "workbench"
+const val ROUTE_HOME = "home"
 const val ROUTE_CLASSES = "classes"
 const val ROUTE_BUILD = "build"
 const val ROUTE_CLOUD = "cloud"
@@ -343,14 +343,14 @@ fun Dex2cApp(
 
   val navItems =
     listOf(
-      NavDestinationItem(ROUTE_WORKBENCH, R.string.nav_workbench, Icons.Rounded.Build, Icons.Outlined.Build, "nav_workbench"),
+      NavDestinationItem(ROUTE_HOME, R.string.nav_home, Icons.Rounded.Home, Icons.Outlined.Home, "nav_home"),
       NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Outlined.DataObject, "nav_classes"),
       NavDestinationItem(ROUTE_BUILD, R.string.nav_build, Icons.Rounded.Code, Icons.Outlined.Code, "nav_build"),
       NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Outlined.CloudQueue, "nav_cloud"),
     )
 
   val backStackEntry by navController.currentBackStackEntryAsState()
-  val currentRoute = backStackEntry?.destination?.route ?: ROUTE_WORKBENCH
+  val currentRoute = backStackEntry?.destination?.route ?: ROUTE_HOME
   val showTopBarAndNav =
     appSettingsHydrated &&
       currentRoute != ROUTE_METHOD_DETAIL &&
@@ -464,9 +464,9 @@ fun Dex2cApp(
           if (appSettingsHydrated) {
             val startDestination =
               remember(appSettingsHydrated) {
-                if (appSettings.hasCompletedOnboarding) ROUTE_WORKBENCH else ROUTE_ONBOARDING
+                if (appSettings.hasCompletedOnboarding) ROUTE_HOME else ROUTE_ONBOARDING
               }
-            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_WORKBENCH, ROUTE_CLASSES, ROUTE_BUILD, ROUTE_CLOUD, ROUTE_METHOD_DETAIL, ROUTE_SETTINGS)
+            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_HOME, ROUTE_CLASSES, ROUTE_BUILD, ROUTE_CLOUD, ROUTE_METHOD_DETAIL, ROUTE_SETTINGS)
             NavHost(
               navController = navController,
               startDestination = startDestination,
@@ -507,8 +507,8 @@ fun Dex2cApp(
                 }
               },
             ) {
-            composable(ROUTE_WORKBENCH) {
-              WorkbenchScreen(
+            composable(ROUTE_HOME) {
+              HomeScreen(
                 loadState = loadState,
                 selectedMethodCount = selectedMethodIds.size,
                 recentFiles = recentFiles,
@@ -702,7 +702,7 @@ fun Dex2cApp(
               val isReplay = navController.previousBackStackEntry != null
               LaunchedEffect(appSettings.hasCompletedOnboarding, isReplay) {
                 if (appSettings.hasCompletedOnboarding && !isReplay) {
-                  navController.navigate(ROUTE_WORKBENCH) {
+                  navController.navigate(ROUTE_HOME) {
                     popUpTo(ROUTE_ONBOARDING) { inclusive = true }
                     launchSingleTop = true
                   }
@@ -731,7 +731,7 @@ fun Dex2cApp(
                 onRequestNotificationPermission = { requestNotificationPermissionIfNeeded() },
                 onFinish = {
                   viewModel.completeOnboarding()
-                  navController.navigate(ROUTE_WORKBENCH) {
+                  navController.navigate(ROUTE_HOME) {
                     popUpTo(ROUTE_ONBOARDING) { inclusive = true }
                     launchSingleTop = true
                   }
