@@ -529,7 +529,134 @@ object DalvikDisassembler {
         )
       pc += width
     }
-    return out
+
+    val payloadReferrerOffset = mutableMapOf<Int, Int>()
+    out.forEach { insn ->
+      if (insn.opcode == 0x26 || insn.opcode == 0x2B || insn.opcode == 0x2C) {
+        insn.targetOffset?.let { pOff ->
+          payloadReferrerOffset.putIfAbsent(pOff, insn.offsetWords)
+        }
+      }
+    }
+
+    val decodedPayloadByOffset = mutableMapOf<Int, DalvikPayload>()
+    val decodedOperandsByOffset = mutableMapOf<Int, String>()
+    out.forEach { insn ->
+      if (insn.category != OpCategory.PAYLOAD) return@forEach
+      val pOff = insn.offsetWords
+      val basePc = payloadReferrerOffset[pOff] ?: pOff
+      when (insn.opcode) {
+        0x0100 -> {
+          val size = words.getOrElse(pOff + 1) { 0 }
+          val firstKey = readWordPairInt(words, pOff + 2) ?: 0
+          val targets =
+            (0 until size).mapNotNull { idx ->
+              val rel = readWordPairInt(words, pOff + 4 + idx * 2) ?: return@mapNotNull null
+              basePc + rel
+            }
+          val payload =
+            DalvikPayload.PackedSwitch(
+              offsetWords = pOff,
+              wordCount = insn.widthWords,
+              firstKey = firstKey,
+              targetOffsets = targets,
+            )
+          decodedPayloadByOffset[pOff] = payload
+          val preview =
+            targets.take(4).mapIndexed { idx, tgt -> "${firstKey + idx}->L_%04x".format(tgt) }
+              .joinToString(", ")
+          val ellipsis = if (targets.size > 4) ", …" else ""
+          decodedOperandsByOffset[pOff] =
+            if (targets.isEmpty()) "0 targets"
+            else "first=$firstKey [${preview}${ellipsis}]"
+        }
+        0x0200 -> {
+          val size = words.getOrElse(pOff + 1) { 0 }
+          val cases =
+            (0 until size).mapNotNull { idx ->
+              val key = readWordPairInt(words, pOff + 2 + idx * 2) ?: return@mapNotNull null
+              val rel = readWordPairInt(words, pOff + 2 + size * 2 + idx * 2) ?: return@mapNotNull null
+              key to (basePc + rel)
+            }
+          val payload =
+            DalvikPayload.SparseSwitch(
+              offsetWords = pOff,
+              wordCount = insn.widthWords,
+              cases = cases,
+            )
+          decodedPayloadByOffset[pOff] = payload
+          val preview =
+            cases.take(4).joinToString(", ") { (k, tgt) -> "$k->L_%04x".format(tgt) }
+          val ellipsis = if (cases.size > 4) ", …" else ""
+          decodedOperandsByOffset[pOff] =
+            if (cases.isEmpty()) "0 cases"
+            else "${cases.size} cases [$preview$ellipsis]"
+        }
+        0x0300 -> {
+          val elemWidth = words.getOrElse(pOff + 1) { 1 }.coerceAtLeast(1)
+          val count = (readWordPairInt(words, pOff + 2) ?: 0).coerceAtLeast(0)
+          val dataStartByte = meta.insnsOffsetBytes + (pOff + 4) * 2
+          val totalBytes = (count.toLong() * elemWidth.toLong()).coerceAtMost(4096L).toInt()
+          val availableBytes = (dex.rawBytes.size - dataStartByte).coerceAtLeast(0)
+          val safeByteCount = minOf(totalBytes, availableBytes)
+          val previewElements = mutableListOf<String>()
+          val maxElementsToDecode = minOf(count, 12)
+          for (i in 0 until maxElementsToDecode) {
+            val elemOff = dataStartByte + i * elemWidth
+            if (elemOff + elemWidth > dex.rawBytes.size) break
+            val formatted =
+              when (elemWidth) {
+                1 -> dex.rawBytes[elemOff].toInt().toString()
+                2 -> buf.getShort(elemOff).toInt().toString()
+                4 -> buf.getInt(elemOff).toString()
+                8 -> buf.getLong(elemOff).toString()
+                else -> "0x%02X".format(dex.rawBytes[elemOff].toInt() and 0xFF)
+              }
+            previewElements += formatted
+          }
+          val hexCount = minOf(safeByteCount, 16)
+          val hexPreview =
+            (0 until hexCount).joinToString(" ") { idx ->
+              "%02X".format(dex.rawBytes[dataStartByte + idx].toInt() and 0xFF)
+            } + if (safeByteCount > 16) " …" else ""
+          val payload =
+            DalvikPayload.FillArrayData(
+              offsetWords = pOff,
+              wordCount = insn.widthWords,
+              elementWidthBytes = elemWidth,
+              elementCount = count,
+              previewElements = previewElements,
+              hexPreview = hexPreview,
+            )
+          decodedPayloadByOffset[pOff] = payload
+          val vals = previewElements.take(6).joinToString(", ")
+          val ellipsis = if (count > 6) ", …" else ""
+          decodedOperandsByOffset[pOff] =
+            if (previewElements.isEmpty()) "${elemWidth}B × $count"
+            else "${elemWidth}B × $count [$vals$ellipsis]"
+        }
+      }
+    }
+
+    return out.map { insn ->
+      when {
+        insn.category == OpCategory.PAYLOAD -> {
+          val decoded = decodedPayloadByOffset[insn.offsetWords]
+          val opText = decodedOperandsByOffset[insn.offsetWords] ?: insn.operandsText
+          insn.copy(payload = decoded, operandsText = opText)
+        }
+        insn.opcode == 0x26 || insn.opcode == 0x2B || insn.opcode == 0x2C -> {
+          val linked = insn.targetOffset?.let { decodedPayloadByOffset[it] }
+          insn.copy(payload = linked)
+        }
+        else -> insn
+      }
+    }
+  }
+
+  private fun readWordPairInt(words: IntArray, index: Int): Int? {
+    if (index < 0 || index + 1 >= words.size) return null
+    return (words[index] and 0xFFFF) or ((words[index + 1] and 0xFFFF) shl 16)
   }
 
   fun parseTryBlocks(dex: DexParsedFile, method: DexEncodedMethod): List<DexTryBlock> {

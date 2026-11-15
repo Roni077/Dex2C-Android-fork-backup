@@ -64,6 +64,7 @@ fun BuildHubScreen(
   isBundleDirty: Boolean = false,
   onEnsureBundleBuilt: () -> Unit = {},
   showOutputScreen: Boolean = true,
+  onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit = {},
 ) {
   val effectiveTab = if (showOutputScreen) activeTab else BuildHubTab.PIPELINE
 
@@ -173,6 +174,8 @@ fun BuildHubScreen(
                 onSelectTab(BuildHubTab.OUTPUT)
               }
             },
+            selectedMethodCount = selectedMethodCount,
+            onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
           )
         }
         BuildHubTab.OUTPUT -> {

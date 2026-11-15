@@ -21,21 +21,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AutoFixHigh
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.UploadFile
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -46,6 +60,7 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,12 +73,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.R
 import com.example.transpiler.ALL_NDK_ABIS
+import com.example.transpiler.COMMON_ANDROID_METHODS
 import com.example.transpiler.FilterMatchSummary
+import com.example.transpiler.FilterRuleEngine
+import com.example.transpiler.FilterRuleType
 import com.example.transpiler.JniBindingStyle
 import com.example.transpiler.LoaderMode
+import com.example.transpiler.StructuredFilterRule
 import com.example.transpiler.TargetCLanguage
 import com.example.transpiler.TranspilerConfig
 import com.example.ui.components.ExpressiveMotion
+import com.example.ui.components.InteractiveFilterRuleBuilderPanel
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
@@ -84,6 +104,8 @@ fun PipelineConfigScreen(
   onImportDccCfg: () -> Unit,
   onApplyFilterRules: () -> Unit,
   modifier: Modifier = Modifier,
+  selectedMethodCount: Int = 0,
+  onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit = {},
 ) {
   var activeCategory by rememberSaveable { mutableStateOf(PipelineCategory.LOADER) }
 
@@ -255,6 +277,8 @@ fun PipelineConfigScreen(
                 onImportFilterTxt = onImportFilterTxt,
                 onApplyFilterRules = onApplyFilterRules,
                 fillAvailableHeight = !needsCompactScroll,
+                selectedMethodCount = selectedMethodCount,
+                onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
               )
             }
           }
@@ -489,7 +513,6 @@ private fun ProtectionPassesCard(
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterRulesCard(
   config: TranspilerConfig,
@@ -499,6 +522,8 @@ private fun FilterRulesCard(
   onImportFilterTxt: () -> Unit,
   onApplyFilterRules: () -> Unit,
   fillAvailableHeight: Boolean,
+  selectedMethodCount: Int,
+  onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -511,102 +536,22 @@ private fun FilterRulesCard(
     color = MaterialTheme.colorScheme.surfaceContainer,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(
-      modifier = Modifier.padding(14.dp).then(if (fillAvailableHeight) Modifier.fillMaxSize() else Modifier),
-      verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-      Text(
-        text = stringResource(R.string.config_filter_rules),
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.primary,
-      )
-
-      OutlinedTextField(
-        value = config.moduleName,
-        onValueChange = { v -> onUpdateConfig { it.copy(moduleName = v) } },
-        label = { Text(stringResource(R.string.config_module_name)) },
-        singleLine = true,
-        shape = RoundedCornerShape(14.dp),
-        textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
-        modifier = Modifier.fillMaxWidth().testTag("input_module_name"),
-      )
-
-      if (filterMatchSummary != null) {
-        FlowRow(
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-          TagPill(
-            text = "Matches ${filterMatchSummary.matchedMethodIds.size} methods (${filterMatchSummary.matchedClassCount} classes)",
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-          )
-          if (filterMatchSummary.skippedInitCount > 0) {
-            TagPill(
-              text = "${filterMatchSummary.skippedInitCount} <init> skipped",
-              containerColor = MaterialTheme.colorScheme.secondaryContainer,
-              contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-          }
-          if (filterMatchSummary.invalidRules.isNotEmpty()) {
-            TagPill(
-              text = "${filterMatchSummary.invalidRules.size} invalid regex",
-              containerColor = MaterialTheme.colorScheme.errorContainer,
-              contentColor = MaterialTheme.colorScheme.error,
-            )
-          }
-        }
-      }
-
-      OutlinedTextField(
-        value = config.filterRulesText,
-        onValueChange = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
-        label = { Text(stringResource(R.string.config_filter_txt_label)) },
-        shape = RoundedCornerShape(14.dp),
-        textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 220.dp))
-            .testTag("input_filter_txt"),
-      )
-
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-      ) {
-        OutlinedButton(
-          onClick = onImportFilterTxt,
-          shape = RoundedCornerShape(20.dp),
-          contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
-          modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("import_filter_txt_button"),
-        ) {
-          Icon(Icons.Rounded.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(6.dp))
-          Text(
-            text = stringResource(R.string.config_import_filter),
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-        Button(
-          onClick = onApplyFilterRules,
-          enabled = hasLoadedDex,
-          shape = RoundedCornerShape(20.dp),
-          contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
-          modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("apply_filter_rules_button"),
-        ) {
-          Text(
-            text = stringResource(R.string.config_apply_filters),
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-      }
-    }
+    InteractiveFilterRuleBuilderPanel(
+      config = config,
+      hasLoadedDex = hasLoadedDex,
+      filterMatchSummary = filterMatchSummary,
+      selectedMethodCount = selectedMethodCount,
+      onUpdateConfig = onUpdateConfig,
+      onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
+      onApplyFilterRules = onApplyFilterRules,
+      fillAvailableHeight = fillAvailableHeight,
+      showModuleNameField = true,
+      onImportFilterTxt = onImportFilterTxt,
+      modifier =
+        Modifier
+          .padding(14.dp)
+          .then(if (fillAvailableHeight) Modifier.fillMaxSize() else Modifier),
+    )
   }
 }
 

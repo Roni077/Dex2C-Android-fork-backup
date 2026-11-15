@@ -17,6 +17,38 @@ enum class AppThemeMode(val label: String, val summary: String) {
   AMOLED("AMOLED Black", "Pure #000000 canvas for OLED contrast and power savings"),
 }
 
+enum class SmaliSyntaxTheme(
+  val label: String,
+  val shortLabel: String,
+  val summary: String,
+  val tagSuffix: String,
+) {
+  APP_DEFAULT(
+    label = "App Default",
+    shortLabel = "Default",
+    summary = "Automatically match the active app appearance",
+    tagSuffix = "default",
+  ),
+  LIGHT(
+    label = "Light",
+    shortLabel = "Light",
+    summary = "High-legibility daylight canvas for bright environments",
+    tagSuffix = "light",
+  ),
+  DARK(
+    label = "Dark",
+    shortLabel = "Dark",
+    summary = "Deep obsidian canvas with balanced syntax contrast",
+    tagSuffix = "dark",
+  ),
+  BYTECODE_HIGH_CONTRAST(
+    label = "Bytecode High-Contrast",
+    shortLabel = "High-Contrast",
+    summary = "Color-coded opcode families, distinct v/p registers, and call targets",
+    tagSuffix = "high_contrast",
+  ),
+}
+
 data class AccentPreset(
   val name: String,
   val hex: String,
@@ -41,10 +73,10 @@ data class AppSettings(
   val codeFontSizeSp: Int = 12,
   val showLineNumbers: Boolean = true,
   val maxCodePreviewLines: Int = 2500,
+  val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
   val defaultHideFramework: Boolean = true,
   val defaultOnlyBytecode: Boolean = true,
   val autoSelectMethodLimit: Int = 32,
-  val preferRustJniBridge: Boolean = true,
   val showOutputScreen: Boolean = true,
   val hasCompletedOnboarding: Boolean = false,
 )
@@ -60,10 +92,10 @@ class AppPreferences(private val context: Context) {
     val CODE_FONT_SIZE_SP = intPreferencesKey("code_font_size_sp")
     val SHOW_LINE_NUMBERS = booleanPreferencesKey("show_line_numbers")
     val MAX_CODE_PREVIEW_LINES = intPreferencesKey("max_code_preview_lines")
+    val SMALI_SYNTAX_THEME = stringPreferencesKey("smali_syntax_theme")
     val DEFAULT_HIDE_FRAMEWORK = booleanPreferencesKey("default_hide_framework")
     val DEFAULT_ONLY_BYTECODE = booleanPreferencesKey("default_only_bytecode")
     val AUTO_SELECT_METHOD_LIMIT = intPreferencesKey("auto_select_method_limit")
-    val PREFER_RUST_JNI_BRIDGE = booleanPreferencesKey("prefer_rust_jni_bridge")
     val SHOW_OUTPUT_SCREEN = booleanPreferencesKey("show_output_screen")
     val HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
   }
@@ -81,11 +113,14 @@ class AppPreferences(private val context: Context) {
       showLineNumbers = prefs[Keys.SHOW_LINE_NUMBERS] ?: defaults.showLineNumbers,
       maxCodePreviewLines =
         (prefs[Keys.MAX_CODE_PREVIEW_LINES] ?: defaults.maxCodePreviewLines).coerceIn(500, 10000),
+      smaliSyntaxTheme =
+        prefs[Keys.SMALI_SYNTAX_THEME]?.let {
+          runCatching { SmaliSyntaxTheme.valueOf(it) }.getOrNull()
+        } ?: defaults.smaliSyntaxTheme,
       defaultHideFramework = prefs[Keys.DEFAULT_HIDE_FRAMEWORK] ?: defaults.defaultHideFramework,
       defaultOnlyBytecode = prefs[Keys.DEFAULT_ONLY_BYTECODE] ?: defaults.defaultOnlyBytecode,
       autoSelectMethodLimit =
         (prefs[Keys.AUTO_SELECT_METHOD_LIMIT] ?: defaults.autoSelectMethodLimit).coerceIn(8, 256),
-      preferRustJniBridge = prefs[Keys.PREFER_RUST_JNI_BRIDGE] ?: defaults.preferRustJniBridge,
       showOutputScreen = prefs[Keys.SHOW_OUTPUT_SCREEN] ?: defaults.showOutputScreen,
       hasCompletedOnboarding = prefs[Keys.HAS_COMPLETED_ONBOARDING] ?: defaults.hasCompletedOnboarding,
     )
@@ -103,10 +138,10 @@ class AppPreferences(private val context: Context) {
     prefs[Keys.CODE_FONT_SIZE_SP] = settings.codeFontSizeSp
     prefs[Keys.SHOW_LINE_NUMBERS] = settings.showLineNumbers
     prefs[Keys.MAX_CODE_PREVIEW_LINES] = settings.maxCodePreviewLines
+    prefs[Keys.SMALI_SYNTAX_THEME] = settings.smaliSyntaxTheme.name
     prefs[Keys.DEFAULT_HIDE_FRAMEWORK] = settings.defaultHideFramework
     prefs[Keys.DEFAULT_ONLY_BYTECODE] = settings.defaultOnlyBytecode
     prefs[Keys.AUTO_SELECT_METHOD_LIMIT] = settings.autoSelectMethodLimit
-    prefs[Keys.PREFER_RUST_JNI_BRIDGE] = settings.preferRustJniBridge
     prefs[Keys.SHOW_OUTPUT_SCREEN] = settings.showOutputScreen
     prefs[Keys.HAS_COMPLETED_ONBOARDING] = settings.hasCompletedOnboarding
   }

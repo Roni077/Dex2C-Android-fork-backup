@@ -21,27 +21,28 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.automirrored.rounded.ViewList
 import androidx.compose.material.icons.rounded.AccountTree
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckBox
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.UnfoldLess
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,12 +73,15 @@ import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.dex.DexClassInfo
 import com.example.dex.DexEncodedMethod
-import com.example.dex.formatAccessFlags
+import com.example.transpiler.FilterMatchSummary
+import com.example.transpiler.FilterRuleEngine
+import com.example.transpiler.TranspilerConfig
 import com.example.ui.ClassFilterState
 import com.example.ui.ClassSortOrder
 import com.example.ui.ClassTypeFilter
 import com.example.ui.DexLoadState
 import com.example.ui.MethodScopeFilter
+import com.example.ui.components.InteractiveFilterRuleBuilderPanel
 import com.example.ui.matchesMethodScope
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
@@ -85,11 +90,21 @@ enum class ClassesViewMode {
   FLAT,
 }
 
-private data class PackageGroup(
+enum class ClassesSubTab {
+  EXPLORER,
+  FILTER_RULES,
+}
+
+internal data class PackageGroup(
   val packageName: String,
-  val classes: List<DexClassInfo>,
+  val displayLabel: String,
+  val depth: Int,
+  val directClasses: List<DexClassInfo>,
+  val subtreeClasses: List<DexClassInfo>,
+  val subpackageCount: Int,
   val totalBytecodeMethods: Int,
   val selectedMethodCount: Int,
+  val children: List<PackageGroup>,
 )
 
 private sealed interface ExplorerRowItem {
@@ -101,20 +116,113 @@ private sealed interface ExplorerRowItem {
 
   data class ClassRow(
     val dexClass: DexClassInfo,
-    val expanded: Boolean,
     val inTreeMode: Boolean,
+    val depth: Int = 0,
   ) : ExplorerRowItem {
     override val key: String = "cls:${dexClass.uniqueKey}"
   }
-
-  data class MethodRow(
-    val dexClass: DexClassInfo,
-    val method: DexEncodedMethod,
-    val inTreeMode: Boolean,
-  ) : ExplorerRowItem {
-    override val key: String = "mtd:${method.id}"
-  }
 }
+
+/**
+ * Builds a Dex Editor Plus style hierarchical package tree (`com` -> `crackme` -> `ui.theme`):
+ * - Depth 0 (`com`) and Depth 1 (`crackme`) remain distinct expandable folder levels so top-level
+ *   domains and app packages are nested hierarchically.
+ * - Deeper subpackage chains (`depth >= 2`, such as `ui` -> `theme`) compact single-child empty
+ *   intermediate folders into `ui.theme`.
+ */
+internal fun buildNestedPackageTree(
+  classes: List<DexClassInfo>,
+  selectedMethodIds: Set<String>,
+  sortOrder: ClassSortOrder,
+  defaultPackageLabel: String,
+): List<PackageGroup> {
+  class MutablePkgNode(
+    val segment: String,
+    val fullPath: String,
+    val children: LinkedHashMap<String, MutablePkgNode> = linkedMapOf(),
+    val directClasses: MutableList<DexClassInfo> = mutableListOf(),
+  )
+
+  val root = MutablePkgNode("", "")
+  for (cls in classes) {
+    val pkg = cls.packageName.ifBlank { defaultPackageLabel }
+    if (pkg == defaultPackageLabel || pkg == "(default)") {
+      val defNode =
+        root.children.getOrPut(defaultPackageLabel) {
+          MutablePkgNode(defaultPackageLabel, defaultPackageLabel)
+        }
+      defNode.directClasses += cls
+    } else {
+      val parts = pkg.split('.').filter { it.isNotBlank() }
+      var curr = root
+      var pathAcc = ""
+      for (part in parts) {
+        pathAcc = if (pathAcc.isEmpty()) part else "$pathAcc.$part"
+        curr = curr.children.getOrPut(part) { MutablePkgNode(part, pathAcc) }
+      }
+      curr.directClasses += cls
+    }
+  }
+
+  fun compactAndConvert(node: MutablePkgNode, depth: Int): PackageGroup {
+    var current = node
+    var label = node.segment
+    if (depth >= 2) {
+      while (current.directClasses.isEmpty() && current.children.size == 1) {
+        val onlyChild = current.children.values.first()
+        label = if (label.isEmpty()) onlyChild.segment else "$label.${onlyChild.segment}"
+        current = onlyChild
+      }
+    }
+
+    val convertedChildren =
+      current.children.values.map { child -> compactAndConvert(child, depth + 1) }
+    val sortedChildren = sortPackageGroups(convertedChildren, sortOrder)
+    val sortedDirectClasses =
+      sortClassesForDisplay(current.directClasses, sortOrder, selectedMethodIds)
+    val allSubtreeClasses = sortedDirectClasses + sortedChildren.flatMap { it.subtreeClasses }
+    val totalBytecode = allSubtreeClasses.sumOf { it.bytecodeMethodCount }
+    val selectedCount =
+      allSubtreeClasses.sumOf { cls -> cls.allMethods.count { it.id in selectedMethodIds } }
+
+    return PackageGroup(
+      packageName = current.fullPath,
+      displayLabel = label,
+      depth = depth,
+      directClasses = sortedDirectClasses,
+      subtreeClasses = allSubtreeClasses,
+      subpackageCount = sortedChildren.size,
+      totalBytecodeMethods = totalBytecode,
+      selectedMethodCount = selectedCount,
+      children = sortedChildren,
+    )
+  }
+
+  val topGroups = root.children.values.map { compactAndConvert(it, 0) }
+  return sortPackageGroups(topGroups, sortOrder)
+}
+
+private fun sortPackageGroups(
+  groups: List<PackageGroup>,
+  sortOrder: ClassSortOrder,
+): List<PackageGroup> =
+  when (sortOrder) {
+    ClassSortOrder.NAME_ASC -> groups.sortedBy { it.packageName.lowercase() }
+    ClassSortOrder.NAME_DESC -> groups.sortedByDescending { it.packageName.lowercase() }
+    ClassSortOrder.BYTECODE_DESC ->
+      groups.sortedWith(
+        compareByDescending<PackageGroup> { it.totalBytecodeMethods }
+          .thenBy { it.packageName.lowercase() }
+      )
+    ClassSortOrder.SELECTED_FIRST ->
+      groups.sortedWith(
+        compareByDescending<PackageGroup> { it.selectedMethodCount > 0 }
+          .thenByDescending { it.selectedMethodCount }
+          .thenByDescending { it.totalBytecodeMethods }
+          .thenBy { it.packageName.lowercase() }
+      )
+    ClassSortOrder.DEX_ORDER -> groups
+  }
 
 @Composable
 fun ClassesScreen(
@@ -128,10 +236,11 @@ fun ClassesScreen(
   onToggleOnlyBytecode: () -> Unit,
   onToggleOnlySelected: () -> Unit,
   onToggleClassSelection: (DexClassInfo) -> Unit,
-  onToggleMethodSelection: (String) -> Unit,
-  onInspectMethod: (DexClassInfo, DexEncodedMethod) -> Unit,
+  @Suppress("UNUSED_PARAMETER") onToggleMethodSelection: (String) -> Unit,
+  @Suppress("UNUSED_PARAMETER") onInspectMethod: (DexClassInfo, DexEncodedMethod) -> Unit,
   onInspectSelfApk: () -> Unit,
   modifier: Modifier = Modifier,
+  onInspectClassSmali: (DexClassInfo) -> Unit = {},
   onSortOrderChange: (ClassSortOrder) -> Unit = {},
   onClassTypeFilterChange: (ClassTypeFilter) -> Unit = {},
   onToggleHideInnerClasses: () -> Unit = {},
@@ -140,16 +249,32 @@ fun ClassesScreen(
   onResetExtraFilters: () -> Unit = {},
   onTogglePackageSelection: (List<DexClassInfo>) -> Unit = {},
   onDexSourceFilterChange: (String?) -> Unit = {},
+  config: TranspilerConfig = TranspilerConfig(),
+  filterMatchSummary: FilterMatchSummary? = null,
+  onUpdateConfig: ((TranspilerConfig) -> TranspilerConfig) -> Unit = {},
+  onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit = {},
+  onApplyFilterRules: () -> Unit = {},
+  onToggleOnlyMatchingFilterRules: () -> Unit = {},
+  onQuickPackageRule: (packageName: String, isBlacklist: Boolean) -> Unit = { _, _ -> },
+  onQuickClassRule: (dexClass: DexClassInfo, isBlacklist: Boolean) -> Unit = { _, _ -> },
+  initialSubTab: ClassesSubTab = ClassesSubTab.EXPLORER,
 ) {
-  var viewMode by remember { mutableStateOf(ClassesViewMode.TREE) }
+  var activeSubTab by rememberSaveable(initialSubTab) { mutableStateOf(initialSubTab) }
+  var viewMode by rememberSaveable { mutableStateOf(ClassesViewMode.TREE) }
+  var showSelectionCheckboxes by rememberSaveable { mutableStateOf(false) }
   var showSortMenu by remember { mutableStateOf(false) }
   var showDexMenu by remember { mutableStateOf(false) }
   var showExtraFilters by remember { mutableStateOf(false) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
-  val expandedClasses = remember { mutableStateMapOf<String, Boolean>() }
 
-  val autoExpandPackages = filterState.searchQuery.isNotBlank() || filterState.onlySelected
+  val structuredRules =
+    remember(config.filterRulesText) { FilterRuleEngine.parseStructuredRules(config.filterRulesText) }
+
+  val autoExpandPackages =
+    filterState.searchQuery.isNotBlank() ||
+      filterState.onlySelected ||
+      filterState.onlyMatchingFilterRules
   LaunchedEffect(autoExpandPackages) {
     if (!autoExpandPackages) {
       searchCollapsedPackages.clear()
@@ -159,37 +284,17 @@ fun ClassesScreen(
   val defaultPackageLabel = stringResource(R.string.label_default_package)
   val packageGroups =
     remember(classes, selectedMethodIds, filterState.sortOrder, defaultPackageLabel) {
-      val grouped =
-        classes
-          .groupBy { it.packageName.ifBlank { defaultPackageLabel } }
-          .entries
-          .map { (pkg, pkgClasses) ->
-            val sortedClasses = sortClassesForDisplay(pkgClasses, filterState.sortOrder, selectedMethodIds)
-            val selCount =
-              sortedClasses.sumOf { cls -> cls.allMethods.count { it.id in selectedMethodIds } }
-            PackageGroup(
-              packageName = pkg,
-              classes = sortedClasses,
-              totalBytecodeMethods = sortedClasses.sumOf { it.bytecodeMethodCount },
-              selectedMethodCount = selCount,
-            )
-          }
-      when (filterState.sortOrder) {
-        ClassSortOrder.NAME_ASC -> grouped.sortedBy { it.packageName.lowercase() }
-        ClassSortOrder.NAME_DESC -> grouped.sortedByDescending { it.packageName.lowercase() }
-        ClassSortOrder.BYTECODE_DESC ->
-          grouped.sortedWith(
-            compareByDescending<PackageGroup> { it.totalBytecodeMethods }.thenBy { it.packageName.lowercase() }
-          )
-        ClassSortOrder.SELECTED_FIRST ->
-          grouped.sortedWith(
-            compareByDescending<PackageGroup> { it.selectedMethodCount > 0 }
-              .thenByDescending { it.selectedMethodCount }
-              .thenByDescending { it.totalBytecodeMethods }
-              .thenBy { it.packageName.lowercase() }
-          )
-        ClassSortOrder.DEX_ORDER -> grouped
-      }
+      buildNestedPackageTree(
+        classes = classes,
+        selectedMethodIds = selectedMethodIds,
+        sortOrder = filterState.sortOrder,
+        defaultPackageLabel = defaultPackageLabel,
+      )
+    }
+
+  val totalDistinctPackages =
+    remember(classes, defaultPackageLabel) {
+      classes.map { it.packageName.ifBlank { defaultPackageLabel } }.distinct().size
     }
 
   val flatClasses =
@@ -203,47 +308,42 @@ fun ClassesScreen(
       viewMode,
       packageGroups,
       flatClasses,
-      filterState.methodScopeFilter,
       autoExpandPackages,
       manualExpandedPackages.toMap(),
       searchCollapsedPackages.toMap(),
-      expandedClasses.toMap(),
     ) {
       buildList {
-        if (viewMode == ClassesViewMode.TREE) {
-          packageGroups.forEach { group ->
-            val pkgExpanded =
-              if (autoExpandPackages) {
-                searchCollapsedPackages[group.packageName] != true
-              } else {
-                manualExpandedPackages[group.packageName] == true
-              }
-            add(ExplorerRowItem.PackageRow(group = group, expanded = pkgExpanded))
-            if (pkgExpanded) {
-              group.classes.forEach { dexClass ->
-                val clsExpanded = expandedClasses[dexClass.uniqueKey] == true
-                add(ExplorerRowItem.ClassRow(dexClass = dexClass, expanded = clsExpanded, inTreeMode = true))
-                if (clsExpanded) {
-                  dexClass.allMethods
-                    .filter { matchesMethodScope(it, filterState.methodScopeFilter) }
-                    .forEach { method ->
-                      add(ExplorerRowItem.MethodRow(dexClass = dexClass, method = method, inTreeMode = true))
-                    }
-                }
-              }
+        fun isGroupExpanded(group: PackageGroup): Boolean {
+          if (autoExpandPackages) {
+            return searchCollapsedPackages[group.packageName] != true
+          }
+          val explicit = manualExpandedPackages[group.packageName]
+          if (explicit != null) return explicit
+          return group.depth == 0 && group.directClasses.isEmpty() && group.children.size == 1
+        }
+
+        fun appendPackageGroup(group: PackageGroup) {
+          val pkgExpanded = isGroupExpanded(group)
+          add(ExplorerRowItem.PackageRow(group = group, expanded = pkgExpanded))
+          if (pkgExpanded) {
+            group.children.forEach { childGroup -> appendPackageGroup(childGroup) }
+            group.directClasses.forEach { dexClass ->
+              add(
+                ExplorerRowItem.ClassRow(
+                  dexClass = dexClass,
+                  inTreeMode = true,
+                  depth = group.depth + 1,
+                )
+              )
             }
           }
+        }
+
+        if (viewMode == ClassesViewMode.TREE) {
+          packageGroups.forEach { group -> appendPackageGroup(group) }
         } else {
           flatClasses.take(flatCap).forEach { dexClass ->
-            val clsExpanded = expandedClasses[dexClass.uniqueKey] == true
-            add(ExplorerRowItem.ClassRow(dexClass = dexClass, expanded = clsExpanded, inTreeMode = false))
-            if (clsExpanded) {
-              dexClass.allMethods
-                .filter { matchesMethodScope(it, filterState.methodScopeFilter) }
-                .forEach { method ->
-                  add(ExplorerRowItem.MethodRow(dexClass = dexClass, method = method, inTreeMode = false))
-                }
-            }
+            add(ExplorerRowItem.ClassRow(dexClass = dexClass, inTreeMode = false))
           }
         }
       }
@@ -251,283 +351,81 @@ fun ClassesScreen(
 
   val hasAnyExpandedPackage =
     viewMode == ClassesViewMode.TREE &&
-      (manualExpandedPackages.values.any { it } || expandedClasses.values.any { it })
+      visibleRows.any { it is ExplorerRowItem.PackageRow && it.expanded }
 
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     Column(modifier = Modifier.fillMaxSize().widthIn(max = 840.dp)) {
-      Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-        OutlinedTextField(
-          value = filterState.searchQuery,
-          onValueChange = onSearchChange,
-          modifier = Modifier.fillMaxWidth().testTag("class_search_input"),
-          placeholder = {
+      Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+        // Top Sub-Tab Strip: EXPLORER | FILTER RULES
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          Column(
+            modifier =
+              Modifier
+                .clickable { activeSubTab = ClassesSubTab.EXPLORER }
+                .padding(vertical = 4.dp)
+                .testTag("classes_subtab_explorer"),
+          ) {
             Text(
-              text = stringResource(R.string.label_search_classes),
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
+              text = "EXPLORER",
+              style = MaterialTheme.typography.labelMedium,
+              fontWeight = FontWeight.Bold,
+              color =
+                if (activeSubTab == ClassesSubTab.EXPLORER) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant,
             )
-          },
-          leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, modifier = Modifier.size(18.dp)) },
-          trailingIcon = {
-            if (filterState.searchQuery.isNotEmpty()) {
-              IconButton(onClick = { onSearchChange("") }) {
-                Icon(Icons.Rounded.Clear, contentDescription = "Clear search", modifier = Modifier.size(18.dp))
-              }
-            }
-          },
-          singleLine = true,
-          shape = RoundedCornerShape(14.dp),
-        )
-        Spacer(Modifier.height(6.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-          item {
-            val isTree = viewMode == ClassesViewMode.TREE
-            FilterChip(
-              selected = true,
-              onClick = { viewMode = if (isTree) ClassesViewMode.FLAT else ClassesViewMode.TREE },
-              leadingIcon = {
-                Icon(
-                  imageVector = if (isTree) Icons.Rounded.AccountTree else Icons.AutoMirrored.Rounded.ViewList,
-                  contentDescription = null,
-                  modifier = Modifier.size(16.dp),
-                )
-              },
-              label = {
-                Text(stringResource(if (isTree) R.string.chip_view_tree else R.string.chip_view_flat))
-              },
-              modifier = Modifier.testTag("chip_view_mode_toggle"),
-            )
-          }
-          item {
-            Box {
-              FilterChip(
-                selected = filterState.sortOrder != ClassSortOrder.NAME_ASC,
-                onClick = { showSortMenu = true },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.Sort,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+            Spacer(Modifier.height(2.dp))
+            Box(
+              modifier =
+                Modifier.width(68.dp)
+                  .height(2.dp)
+                  .background(
+                    if (activeSubTab == ClassesSubTab.EXPLORER) MaterialTheme.colorScheme.primary
+                    else Color.Transparent,
+                    RoundedCornerShape(1.dp),
                   )
-                },
-                label = { Text("Sort: ${filterState.sortOrder.label}") },
-                modifier = Modifier.testTag("chip_class_sort"),
-              )
-              DropdownMenu(
-                expanded = showSortMenu,
-                onDismissRequest = { showSortMenu = false },
-              ) {
-                ClassSortOrder.entries.forEach { order ->
-                  DropdownMenuItem(
-                    text = { Text(order.label) },
-                    trailingIcon = {
-                      if (filterState.sortOrder == order) {
-                        Icon(
-                          imageVector = Icons.Rounded.Check,
-                          contentDescription = null,
-                          modifier = Modifier.size(16.dp),
-                        )
-                      }
-                    },
-                    onClick = {
-                      onSortOrderChange(order)
-                      showSortMenu = false
-                    },
-                    modifier = Modifier.testTag("sort_option_${order.name}"),
-                  )
-                }
-              }
-            }
-          }
-          val loadedDexNames =
-            (loadState as? DexLoadState.Ready)?.loadedEntryNames ?: emptyList()
-          if (loadedDexNames.size > 1) {
-            item {
-              val activeDex = filterState.dexSourceFilter?.takeIf { it in loadedDexNames }
-              Box {
-                FilterChip(
-                  selected = activeDex != null,
-                  onClick = { showDexMenu = true },
-                  label = {
-                    Text(
-                      if (activeDex == null) "DEX: All (${loadedDexNames.size})"
-                      else "DEX: $activeDex"
-                    )
-                  },
-                  modifier = Modifier.testTag("chip_dex_source"),
-                )
-                DropdownMenu(
-                  expanded = showDexMenu,
-                  onDismissRequest = { showDexMenu = false },
-                ) {
-                  DropdownMenuItem(
-                    text = { Text("All Loaded DEXes (${loadedDexNames.size})") },
-                    trailingIcon = {
-                      if (activeDex == null) {
-                        Icon(
-                          imageVector = Icons.Rounded.Check,
-                          contentDescription = null,
-                          modifier = Modifier.size(16.dp),
-                        )
-                      }
-                    },
-                    onClick = {
-                      onDexSourceFilterChange(null)
-                      showDexMenu = false
-                    },
-                    modifier = Modifier.testTag("dex_source_all"),
-                  )
-                  loadedDexNames.forEach { entryName ->
-                    DropdownMenuItem(
-                      text = { Text(entryName, fontFamily = JetBrainsMonoFontFamily) },
-                      trailingIcon = {
-                        if (activeDex == entryName) {
-                          Icon(
-                            imageVector = Icons.Rounded.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                          )
-                        }
-                      },
-                      onClick = {
-                        onDexSourceFilterChange(entryName)
-                        showDexMenu = false
-                      },
-                      modifier = Modifier.testTag("dex_source_$entryName"),
-                    )
-                  }
-                }
-              }
-            }
-          }
-          item {
-            val activeCount = filterState.extraFilterCount
-            FilterChip(
-              selected = showExtraFilters || activeCount > 0,
-              onClick = { showExtraFilters = !showExtraFilters },
-              leadingIcon = {
-                Icon(
-                  imageVector = Icons.Rounded.Tune,
-                  contentDescription = null,
-                  modifier = Modifier.size(16.dp),
-                )
-              },
-              label = {
-                Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
-              },
-              modifier = Modifier.testTag("chip_extra_filters"),
             )
           }
-          item {
-            FilterChip(
-              selected = filterState.hideFramework,
-              onClick = onToggleHideFramework,
-              label = { Text(stringResource(R.string.chip_hide_framework)) },
-              modifier = Modifier.testTag("chip_hide_framework"),
-            )
-          }
-          item {
-            FilterChip(
-              selected = filterState.onlyWithBytecode,
-              onClick = onToggleOnlyBytecode,
-              label = { Text(stringResource(R.string.chip_has_bytecode)) },
-              modifier = Modifier.testTag("chip_has_bytecode"),
-            )
-          }
-          item {
-            FilterChip(
-              selected = filterState.onlySelected,
-              onClick = onToggleOnlySelected,
-              label = { Text("${stringResource(R.string.chip_selected_only)} (${selectedMethodIds.size})") },
-              modifier = Modifier.testTag("chip_selected_only"),
-            )
-          }
-        }
 
-        AnimatedVisibility(visible = showExtraFilters) {
-          Surface(
-            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+          Column(
+            modifier =
+              Modifier
+                .clickable { activeSubTab = ClassesSubTab.FILTER_RULES }
+                .padding(vertical = 4.dp)
+                .testTag("classes_subtab_rules"),
           ) {
-            Column(
-              modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-              verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-              LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                ClassTypeFilter.entries.forEach { typeFilter ->
-                  item {
-                    FilterChip(
-                      selected = filterState.classTypeFilter == typeFilter,
-                      onClick = { onClassTypeFilterChange(typeFilter) },
-                      label = { Text(typeFilter.label) },
-                      modifier = Modifier.testTag("filter_class_type_${typeFilter.name}"),
-                    )
-                  }
-                }
-                item {
-                  FilterChip(
-                    selected = filterState.hideInnerClasses,
-                    onClick = onToggleHideInnerClasses,
-                    label = { Text("Hide \$Inner") },
-                    modifier = Modifier.testTag("filter_hide_inner"),
+            Text(
+              text = "FILTER RULES (${structuredRules.size})",
+              style = MaterialTheme.typography.labelMedium,
+              fontWeight = FontWeight.Bold,
+              color =
+                if (activeSubTab == ClassesSubTab.FILTER_RULES) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(2.dp))
+            Box(
+              modifier =
+                Modifier.width(108.dp)
+                  .height(2.dp)
+                  .background(
+                    if (activeSubTab == ClassesSubTab.FILTER_RULES) MaterialTheme.colorScheme.primary
+                    else Color.Transparent,
+                    RoundedCornerShape(1.dp),
                   )
-                }
-                item {
-                  FilterChip(
-                    selected = filterState.nonEmptyPackagesOnly,
-                    onClick = onToggleNonEmptyPackages,
-                    label = { Text("Non-Empty Pkgs") },
-                    modifier = Modifier.testTag("filter_non_empty_pkgs"),
-                  )
-                }
-              }
-              Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-              ) {
-                LazyRow(
-                  modifier = Modifier.weight(1f),
-                  horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                  MethodScopeFilter.entries.forEach { scope ->
-                    item {
-                      FilterChip(
-                        selected = filterState.methodScopeFilter == scope,
-                        onClick = { onMethodScopeFilterChange(scope) },
-                        label = { Text(scope.label) },
-                        modifier = Modifier.testTag("filter_method_scope_${scope.name}"),
-                      )
-                    }
-                  }
-                }
-                if (filterState.extraFilterCount > 0) {
-                  TextButton(
-                    onClick = onResetExtraFilters,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                    modifier = Modifier.defaultMinSize(minHeight = 32.dp).testTag("filter_reset_extra_btn"),
-                  ) {
-                    Text("Reset", style = MaterialTheme.typography.labelSmall)
-                  }
-                }
-              }
-            }
+            )
           }
-        }
 
-        if (loadState is DexLoadState.Ready && classes.isNotEmpty()) {
-          Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
+          Spacer(Modifier.weight(1f))
+
+          if (activeSubTab == ClassesSubTab.EXPLORER && loadState is DexLoadState.Ready && classes.isNotEmpty()) {
             val summaryText =
               if (viewMode == ClassesViewMode.TREE) {
-                "${packageGroups.size} pkgs • ${classes.size} cls • ${filterState.sortOrder.label}"
-              } else if (classes.size > flatCap) {
-                "Top $flatCap of ${classes.size} cls • ${filterState.sortOrder.label}"
+                "$totalDistinctPackages pkgs • ${classes.size} cls"
               } else {
-                "${classes.size} cls • ${filterState.sortOrder.label}"
+                "${classes.size} cls"
               }
             Text(
               text = summaryText,
@@ -536,31 +434,367 @@ fun ClassesScreen(
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis,
-              modifier = Modifier.weight(1f),
             )
             if (hasAnyExpandedPackage) {
               TextButton(
                 onClick = {
-                  manualExpandedPackages.clear()
-                  expandedClasses.clear()
+                  packageGroups.forEach { top -> manualExpandedPackages[top.packageName] = false }
+                  manualExpandedPackages.keys.toList().forEach { key ->
+                    manualExpandedPackages[key] = false
+                  }
                 },
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                modifier = Modifier.defaultMinSize(minHeight = 32.dp).testTag("classes_collapse_all_btn"),
+                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                modifier =
+                  Modifier.defaultMinSize(minHeight = 30.dp).testTag("classes_collapse_all_btn"),
               ) {
                 Icon(
                   imageVector = Icons.Rounded.UnfoldLess,
                   contentDescription = null,
                   modifier = Modifier.size(15.dp),
                 )
-                Spacer(Modifier.width(4.dp))
+                Spacer(Modifier.width(2.dp))
                 Text("Collapse", style = MaterialTheme.typography.labelSmall)
+              }
+            }
+          }
+        }
+
+        if (activeSubTab == ClassesSubTab.EXPLORER) {
+          OutlinedTextField(
+            value = filterState.searchQuery,
+            onValueChange = onSearchChange,
+            modifier = Modifier.fillMaxWidth().testTag("class_search_input"),
+            placeholder = {
+              Text(
+                text = stringResource(R.string.label_search_classes),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+            },
+            leadingIcon = {
+              Icon(Icons.Rounded.Search, contentDescription = null, modifier = Modifier.size(18.dp))
+            },
+            trailingIcon = {
+              if (filterState.searchQuery.isNotEmpty()) {
+                IconButton(onClick = { onSearchChange("") }) {
+                  Icon(
+                    Icons.Rounded.Clear,
+                    contentDescription = "Clear search",
+                    modifier = Modifier.size(18.dp),
+                  )
+                }
+              }
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(14.dp),
+          )
+          Spacer(Modifier.height(6.dp))
+          LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            item {
+              val isTree = viewMode == ClassesViewMode.TREE
+              FilterChip(
+                selected = true,
+                onClick = { viewMode = if (isTree) ClassesViewMode.FLAT else ClassesViewMode.TREE },
+                leadingIcon = {
+                  Icon(
+                    imageVector =
+                      if (isTree) Icons.Rounded.AccountTree else Icons.AutoMirrored.Rounded.ViewList,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = {
+                  Text(stringResource(if (isTree) R.string.chip_view_tree else R.string.chip_view_flat))
+                },
+                modifier = Modifier.testTag("chip_view_mode_toggle"),
+              )
+            }
+            item {
+              FilterChip(
+                selected = showSelectionCheckboxes,
+                onClick = { showSelectionCheckboxes = !showSelectionCheckboxes },
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.Rounded.CheckBox,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = {
+                  Text(
+                    if (selectedMethodIds.isNotEmpty()) "Select (${selectedMethodIds.size})"
+                    else "Select"
+                  )
+                },
+                modifier = Modifier.testTag("chip_select_mode"),
+              )
+            }
+            item {
+              FilterChip(
+                selected = filterState.onlyMatchingFilterRules,
+                onClick = onToggleOnlyMatchingFilterRules,
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.Rounded.FilterAlt,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = {
+                  Text(
+                    if (structuredRules.isNotEmpty()) "Match Rules (${structuredRules.size})"
+                    else "Match Rules"
+                  )
+                },
+                modifier = Modifier.testTag("chip_match_filter_rules"),
+              )
+            }
+            item {
+              Box {
+                FilterChip(
+                  selected = filterState.sortOrder != ClassSortOrder.NAME_ASC,
+                  onClick = { showSortMenu = true },
+                  leadingIcon = {
+                    Icon(
+                      imageVector = Icons.AutoMirrored.Rounded.Sort,
+                      contentDescription = null,
+                      modifier = Modifier.size(16.dp),
+                    )
+                  },
+                  label = { Text("Sort: ${filterState.sortOrder.label}") },
+                  modifier = Modifier.testTag("chip_class_sort"),
+                )
+                DropdownMenu(
+                  expanded = showSortMenu,
+                  onDismissRequest = { showSortMenu = false },
+                ) {
+                  ClassSortOrder.entries.forEach { order ->
+                    DropdownMenuItem(
+                      text = { Text(order.label) },
+                      trailingIcon = {
+                        if (filterState.sortOrder == order) {
+                          Icon(
+                            imageVector = Icons.Rounded.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                          )
+                        }
+                      },
+                      onClick = {
+                        onSortOrderChange(order)
+                        showSortMenu = false
+                      },
+                      modifier = Modifier.testTag("sort_option_${order.name}"),
+                    )
+                  }
+                }
+              }
+            }
+            val loadedDexNames =
+              (loadState as? DexLoadState.Ready)?.loadedEntryNames ?: emptyList()
+            if (loadedDexNames.size > 1) {
+              item {
+                val activeDex = filterState.dexSourceFilter?.takeIf { it in loadedDexNames }
+                Box {
+                  FilterChip(
+                    selected = activeDex != null,
+                    onClick = { showDexMenu = true },
+                    label = {
+                      Text(
+                        if (activeDex == null) "DEX: All (${loadedDexNames.size})"
+                        else "DEX: $activeDex"
+                      )
+                    },
+                    modifier = Modifier.testTag("chip_dex_source"),
+                  )
+                  DropdownMenu(
+                    expanded = showDexMenu,
+                    onDismissRequest = { showDexMenu = false },
+                  ) {
+                    DropdownMenuItem(
+                      text = { Text("All Loaded DEXes (${loadedDexNames.size})") },
+                      trailingIcon = {
+                        if (activeDex == null) {
+                          Icon(
+                            imageVector = Icons.Rounded.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                          )
+                        }
+                      },
+                      onClick = {
+                        onDexSourceFilterChange(null)
+                        showDexMenu = false
+                      },
+                      modifier = Modifier.testTag("dex_source_all"),
+                    )
+                    loadedDexNames.forEach { entryName ->
+                      DropdownMenuItem(
+                        text = { Text(entryName, fontFamily = JetBrainsMonoFontFamily) },
+                        trailingIcon = {
+                          if (activeDex == entryName) {
+                            Icon(
+                              imageVector = Icons.Rounded.Check,
+                              contentDescription = null,
+                              modifier = Modifier.size(16.dp),
+                            )
+                          }
+                        },
+                        onClick = {
+                          onDexSourceFilterChange(entryName)
+                          showDexMenu = false
+                        },
+                        modifier = Modifier.testTag("dex_source_$entryName"),
+                      )
+                    }
+                  }
+                }
+              }
+            }
+            item {
+              val activeCount = filterState.extraFilterCount
+              FilterChip(
+                selected = showExtraFilters || activeCount > 0,
+                onClick = { showExtraFilters = !showExtraFilters },
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.Rounded.Tune,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = {
+                  Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
+                },
+                modifier = Modifier.testTag("chip_extra_filters"),
+              )
+            }
+            item {
+              FilterChip(
+                selected = filterState.hideFramework,
+                onClick = onToggleHideFramework,
+                label = { Text(stringResource(R.string.chip_hide_framework)) },
+                modifier = Modifier.testTag("chip_hide_framework"),
+              )
+            }
+            item {
+              FilterChip(
+                selected = filterState.onlyWithBytecode,
+                onClick = onToggleOnlyBytecode,
+                label = { Text(stringResource(R.string.chip_has_bytecode)) },
+                modifier = Modifier.testTag("chip_has_bytecode"),
+              )
+            }
+            item {
+              FilterChip(
+                selected = filterState.onlySelected,
+                onClick = onToggleOnlySelected,
+                label = {
+                  Text("${stringResource(R.string.chip_selected_only)} (${selectedMethodIds.size})")
+                },
+                modifier = Modifier.testTag("chip_selected_only"),
+              )
+            }
+          }
+
+          AnimatedVisibility(visible = showExtraFilters) {
+            Surface(
+              modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+              shape = RoundedCornerShape(12.dp),
+              color = MaterialTheme.colorScheme.surfaceContainer,
+              border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+            ) {
+              Column(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+              ) {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                  ClassTypeFilter.entries.forEach { typeFilter ->
+                    item {
+                      FilterChip(
+                        selected = filterState.classTypeFilter == typeFilter,
+                        onClick = { onClassTypeFilterChange(typeFilter) },
+                        label = { Text(typeFilter.label) },
+                        modifier = Modifier.testTag("filter_class_type_${typeFilter.name}"),
+                      )
+                    }
+                  }
+                  item {
+                    FilterChip(
+                      selected = filterState.hideInnerClasses,
+                      onClick = onToggleHideInnerClasses,
+                      label = { Text("Hide \$Inner") },
+                      modifier = Modifier.testTag("filter_hide_inner"),
+                    )
+                  }
+                  item {
+                    FilterChip(
+                      selected = filterState.nonEmptyPackagesOnly,
+                      onClick = onToggleNonEmptyPackages,
+                      label = { Text("Non-Empty Pkgs") },
+                      modifier = Modifier.testTag("filter_non_empty_pkgs"),
+                    )
+                  }
+                }
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  verticalAlignment = Alignment.CenterVertically,
+                ) {
+                  LazyRow(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                  ) {
+                    MethodScopeFilter.entries.forEach { scope ->
+                      item {
+                        FilterChip(
+                          selected = filterState.methodScopeFilter == scope,
+                          onClick = { onMethodScopeFilterChange(scope) },
+                          label = { Text(scope.label) },
+                          modifier = Modifier.testTag("filter_method_scope_${scope.name}"),
+                        )
+                      }
+                    }
+                  }
+                  if (filterState.extraFilterCount > 0) {
+                    TextButton(
+                      onClick = onResetExtraFilters,
+                      contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                      modifier =
+                        Modifier.defaultMinSize(minHeight = 32.dp).testTag("filter_reset_extra_btn"),
+                    ) {
+                      Text("Reset", style = MaterialTheme.typography.labelSmall)
+                    }
+                  }
+                }
               }
             }
           }
         }
       }
 
-      if (loadState !is DexLoadState.Ready) {
+      if (activeSubTab == ClassesSubTab.FILTER_RULES) {
+        Surface(
+          modifier = Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+          shape = RoundedCornerShape(16.dp),
+          color = MaterialTheme.colorScheme.surfaceContainer,
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+        ) {
+          InteractiveFilterRuleBuilderPanel(
+            config = config,
+            hasLoadedDex = loadState is DexLoadState.Ready,
+            filterMatchSummary = filterMatchSummary,
+            selectedMethodCount = selectedMethodIds.size,
+            onUpdateConfig = onUpdateConfig,
+            onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
+            onApplyFilterRules = onApplyFilterRules,
+            fillAvailableHeight = true,
+            showModuleNameField = false,
+            onlyMatchingExplorerFilter = filterState.onlyMatchingFilterRules,
+            onToggleMatchingExplorerFilter = onToggleOnlyMatchingFilterRules,
+            modifier = Modifier.fillMaxSize().padding(14.dp),
+          )
+        }
+      } else if (loadState !is DexLoadState.Ready) {
         Box(
           modifier = Modifier.fillMaxSize().padding(24.dp),
           contentAlignment = Alignment.Center,
@@ -586,7 +820,8 @@ fun ClassesScreen(
           contentAlignment = Alignment.Center,
         ) {
           Text(
-            text = "No classes match the active search or filters. Adjust filters or turn off \"App Only\".",
+            text =
+              "No classes match the active search or filters. Adjust filters or turn off \"App Only\".",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -600,14 +835,15 @@ fun ClassesScreen(
         ) {
           LazyColumn(
             modifier = Modifier.fillMaxSize().testTag("classes_explorer_list"),
-            contentPadding = PaddingValues(vertical = 2.dp),
+            contentPadding = PaddingValues(vertical = 4.dp),
           ) {
-            itemsIndexed(visibleRows, key = { _, item -> item.key }) { idx, item ->
+            itemsIndexed(visibleRows, key = { _, item -> item.key }) { _, item ->
               when (item) {
                 is ExplorerRowItem.PackageRow -> {
                   PackageFolderRow(
                     group = item.group,
                     expanded = item.expanded,
+                    showSelectionCheckboxes = showSelectionCheckboxes,
                     selectedMethodIds = selectedMethodIds,
                     methodScopeFilter = filterState.methodScopeFilter,
                     allowInit = allowInit,
@@ -618,7 +854,9 @@ fun ClassesScreen(
                         manualExpandedPackages[item.group.packageName] = !item.expanded
                       }
                     },
-                    onTogglePackageSelect = { onTogglePackageSelection(item.group.classes) },
+                    onTogglePackageSelect = { onTogglePackageSelection(item.group.subtreeClasses) },
+                    onWhitelistPackage = { onQuickPackageRule(item.group.packageName, false) },
+                    onBlacklistPackage = { onQuickPackageRule(item.group.packageName, true) },
                   )
                 }
 
@@ -626,33 +864,19 @@ fun ClassesScreen(
                   val isMultiDex = (loadState as? DexLoadState.Ready)?.loadedDexes?.size ?: 0 > 1
                   CompactClassRow(
                     dexClass = item.dexClass,
-                    expanded = item.expanded,
                     inTreeMode = item.inTreeMode,
+                    depth = item.depth,
                     showDexOrigin = isMultiDex,
+                    showSelectionCheckboxes = showSelectionCheckboxes,
                     selectedMethodIds = selectedMethodIds,
                     methodScopeFilter = filterState.methodScopeFilter,
                     allowInit = allowInit,
-                    onToggleExpand = { expandedClasses[item.dexClass.uniqueKey] = !item.expanded },
                     onToggleClassSelect = { onToggleClassSelection(item.dexClass) },
+                    onWhitelistClass = { onQuickClassRule(item.dexClass, false) },
+                    onBlacklistClass = { onQuickClassRule(item.dexClass, true) },
+                    onOpenSmali = { onInspectClassSmali(item.dexClass) },
                   )
                 }
-
-                is ExplorerRowItem.MethodRow -> {
-                  CompactMethodRow(
-                    method = item.method,
-                    inTreeMode = item.inTreeMode,
-                    selected = item.method.id in selectedMethodIds,
-                    allowInit = allowInit,
-                    onToggleSelect = { onToggleMethodSelection(item.method.id) },
-                    onInspect = { onInspectMethod(item.dexClass, item.method) },
-                  )
-                }
-              }
-              if (idx < visibleRows.lastIndex) {
-                HorizontalDivider(
-                  thickness = 0.5.dp,
-                  color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f),
-                )
               }
             }
           }
@@ -669,7 +893,9 @@ private fun sortClassesForDisplay(
 ): List<DexClassInfo> =
   when (sortOrder) {
     ClassSortOrder.NAME_ASC ->
-      classes.sortedWith(compareBy({ it.simpleName.lowercase() }, { it.packageName.lowercase() }, { it.classIndex }))
+      classes.sortedWith(
+        compareBy({ it.simpleName.lowercase() }, { it.packageName.lowercase() }, { it.classIndex })
+      )
     ClassSortOrder.NAME_DESC ->
       classes.sortedWith(
         compareByDescending<DexClassInfo> { it.simpleName.lowercase() }
@@ -684,7 +910,9 @@ private fun sortClassesForDisplay(
       )
     ClassSortOrder.SELECTED_FIRST ->
       classes.sortedWith(
-        compareByDescending<DexClassInfo> { cls -> cls.allMethods.count { it.id in selectedMethodIds } }
+        compareByDescending<DexClassInfo> { cls ->
+            cls.allMethods.count { it.id in selectedMethodIds }
+          }
           .thenByDescending { it.bytecodeMethodCount }
           .thenBy { it.simpleName.lowercase() }
           .thenBy { it.classIndex }
@@ -696,16 +924,23 @@ private fun sortClassesForDisplay(
 private fun PackageFolderRow(
   group: PackageGroup,
   expanded: Boolean,
+  showSelectionCheckboxes: Boolean,
   selectedMethodIds: Set<String>,
   methodScopeFilter: MethodScopeFilter,
   allowInit: Boolean,
   onToggleExpand: () -> Unit,
   onTogglePackageSelect: () -> Unit,
+  onWhitelistPackage: () -> Unit = {},
+  onBlacklistPackage: () -> Unit = {},
 ) {
   val targetIds =
     remember(group, allowInit, methodScopeFilter) {
-      val scoped = group.classes.flatMap { cls -> cls.allMethods.filter { matchesMethodScope(it, methodScopeFilter) } }
-      val bytecodeIds = scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+      val scoped =
+        group.subtreeClasses.flatMap { cls ->
+          cls.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
+        }
+      val bytecodeIds =
+        scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
       bytecodeIds.ifEmpty { scoped.map { it.id } }
     }
   val selectedCount = targetIds.count { it in selectedMethodIds }
@@ -716,79 +951,121 @@ private fun PackageFolderRow(
       else -> ToggleableState.Indeterminate
     }
 
+  val startPad = (10 + group.depth * 20).dp
+
   Row(
     modifier =
       Modifier.fillMaxWidth()
         .defaultMinSize(minHeight = 48.dp)
-        .background(
-          if (expanded) MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.7f)
-          else Color.Transparent
-        )
         .clickable(onClick = onToggleExpand)
-        .padding(start = 2.dp, end = 10.dp)
+        .padding(start = startPad, end = 12.dp)
         .testTag("pkg_row_${group.packageName}"),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    TriStateCheckbox(
-      state = toggleState,
-      onClick = onTogglePackageSelect,
-      modifier = Modifier.minimumInteractiveComponentSize().testTag("pkg_checkbox_${group.packageName}"),
-    )
+    if (expanded) {
+      Text(
+        text = "┘",
+        style = MaterialTheme.typography.labelMedium,
+        fontFamily = JetBrainsMonoFontFamily,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(end = 6.dp),
+      )
+    } else {
+      Icon(
+        imageVector = Icons.Rounded.ChevronRight,
+        contentDescription = "Expand package",
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.size(16.dp).padding(end = 2.dp),
+      )
+    }
+    if (showSelectionCheckboxes) {
+      TriStateCheckbox(
+        state = toggleState,
+        onClick = onTogglePackageSelect,
+        modifier =
+          Modifier.minimumInteractiveComponentSize().testTag("pkg_checkbox_${group.packageName}"),
+      )
+    }
     Icon(
       imageVector = if (expanded) Icons.Rounded.FolderOpen else Icons.Rounded.Folder,
       contentDescription = null,
       tint =
-        if (expanded || selectedCount > 0) MaterialTheme.colorScheme.primary
+        if (expanded || selectedCount > 0) MaterialTheme.colorScheme.onSurface
         else MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.size(18.dp),
+      modifier = Modifier.size(20.dp),
     )
     Spacer(Modifier.width(8.dp))
     Text(
-      text = group.packageName,
-      style = MaterialTheme.typography.labelLarge,
-      fontFamily = JetBrainsMonoFontFamily,
-      fontWeight = FontWeight.SemiBold,
+      text = group.displayLabel.ifBlank { group.packageName },
+      style = MaterialTheme.typography.bodyMedium,
+      fontWeight = FontWeight.Medium,
       color = MaterialTheme.colorScheme.onSurface,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
       modifier = Modifier.weight(1f),
     )
-    Spacer(Modifier.width(6.dp))
-    Text(
-      text = "${group.classes.size}c • ${group.totalBytecodeMethods}m",
-      style = MaterialTheme.typography.labelSmall,
-      fontFamily = JetBrainsMonoFontFamily,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
     if (selectedCount > 0) {
-      Spacer(Modifier.width(4.dp))
+      Spacer(Modifier.width(6.dp))
       InlineBadge(
         text = "${selectedCount}q",
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
       )
     }
-    Spacer(Modifier.width(4.dp))
-    Icon(
-      imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ChevronRight,
-      contentDescription = if (expanded) "Collapse package" else "Expand package",
-      tint = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.size(18.dp),
-    )
+    if (showSelectionCheckboxes) {
+      Spacer(Modifier.width(4.dp))
+      QuickRuleBadgeButton(
+        text = "+W",
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        onClick = onWhitelistPackage,
+        testTag = "pkg_whitelist_btn_${group.packageName}",
+      )
+      Spacer(Modifier.width(4.dp))
+      QuickRuleBadgeButton(
+        text = "!B",
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        onClick = onBlacklistPackage,
+        testTag = "pkg_blacklist_btn_${group.packageName}",
+      )
+      Spacer(Modifier.width(6.dp))
+      Text(
+        text = "${group.subtreeClasses.size}c",
+        style = MaterialTheme.typography.labelSmall,
+        fontFamily = JetBrainsMonoFontFamily,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      Icon(
+        imageVector = if (expanded) Icons.Rounded.ExpandMore else Icons.Rounded.ChevronRight,
+        contentDescription = if (expanded) "Collapse package" else "Expand package",
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.size(18.dp),
+      )
+    }
   }
 }
 
+/**
+ * Renders a class leaf row modeled after Dex Editor Plus (panel 18):
+ * - Circular blue `(C)` badge (`(I)` for interface, `(E)` for enum) + class `simpleName`.
+ * - Tapping anywhere on the row directly opens the full Class Smali screen (`onOpenSmali`),
+ *   bypassing method child rows.
+ */
 @Composable
 private fun CompactClassRow(
   dexClass: DexClassInfo,
-  expanded: Boolean,
   inTreeMode: Boolean,
+  depth: Int,
   showDexOrigin: Boolean,
+  showSelectionCheckboxes: Boolean,
   selectedMethodIds: Set<String>,
   methodScopeFilter: MethodScopeFilter,
   allowInit: Boolean,
-  onToggleExpand: () -> Unit,
   onToggleClassSelect: () -> Unit,
+  onWhitelistClass: () -> Unit = {},
+  onBlacklistClass: () -> Unit = {},
+  onOpenSmali: () -> Unit,
 ) {
   val scopedMethods =
     remember(dexClass, methodScopeFilter) {
@@ -814,6 +1091,25 @@ private fun CompactClassRow(
   val classCheckboxTag =
     if (dexClass.sourceEntryName == "classes.dex") "class_checkbox_${dexClass.classIndex}"
     else "class_checkbox_${dexClass.sourceEntryName}_${dexClass.classIndex}"
+  val classSmaliTag =
+    if (dexClass.sourceEntryName == "classes.dex") "class_smali_btn_${dexClass.classIndex}"
+    else "class_smali_btn_${dexClass.sourceEntryName}_${dexClass.classIndex}"
+  val classWhitelistTag =
+    if (dexClass.sourceEntryName == "classes.dex") "class_whitelist_btn_${dexClass.classIndex}"
+    else "class_whitelist_btn_${dexClass.sourceEntryName}_${dexClass.classIndex}"
+  val classBlacklistTag =
+    if (dexClass.sourceEntryName == "classes.dex") "class_blacklist_btn_${dexClass.classIndex}"
+    else "class_blacklist_btn_${dexClass.sourceEntryName}_${dexClass.classIndex}"
+
+  val startPad = if (inTreeMode) (16 + depth * 20).dp else 12.dp
+  val isInterface = (dexClass.accessFlags and 0x0200) != 0
+  val isEnum = (dexClass.accessFlags and 0x4000) != 0
+  val badgeLetter =
+    when {
+      isInterface -> "I"
+      isEnum -> "E"
+      else -> "C"
+    }
 
   Row(
     modifier =
@@ -823,32 +1119,47 @@ private fun CompactClassRow(
           if (selectedCount > 0) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.14f)
           else Color.Transparent
         )
-        .clickable(onClick = onToggleExpand)
-        .padding(start = if (inTreeMode) 14.dp else 2.dp, end = 10.dp)
+        .clickable(onClick = onOpenSmali)
+        .padding(start = startPad, end = 12.dp, top = 4.dp, bottom = 4.dp)
         .testTag(classRowTag),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    if (inTreeMode) {
-      Box(
-        modifier =
-          Modifier.width(1.dp)
-            .height(28.dp)
-            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
+    if (showSelectionCheckboxes) {
+      TriStateCheckbox(
+        state = toggleState,
+        onClick = onToggleClassSelect,
+        modifier = Modifier.minimumInteractiveComponentSize().testTag(classCheckboxTag),
       )
-      Spacer(Modifier.width(2.dp))
     }
-    TriStateCheckbox(
-      state = toggleState,
-      onClick = onToggleClassSelect,
-      modifier = Modifier.minimumInteractiveComponentSize().testTag(classCheckboxTag),
-    )
-    Column(modifier = Modifier.weight(1f).padding(vertical = 4.dp)) {
+    Surface(
+      shape = CircleShape,
+      color =
+        when {
+          isInterface -> MaterialTheme.colorScheme.tertiary
+          isEnum -> MaterialTheme.colorScheme.secondary
+          else -> Color(0xFF4A76C5)
+        },
+      contentColor = Color.White,
+      modifier = Modifier.size(24.dp),
+    ) {
+      Box(contentAlignment = Alignment.Center) {
+        Text(
+          text = badgeLetter,
+          style = MaterialTheme.typography.labelSmall,
+          fontFamily = JetBrainsMonoFontFamily,
+          fontWeight = FontWeight.Bold,
+          fontSize = 12.sp,
+        )
+      }
+    }
+    Spacer(Modifier.width(12.dp))
+    Column(modifier = Modifier.weight(1f)) {
       Text(
         text = dexClass.simpleName,
         style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 1,
+        maxLines = 2,
         overflow = TextOverflow.Ellipsis,
       )
       if (!inTreeMode && dexClass.packageName.isNotBlank()) {
@@ -870,15 +1181,6 @@ private fun CompactClassRow(
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
       )
     }
-    Spacer(Modifier.width(6.dp))
-    val displayedBytecodeCount =
-      if (methodScopeFilter == MethodScopeFilter.ALL) dexClass.bytecodeMethodCount
-      else scopedMethods.count { it.hasBytecode }
-    InlineBadge(
-      text = "${displayedBytecodeCount}m",
-      containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-      contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
     if (selectedCount > 0) {
       Spacer(Modifier.width(4.dp))
       InlineBadge(
@@ -887,95 +1189,60 @@ private fun CompactClassRow(
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
       )
     }
-    Spacer(Modifier.width(4.dp))
-    Icon(
-      imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-      contentDescription = if (expanded) "Collapse class methods" else "Expand class methods",
-      tint = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.size(18.dp),
-    )
+    if (showSelectionCheckboxes) {
+      Spacer(Modifier.width(4.dp))
+      QuickRuleBadgeButton(
+        text = "+W",
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        onClick = onWhitelistClass,
+        testTag = classWhitelistTag,
+      )
+      Spacer(Modifier.width(4.dp))
+      QuickRuleBadgeButton(
+        text = "!B",
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        onClick = onBlacklistClass,
+        testTag = classBlacklistTag,
+      )
+    }
+    IconButton(
+      onClick = onOpenSmali,
+      modifier = Modifier.minimumInteractiveComponentSize().testTag(classSmaliTag),
+    ) {
+      Icon(
+        imageVector = Icons.Rounded.Code,
+        contentDescription = "Open Smali for ${dexClass.simpleName}",
+        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+        modifier = Modifier.size(16.dp),
+      )
+    }
   }
 }
 
 @Composable
-private fun CompactMethodRow(
-  method: DexEncodedMethod,
-  inTreeMode: Boolean,
-  selected: Boolean,
-  allowInit: Boolean,
-  onToggleSelect: () -> Unit,
-  onInspect: () -> Unit,
+private fun QuickRuleBadgeButton(
+  text: String,
+  containerColor: Color,
+  contentColor: Color,
+  onClick: () -> Unit,
+  testTag: String,
 ) {
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .defaultMinSize(minHeight = 48.dp)
-        .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.45f))
-        .clickable(onClick = onInspect)
-        .padding(start = if (inTreeMode) 30.dp else 16.dp, end = 10.dp),
-    verticalAlignment = Alignment.CenterVertically,
+  Surface(
+    onClick = onClick,
+    shape = RoundedCornerShape(6.dp),
+    color = containerColor,
+    contentColor = contentColor,
+    modifier = Modifier.testTag(testTag),
   ) {
-    Box(
-      modifier =
-        Modifier.width(1.dp)
-          .height(26.dp)
-          .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
-    )
-    Spacer(Modifier.width(2.dp))
-    Checkbox(
-      checked = selected,
-      onCheckedChange = { onToggleSelect() },
-      modifier = Modifier.minimumInteractiveComponentSize().testTag("method_checkbox_${method.id}"),
-    )
-    Column(modifier = Modifier.weight(1f).padding(vertical = 4.dp)) {
-      Text(
-        text = method.methodRef.prettySignature(),
-        style = MaterialTheme.typography.labelMedium,
-        fontFamily = JetBrainsMonoFontFamily,
-        fontWeight = FontWeight.Medium,
-        color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-      val meta = method.codeMeta
-      val metaStr =
-        if (meta != null) {
-          "r=${meta.registersSize} • ${meta.insnsCount}w • ${formatAccessFlags(method.accessFlags, true)}"
-        } else {
-          "no code • ${formatAccessFlags(method.accessFlags, true)}"
-        }
-      Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = metaStr,
-          style = MaterialTheme.typography.labelSmall,
-          fontSize = 11.sp,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-          modifier = Modifier.weight(1f, fill = false),
-        )
-        if (method.isInitConstructor) {
-          InlineBadge(
-            text = if (allowInit) "<init>" else "skip",
-            containerColor =
-              if (allowInit) MaterialTheme.colorScheme.primaryContainer
-              else MaterialTheme.colorScheme.secondaryContainer,
-            contentColor =
-              if (allowInit) MaterialTheme.colorScheme.onPrimaryContainer
-              else MaterialTheme.colorScheme.onSecondaryContainer,
-          )
-        }
-      }
-    }
-    Spacer(Modifier.width(4.dp))
-    Icon(
-      imageVector = Icons.Rounded.ChevronRight,
-      contentDescription = "Inspect method",
-      tint = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.size(16.dp),
+    Text(
+      text = text,
+      style = MaterialTheme.typography.labelSmall,
+      fontFamily = JetBrainsMonoFontFamily,
+      fontSize = 10.sp,
+      fontWeight = FontWeight.Bold,
+      modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
     )
   }
 }

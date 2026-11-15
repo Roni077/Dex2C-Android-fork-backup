@@ -15,6 +15,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.data.AppThemeMode
+import com.example.data.SmaliSyntaxTheme
 
 /**
  * Material 3 Expressive Shape Scale:
@@ -34,7 +35,19 @@ data class EditorDisplaySettings(
   val fontSizeSp: Int = 12,
   val showLineNumbers: Boolean = true,
   val maxLinesLimit: Int = 2500,
+  val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
 )
+
+fun resolveSmaliSyntaxPalette(
+  theme: SmaliSyntaxTheme,
+  appDefaultPalette: SyntaxPalette,
+): SyntaxPalette =
+  when (theme) {
+    SmaliSyntaxTheme.APP_DEFAULT -> appDefaultPalette
+    SmaliSyntaxTheme.LIGHT -> LightSyntaxPalette
+    SmaliSyntaxTheme.DARK -> DarkSyntaxPalette
+    SmaliSyntaxTheme.BYTECODE_HIGH_CONTRAST -> BytecodeHighContrastSyntaxPalette
+  }
 
 val LocalSyntaxPalette = staticCompositionLocalOf { DarkSyntaxPalette }
 val LocalEditorSettings = staticCompositionLocalOf { EditorDisplaySettings() }

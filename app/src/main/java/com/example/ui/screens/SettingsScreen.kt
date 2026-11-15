@@ -106,7 +106,6 @@ fun SettingsScreen(
   onSignOutGitHub: () -> Unit,
   onOpenGitHubAppSettings: () -> Unit,
   onGoToPipelineConfig: () -> Unit,
-  onOpenRustBridge: () -> Unit,
   onClearRecentHistory: () -> Unit,
   onResetAllSettings: (clearGitHubSession: Boolean) -> Unit,
   onReplayOnboarding: () -> Unit,
@@ -218,7 +217,6 @@ fun SettingsScreen(
                 onSignOutGitHub = onSignOutGitHub,
                 onOpenGitHubAppSettings = onOpenGitHubAppSettings,
                 onGoToPipelineConfig = onGoToPipelineConfig,
-                onOpenRustBridge = onOpenRustBridge,
                 onClearRecentHistory = onClearRecentHistory,
                 onResetAllSettings = onResetAllSettings,
                 onReplayOnboarding = onReplayOnboarding,
@@ -268,7 +266,6 @@ fun SettingsScreen(
                   onSignOutGitHub = onSignOutGitHub,
                   onOpenGitHubAppSettings = onOpenGitHubAppSettings,
                   onGoToPipelineConfig = onGoToPipelineConfig,
-                  onOpenRustBridge = onOpenRustBridge,
                   onClearRecentHistory = onClearRecentHistory,
                   onResetAllSettings = onResetAllSettings,
                   onReplayOnboarding = onReplayOnboarding,
@@ -462,7 +459,6 @@ private fun SettingsDetailHost(
   onSignOutGitHub: () -> Unit,
   onOpenGitHubAppSettings: () -> Unit,
   onGoToPipelineConfig: () -> Unit,
-  onOpenRustBridge: () -> Unit,
   onClearRecentHistory: () -> Unit,
   onResetAllSettings: (clearGitHubSession: Boolean) -> Unit,
   onReplayOnboarding: () -> Unit,
@@ -485,7 +481,6 @@ private fun SettingsDetailHost(
         transpilerConfig = transpilerConfig,
         onUpdateAppSettings = onUpdateAppSettings,
         onGoToPipelineConfig = onGoToPipelineConfig,
-        onOpenRustBridge = onOpenRustBridge,
       )
     SettingsSection.GITHUB_CLOUD ->
       SettingsGitHubCloudSubScreen(
@@ -546,7 +541,7 @@ private fun sectionSummary(
       "${appSettings.themeMode.label} • $paletteLabel"
     }
     SettingsSection.CODE_EDITOR ->
-      "${appSettings.codeFontSizeSp}sp • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"
+      "${appSettings.codeFontSizeSp}sp • ${appSettings.smaliSyntaxTheme.shortLabel} • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"
     SettingsSection.DEX_PARSER ->
       "${if (appSettings.defaultHideFramework) "App-only default" else "All classes"} • Auto-select ${appSettings.autoSelectMethodLimit} • ${if (appSettings.showOutputScreen) "Output ON" else "Output OFF"}"
     SettingsSection.GITHUB_CLOUD ->

@@ -86,11 +86,12 @@ import com.example.cloud.SUPPORTED_NDK_VERSIONS
 import com.example.data.AppSettings
 import com.example.data.AppThemeMode
 import com.example.data.CURATED_ACCENT_PRESETS
+import com.example.data.SmaliSyntaxTheme
 import com.example.data.normalizeHexColor
-import com.example.dex.NativeDexParserBridge
 import com.example.transpiler.TranspilerConfig
 import com.example.ui.components.AccentColorPickerSection
 import com.example.ui.components.ExpressiveMotion
+import com.example.ui.components.SmaliSyntaxCodeViewer
 import com.example.ui.components.SyntaxCodeViewer
 import com.example.ui.components.TagPill
 import com.example.ui.theme.JetBrainsMonoFontFamily
@@ -379,6 +380,46 @@ fun SettingsCodeEditorSubScreen(
     }
 
     item {
+      SubScreenCard(title = "Smali Syntax Theme", icon = Icons.Rounded.Palette) {
+        Text(
+          text = "Select the syntax coloring palette used by the Smali Class Viewer, or enable Bytecode High-Contrast for semantic opcode-family and v/p register coloring.",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(8.dp))
+        FlowRow(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+          SmaliSyntaxTheme.entries.forEach { theme ->
+            FilterChip(
+              selected = appSettings.smaliSyntaxTheme == theme,
+              onClick = { onUpdateAppSettings { it.copy(smaliSyntaxTheme = theme) } },
+              label = { Text(theme.label) },
+              modifier = Modifier.testTag("settings_smali_theme_${theme.tagSuffix}"),
+            )
+          }
+        }
+        Spacer(Modifier.height(8.dp))
+        SmaliSyntaxCodeViewer(
+          lines =
+            listOf(
+              ".method public verify(Ljava/lang/String;)Z",
+              "    .registers 3",
+              "    const-string v0, \"secret\"",
+              "    invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z",
+              "    move-result v1",
+              "    if-eqz v1, :cond_fail",
+              "    return v1",
+              ".end method",
+            ),
+          syntaxThemeOverride = appSettings.smaliSyntaxTheme,
+          modifier = Modifier.fillMaxWidth().height(155.dp),
+        )
+      }
+    }
+
+    item {
       SubScreenCard(title = "Live Code Preview", icon = Icons.Rounded.Code) {
         SyntaxCodeViewer(
           code = sampleSnippet,
@@ -396,7 +437,6 @@ fun SettingsDexParserSubScreen(
   transpilerConfig: TranspilerConfig,
   onUpdateAppSettings: ((AppSettings) -> AppSettings) -> Unit,
   onGoToPipelineConfig: () -> Unit,
-  onOpenRustBridge: () -> Unit,
 ) {
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
@@ -453,13 +493,11 @@ fun SettingsDexParserSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Native Parser & Kirlif/d2c Integration", icon = Icons.Rounded.Memory) {
-        SettingsToggleRow(
-          title = "Prefer Rust dexparser-rs JNI Bridge",
-          subtitle = "Current runtime: ${NativeDexParserBridge.activeEngineLabel()}",
-          checked = appSettings.preferRustJniBridge,
-          onCheckedChange = { pref -> onUpdateAppSettings { it.copy(preferRustJniBridge = pref) } },
-          testTag = "settings_prefer_rust_switch",
+      SubScreenCard(title = "DEX Disassembly & Kirlif/d2c Integration", icon = Icons.Rounded.Memory) {
+        Text(
+          text = "Engine: Kotlin DexFile + Google smali-dexlib2 & smali-baksmali",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(10.dp))
         FlowRow(
@@ -471,26 +509,13 @@ fun SettingsDexParserSubScreen(
           TagPill(text = "ABIs: ${transpilerConfig.targetAbis.joinToString(",")}")
         }
         Spacer(Modifier.height(12.dp))
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        OutlinedButton(
+          onClick = onGoToPipelineConfig,
+          modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_open_pipeline_btn"),
         ) {
-          OutlinedButton(
-            onClick = onGoToPipelineConfig,
-            modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_open_pipeline_btn"),
-          ) {
-            Icon(Icons.Rounded.Tune, contentDescription = null, modifier = Modifier.size(16.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Pipeline Config")
-          }
-          OutlinedButton(
-            onClick = onOpenRustBridge,
-            modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("settings_open_rust_bridge_btn"),
-          ) {
-            Icon(Icons.Rounded.Build, contentDescription = null, modifier = Modifier.size(16.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Rust JNI Bridge")
-          }
+          Icon(Icons.Rounded.Tune, contentDescription = null, modifier = Modifier.size(16.dp))
+          Spacer(Modifier.width(6.dp))
+          Text("Pipeline Config")
         }
       }
     }
@@ -1036,7 +1061,7 @@ fun SettingsAboutSubScreen(
         AboutRow("App Name", stringResource(R.string.app_name))
         AboutRow("Version", "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         AboutRow("Application ID", BuildConfig.APPLICATION_ID)
-        AboutRow("Active DEX Engine", NativeDexParserBridge.activeEngineLabel())
+        AboutRow("Active DEX Engine", "Kotlin DexFile + smali-dexlib2")
         AboutRow("Supported DEX Formats", "035, 037, 038, 039, 040, 041")
         AboutRow("Default Module Name", transpilerConfig.moduleName)
       }
@@ -1065,7 +1090,7 @@ fun SettingsAboutSubScreen(
       SubScreenCard(title = "Bundled Toolchains & Integrations", icon = Icons.Rounded.Build) {
         Text(
           text = "• Kirlif/d2c & codehasan/dex2c transpiler parity (dcc.cfg, filter.txt, allow-init, custom loader)\n" +
-            "• androguard/dex-parser structural map_list + Rust dexparser-rs JNI bridge scaffolding\n" +
+            "• Google smali-dexlib2 & smali-baksmali class disassembly + Kotlin CFG/payload analysis\n" +
             "• GitHub OAuth Device Flow + Private Workspace dex2c.yml Actions + WorkManager push alerts",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -56,7 +56,6 @@ object DexParser {
     rawBytes: ByteArray,
     sourceLabel: String,
     entryName: String,
-    preferNativeBridge: Boolean = true,
   ): DexParsedFile {
     val startNanos = System.nanoTime()
     if (rawBytes.size < 0x70) {
@@ -184,7 +183,7 @@ object DexParser {
         )
       }
 
-    // 6. map_list (androguard/dex-parser structural directory)
+    // 6. map_list structural directory
     val mapItems = parseMapList(buf, rawBytes.size, mapOff)
 
     // 7. DEX 038-041 structural items (method_handle_item, call_site_id_item, hiddenapi)
@@ -192,12 +191,27 @@ object DexParser {
     val callSites = parseCallSites(buf, rawBytes, mapItems, strings, types, protos, fields, methods, methodHandles)
     val hiddenApiSummary = parseHiddenApiSummary(buf, rawBytes.size, mapItems, classDefsSize)
 
-    // 8. Class Defs
+    // 8. Class Defs (via smali-dexlib2 DexBackedDexFile with raw offset hydration)
+    val dexlib2Classes =
+      SmaliClassDisassembler.indexClassesWithDexlib2(
+        rawBytes = rawBytes,
+        buf = buf,
+        version = version,
+        sha1Hex = sha1Hex,
+        entryName = entryName,
+        classDefsSize = classDefsSize,
+        classDefsOff = classDefsOff,
+        types = types,
+        fields = fields,
+        methods = methods,
+        readCodeMeta = { codeOff -> readCodeMeta(buf, rawBytes.size, codeOff) },
+      )
     val classes =
-      List(classDefsSize) { i ->
-        val base = classDefsOff + i * 32
-        val classIdx = buf.getInt(base)
-        val accessFlags = buf.getInt(base + 4)
+      dexlib2Classes
+        ?: List(classDefsSize) { i ->
+          val base = classDefsOff + i * 32
+          val classIdx = buf.getInt(base)
+          val accessFlags = buf.getInt(base + 4)
         val superIdx = buf.getInt(base + 8)
         val interfacesOff = buf.getInt(base + 12)
         val sourceFileIdx = buf.getInt(base + 16)
@@ -317,10 +331,6 @@ object DexParser {
         )
       }
 
-    // Hook optional native JNI validation if libdexparser_jni.so is loaded and preferred
-    if (preferNativeBridge) {
-      NativeDexParserBridge.tryNativeHeaderJson(rawBytes)
-    }
     val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
 
     return DexParsedFile(
@@ -339,9 +349,7 @@ object DexParser {
       callSites = callSites,
       hiddenApiSummary = hiddenApiSummary,
       parseDurationMs = elapsedMs,
-      parserEngine =
-        if (preferNativeBridge) NativeDexParserBridge.activeEngineLabel()
-        else "Kotlin DexFile/DexHelper",
+      parserEngine = "Kotlin DexFile + smali-dexlib2",
     )
   }
 

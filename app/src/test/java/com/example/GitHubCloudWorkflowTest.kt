@@ -266,7 +266,6 @@ class GitHubCloudWorkflowTest {
     assertTrue(defaults.defaultHideFramework)
     assertTrue(defaults.defaultOnlyBytecode)
     assertEquals(32, defaults.autoSelectMethodLimit)
-    assertTrue(defaults.preferRustJniBridge)
     assertFalse(defaults.hasCompletedOnboarding)
     assertEquals(4, com.example.data.AppThemeMode.entries.size)
     assertTrue(com.example.data.AppThemeMode.entries.contains(com.example.data.AppThemeMode.AMOLED))

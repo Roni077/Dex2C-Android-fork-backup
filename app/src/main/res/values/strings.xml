@@ -77,13 +77,34 @@
     <string name="label_default_package">(default package)</string>
 
     <string name="tab_dalvik">Dalvik IR</string>
+    <string name="tab_smali">Smali</string>
+    <string name="tab_blocks">Blocks</string>
     <string name="tab_transpiled_c">JNI C/C++</string>
     <string name="tab_dex_meta">DEX Meta</string>
 
+    <string name="cfg_empty_title">No Control Flow Graph</string>
+    <string name="cfg_empty_body">Abstract, native, or interface methods have no Dalvik bytecode instructions to segment into basic blocks.</string>
+    <string name="cfg_payloads_title">Decoded Payloads</string>
+    <string name="cfg_predecessors_label">From</string>
+    <string name="cfg_outgoing_label">Outgoing</string>
+
     <string name="label_map_list">DEX Structural Map (map_list)</string>
-    <string name="label_rust_jni_bridge">Rust JNI Bridge</string>
-    <string name="rust_bridge_title">androguard/dex-parser Rust JNI Bridge</string>
-    <string name="rust_bridge_subtitle">Cross-compile dexparser-rs to libdexparser_jni.so via cargo-ndk to enable native acceleration automatically</string>
+    <string name="action_view_smali">View Smali</string>
+    <string name="action_class_smali">Class Smali</string>
+    <string name="action_export_smali">Save .smali</string>
+    <string name="action_search_smali">Search Smali</string>
+    <string name="smali_search_hint">Search instructions, methods, types…</string>
+    <string name="smali_no_matches">No matches</string>
+    <string name="smali_disassembling">Disassembling Smali via dexlib2 &amp; baksmali…</string>
+    <string name="smali_empty_title">No Smali Output</string>
+    <string name="smali_empty_body">Unable to disassemble this class from the loaded DEX binary.</string>
+    <string name="smali_exported_msg">Saved Smali class file</string>
+    <string name="filter_mode_builder">Rule Builder</string>
+    <string name="filter_mode_raw">Raw filter.txt</string>
+    <string name="filter_add_rule">Add Rule</string>
+    <string name="filter_sync_selection">Sync Selection to Wildcards</string>
+    <string name="filter_whitelist">Whitelist</string>
+    <string name="filter_blacklist">Blacklist (!)</string>
 
     <string name="config_title">Transpiler Pipeline</string>
     <string name="config_subtitle">Configure JNI symbol binding, obfuscation passes, and NDK build output</string>
@@ -135,4 +156,15 @@
     <string name="onboarding_done">Done</string>
     <string name="onboarding_tour_desc">Dex2C Studio pipeline illustration</string>
     <string name="settings_replay_onboarding">Replay Onboarding &amp; Setup</string>
+
+    <string name="bytecode_overview_title">Bytecode Overview</string>
+    <string name="bytecode_overview_awaiting">Awaiting DEX</string>
+    <string name="bytecode_overview_no_dex_subtitle">No DEX analyzed yet</string>
+    <string name="bytecode_overview_methods_label">Methods</string>
+    <string name="bytecode_overview_classes_label">Class Definitions</string>
+    <string name="bytecode_overview_top_classes">Top Class Definitions</string>
+    <string name="bytecode_overview_browse_classes">Browse Classes</string>
+    <string name="bytecode_overview_reopen_last">Reopen Last DEX</string>
+    <string name="bytecode_overview_empty_hint">Analyze an APK or classes.dex file to see method totals, class definition counts, and top app classes pinned here across sessions.</string>
+    <string name="bytecode_overview_no_classes_hint">Header metrics captured. Open Classes to inspect full class definitions.</string>
 </resources>

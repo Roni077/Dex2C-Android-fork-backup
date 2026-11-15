@@ -19,6 +19,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
@@ -37,6 +38,7 @@ import com.example.ui.Dex2cViewModel
 import com.example.ui.components.BuildMonitorCard
 import com.example.ui.screens.OnboardingScreen
 import com.example.ui.theme.Dex2cTheme
+import kotlinx.coroutines.flow.first
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.concurrent.CopyOnWriteArrayList
@@ -771,9 +773,12 @@ class ExampleRobolectricTest {
       }
     }
 
-    // Initially in Tree mode: package rows shown, class rows collapsed
+    // Initially in Tree mode: package rows shown cleanly without checkboxes until Select Mode is toggled
     composeTestRule.onNodeWithTag("pkg_row_okhttp3").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pkg_row_okio").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("chip_select_mode").performClick()
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").assert(
       androidx.compose.ui.test.SemanticsMatcher.expectValue(
         androidx.compose.ui.semantics.SemanticsProperties.ToggleableState,
@@ -1424,7 +1429,6 @@ class ExampleRobolectricTest {
           onSignOutGitHub = {},
           onOpenGitHubAppSettings = {},
           onGoToPipelineConfig = { pipelineShortcutClicked = true },
-          onOpenRustBridge = {},
           onClearRecentHistory = {},
           onResetAllSettings = {},
           onReplayOnboarding = {},
@@ -1524,7 +1528,6 @@ class ExampleRobolectricTest {
           onSelectDexEntry = {},
           onAutoSelectAppMethods = {},
           onClearSelection = {},
-          onOpenRustBridge = {},
           onNavigateToClasses = {},
           onNavigateToExport = {},
         )
@@ -1543,7 +1546,6 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("home_tab_HEADER_AND_MAP").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithText("DEX v038").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("open_rust_jni_bridge_btn").assertIsDisplayed()
     composeTestRule.onNodeWithTag("toggle_all_map_list_btn").assertIsDisplayed()
   }
 
@@ -1678,7 +1680,6 @@ class ExampleRobolectricTest {
               transpilerConfig = com.example.transpiler.TranspilerConfig(),
               onUpdateAppSettings = { transform -> settings = transform(settings) },
               onGoToPipelineConfig = {},
-              onOpenRustBridge = {},
             )
           1 ->
             com.example.ui.screens.BuildHubScreen(
@@ -1712,7 +1713,6 @@ class ExampleRobolectricTest {
               onSelectDexEntry = {},
               onAutoSelectAppMethods = {},
               onClearSelection = {},
-              onOpenRustBridge = {},
               onNavigateToClasses = {},
               onNavigateToExport = {},
               showOutputScreen = settings.showOutputScreen,
@@ -1918,6 +1918,1050 @@ class ExampleRobolectricTest {
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithText("GitHub Cloud CI").assertIsDisplayed()
   }
+
+  @Test
+  fun `recentFilesStore persists and clears lastBytecodeSummary`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val store = com.example.data.RecentFilesStore(context)
+    kotlinx.coroutines.runBlocking {
+      store.clearAll()
+      assertNull(store.lastBytecodeSummaryFlow.first())
+
+      val summary =
+        com.example.dex.BytecodeOverviewSummary(
+          sourceLabel = "SecureVault.apk",
+          entryName = "classes.dex",
+          dexCount = 2,
+          dexVersion = "039",
+          totalMethods = 4210,
+          bytecodeMethods = 3100,
+          totalClassDefinitions = 640,
+          appClassDefinitions = 180,
+          totalStrings = 9500,
+          analyzedAtMillis = 1_700_000_000_000L,
+          topClasses =
+            listOf(
+              com.example.dex.ClassDefinitionSummary("VaultEngine", "com.demo.vault", 14, 12, false),
+              com.example.dex.ClassDefinitionSummary("KeyStore", "com.demo.crypto", 9, 8, false),
+            ),
+        )
+      store.saveLastBytecodeSummary(summary)
+      val loaded = store.lastBytecodeSummaryFlow.first()
+      assertNotNull(loaded)
+      assertEquals("SecureVault.apk", loaded!!.sourceLabel)
+      assertEquals(4210, loaded.totalMethods)
+      assertEquals(640, loaded.totalClassDefinitions)
+      assertEquals(2, loaded.topClasses.size)
+      assertEquals("VaultEngine", loaded.topClasses.first().simpleName)
+
+      store.clearAll()
+      assertNull(store.lastBytecodeSummaryFlow.first())
+    }
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `homeScreen renders BytecodeOverviewCard in live ready state and empty saved state`() {
+    fun makeMethod(id: String, clsDesc: String, name: String, hasCode: Boolean): com.example.dex.DexEncodedMethod =
+      com.example.dex.DexEncodedMethod(
+        id = id,
+        methodIndex = id.hashCode(),
+        methodRef =
+          com.example.dex.DexMethodRef(
+            definingClass = clsDesc,
+            proto = com.example.dex.DexProto("V", "V", emptyList()),
+            name = name,
+          ),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta =
+          if (hasCode)
+            com.example.dex.DexCodeMeta(
+              registersSize = 2,
+              insSize = 1,
+              outsSize = 0,
+              triesSize = 0,
+              insnsCount = 6,
+              insnsOffsetBytes = 0,
+            )
+          else null,
+      )
+
+    val appClassTop =
+      com.example.dex.DexClassInfo(
+        classIndex = 1,
+        descriptor = "Lcom/demo/app/MainRouter;",
+        fullName = "com.demo.app.MainRouter",
+        simpleName = "MainRouter",
+        packageName = "com.demo.app",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "MainRouter.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods =
+          listOf(
+            makeMethod("m1", "Lcom/demo/app/MainRouter;", "route", true),
+            makeMethod("m2", "Lcom/demo/app/MainRouter;", "auth", true),
+            makeMethod("m3", "Lcom/demo/app/MainRouter;", "sync", true),
+          ),
+      )
+    val appClassSecond =
+      com.example.dex.DexClassInfo(
+        classIndex = 2,
+        descriptor = "Lcom/demo/core/TokenGuard;",
+        fullName = "com.demo.core.TokenGuard",
+        simpleName = "TokenGuard",
+        packageName = "com.demo.core",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "TokenGuard.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = listOf(makeMethod("m4", "Lcom/demo/core/TokenGuard;", "verify", true)),
+      )
+
+    val liveDex =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "LiveTarget.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(1024),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n039\u0000",
+            version = "039",
+            checksum = 0x1234L,
+            sha1Hex = "deadbeef",
+            fileSize = 256_000,
+            endianTag = 0x12345678L,
+            stringIdsSize = 420,
+            typeIdsSize = 88,
+            protoIdsSize = 64,
+            fieldIdsSize = 40,
+            methodIdsSize = 512,
+            classDefsSize = 38,
+            mapOff = 0x100,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = listOf(appClassSecond, appClassTop),
+      )
+
+    val recentSaved =
+      com.example.apk.RecentBinaryItem(
+        id = "SAF_URI:content://recent/Saved.apk",
+        displayName = "SavedApp.apk",
+        sourceType = com.example.apk.BinarySourceType.SAF_URI,
+        uriOrPath = "content://recent/Saved.apk",
+        packageName = "com.saved.app",
+        byteSize = 4_200_000L,
+        lastOpenedMillis = 1_700_000_000_000L,
+      )
+    val savedSummary =
+      com.example.dex.BytecodeOverviewSummary(
+        sourceLabel = "SavedApp.apk",
+        entryName = "classes.dex",
+        dexCount = 1,
+        dexVersion = "038",
+        totalMethods = 1920,
+        bytecodeMethods = 1400,
+        totalClassDefinitions = 215,
+        appClassDefinitions = 64,
+        totalStrings = 3100,
+        analyzedAtMillis = 1_700_000_000_000L,
+        topClasses =
+          listOf(
+            com.example.dex.ClassDefinitionSummary("SavedEngine", "com.saved.app", 11, 10, false),
+          ),
+      )
+
+    var loadState by mutableStateOf<com.example.ui.DexLoadState>(
+      com.example.ui.DexLoadState.Ready(
+        sourceLabel = "LiveTarget.apk",
+        dexEntries = listOf(com.example.dex.ApkDexEntry("classes.dex", 256_000)),
+        activeEntryName = "classes.dex",
+        parsedDex = liveDex,
+        loadedDexes = mapOf("classes.dex" to liveDex),
+      )
+    )
+    var persistedSummary by mutableStateOf<com.example.dex.BytecodeOverviewSummary?>(savedSummary)
+    var browseClassesCount = 0
+    var reopenedItem: com.example.apk.RecentBinaryItem? = null
+    var inspectSelfCount = 0
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.HomeScreen(
+          loadState = loadState,
+          selectedMethodCount = 2,
+          recentFiles = listOf(recentSaved),
+          lastBytecodeSummary = persistedSummary,
+          onOpenPicker = {},
+          onInspectSelfApk = { inspectSelfCount++ },
+          onSelectRecent = { reopenedItem = it },
+          onSelectDexEntry = {},
+          onAutoSelectAppMethods = {},
+          onClearSelection = {},
+          onNavigateToClasses = { browseClassesCount++ },
+          onNavigateToExport = {},
+        )
+      }
+    }
+
+    // Live Ready mode: card renders live metrics, top class definitions, and Browse Classes action
+    composeTestRule.onNodeWithTag("bytecode_overview_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bytecode_overview_status_pill").assertTextContains("Live · v039")
+    composeTestRule.onNodeWithTag("bytecode_overview_methods").assertTextContains("512 total", substring = true)
+    composeTestRule.onNodeWithTag("bytecode_overview_classes").assertTextContains("38 defs", substring = true)
+    composeTestRule.onNodeWithText("MainRouter").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithText("TokenGuard").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bytecode_overview_action_btn").performScrollTo().assertTextContains("Browse Classes").performClick()
+    assertEquals(1, browseClassesCount)
+
+    // Switch to Empty state with saved summary -> renders Last Analyzed snapshot & Reopen Last DEX
+    loadState = com.example.ui.DexLoadState.Empty
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("bytecode_overview_card").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bytecode_overview_status_pill").assertTextContains("Last Analyzed · v038")
+    composeTestRule.onNodeWithText("SavedEngine").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("bytecode_overview_action_btn").performScrollTo().assertTextContains("Reopen Last DEX").performClick()
+    assertEquals(recentSaved, reopenedItem)
+
+    // Switch to clean Empty state without saved summary -> Awaiting DEX + Inspect Live APK
+    persistedSummary = null
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("bytecode_overview_status_pill").assertTextContains("Awaiting DEX")
+    composeTestRule.onNodeWithTag("bytecode_overview_action_btn").performScrollTo().assertTextContains("Inspect Live APK").performClick()
+    assertEquals(1, inspectSelfCount)
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `methodDetailScreen renders Blocks CFG tab with basic blocks, outgoing edges, and decoded payloads`() {
+    val payload =
+      com.example.dex.DalvikPayload.PackedSwitch(
+        offsetWords = 8,
+        wordCount = 8,
+        firstKey = 0,
+        targetOffsets = listOf(5, 7),
+      )
+    val insns =
+      listOf(
+        com.example.dex.DalvikInstruction(
+          offsetWords = 0,
+          widthWords = 2,
+          opcode = 0x38,
+          mnemonic = "if-eqz",
+          format = "21t",
+          operandsText = "v0, L_0005",
+          rawWords = listOf(0x0038, 0x0005),
+          category = com.example.dex.OpCategory.BRANCH,
+          regA = 0,
+          targetOffset = 5,
+        ),
+        com.example.dex.DalvikInstruction(
+          offsetWords = 2,
+          widthWords = 3,
+          opcode = 0x2B,
+          mnemonic = "packed-switch",
+          format = "31t",
+          operandsText = "v1, L_0008",
+          rawWords = listOf(0x012B, 0x0006, 0x0000),
+          category = com.example.dex.OpCategory.BRANCH,
+          regA = 1,
+          targetOffset = 8,
+          payload = payload,
+        ),
+        com.example.dex.DalvikInstruction(
+          offsetWords = 5,
+          widthWords = 1,
+          opcode = 0x12,
+          mnemonic = "const/4",
+          format = "11n",
+          operandsText = "v0, #1",
+          rawWords = listOf(0x1012),
+          category = com.example.dex.OpCategory.CONST,
+        ),
+        com.example.dex.DalvikInstruction(
+          offsetWords = 6,
+          widthWords = 1,
+          opcode = 0x0F,
+          mnemonic = "return",
+          format = "11x",
+          operandsText = "v0",
+          rawWords = listOf(0x000F),
+          category = com.example.dex.OpCategory.RETURN,
+        ),
+        com.example.dex.DalvikInstruction(
+          offsetWords = 7,
+          widthWords = 1,
+          opcode = 0x0F,
+          mnemonic = "return",
+          format = "11x",
+          operandsText = "v0",
+          rawWords = listOf(0x000F),
+          category = com.example.dex.OpCategory.RETURN,
+        ),
+        com.example.dex.DalvikInstruction(
+          offsetWords = 8,
+          widthWords = 8,
+          opcode = 0x0100,
+          mnemonic = "packed-switch-payload",
+          format = "payload",
+          operandsText = "first=0 [0->L_0005, 1->L_0007]",
+          rawWords = listOf(0x0100, 0x0002, 0x0000, 0x0000),
+          category = com.example.dex.OpCategory.PAYLOAD,
+          payload = payload,
+        ),
+      )
+
+    val method =
+      com.example.dex.DexEncodedMethod(
+        id = "m_cfg_ui",
+        methodIndex = 1,
+        methodRef = com.example.dex.DexMethodRef("Lcom/demo/Router;", com.example.dex.DexProto("II", "I", listOf("I")), "dispatch"),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta = com.example.dex.DexCodeMeta(2, 1, 0, 0, 16, 0),
+      )
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 1,
+        descriptor = "Lcom/demo/Router;",
+        fullName = "com.demo.Router",
+        simpleName = "Router",
+        packageName = "com.demo",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Router.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = listOf(method),
+      )
+    val meta =
+      com.example.dex.DexMethodStructuralMeta(
+        methodIndex = 1,
+        codeItemOffset = 0x100,
+        debugInfoOffset = 0,
+        classAnnotationsOffset = 0,
+        staticValuesOffset = 0,
+        parameterNames = listOf("code"),
+        debugLines = emptyList(),
+        classAnnotations = emptyList(),
+        methodAnnotations = emptyList(),
+        staticValuesPreview = emptyList(),
+        sourceFile = "Router.kt",
+      )
+    val inspection =
+      com.example.ui.MethodInspectionState(
+        method = method,
+        dexClass = dexClass,
+        instructions = insns,
+        tryBlocks = emptyList(),
+        transpiledC = "jint Java_Router_dispatch(JNIEnv* env) { return 1; }",
+        structuralMeta = meta,
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.MethodDetailScreen(
+          inspection = inspection,
+          isSelected = false,
+          onToggleSelect = {},
+          onCopyCCode = {},
+          onBack = {},
+        )
+      }
+    }
+
+    // Switch to Blocks tab
+    composeTestRule.onNodeWithTag("tab_blocks").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("cfg_viewer_container").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cfg_stat_blocks").assertTextContains("4 blocks")
+    composeTestRule.onNodeWithTag("cfg_stat_payloads").assertTextContains("1 payloads")
+    composeTestRule.onNodeWithTag("cfg_block_BB_0").assertIsDisplayed()
+
+    // Scroll to decoded payload section in CFG list
+    composeTestRule.onNodeWithTag("cfg_blocks_list").performScrollToNode(hasTestTag("cfg_payloads_section"))
+    composeTestRule.onNodeWithTag("cfg_payloads_section").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cfg_payload_8").assertIsDisplayed()
+
+    // Switch to Dalvik IR tab and check inline payload comment line
+    composeTestRule.onNodeWithTag("tab_dalvik_ir").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("; 0->L_0005, 1->L_0007", substring = true).assertIsDisplayed()
+
+    // View Smali button in TopAppBar is visible and clickable
+    composeTestRule.onNodeWithTag("method_view_smali_btn").assertIsDisplayed()
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `classesScreen opens Smali class view from class row action button`() {
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 4,
+        descriptor = "Lcom/example/Vault;",
+        fullName = "com.example.Vault",
+        simpleName = "Vault",
+        packageName = "com.example",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Vault.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = emptyList(),
+      )
+    val parsed =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "App.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(64),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n039\u0000",
+            version = "039",
+            checksum = 1L,
+            sha1Hex = "abc",
+            fileSize = 64,
+            endianTag = 0x12345678L,
+            stringIdsSize = 1,
+            typeIdsSize = 1,
+            protoIdsSize = 1,
+            fieldIdsSize = 0,
+            methodIdsSize = 1,
+            classDefsSize = 1,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = listOf(dexClass),
+      )
+    val ready =
+      com.example.ui.DexLoadState.Ready(
+        sourceLabel = "App.apk",
+        dexEntries = listOf(com.example.dex.ApkDexEntry("classes.dex", 64)),
+        activeEntryName = "classes.dex",
+        parsedDex = parsed,
+        loadedDexes = mapOf("classes.dex" to parsed),
+      )
+
+    var openedSmaliClass: com.example.dex.DexClassInfo? = null
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.ClassesScreen(
+          loadState = ready,
+          classes = listOf(dexClass),
+          filterState = com.example.ui.ClassFilterState(onlyWithBytecode = false),
+          selectedMethodIds = emptySet(),
+          allowInit = false,
+          onSearchChange = {},
+          onToggleHideFramework = {},
+          onToggleOnlyBytecode = {},
+          onToggleOnlySelected = {},
+          onToggleClassSelection = {},
+          onToggleMethodSelection = {},
+          onInspectMethod = { _, _ -> },
+          onInspectSelfApk = {},
+          onInspectClassSmali = { openedSmaliClass = it },
+        )
+      }
+    }
+
+    // Top-level "com" is auto-expanded to reveal nested "example" package; expanding it reveals class leaf row
+    composeTestRule.onNodeWithTag("pkg_row_com").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pkg_row_com.example").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("class_row_4").assertIsDisplayed().performClick()
+    assertEquals(dexClass, openedSmaliClass)
+
+    // Verify Dex Editor Plus hierarchy (com -> crackme -> ui.theme)
+    val mainActivityCls = dexClass.copy(packageName = "com.crackme", simpleName = "MainActivity")
+    val themeCls = dexClass.copy(classIndex = 5, packageName = "com.crackme.ui.theme", simpleName = "ThemeKt")
+    val tree =
+      com.example.ui.screens.buildNestedPackageTree(
+        classes = listOf(mainActivityCls, themeCls),
+        selectedMethodIds = emptySet(),
+        sortOrder = com.example.ui.ClassSortOrder.NAME_ASC,
+        defaultPackageLabel = "(default)",
+      )
+    assertEquals(1, tree.size)
+    assertEquals("com", tree[0].displayLabel)
+    assertEquals(1, tree[0].children.size)
+    val crackmeGroup = tree[0].children[0]
+    assertEquals("crackme", crackmeGroup.displayLabel)
+    assertEquals("com.crackme", crackmeGroup.packageName)
+    assertEquals(listOf("MainActivity"), crackmeGroup.directClasses.map { it.simpleName })
+    assertEquals(1, crackmeGroup.children.size)
+    assertEquals("ui.theme", crackmeGroup.children[0].displayLabel)
+    assertEquals("com.crackme.ui.theme", crackmeGroup.children[0].packageName)
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `smaliClassScreen renders Smali source, searches matches, and fires copy and export`() {
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/example/TokenGuard;",
+        fullName = "com.example.TokenGuard",
+        simpleName = "TokenGuard",
+        packageName = "com.example",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "TokenGuard.kt",
+        accessFlags = 0x0011,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = emptyList(),
+      )
+    val sampleSmali =
+      """
+      .class public final Lcom/example/TokenGuard;
+      .super Ljava/lang/Object;
+      .source "TokenGuard.kt"
+
+      # direct methods
+      .method public constructor <init>()V
+          .registers 1
+          invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+          return-void
+      .end method
+
+      .method public final verify(Ljava/lang/String;)Z
+          .registers 3
+          const-string v0, "ok"
+          invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+          move-result v0
+          return v0
+      .end method
+      """.trimIndent()
+    val lines = sampleSmali.lines()
+    val state =
+      com.example.ui.SmaliClassUiState.Ready(
+        dexClass = dexClass,
+        smaliText = sampleSmali,
+        lines = lines,
+        lineCount = lines.size,
+        methodCount = 2,
+        fieldCount = 0,
+        durationMs = 4L,
+        methodSpans = com.example.dex.SmaliClassDisassembler.extractMethodSpans(lines),
+      )
+
+    var copiedText = ""
+    var exportedFile = ""
+    var backPressed = false
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.SmaliClassScreen(
+          state = state,
+          onCopySmali = { copiedText = it },
+          onExportSmali = { fileName, _ -> exportedFile = fileName },
+          onBack = { backPressed = true },
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithText("TokenGuard.smali").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_method_range_bar").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_active_method_range_text", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_code_list").assertIsDisplayed()
+    composeTestRule.onNodeWithText(".class public final Lcom/example/TokenGuard;", substring = true).assertIsDisplayed()
+
+    // Toggle search bar, search for "return", and step to match 2/2
+    composeTestRule.onNodeWithTag("smali_search_toggle_btn").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_input").performTextReplacement("return")
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("1/2")
+    composeTestRule.onNodeWithTag("smali_search_next_btn").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("2/2")
+
+    // Copy, export, and back actions
+    composeTestRule.onNodeWithTag("smali_copy_btn").performClick()
+    assertEquals(sampleSmali, copiedText)
+    composeTestRule.onNodeWithTag("smali_export_btn").performClick()
+    assertEquals("TokenGuard.smali", exportedFile)
+    composeTestRule.onNodeWithTag("smali_back_btn").performClick()
+    assertTrue(backPressed)
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `methodDetailScreen displays Smali tab and PipelineConfigScreen renders Filter Rule Builder`() {
+    val method =
+      com.example.dex.DexEncodedMethod(
+        id = "classes.dex::Lcom/example/Auth;#0",
+        methodIndex = 0,
+        methodRef =
+          com.example.dex.DexMethodRef(
+            definingClass = "Lcom/example/Auth;",
+            proto = com.example.dex.DexProto("Z", "Z", emptyList()),
+            name = "check",
+          ),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta =
+          com.example.dex.DexCodeMeta(
+            registersSize = 2,
+            insSize = 1,
+            outsSize = 0,
+            triesSize = 0,
+            insnsCount = 2,
+            insnsOffsetBytes = 0,
+          ),
+      )
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/example/Auth;",
+        fullName = "com.example.Auth",
+        simpleName = "Auth",
+        packageName = "com.example",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Auth.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = listOf(method),
+      )
+    val sampleMethodSmali =
+      """
+      .method public check()Z
+          .registers 2
+          const/4 v0, 0x1
+          return v0
+      .end method
+      """.trimIndent()
+    val inspection =
+      com.example.ui.MethodInspectionState(
+        method = method,
+        dexClass = dexClass,
+        instructions = emptyList(),
+        tryBlocks = emptyList(),
+        transpiledC = "jboolean Java_com_example_Auth_check(JNIEnv* env, jobject thiz) { return 1; }",
+        structuralMeta =
+          com.example.dex.DexMethodStructuralMeta(
+            methodIndex = 0,
+            codeItemOffset = 0,
+            debugInfoOffset = 0,
+            classAnnotationsOffset = 0,
+            staticValuesOffset = 0,
+            parameterNames = emptyList(),
+            debugLines = emptyList(),
+            classAnnotations = emptyList(),
+            methodAnnotations = emptyList(),
+            staticValuesPreview = emptyList(),
+            sourceFile = "Auth.kt",
+          ),
+        methodSmali = sampleMethodSmali,
+      )
+
+    var copiedCode = ""
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.MethodDetailScreen(
+          inspection = inspection,
+          isSelected = false,
+          onToggleSelect = {},
+          onCopyCCode = { copiedCode = it },
+          onBack = {},
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithTag("tab_method_smali").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_code_list").assertIsDisplayed()
+    composeTestRule.onNodeWithText(".method public check()Z", substring = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("method_copy_c_btn").performClick()
+    assertEquals(sampleMethodSmali, copiedCode)
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `classesScreen Filter Rules sub-tab toggles Whitelist and Blacklist presets and quick row rules`() {
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/crackme/MainActivity;",
+        fullName = "com.crackme.MainActivity",
+        simpleName = "MainActivity",
+        packageName = "com.crackme",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "MainActivity.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = emptyList(),
+      )
+    val parsed =
+      com.example.dex.DexParsedFile(
+        sourceLabel = "CrackMe.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(64),
+        header =
+          com.example.dex.DexHeaderInfo(
+            magic = "dex\n039\u0000",
+            version = "039",
+            checksum = 1L,
+            sha1Hex = "abc",
+            fileSize = 64,
+            endianTag = 0x12345678L,
+            stringIdsSize = 1,
+            typeIdsSize = 1,
+            protoIdsSize = 1,
+            fieldIdsSize = 0,
+            methodIdsSize = 1,
+            classDefsSize = 1,
+          ),
+        strings = emptyList(),
+        types = emptyList(),
+        protos = emptyList(),
+        fields = emptyList(),
+        methods = emptyList(),
+        classes = listOf(dexClass),
+      )
+    val ready =
+      com.example.ui.DexLoadState.Ready(
+        sourceLabel = "CrackMe.apk",
+        dexEntries = listOf(com.example.dex.ApkDexEntry("classes.dex", 64)),
+        activeEntryName = "classes.dex",
+        parsedDex = parsed,
+        loadedDexes = mapOf("classes.dex" to parsed),
+      )
+    var cfg by mutableStateOf(com.example.transpiler.TranspilerConfig(filterRulesText = ""))
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.ClassesScreen(
+          loadState = ready,
+          classes = listOf(dexClass),
+          filterState = com.example.ui.ClassFilterState(onlyWithBytecode = false),
+          selectedMethodIds = emptySet(),
+          allowInit = false,
+          onSearchChange = {},
+          onToggleHideFramework = {},
+          onToggleOnlyBytecode = {},
+          onToggleOnlySelected = {},
+          onToggleClassSelection = {},
+          onToggleMethodSelection = {},
+          onInspectMethod = { _, _ -> },
+          onInspectSelfApk = {},
+          config = cfg,
+          onUpdateConfig = { transform -> cfg = transform(cfg) },
+          onQuickPackageRule = { pkg, isBlacklist ->
+            val rule =
+              com.example.transpiler.StructuredFilterRule(
+                packageName = pkg.replace('.', '/'),
+                className = "",
+                methodName = "",
+                isBlacklist = isBlacklist,
+                ruleType = com.example.transpiler.FilterRuleType.PACKAGE_ALL,
+              )
+            cfg =
+              cfg.copy(
+                filterRulesText =
+                  com.example.transpiler.FilterRuleEngine.upsertStructuredRule(cfg.filterRulesText, rule)
+              )
+          },
+        )
+      }
+    }
+
+    // Enable Select Mode in Explorer and click +W on com.crackme package
+    composeTestRule.onNodeWithTag("chip_select_mode").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("pkg_whitelist_btn_com.crackme").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(cfg.filterRulesText.contains("com/crackme/.*;.*"))
+
+    // Switch to FILTER RULES sub-tab and verify Whitelist/Blacklist cards and presets
+    composeTestRule.onNodeWithTag("classes_subtab_rules").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("summary_card_whitelist").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("summary_card_blacklist").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("preset_lifecycle_onCreate").performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(cfg.filterRulesText.contains(".*;onCreate\\(.*"))
+  }
+
+  @Test
+  fun `findSmaliSearchMatches and extractLineInteractiveTokens handle wholeWord, regex, category filters, and symbol tokens`() {
+    val lines =
+      listOf(
+        ".class public Lcom/crackme/Auth;",
+        ".method public verify(Ljava/lang/String;)Z",
+        "    .registers 12",
+        "    const-string v0, \"secret_key\"",
+        "    const/4 v1, 0x1",
+        "    const/4 v10, 0x0",
+        "    invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z",
+        "    move-result v1",
+        "    return v1",
+        ".end method",
+      )
+    val spans = com.example.dex.SmaliClassDisassembler.extractMethodSpans(lines)
+
+    // 1. Whole-word search for "v1" should match lines 4, 7, 8 ("v1"), NOT line 5 ("v10")
+    val wholeWordRes =
+      com.example.ui.components.findSmaliSearchMatches(
+        lines = lines,
+        methodSpans = spans,
+        options =
+          com.example.ui.components.SmaliSearchOptions(
+            query = "v1",
+            wholeWord = true,
+          ),
+      )
+    assertEquals(listOf(4, 7, 8), wholeWordRes.matches.map { it.lineIndex })
+    assertEquals("verify", wholeWordRes.matches.first().enclosingMethodName)
+
+    // 2. Category filter for METHODS without query should match method declaration + invoke-virtual call
+    val methodsRes =
+      com.example.ui.components.findSmaliSearchMatches(
+        lines = lines,
+        methodSpans = spans,
+        options =
+          com.example.ui.components.SmaliSearchOptions(
+            query = "",
+            category = com.example.ui.components.SmaliSearchCategory.METHODS,
+          ),
+      )
+    assertEquals(listOf(1, 6), methodsRes.matches.map { it.lineIndex })
+
+    // 3. Regex search for "const(-string|/4)"
+    val regexRes =
+      com.example.ui.components.findSmaliSearchMatches(
+        lines = lines,
+        methodSpans = spans,
+        options =
+          com.example.ui.components.SmaliSearchOptions(
+            query = "const(-string|/4)",
+            useRegex = true,
+          ),
+      )
+    assertEquals(listOf(3, 4, 5), regexRes.matches.map { it.lineIndex })
+
+    // 4. Interactive token extraction on invoke-virtual line
+    val tokens = com.example.ui.components.extractLineInteractiveTokens(lines[6])
+    assertTrue(tokens.any { it.text == "invoke-virtual" && it.kind == com.example.ui.components.SmaliTokenKind.OPCODE })
+    assertTrue(tokens.any { it.text == "p1" && it.kind == com.example.ui.components.SmaliTokenKind.REGISTER })
+    assertTrue(tokens.any { it.text == "v0" && it.kind == com.example.ui.components.SmaliTokenKind.REGISTER })
+    assertTrue(tokens.any { it.text == "->equals(" && it.kind == com.example.ui.components.SmaliTokenKind.METHOD })
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `smaliClassScreen supports category filter chips, interactive register highlighting, and matching lines drawer`() {
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/crackme/Auth;",
+        fullName = "com.crackme.Auth",
+        simpleName = "Auth",
+        packageName = "com.crackme",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Auth.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = emptyList(),
+      )
+    val lines =
+      listOf(
+        ".class public Lcom/crackme/Auth;",
+        ".super Ljava/lang/Object;",
+        ".method public verify(Ljava/lang/String;)Z",
+        "    .registers 4",
+        "    const-string v0, \"secret\"",
+        "    invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z",
+        "    move-result v0",
+        "    return v0",
+        ".end method",
+      )
+    val readyState =
+      com.example.ui.SmaliClassUiState.Ready(
+        dexClass = dexClass,
+        smaliText = lines.joinToString("\n"),
+        lines = lines,
+        lineCount = lines.size,
+        methodCount = 1,
+        fieldCount = 0,
+        durationMs = 5L,
+        methodSpans = com.example.dex.SmaliClassDisassembler.extractMethodSpans(lines),
+      )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.SmaliClassScreen(
+          state = readyState,
+          onCopySmali = {},
+          onExportSmali = { _, _ -> },
+          onBack = {},
+        )
+      }
+    }
+
+    // Tap line 5 (invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z) to inspect symbols
+    composeTestRule.onNodeWithTag("smali_code_line_5").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_inspected_line_bar").assertIsDisplayed()
+
+    // Tap register v0 token chip from the inspected line bar -> opens search bar & highlights all 4 lines with v0
+    composeTestRule.onNodeWithTag("smali_line_token_v0").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("1/4")
+
+    // Open Matching Lines drawer and verify rows are displayed
+    composeTestRule.onNodeWithTag("smali_search_matches_drawer_toggle").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_matching_lines_drawer").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_match_result_row_7").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("4/4")
+
+    // Clear search and tap Strings category chip to highlight string literals
+    composeTestRule.onNodeWithTag("smali_search_clear_btn").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_category_strings").performScrollTo().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("1/1")
+  }
+
+  @Test
+  fun `resolveSmaliSyntaxPalette and highlightSmaliLine apply BytecodeHighContrast semantic colors`() {
+    val hcPalette =
+      com.example.ui.theme.resolveSmaliSyntaxPalette(
+        com.example.data.SmaliSyntaxTheme.BYTECODE_HIGH_CONTRAST,
+        com.example.ui.theme.DarkSyntaxPalette,
+      )
+    assertTrue(hcPalette.isHighContrastBytecode)
+    assertEquals(com.example.ui.theme.BytecodeHighContrastSyntaxPalette, hcPalette)
+
+    val invokeLine = "    invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z"
+    val annotatedInvoke =
+      com.example.ui.components.highlightSmaliLine(
+        line = invokeLine,
+        palette = hcPalette,
+      )
+    assertTrue(annotatedInvoke.spanStyles.any { it.item.color == hcPalette.opcodeInvoke })
+    assertTrue(annotatedInvoke.spanStyles.any { it.item.color == hcPalette.parameterRegister })
+    assertTrue(annotatedInvoke.spanStyles.any { it.item.color == hcPalette.register })
+    assertTrue(annotatedInvoke.spanStyles.any { it.item.color == hcPalette.memberTarget })
+
+    val branchLine = "    if-eqz v0, :cond_0"
+    val annotatedBranch =
+      com.example.ui.components.highlightSmaliLine(
+        line = branchLine,
+        palette = hcPalette,
+      )
+    assertTrue(annotatedBranch.spanStyles.any { it.item.color == hcPalette.opcodeBranch })
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
+  fun `smaliClassScreen theme switcher toggles Light, Dark, and Bytecode High-Contrast themes`() {
+    val dexClass =
+      com.example.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/crackme/Auth;",
+        fullName = "com.crackme.Auth",
+        simpleName = "Auth",
+        packageName = "com.crackme",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Auth.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = emptyList(),
+        virtualMethods = emptyList(),
+      )
+    val lines =
+      listOf(
+        ".class public Lcom/crackme/Auth;",
+        ".method public verify(Ljava/lang/String;)Z",
+        "    .registers 3",
+        "    const-string v0, \"secret\"",
+        "    invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z",
+        "    move-result v0",
+        "    if-eqz v0, :cond_0",
+        "    :cond_0",
+        "    return v0",
+        ".end method",
+      )
+    val readyState =
+      com.example.ui.SmaliClassUiState.Ready(
+        dexClass = dexClass,
+        smaliText = lines.joinToString("\n"),
+        lines = lines,
+        lineCount = lines.size,
+        methodCount = 1,
+        fieldCount = 0,
+        durationMs = 4L,
+        methodSpans = com.example.dex.SmaliClassDisassembler.extractMethodSpans(lines),
+      )
+
+    var selectedTheme by mutableStateOf(com.example.data.SmaliSyntaxTheme.APP_DEFAULT)
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.example.ui.screens.SmaliClassScreen(
+          state = readyState,
+          onCopySmali = {},
+          onExportSmali = { _, _ -> },
+          onBack = {},
+          smaliSyntaxTheme = selectedTheme,
+          onSelectSmaliSyntaxTheme = { selectedTheme = it },
+        )
+      }
+    }
+
+    // Open the Smali syntax theme switcher bar from the top toolbar
+    composeTestRule.onNodeWithTag("smali_theme_switcher_btn").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("smali_theme_selector_bar").assertIsDisplayed()
+
+    // Select Light theme
+    composeTestRule.onNodeWithTag("smali_theme_chip_light").performScrollTo().performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(com.example.data.SmaliSyntaxTheme.LIGHT, selectedTheme)
+
+    // Select Bytecode High-Contrast theme and verify the semantic color legend appears
+    composeTestRule.onNodeWithTag("smali_theme_chip_high_contrast").performScrollTo().performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(com.example.data.SmaliSyntaxTheme.BYTECODE_HIGH_CONTRAST, selectedTheme)
+    composeTestRule.onNodeWithTag("smali_high_contrast_legend").assertIsDisplayed()
+  }
 }
+
+
+
 
 

@@ -4,9 +4,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 /**
- * Pure Kotlin port of `androguard/dex-parser`'s `DexHelper` ergonomic query facade,
- * plus lazy structural decoders for DEX `035`–`041` sections (`debug_info_item`,
- * `annotations_directory_item`, `encoded_array_item`).
+ * Pure Kotlin structural query facade and decoders for DEX `035`–`041` sections
+ * (`debug_info_item`, `annotations_directory_item`, `encoded_array_item`).
  */
 object DexHelper {
 

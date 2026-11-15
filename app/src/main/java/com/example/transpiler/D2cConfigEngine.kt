@@ -160,6 +160,365 @@ object FilterRuleEngine {
     if (includes.isEmpty()) return true
     return includes.any(::matchesAny)
   }
+
+  /**
+   * Generates canonical Dex2C wildcard filter rules from selected packages, classes, and methods,
+   * matching `springmusk026/Dex2C-Android`'s `FilterBuilderViewModel.generateFilterRules`:
+   * - Entire package selected -> `com/package/.*;.*`
+   * - Entire class selected   -> `com/package/Class;.*`
+   * - Specific method selected -> `com/package/Class;methodName\(.*`
+   */
+  fun generateWildcardRulesFromSelection(
+    classes: List<com.example.dex.DexClassInfo>,
+    selectedMethodIds: Set<String>,
+    allowInit: Boolean = false,
+    isBlacklist: Boolean = false,
+  ): List<StructuredFilterRule> {
+    if (selectedMethodIds.isEmpty() || classes.isEmpty()) return emptyList()
+
+    val rules = mutableListOf<StructuredFilterRule>()
+    val byPackage = classes.groupBy { it.packageName }
+
+    for ((pkgDot, pkgClasses) in byPackage) {
+      val slashPkg = if (pkgDot == "(default)" || pkgDot.isBlank()) "" else pkgDot.replace('.', '/')
+      val pkgEligibleIds =
+        pkgClasses.flatMap { cls ->
+          cls.allMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+        }
+      if (pkgEligibleIds.isEmpty()) continue
+
+      val selectedInPkg = pkgEligibleIds.count { it in selectedMethodIds }
+      if (selectedInPkg == 0) continue
+
+      // If all classes in a non-default package with >=2 classes are completely selected, emit package wildcard
+      if (slashPkg.isNotEmpty() && pkgClasses.size >= 2 && selectedInPkg == pkgEligibleIds.size) {
+        rules +=
+          StructuredFilterRule(
+            packageName = slashPkg,
+            className = "",
+            methodName = "",
+            isBlacklist = isBlacklist,
+            ruleType = FilterRuleType.PACKAGE_ALL,
+          )
+        continue
+      }
+
+      for (cls in pkgClasses) {
+        val clsEligible = cls.allMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }
+        if (clsEligible.isEmpty()) continue
+        val clsSelected = clsEligible.filter { it.id in selectedMethodIds }
+        if (clsSelected.isEmpty()) continue
+
+        if (clsSelected.size == clsEligible.size) {
+          rules +=
+            StructuredFilterRule(
+              packageName = slashPkg,
+              className = cls.simpleName,
+              methodName = "",
+              isBlacklist = isBlacklist,
+              ruleType = FilterRuleType.ALL_CLASS_METHODS,
+            )
+        } else {
+          val seenMethodNames = linkedSetOf<String>()
+          for (m in clsSelected) {
+            val methodToken = "${m.methodRef.name}("
+            if (seenMethodNames.add(methodToken)) {
+              rules +=
+                StructuredFilterRule(
+                  packageName = slashPkg,
+                  className = cls.simpleName,
+                  methodName = methodToken,
+                  isBlacklist = isBlacklist,
+                  ruleType = FilterRuleType.CLASS_METHOD,
+                )
+            }
+          }
+        }
+      }
+    }
+    return rules
+  }
+
+  fun parseStructuredRules(filterText: String): List<StructuredFilterRule> {
+    if (filterText.isBlank()) return emptyList()
+    return filterText
+      .lineSequence()
+      .map { it.trim() }
+      .filter { it.isNotEmpty() && !it.startsWith("#") }
+      .mapIndexed { idx, line ->
+        val isBlacklist = line.startsWith("!")
+        val clean = line.removePrefix("!").trim().removePrefix("^")
+        val semiIdx = clean.indexOf(';')
+        if (semiIdx > 0) {
+          val classPart = clean.substring(0, semiIdx).removePrefix("L")
+          val methodPart =
+            clean
+              .substring(semiIdx + 1)
+              .replace("\\(", "(")
+              .replace("\\)", ")")
+              .removeSuffix(".*")
+          val slashIdx = classPart.lastIndexOf('/')
+          val pkg = if (slashIdx > 0) classPart.substring(0, slashIdx) else ""
+          val cls = if (slashIdx >= 0) classPart.substring(slashIdx + 1) else classPart
+          val ruleType =
+            when {
+              cls == ".*" && (methodPart.isEmpty() || methodPart == ".*") -> FilterRuleType.PACKAGE_ALL
+              methodPart.isEmpty() || methodPart == ".*" -> FilterRuleType.ALL_CLASS_METHODS
+              classPart == ".*" -> FilterRuleType.METHOD_ALL_CLASSES
+              else -> FilterRuleType.CLASS_METHOD
+            }
+          StructuredFilterRule(
+            id = "rule_${idx}_${line.hashCode()}",
+            packageName = if (classPart == ".*") "" else pkg,
+            className = if (cls == ".*") "" else cls,
+            methodName = if (methodPart == ".*") "" else methodPart,
+            isBlacklist = isBlacklist,
+            ruleType = ruleType,
+            customPattern = null,
+          )
+        } else {
+          StructuredFilterRule(
+            id = "rule_${idx}_${line.hashCode()}",
+            packageName = "",
+            className = "",
+            methodName = "",
+            isBlacklist = isBlacklist,
+            ruleType = FilterRuleType.CUSTOM_REGEX,
+            customPattern = clean,
+          )
+        }
+      }
+      .toList()
+  }
+
+  fun serializeStructuredRules(rules: List<StructuredFilterRule>): String =
+    rules.joinToString("\n") { it.toFilterLine() }
+
+  fun toggleRuleLine(filterText: String, ruleLine: String): String {
+    val trimmedTarget = ruleLine.trim()
+    if (trimmedTarget.isEmpty()) return filterText
+    val existingLines =
+      filterText
+        .lineSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .toMutableList()
+    if (trimmedTarget in existingLines) {
+      existingLines.removeAll { it == trimmedTarget }
+    } else {
+      val opposite =
+        if (trimmedTarget.startsWith("!")) trimmedTarget.removePrefix("!")
+        else "!$trimmedTarget"
+      existingLines.removeAll { it == opposite }
+      existingLines.add(trimmedTarget)
+    }
+    return existingLines.joinToString("\n")
+  }
+
+  fun upsertStructuredRule(filterText: String, newRule: StructuredFilterRule): String {
+    val targetLine = newRule.toFilterLine().trim()
+    if (targetLine.isEmpty()) return filterText
+    val expr = newRule.toRuleExpression().trim()
+    val existingLines =
+      filterText
+        .lineSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .toMutableList()
+    existingLines.removeAll { line ->
+      val clean = line.removePrefix("!").trim()
+      clean == expr
+    }
+    existingLines.add(targetLine)
+    return existingLines.joinToString("\n")
+  }
+}
+
+/**
+ * Filter rule scope types modeled after `springmusk026/Dex2C-Android`'s `FilterBuilderScreen`.
+ */
+enum class FilterRuleType(val displayName: String, val description: String) {
+  CLASS_METHOD("Specific Method", "Protect or exclude one method in a class"),
+  ALL_CLASS_METHODS("All Class Methods", "Protect or exclude all methods in a class"),
+  PACKAGE_ALL("Package All", "Protect or exclude all classes and methods in a package"),
+  METHOD_ALL_CLASSES("Method in All Classes", "Match a method name across all classes"),
+  CUSTOM_REGEX("Custom Pattern", "Raw regular expression pattern"),
+}
+
+data class FilterPresetItem(
+  val id: String,
+  val label: String,
+  val ruleLine: String,
+  val isBlacklist: Boolean,
+  val description: String,
+)
+
+val LIFECYCLE_SECURITY_PRESETS =
+  listOf(
+    FilterPresetItem(
+      id = "onCreate",
+      label = "+onCreate()",
+      ruleLine = ".*;onCreate\\(.*",
+      isBlacklist = false,
+      description = "Whitelist Activity/Fragment/Application onCreate lifecycle methods",
+    ),
+    FilterPresetItem(
+      id = "attachBaseContext",
+      label = "+attachBaseContext()",
+      ruleLine = ".*;attachBaseContext\\(.*",
+      isBlacklist = false,
+      description = "Whitelist Application/Activity attachBaseContext entry points",
+    ),
+    FilterPresetItem(
+      id = "onResume",
+      label = "+onResume()",
+      ruleLine = ".*;onResume\\(.*",
+      isBlacklist = false,
+      description = "Whitelist onResume lifecycle methods",
+    ),
+    FilterPresetItem(
+      id = "verify",
+      label = "+verify*()",
+      ruleLine = ".*;verify.*\\(.*",
+      isBlacklist = false,
+      description = "Whitelist verification, signature, and token check methods",
+    ),
+    FilterPresetItem(
+      id = "check",
+      label = "+check*()",
+      ruleLine = ".*;check.*\\(.*",
+      isBlacklist = false,
+      description = "Whitelist root/tamper/license check methods",
+    ),
+    FilterPresetItem(
+      id = "decrypt",
+      label = "+decrypt*()",
+      ruleLine = ".*;decrypt.*\\(.*",
+      isBlacklist = false,
+      description = "Whitelist decryption and key derivation methods",
+    ),
+  )
+
+val FRAMEWORK_BLACKLIST_PRESETS =
+  listOf(
+    FilterPresetItem(
+      id = "androidx",
+      label = "!androidx/*",
+      ruleLine = "!androidx/.*;.*",
+      isBlacklist = true,
+      description = "Exclude AndroidX Jetpack library classes",
+    ),
+    FilterPresetItem(
+      id = "kotlin",
+      label = "!kotlin/*",
+      ruleLine = "!kotlin/.*;.*",
+      isBlacklist = true,
+      description = "Exclude Kotlin standard library & coroutines classes",
+    ),
+    FilterPresetItem(
+      id = "kotlinx",
+      label = "!kotlinx/*",
+      ruleLine = "!kotlinx/.*;.*",
+      isBlacklist = true,
+      description = "Exclude KotlinX serialization and coroutines runtime",
+    ),
+    FilterPresetItem(
+      id = "material",
+      label = "!material/*",
+      ruleLine = "!com/google/android/material/.*;.*",
+      isBlacklist = true,
+      description = "Exclude Google Material Components classes",
+    ),
+    FilterPresetItem(
+      id = "r_buildconfig",
+      label = "!R$ / BuildConfig",
+      ruleLine = "!.*/R\\$?.*;.*",
+      isBlacklist = true,
+      description = "Exclude generated R resource and BuildConfig classes",
+    ),
+  )
+
+val COMMON_ANDROID_METHODS =
+  listOf(
+    "onCreate",
+    "attachBaseContext",
+    "onStart",
+    "onResume",
+    "onPause",
+    "onStop",
+    "onDestroy",
+    "verify",
+    "check",
+    "decrypt",
+    "onClick",
+    "run",
+    "execute",
+    "doInBackground",
+  )
+
+data class StructuredFilterRule(
+  val id: String = "rule_${System.nanoTime()}",
+  val packageName: String,
+  val className: String,
+  val methodName: String,
+  val isBlacklist: Boolean = false,
+  val ruleType: FilterRuleType = FilterRuleType.CLASS_METHOD,
+  val customPattern: String? = null,
+) {
+  fun toRuleExpression(): String {
+    if (ruleType == FilterRuleType.CUSTOM_REGEX && !customPattern.isNullOrBlank()) {
+      return customPattern.trim()
+    }
+    val normPkg = packageName.trim().replace('.', '/').trim('/')
+    val normCls = className.trim().removeSuffix(";")
+    val normMethod = methodName.trim()
+    val escapedMethod =
+      if (normMethod.isEmpty() || normMethod == ".*") {
+        ".*"
+      } else if (normMethod.endsWith("(")) {
+        "${normMethod.removeSuffix("(")}\\(.*"
+      } else if ('(' in normMethod && "\\(" !in normMethod) {
+        normMethod.replace("(", "\\(").replace(")", "\\)")
+      } else {
+        normMethod
+      }
+    return when (ruleType) {
+      FilterRuleType.PACKAGE_ALL ->
+        if (normPkg.isNotEmpty()) "$normPkg/.*;.*" else ".*;.*"
+      FilterRuleType.ALL_CLASS_METHODS ->
+        if (normPkg.isNotEmpty()) "$normPkg/$normCls;.*" else "$normCls;.*"
+      FilterRuleType.METHOD_ALL_CLASSES ->
+        ".*;$escapedMethod"
+      FilterRuleType.CLASS_METHOD ->
+        if (normPkg.isNotEmpty()) "$normPkg/$normCls;$escapedMethod" else "$normCls;$escapedMethod"
+      FilterRuleType.CUSTOM_REGEX ->
+        customPattern?.trim().orEmpty()
+    }
+  }
+
+  fun toDisplayLabel(): String {
+    if (ruleType == FilterRuleType.CUSTOM_REGEX && !customPattern.isNullOrBlank()) {
+      return customPattern.trim()
+    }
+    val normPkg = packageName.trim().replace('.', '/').trim('/')
+    val normCls = className.trim()
+    val normMethod = methodName.trim().ifEmpty { ".*" }
+    return when (ruleType) {
+      FilterRuleType.PACKAGE_ALL -> "${normPkg.ifEmpty { "*" }}/.*;.*"
+      FilterRuleType.ALL_CLASS_METHODS ->
+        if (normPkg.isNotEmpty()) "$normPkg/$normCls;.*" else "$normCls;.*"
+      FilterRuleType.METHOD_ALL_CLASSES -> ".*;$normMethod"
+      FilterRuleType.CLASS_METHOD ->
+        if (normPkg.isNotEmpty()) "$normPkg/$normCls;$normMethod" else "$normCls;$normMethod"
+      FilterRuleType.CUSTOM_REGEX -> customPattern.orEmpty()
+    }
+  }
+
+  fun toFilterLine(): String {
+    val expr = toRuleExpression()
+    if (expr.isBlank()) return ""
+    return if (isBlacklist) "!$expr" else expr
+  }
 }
 
 object DccConfigCodec {

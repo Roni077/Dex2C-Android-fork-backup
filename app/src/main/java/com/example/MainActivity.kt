@@ -105,15 +105,16 @@ import com.example.ui.DexLoadState
 import com.example.ui.components.ApkPickerSheet
 import com.example.ui.components.ApkPreviewSheet
 import com.example.ui.components.ExpressiveMotion
-import com.example.ui.components.RustJniBridgeSheet
 import com.example.ui.screens.BuildHubScreen
 import com.example.ui.screens.BuildHubTab
 import com.example.ui.screens.ClassesScreen
+import com.example.ui.screens.ClassesSubTab
 import com.example.ui.screens.CloudBuildScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.MethodDetailScreen
 import com.example.ui.screens.OnboardingScreen
 import com.example.ui.screens.SettingsScreen
+import com.example.ui.screens.SmaliClassScreen
 import com.example.ui.theme.Dex2cTheme
 import com.example.ui.theme.EditorDisplaySettings
 import kotlinx.coroutines.launch
@@ -123,6 +124,7 @@ const val ROUTE_CLASSES = "classes"
 const val ROUTE_BUILD = "build"
 const val ROUTE_CLOUD = "cloud"
 const val ROUTE_METHOD_DETAIL = "method_detail"
+const val ROUTE_SMALI_CLASS = "smali_class"
 const val ROUTE_SETTINGS = "settings"
 const val ROUTE_ONBOARDING = "onboarding"
 
@@ -175,6 +177,7 @@ class MainActivity : ComponentActivity() {
             fontSizeSp = appSettings.codeFontSizeSp,
             showLineNumbers = appSettings.showLineNumbers,
             maxLinesLimit = appSettings.maxCodePreviewLines,
+            smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
           ),
       ) {
         Dex2cApp(
@@ -223,9 +226,11 @@ fun Dex2cApp(
   val isLoadingApps by viewModel.isLoadingApps.collectAsStateWithLifecycle()
   val appSearchQuery by viewModel.appSearchQuery.collectAsStateWithLifecycle()
   val recentFiles by viewModel.recentFiles.collectAsStateWithLifecycle()
+  val lastBytecodeSummary by viewModel.lastBytecodeSummary.collectAsStateWithLifecycle()
   val stagingState by viewModel.stagingState.collectAsStateWithLifecycle()
   val filterMatchSummary by viewModel.filterMatchSummary.collectAsStateWithLifecycle()
-  val isRustBridgeSheetOpen by viewModel.isRustBridgeSheetOpen.collectAsStateWithLifecycle()
+  val smaliClassState by viewModel.smaliClassState.collectAsStateWithLifecycle()
+  var pendingSmaliExportText by remember { mutableStateOf<String?>(null) }
 
   val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
   val appSettingsHydrated by viewModel.appSettingsHydrated.collectAsStateWithLifecycle()
@@ -300,10 +305,12 @@ fun Dex2cApp(
       }
     }
 
-  val exportRustZipLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
-      if (uri != null) {
-        viewModel.exportRustBridgeZip(uri)
+  val exportSmaliLauncher =
+    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+      val text = pendingSmaliExportText
+      pendingSmaliExportText = null
+      if (uri != null && text != null) {
+        viewModel.exportSmaliToUri(uri, text)
       }
     }
 
@@ -335,6 +342,7 @@ fun Dex2cApp(
   }
 
   var buildHubTab by rememberSaveable { mutableStateOf(BuildHubTab.PIPELINE) }
+  var classesSubTab by rememberSaveable { mutableStateOf(ClassesSubTab.EXPLORER) }
   LaunchedEffect(appSettings.showOutputScreen) {
     if (!appSettings.showOutputScreen && buildHubTab == BuildHubTab.OUTPUT) {
       buildHubTab = BuildHubTab.PIPELINE
@@ -354,6 +362,7 @@ fun Dex2cApp(
   val showTopBarAndNav =
     appSettingsHydrated &&
       currentRoute != ROUTE_METHOD_DETAIL &&
+      currentRoute != ROUTE_SMALI_CLASS &&
       currentRoute != ROUTE_SETTINGS &&
       currentRoute != ROUTE_ONBOARDING
 
@@ -466,7 +475,7 @@ fun Dex2cApp(
               remember(appSettingsHydrated) {
                 if (appSettings.hasCompletedOnboarding) ROUTE_HOME else ROUTE_ONBOARDING
               }
-            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_HOME, ROUTE_CLASSES, ROUTE_BUILD, ROUTE_CLOUD, ROUTE_METHOD_DETAIL, ROUTE_SETTINGS)
+            val routeOrder = listOf(ROUTE_ONBOARDING, ROUTE_HOME, ROUTE_CLASSES, ROUTE_BUILD, ROUTE_CLOUD, ROUTE_METHOD_DETAIL, ROUTE_SMALI_CLASS, ROUTE_SETTINGS)
             NavHost(
               navController = navController,
               startDestination = startDestination,
@@ -518,8 +527,10 @@ fun Dex2cApp(
                 onSelectDexEntry = { viewModel.switchDexEntry(it) },
                 onAutoSelectAppMethods = { viewModel.autoSelectAppMethods() },
                 onClearSelection = { viewModel.clearSelection() },
-                onOpenRustBridge = { viewModel.openRustBridgeSheet() },
-                onNavigateToClasses = { navigateTopLevel(ROUTE_CLASSES) },
+                onNavigateToClasses = {
+                  classesSubTab = ClassesSubTab.EXPLORER
+                  navigateTopLevel(ROUTE_CLASSES)
+                },
                 onNavigateToExport = {
                   if (appSettings.showOutputScreen) {
                     buildHubTab = BuildHubTab.OUTPUT
@@ -527,7 +538,16 @@ fun Dex2cApp(
                   }
                 },
                 onFocusHeaderDex = { viewModel.focusHeaderDexEntry(it) },
+                lastBytecodeSummary = lastBytecodeSummary,
                 showOutputScreen = appSettings.showOutputScreen,
+                config = config,
+                filterMatchSummary = filterMatchSummary,
+                onTogglePresetRule = { viewModel.togglePresetRuleLine(it) },
+                onApplyFilterRules = { viewModel.applyFilterRules() },
+                onOpenRuleBuilder = {
+                  classesSubTab = ClassesSubTab.FILTER_RULES
+                  navigateTopLevel(ROUTE_CLASSES)
+                },
               )
             }
 
@@ -557,6 +577,25 @@ fun Dex2cApp(
                   navController.navigate(ROUTE_METHOD_DETAIL)
                 },
                 onInspectSelfApk = { viewModel.inspectLiveAppApk() },
+                onInspectClassSmali = { cls ->
+                  viewModel.inspectClassSmali(cls)
+                  navController.navigate(ROUTE_SMALI_CLASS)
+                },
+                config = config,
+                filterMatchSummary = filterMatchSummary,
+                onUpdateConfig = { viewModel.updateConfig(it) },
+                onSyncSelectionToWildcardRules = { isBlacklist ->
+                  viewModel.syncSelectionToWildcardRules(isBlacklist)
+                },
+                onApplyFilterRules = { viewModel.applyFilterRules() },
+                onToggleOnlyMatchingFilterRules = { viewModel.toggleOnlyMatchingFilterRules() },
+                onQuickPackageRule = { pkg, isBlacklist ->
+                  viewModel.addQuickPackageRule(pkg, isBlacklist)
+                },
+                onQuickClassRule = { cls, isBlacklist ->
+                  viewModel.addQuickClassRule(cls, isBlacklist)
+                },
+                initialSubTab = classesSubTab,
               )
             }
 
@@ -593,6 +632,9 @@ fun Dex2cApp(
                 isBundleDirty = isBundleDirty,
                 onEnsureBundleBuilt = { viewModel.ensureBundleBuilt() },
                 showOutputScreen = appSettings.showOutputScreen,
+                onSyncSelectionToWildcardRules = { isBlacklist ->
+                  viewModel.syncSelectionToWildcardRules(isBlacklist)
+                },
               )
             }
 
@@ -646,6 +688,38 @@ fun Dex2cApp(
                   onToggleSelect = { viewModel.toggleMethodSelection(currentInspection.method.id) },
                   onCopyCCode = { copyText(it) },
                   onBack = { navController.popBackStack() },
+                  onOpenClassSmali = {
+                    viewModel.inspectClassSmali(
+                      currentInspection.dexClass,
+                      focusMethodName = currentInspection.method.methodRef.name,
+                    )
+                    navController.navigate(ROUTE_SMALI_CLASS)
+                  },
+                )
+              }
+            }
+
+            composable(ROUTE_SMALI_CLASS) {
+              val currentSmali = smaliClassState
+              if (currentSmali != null) {
+                SmaliClassScreen(
+                  state = currentSmali,
+                  onCopySmali = { copyText(it) },
+                  onExportSmali = { fileName, smaliText ->
+                    pendingSmaliExportText = smaliText
+                    exportSmaliLauncher.launch(fileName)
+                  },
+                  onBack = { navController.popBackStack() },
+                  selectedMethodIds = selectedMethodIds,
+                  onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
+                  onInspectMethodC = { method ->
+                    viewModel.inspectMethod(currentSmali.dexClass, method)
+                    navController.navigate(ROUTE_METHOD_DETAIL)
+                  },
+                  smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
+                  onSelectSmaliSyntaxTheme = { selectedTheme ->
+                    viewModel.updateAppSettings { it.copy(smaliSyntaxTheme = selectedTheme) }
+                  },
                 )
               }
             }
@@ -683,10 +757,6 @@ fun Dex2cApp(
                   navController.popBackStack()
                   buildHubTab = BuildHubTab.PIPELINE
                   navigateTopLevel(ROUTE_BUILD)
-                },
-                onOpenRustBridge = {
-                  navController.popBackStack()
-                  viewModel.openRustBridgeSheet()
                 },
                 onClearRecentHistory = { viewModel.clearRecentHistory() },
                 onResetAllSettings = { clearGitHub -> viewModel.resetAllSettingsToDefaults(clearGitHub) },
@@ -782,14 +852,6 @@ fun Dex2cApp(
       onSelectPrimaryDexEntry = { viewModel.selectPrimaryStagedDexEntry() },
       onConfirmLoad = { viewModel.commitStagedDex() },
       onDismiss = { viewModel.dismissStagingPreview() },
-    )
-  }
-
-  if (isRustBridgeSheetOpen) {
-    RustJniBridgeSheet(
-      onCopyCode = { copyText(it) },
-      onExportZip = { exportRustZipLauncher.launch("dexparser_jni_rust.zip") },
-      onDismiss = { viewModel.closeRustBridgeSheet() },
     )
   }
 }

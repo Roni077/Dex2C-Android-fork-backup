@@ -61,8 +61,6 @@ import com.example.R
 import com.example.dex.DexMethodStructuralMeta
 import com.example.dex.DexParsedFile
 import com.example.dex.DexTryBlock
-import com.example.dex.NativeDexParserBridge
-import com.example.dex.RustJniScaffolding
 import com.example.dex.descriptorToJavaName
 import com.example.ui.theme.JetBrainsMonoFontFamily
 
@@ -70,7 +68,6 @@ import com.example.ui.theme.JetBrainsMonoFontFamily
 @Composable
 fun DexMapListCard(
   dex: DexParsedFile,
-  onOpenRustBridge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showAllSheet by remember { mutableStateOf(false) }
@@ -113,17 +110,6 @@ fun DexMapListCard(
               overflow = TextOverflow.Ellipsis,
             )
           }
-        }
-        Spacer(Modifier.width(6.dp))
-        OutlinedButton(
-          onClick = onOpenRustBridge,
-          shape = RoundedCornerShape(20.dp),
-          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-          modifier = Modifier.testTag("open_rust_jni_bridge_btn"),
-        ) {
-          Icon(Icons.Rounded.Memory, contentDescription = null, modifier = Modifier.size(14.dp))
-          Spacer(Modifier.width(4.dp))
-          Text(stringResource(R.string.label_rust_jni_bridge), style = MaterialTheme.typography.labelSmall, maxLines = 1)
         }
       }
 
@@ -552,112 +538,6 @@ private fun AnnotationBadgeRow(
           fontFamily = JetBrainsMonoFontFamily,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-      }
-    }
-  }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RustJniBridgeSheet(
-  onCopyCode: (String) -> Unit,
-  onExportZip: () -> Unit,
-  onDismiss: () -> Unit,
-) {
-  val files = remember { RustJniScaffolding.generateBridgeFiles() }
-  var selectedIdx by remember { mutableIntStateOf(0) }
-  val activeFile = files[selectedIdx.coerceIn(files.indices)]
-  val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-  ModalBottomSheet(
-    onDismissRequest = onDismiss,
-    sheetState = sheetState,
-    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-  ) {
-    Column(
-      modifier =
-        Modifier.fillMaxWidth()
-          .height(540.dp)
-          .windowInsetsPadding(WindowInsets.navigationBars)
-          .padding(horizontal = 16.dp, vertical = 6.dp),
-      verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Column(modifier = Modifier.weight(1f)) {
-          Text(
-            text = stringResource(R.string.rust_bridge_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-          )
-          Text(
-            text = stringResource(R.string.rust_bridge_subtitle),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-        TagPill(
-          text = if (NativeDexParserBridge.isNativeLoaded) "SO LOADED" else "KOTLIN FALLBACK",
-          containerColor =
-            if (NativeDexParserBridge.isNativeLoaded) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.secondaryContainer,
-          contentColor =
-            if (NativeDexParserBridge.isNativeLoaded) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-      }
-
-      LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        itemsIndexed(files) { idx, file ->
-          FilterChip(
-            selected = idx == selectedIdx,
-            onClick = { selectedIdx = idx },
-            leadingIcon = { Icon(Icons.Rounded.Code, contentDescription = null, modifier = Modifier.size(15.dp)) },
-            label = { Text(file.fileName, fontFamily = JetBrainsMonoFontFamily) },
-          )
-        }
-      }
-
-      Text(
-        text = "${activeFile.relativePath} — ${activeFile.description}",
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-
-      SyntaxCodeViewer(
-        code = activeFile.content,
-        modifier = Modifier.weight(1f).fillMaxWidth(),
-      )
-
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-      ) {
-        OutlinedButton(
-          onClick = { onCopyCode(activeFile.content) },
-          shape = RoundedCornerShape(20.dp),
-          modifier = Modifier.weight(1f).testTag("copy_rust_bridge_btn"),
-        ) {
-          Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(6.dp))
-          Text(stringResource(R.string.action_copy_code))
-        }
-        Button(
-          onClick = onExportZip,
-          shape = RoundedCornerShape(20.dp),
-          modifier = Modifier.weight(1.2f).testTag("export_rust_bridge_zip_btn"),
-        ) {
-          Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(6.dp))
-          Text("Export Crate .ZIP")
-        }
-      }
-      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-        TextButton(onClick = onDismiss) { Text("Close") }
       }
     }
   }

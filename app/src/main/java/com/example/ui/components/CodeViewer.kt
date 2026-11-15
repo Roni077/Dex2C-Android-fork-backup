@@ -28,7 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dex.DalvikInstruction
+import com.example.dex.DalvikPayload
 import com.example.dex.DexTryBlock
+import com.example.dex.OpCategory
 import com.example.ui.theme.JetBrainsMonoFontFamily
 import com.example.ui.theme.LocalEditorSettings
 import com.example.ui.theme.LocalSyntaxPalette
@@ -162,6 +164,29 @@ fun DalvikInstructionViewer(
               fontSize = codeFontSp,
               lineHeight = lineHeightSp,
             )
+          }
+          val payload = insn.payload
+          if (insn.category == OpCategory.PAYLOAD && payload != null) {
+            val detailLine =
+              when (payload) {
+                is DalvikPayload.PackedSwitch ->
+                  payload.targetOffsets.mapIndexed { idx, t -> "${payload.firstKey + idx}->L_%04x".format(t) }
+                    .joinToString(", ")
+                is DalvikPayload.SparseSwitch ->
+                  payload.cases.joinToString(", ") { (k, t) -> "$k->L_%04x".format(t) }
+                is DalvikPayload.FillArrayData ->
+                  "data=[${payload.previewElements.joinToString(", ")}] hex=${payload.hexPreview}"
+              }
+            if (detailLine.isNotBlank()) {
+              Text(
+                text = "      ; $detailLine",
+                color = palette.comment,
+                fontFamily = JetBrainsMonoFontFamily,
+                fontSize = addrFontSp,
+                lineHeight = lineHeightSp,
+                modifier = Modifier.padding(bottom = 2.dp),
+              )
+            }
           }
         }
       }

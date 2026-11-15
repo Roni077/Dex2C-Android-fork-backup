@@ -78,9 +78,15 @@ import com.example.R
 import com.example.apk.BinarySourceType
 import com.example.apk.PickerTab
 import com.example.apk.RecentBinaryItem
+import com.example.dex.BytecodeOverviewSummary
+import com.example.dex.buildBytecodeOverviewSummary
+import com.example.transpiler.FilterMatchSummary
+import com.example.transpiler.TranspilerConfig
 import com.example.ui.DexLoadState
+import com.example.ui.components.BytecodeOverviewCard
 import com.example.ui.components.DexMapListCard
 import com.example.ui.components.ExpressiveMotion
+import com.example.ui.components.HomeFilterFocusCard
 import com.example.ui.components.MetricTile
 import com.example.ui.components.TagPill
 import com.example.ui.components.expressivePressScale
@@ -103,18 +109,22 @@ fun HomeScreen(
   onSelectDexEntry: (String) -> Unit,
   onAutoSelectAppMethods: () -> Unit,
   onClearSelection: () -> Unit,
-  onOpenRustBridge: () -> Unit,
   onNavigateToClasses: () -> Unit,
   onNavigateToExport: () -> Unit,
   modifier: Modifier = Modifier,
+  lastBytecodeSummary: BytecodeOverviewSummary? = null,
   onFocusHeaderDex: (String) -> Unit = {},
   showOutputScreen: Boolean = true,
+  config: TranspilerConfig = TranspilerConfig(),
+  filterMatchSummary: FilterMatchSummary? = null,
+  onTogglePresetRule: (String) -> Unit = {},
+  onApplyFilterRules: () -> Unit = {},
+  onOpenRuleBuilder: () -> Unit = onNavigateToClasses,
 ) {
   var activeTab by rememberSaveable { mutableStateOf(HomeTab.OVERVIEW) }
 
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val isWide = maxWidth >= 680.dp
-    val needsCompactScroll = maxHeight < 480.dp
 
     when (loadState) {
       is DexLoadState.Ready -> {
@@ -174,13 +184,11 @@ fun HomeScreen(
             }
           }
 
-          val paneScrollState = rememberScrollState()
           Box(
             modifier =
               Modifier
                 .weight(1f)
-                .fillMaxWidth()
-                .then(if (needsCompactScroll) Modifier.verticalScroll(paneScrollState) else Modifier),
+                .fillMaxWidth(),
           ) {
             AnimatedContent(
               targetState = activeTab,
@@ -191,13 +199,22 @@ fun HomeScreen(
             ) { tab ->
               when (tab) {
                 HomeTab.OVERVIEW -> {
+                  val overviewScrollState = rememberScrollState()
                   val bannerSummary =
                     if (loadedDexList.size > 1) "${loadedDexList.size} DEXes merged"
                     else loadState.activeEntryName
+                  val liveOverviewSummary =
+                    remember(loadState.sourceLabel, loadState.activeEntryName, loadState.loadedDexes) {
+                      buildBytecodeOverviewSummary(
+                        sourceLabel = loadState.sourceLabel,
+                        activeEntryName = loadState.activeEntryName,
+                        dexList = loadedDexList,
+                      )
+                    }
 
                   if (isWide) {
                     Row(
-                      modifier = Modifier.fillMaxSize(),
+                      modifier = Modifier.fillMaxSize().verticalScroll(overviewScrollState),
                       horizontalArrangement = Arrangement.spacedBy(12.dp),
                       verticalAlignment = Alignment.Top,
                     ) {
@@ -221,6 +238,14 @@ fun HomeScreen(
                           showOutputScreen = showOutputScreen,
                           compact = true,
                         )
+                        HomeFilterFocusCard(
+                          config = config,
+                          filterMatchSummary = filterMatchSummary,
+                          hasLoadedDex = true,
+                          onTogglePresetRule = onTogglePresetRule,
+                          onApplyFilterRules = onApplyFilterRules,
+                          onOpenRuleBuilder = onOpenRuleBuilder,
+                        )
                       }
                       Column(
                         modifier = Modifier.weight(0.95f),
@@ -240,11 +265,20 @@ fun HomeScreen(
                           totalSizeBytes = totalSizeBytes,
                           compact = true,
                         )
+                        BytecodeOverviewCard(
+                          summary = liveOverviewSummary,
+                          isLive = true,
+                          canReopenLast = false,
+                          onBrowseClasses = onNavigateToClasses,
+                          onReopenLast = {},
+                          onInspectSelfApk = onInspectSelfApk,
+                          compact = true,
+                        )
                       }
                     }
                   } else {
                     Column(
-                      modifier = Modifier.fillMaxWidth(),
+                      modifier = Modifier.fillMaxWidth().verticalScroll(overviewScrollState),
                       verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                       HeroHomeBanner(
@@ -270,11 +304,28 @@ fun HomeScreen(
                         showOutputScreen = showOutputScreen,
                         compact = true,
                       )
+                      HomeFilterFocusCard(
+                        config = config,
+                        filterMatchSummary = filterMatchSummary,
+                        hasLoadedDex = true,
+                        onTogglePresetRule = onTogglePresetRule,
+                        onApplyFilterRules = onApplyFilterRules,
+                        onOpenRuleBuilder = onOpenRuleBuilder,
+                      )
                       HomeMetricsGrid(
                         totalClasses = totalClasses,
                         totalMethods = totalMethods,
                         totalStrings = totalStrings,
                         totalSizeBytes = totalSizeBytes,
+                        compact = true,
+                      )
+                      BytecodeOverviewCard(
+                        summary = liveOverviewSummary,
+                        isLive = true,
+                        canReopenLast = false,
+                        onBrowseClasses = onNavigateToClasses,
+                        onReopenLast = {},
+                        onInspectSelfApk = onInspectSelfApk,
                         compact = true,
                       )
                     }
@@ -297,7 +348,6 @@ fun HomeScreen(
                       )
                       DexMapListCard(
                         dex = dex,
-                        onOpenRustBridge = onOpenRustBridge,
                         modifier = Modifier.weight(1f),
                       )
                     }
@@ -314,7 +364,6 @@ fun HomeScreen(
                       )
                       DexMapListCard(
                         dex = dex,
-                        onOpenRustBridge = onOpenRustBridge,
                       )
                     }
                   }
@@ -327,12 +376,21 @@ fun HomeScreen(
 
       else -> {
         val scrollState = rememberScrollState()
+        val matchingRecent =
+          remember(lastBytecodeSummary, recentFiles) {
+            if (lastBytecodeSummary == null) null
+            else
+              recentFiles.firstOrNull {
+                it.displayName == lastBytecodeSummary.sourceLabel ||
+                  it.packageName == lastBytecodeSummary.sourceLabel
+              } ?: recentFiles.firstOrNull()
+          }
         Column(
           modifier =
             Modifier
               .fillMaxSize()
               .widthIn(max = 880.dp)
-              .then(if (needsCompactScroll) Modifier.verticalScroll(scrollState) else Modifier)
+              .verticalScroll(scrollState)
               .padding(horizontal = 16.dp, vertical = 12.dp),
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -412,9 +470,27 @@ fun HomeScreen(
                   onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                   onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
                 )
+                if (loadState is DexLoadState.Empty) {
+                  BytecodeOverviewCard(
+                    summary = lastBytecodeSummary,
+                    isLive = false,
+                    canReopenLast = matchingRecent != null,
+                    onBrowseClasses = onNavigateToClasses,
+                    onReopenLast = { matchingRecent?.let(onSelectRecent) },
+                    onInspectSelfApk = onInspectSelfApk,
+                  )
+                }
               }
               Column(modifier = Modifier.weight(0.9f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 stateContent()
+                HomeFilterFocusCard(
+                  config = config,
+                  filterMatchSummary = filterMatchSummary,
+                  hasLoadedDex = false,
+                  onTogglePresetRule = onTogglePresetRule,
+                  onApplyFilterRules = onApplyFilterRules,
+                  onOpenRuleBuilder = onOpenRuleBuilder,
+                )
               }
             }
             if (recentFiles.isNotEmpty() && loadState is DexLoadState.Empty) {
@@ -428,6 +504,24 @@ fun HomeScreen(
             HeroHomeBanner(
               onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
               onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+            )
+            if (loadState is DexLoadState.Empty) {
+              BytecodeOverviewCard(
+                summary = lastBytecodeSummary,
+                isLive = false,
+                canReopenLast = matchingRecent != null,
+                onBrowseClasses = onNavigateToClasses,
+                onReopenLast = { matchingRecent?.let(onSelectRecent) },
+                onInspectSelfApk = onInspectSelfApk,
+              )
+            }
+            HomeFilterFocusCard(
+              config = config,
+              filterMatchSummary = filterMatchSummary,
+              hasLoadedDex = false,
+              onTogglePresetRule = onTogglePresetRule,
+              onApplyFilterRules = onApplyFilterRules,
+              onOpenRuleBuilder = onOpenRuleBuilder,
             )
             if (recentFiles.isNotEmpty() && loadState is DexLoadState.Empty) {
               RecentQuickStrip(

@@ -143,6 +143,46 @@ data class DexTryBlock(
   val endOffsetWord: Int get() = startOffsetWord + insnCount
 }
 
+sealed interface DalvikPayload {
+  val offsetWords: Int
+  val wordCount: Int
+  val summaryLabel: String
+
+  data class PackedSwitch(
+    override val offsetWords: Int,
+    override val wordCount: Int,
+    val firstKey: Int,
+    val targetOffsets: List<Int>,
+  ) : DalvikPayload {
+    override val summaryLabel: String
+      get() {
+        val lastKey = if (targetOffsets.isEmpty()) firstKey else firstKey + targetOffsets.size - 1
+        return "packed-switch ($firstKey..$lastKey, ${targetOffsets.size} targets)"
+      }
+  }
+
+  data class SparseSwitch(
+    override val offsetWords: Int,
+    override val wordCount: Int,
+    val cases: List<Pair<Int, Int>>,
+  ) : DalvikPayload {
+    override val summaryLabel: String
+      get() = "sparse-switch (${cases.size} cases)"
+  }
+
+  data class FillArrayData(
+    override val offsetWords: Int,
+    override val wordCount: Int,
+    val elementWidthBytes: Int,
+    val elementCount: Int,
+    val previewElements: List<String>,
+    val hexPreview: String,
+  ) : DalvikPayload {
+    override val summaryLabel: String
+      get() = "fill-array-data (${elementWidthBytes}B × $elementCount)"
+  }
+}
+
 data class DalvikInstruction(
   val offsetWords: Int,
   val widthWords: Int,
@@ -163,6 +203,7 @@ data class DalvikInstruction(
   val typeRef: String? = null,
   val fieldRef: DexFieldRef? = null,
   val methodRef: DexMethodRef? = null,
+  val payload: DalvikPayload? = null,
 ) {
   fun formatHexWords(): String = rawWords.joinToString(" ") { "%04X".format(it and 0xFFFF) }
 }
@@ -337,3 +378,76 @@ fun formatAccessFlags(flags: Int, isMethod: Boolean = false): String {
   if (isMethod && (flags and 0x10000) != 0) parts += "constructor"
   return parts.filter { it.isNotEmpty() }.joinToString(" ")
 }
+
+data class ClassDefinitionSummary(
+  val simpleName: String,
+  val packageName: String,
+  val methodCount: Int,
+  val bytecodeMethodCount: Int,
+  val isFramework: Boolean,
+)
+
+data class BytecodeOverviewSummary(
+  val sourceLabel: String,
+  val entryName: String,
+  val dexCount: Int,
+  val dexVersion: String,
+  val totalMethods: Int,
+  val bytecodeMethods: Int,
+  val totalClassDefinitions: Int,
+  val appClassDefinitions: Int,
+  val totalStrings: Int,
+  val analyzedAtMillis: Long,
+  val topClasses: List<ClassDefinitionSummary>,
+)
+
+fun buildBytecodeOverviewSummary(
+  sourceLabel: String,
+  activeEntryName: String,
+  dexList: List<DexParsedFile>,
+  analyzedAtMillis: Long = System.currentTimeMillis(),
+): BytecodeOverviewSummary {
+  val primary = dexList.firstOrNull { it.entryName == activeEntryName } ?: dexList.firstOrNull()
+  val allClasses = dexList.flatMap { it.classes }
+  val encodedMethodCount = allClasses.sumOf { it.allMethods.size }
+  val headerMethodCount = dexList.sumOf { it.header.methodIdsSize }
+  val headerClassCount = dexList.sumOf { it.header.classDefsSize }
+  val bytecodeMethodCount = allClasses.sumOf { it.bytecodeMethodCount }
+  val appClassCount = allClasses.count { !it.isFrameworkClass }
+  val stringCount = dexList.sumOf { it.header.stringIdsSize }
+
+  val hasAppClasses = allClasses.any { !it.isFrameworkClass }
+  val rankedPool = if (hasAppClasses) allClasses.filter { !it.isFrameworkClass } else allClasses
+  val topClasses =
+    rankedPool
+      .sortedWith(
+        compareByDescending<DexClassInfo> { it.bytecodeMethodCount }
+          .thenByDescending { it.allMethods.size }
+          .thenBy { it.simpleName }
+      )
+      .take(3)
+      .map { cls ->
+        ClassDefinitionSummary(
+          simpleName = cls.simpleName.ifBlank { cls.descriptor },
+          packageName = cls.packageName,
+          methodCount = cls.allMethods.size,
+          bytecodeMethodCount = cls.bytecodeMethodCount,
+          isFramework = cls.isFrameworkClass,
+        )
+      }
+
+  return BytecodeOverviewSummary(
+    sourceLabel = sourceLabel,
+    entryName = primary?.entryName ?: activeEntryName,
+    dexCount = dexList.size.coerceAtLeast(1),
+    dexVersion = primary?.header?.version?.ifBlank { "035" } ?: "035",
+    totalMethods = if (headerMethodCount > 0) headerMethodCount else encodedMethodCount,
+    bytecodeMethods = bytecodeMethodCount,
+    totalClassDefinitions = if (headerClassCount > 0) headerClassCount else allClasses.size,
+    appClassDefinitions = appClassCount,
+    totalStrings = stringCount,
+    analyzedAtMillis = analyzedAtMillis,
+    topClasses = topClasses,
+  )
+}
+

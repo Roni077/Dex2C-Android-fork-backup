@@ -45,6 +45,12 @@ data class SyntaxPalette(
   val opcode: Color,
   val register: Color,
   val label: Color,
+  val opcodeBranch: Color = opcode,
+  val opcodeInvoke: Color = opcode,
+  val opcodeAccess: Color = opcode,
+  val parameterRegister: Color = register,
+  val memberTarget: Color = defaultText,
+  val isHighContrastBytecode: Boolean = false,
 )
 
 val DarkSyntaxPalette =
@@ -81,6 +87,27 @@ val LightSyntaxPalette =
     opcode = Color(0xFF02724A),
     register = Color(0xFF9E5000),
     label = Color(0xFF6B35B5),
+  )
+
+val BytecodeHighContrastSyntaxPalette =
+  SyntaxPalette(
+    codeBackground = Color(0xFF02050A),
+    lineNumber = Color(0xFF8AA4C8),
+    defaultText = Color(0xFFF8FAFC),
+    keyword = Color(0xFFFF5C93),
+    typeName = Color(0xFF66D9FF),
+    stringLiteral = Color(0xFF39FF88),
+    comment = Color(0xFF88A0BE),
+    numberLiteral = Color(0xFFFF9E3B),
+    opcode = Color(0xFF00FF9D),
+    register = Color(0xFFFFB000),
+    label = Color(0xFFE296FF),
+    opcodeBranch = Color(0xFFFF3B6B),
+    opcodeInvoke = Color(0xFF00F0FF),
+    opcodeAccess = Color(0xFFFFEA00),
+    parameterRegister = Color(0xFF80FFFF),
+    memberTarget = Color(0xFFC6FF4D),
+    isHighContrastBytecode = true,
   )
 
 /**

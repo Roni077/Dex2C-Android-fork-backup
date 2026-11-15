@@ -35,6 +35,8 @@ import com.example.data.CloudPreferences
 import com.example.data.RecentFilesStore
 import com.example.data.TranspilerPreferences
 import com.example.dex.ApkDexEntry
+import com.example.dex.BytecodeOverviewSummary
+import com.example.dex.ControlFlowGraphBuilder
 import com.example.dex.DalvikDisassembler
 import com.example.dex.DalvikInstruction
 import com.example.dex.DexClassInfo
@@ -43,16 +45,18 @@ import com.example.dex.DexHelper
 import com.example.dex.DexMethodStructuralMeta
 import com.example.dex.DexParsedFile
 import com.example.dex.DexParser
+import com.example.dex.buildBytecodeOverviewSummary
 import com.example.dex.DexTryBlock
-import com.example.dex.RustJniScaffolding
-import java.io.BufferedOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
+import com.example.dex.MethodControlFlowGraph
+import com.example.dex.SmaliClassDisassembler
+import com.example.dex.SmaliMethodSpan
 import com.example.transpiler.DccConfigCodec
 import com.example.transpiler.Dex2cTranspiler
 import com.example.transpiler.FilterMatchSummary
 import com.example.transpiler.FilterRuleEngine
+import com.example.transpiler.FilterRuleType
 import com.example.transpiler.GeneratedBundle
+import com.example.transpiler.StructuredFilterRule
 import com.example.transpiler.TranspileProgress
 import com.example.transpiler.TranspilerConfig
 import com.example.transpiler.ZipBundleExporter
@@ -115,7 +119,32 @@ data class MethodInspectionState(
   val tryBlocks: List<DexTryBlock>,
   val transpiledC: String,
   val structuralMeta: DexMethodStructuralMeta,
+  val cfg: MethodControlFlowGraph = ControlFlowGraphBuilder.build(instructions, tryBlocks),
+  val methodSmali: String = "",
 )
+
+sealed interface SmaliClassUiState {
+  val dexClass: DexClassInfo
+
+  data class Loading(override val dexClass: DexClassInfo) : SmaliClassUiState
+
+  data class Ready(
+    override val dexClass: DexClassInfo,
+    val smaliText: String,
+    val lines: List<String>,
+    val lineCount: Int,
+    val methodCount: Int,
+    val fieldCount: Int,
+    val durationMs: Long,
+    val initialFocusMethodName: String? = null,
+    val methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
+  ) : SmaliClassUiState
+
+  data class Error(
+    override val dexClass: DexClassInfo,
+    val message: String,
+  ) : SmaliClassUiState
+}
 
 enum class ClassSortOrder(val label: String) {
   NAME_ASC("Name A–Z"),
@@ -151,6 +180,7 @@ data class ClassFilterState(
   val hideFramework: Boolean = true,
   val onlyWithBytecode: Boolean = true,
   val onlySelected: Boolean = false,
+  val onlyMatchingFilterRules: Boolean = false,
   val dexSourceFilter: String? = null,
   val sortOrder: ClassSortOrder = ClassSortOrder.NAME_ASC,
   val classTypeFilter: ClassTypeFilter = ClassTypeFilter.ALL,
@@ -163,7 +193,8 @@ data class ClassFilterState(
       (if (classTypeFilter != ClassTypeFilter.ALL) 1 else 0) +
         (if (hideInnerClasses) 1 else 0) +
         (if (methodScopeFilter != MethodScopeFilter.ALL) 1 else 0) +
-        (if (nonEmptyPackagesOnly) 1 else 0)
+        (if (nonEmptyPackagesOnly) 1 else 0) +
+        (if (onlyMatchingFilterRules) 1 else 0)
 }
 
 data class CloudApkChoice(
@@ -237,11 +268,14 @@ class Dex2cViewModel @JvmOverloads constructor(
   val recentFiles: StateFlow<List<RecentBinaryItem>> =
     recentStore.recentItemsFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+  val lastBytecodeSummary: StateFlow<BytecodeOverviewSummary?> =
+    recentStore.lastBytecodeSummaryFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
   private val _stagingState = MutableStateFlow<ApkStagingState?>(null)
   val stagingState: StateFlow<ApkStagingState?> = _stagingState.asStateFlow()
 
-  private val _isRustBridgeSheetOpen = MutableStateFlow(false)
-  val isRustBridgeSheetOpen: StateFlow<Boolean> = _isRustBridgeSheetOpen.asStateFlow()
+  private val _smaliClassState = MutableStateFlow<SmaliClassUiState?>(null)
+  val smaliClassState: StateFlow<SmaliClassUiState?> = _smaliClassState.asStateFlow()
 
   // App personalization, editor & DEX parser preferences
   private val _appSettings = MutableStateFlow(AppSettings())
@@ -281,22 +315,33 @@ class Dex2cViewModel @JvmOverloads constructor(
   private var dexByteCache: Map<String, ByteArray> = emptyMap()
   private var currentSourceLabel: String = ""
   private var bundleJob: Job? = null
+  private var smaliJob: Job? = null
   private var devicePollJob: Job? = null
   private var repoSetupJob: Job? = null
   private var cloudRunPollJob: Job? = null
 
+  val filterMatchSummary: StateFlow<FilterMatchSummary?> =
+    combine(_loadState, _config) { load, cfg ->
+      val ready = load as? DexLoadState.Ready ?: return@combine null
+      withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
   val filteredClasses: StateFlow<List<DexClassInfo>> =
-    combine(_loadState, _filterState, _selectedMethodIds) { load, filter, selected ->
+    combine(_loadState, _filterState, _selectedMethodIds, filterMatchSummary) { load, filter, selected, ruleMatch ->
       val ready = load as? DexLoadState.Ready ?: return@combine emptyList()
       val activeDexFilter =
         filter.dexSourceFilter?.takeIf { it in ready.loadedDexes }
       val query = filter.searchQuery.trim().lowercase()
+      val ruleMatchedIds = ruleMatch?.matchedMethodIds
       val filtered =
         ready.mergedClasses.filter { cls ->
           if (activeDexFilter != null && cls.sourceEntryName != activeDexFilter) return@filter false
           if (filter.hideFramework && cls.isFrameworkClass) return@filter false
           if (filter.onlyWithBytecode && cls.bytecodeMethodCount == 0) return@filter false
           if (filter.onlySelected && cls.allMethods.none { it.id in selected }) return@filter false
+          if (filter.onlyMatchingFilterRules && ruleMatchedIds != null) {
+            if (cls.allMethods.none { it.id in ruleMatchedIds }) return@filter false
+          }
           val isInterfaceOrEnum = (cls.accessFlags and 0x4200) != 0
           when (filter.classTypeFilter) {
             ClassTypeFilter.ALL -> Unit
@@ -352,12 +397,6 @@ class Dex2cViewModel @JvmOverloads constructor(
         ClassSortOrder.DEX_ORDER -> packageFiltered
       }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
-  val filterMatchSummary: StateFlow<FilterMatchSummary?> =
-    combine(_loadState, _config) { load, cfg ->
-      val ready = load as? DexLoadState.Ready ?: return@combine null
-      withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
   private var hasInitializedFilterDefaults = false
   private var pendingAppSettingsWrites = 0
@@ -594,7 +633,7 @@ class Dex2cViewModel @JvmOverloads constructor(
     viewModelScope.launch {
       try {
         val label = preview.appLabel?.takeIf { it.isNotBlank() } ?: preview.sourceLabel
-        val preferNative = _appSettings.value.preferRustJniBridge
+        SmaliClassDisassembler.clearCache()
         val parsedList =
           coroutineScope {
             chosenEntries
@@ -605,7 +644,6 @@ class Dex2cViewModel @JvmOverloads constructor(
                     rawBytes = bytes,
                     sourceLabel = label,
                     entryName = entryName,
-                    preferNativeBridge = preferNative,
                   )
                 }
               }
@@ -696,7 +734,6 @@ class Dex2cViewModel @JvmOverloads constructor(
               rawBytes = bytes,
               sourceLabel = currentSourceLabel,
               entryName = entryName,
-              preferNativeBridge = _appSettings.value.preferRustJniBridge,
             )
           }
         val latest = _loadState.value as? DexLoadState.Ready ?: return@launch
@@ -748,6 +785,13 @@ class Dex2cViewModel @JvmOverloads constructor(
     _filterState.update { it.copy(dexSourceFilter = null) }
     val primary = dexMap.values.first()
     _loadState.value = DexLoadState.Ready(label, entries, primary.entryName, primary, dexMap)
+    val overviewSummary =
+      buildBytecodeOverviewSummary(
+        sourceLabel = label,
+        activeEntryName = primary.entryName,
+        dexList = dexMap.values.toList(),
+      )
+    viewModelScope.launch { recentStore.saveLastBytecodeSummary(overviewSummary) }
   }
 
   fun updateSearchQuery(query: String) {
@@ -764,6 +808,10 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun toggleOnlySelected() {
     _filterState.update { it.copy(onlySelected = !it.onlySelected) }
+  }
+
+  fun toggleOnlyMatchingFilterRules() {
+    _filterState.update { it.copy(onlyMatchingFilterRules = !it.onlyMatchingFilterRules) }
   }
 
   fun setClassSortOrder(sortOrder: ClassSortOrder) {
@@ -797,8 +845,55 @@ class Dex2cViewModel @JvmOverloads constructor(
         hideInnerClasses = false,
         methodScopeFilter = MethodScopeFilter.ALL,
         nonEmptyPackagesOnly = false,
+        onlyMatchingFilterRules = false,
       )
     }
+  }
+
+  fun togglePresetRuleLine(ruleLine: String) {
+    updateConfig { current ->
+      current.copy(filterRulesText = FilterRuleEngine.toggleRuleLine(current.filterRulesText, ruleLine))
+    }
+  }
+
+  fun addQuickPackageRule(packageName: String, isBlacklist: Boolean) {
+    val slashPkg =
+      if (packageName == "(default)" || packageName.isBlank()) ""
+      else packageName.replace('.', '/')
+    val rule =
+      StructuredFilterRule(
+        packageName = slashPkg,
+        className = "",
+        methodName = "",
+        isBlacklist = isBlacklist,
+        ruleType = FilterRuleType.PACKAGE_ALL,
+      )
+    updateConfig { current ->
+      current.copy(filterRulesText = FilterRuleEngine.upsertStructuredRule(current.filterRulesText, rule))
+    }
+    _statusBanner.value =
+      if (isBlacklist) "Added Blacklist rule for package $packageName"
+      else "Added Whitelist rule for package $packageName"
+  }
+
+  fun addQuickClassRule(dexClass: DexClassInfo, isBlacklist: Boolean) {
+    val slashPkg =
+      if (dexClass.packageName == "(default)" || dexClass.packageName.isBlank()) ""
+      else dexClass.packageName.replace('.', '/')
+    val rule =
+      StructuredFilterRule(
+        packageName = slashPkg,
+        className = dexClass.simpleName,
+        methodName = "",
+        isBlacklist = isBlacklist,
+        ruleType = FilterRuleType.ALL_CLASS_METHODS,
+      )
+    updateConfig { current ->
+      current.copy(filterRulesText = FilterRuleEngine.upsertStructuredRule(current.filterRulesText, rule))
+    }
+    _statusBanner.value =
+      if (isBlacklist) "Added Blacklist rule for ${dexClass.simpleName}"
+      else "Added Whitelist rule for ${dexClass.simpleName}"
   }
 
   private fun markBundleDirty() {
@@ -981,31 +1076,53 @@ class Dex2cViewModel @JvmOverloads constructor(
     _generatedBundle.value = null
   }
 
-  fun openRustBridgeSheet() {
-    _isRustBridgeSheetOpen.value = true
+  fun inspectClassSmali(dexClass: DexClassInfo, focusMethodName: String? = null) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val targetDex =
+      ready.loadedDexes[dexClass.sourceEntryName]
+        ?: ready.parsedDex
+    smaliJob?.cancel()
+    _smaliClassState.value = SmaliClassUiState.Loading(dexClass)
+    smaliJob =
+      viewModelScope.launch {
+        try {
+          val result =
+            withContext(Dispatchers.Default) {
+              SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
+            }
+          _smaliClassState.value =
+            SmaliClassUiState.Ready(
+              dexClass = dexClass,
+              smaliText = result.smaliText,
+              lines = result.lines,
+              lineCount = result.lineCount,
+              methodCount = result.methodCount,
+              fieldCount = result.fieldCount,
+              durationMs = result.durationMs,
+              initialFocusMethodName = focusMethodName,
+              methodSpans = result.methodSpans,
+            )
+        } catch (t: Throwable) {
+          if (t is CancellationException) throw t
+          _smaliClassState.value =
+            SmaliClassUiState.Error(
+              dexClass = dexClass,
+              message = t.message ?: "Unable to disassemble ${dexClass.fullName} into Smali.",
+            )
+        }
+      }
   }
 
-  fun closeRustBridgeSheet() {
-    _isRustBridgeSheetOpen.value = false
-  }
-
-  fun exportRustBridgeZip(uri: Uri) {
+  fun exportSmaliToUri(uri: Uri, smaliText: String) {
     val context = getApplication<Application>()
     viewModelScope.launch {
       try {
-        val files = RustJniScaffolding.generateBridgeFiles()
         withContext(Dispatchers.IO) {
           context.contentResolver.openOutputStream(uri)?.use { out ->
-            ZipOutputStream(BufferedOutputStream(out)).use { zos ->
-              files.forEach { file ->
-                zos.putNextEntry(ZipEntry(file.relativePath))
-                zos.write(file.content.toByteArray(Charsets.UTF_8))
-                zos.closeEntry()
-              }
-            }
-          } ?: throw IllegalStateException("Unable to open output stream for ZIP")
+            out.write(smaliText.toByteArray(Charsets.UTF_8))
+          } ?: throw IllegalStateException("Unable to open output stream for .smali file")
         }
-        _statusBanner.value = "Exported Rust dexparser-rs JNI crate to ZIP."
+        _statusBanner.value = "Saved .smali class file."
       } catch (t: Throwable) {
         _statusBanner.value = "Export failed: ${t.message}"
       }
@@ -1024,12 +1141,47 @@ class Dex2cViewModel @JvmOverloads constructor(
         withContext(Dispatchers.Default) {
           val insns = DalvikDisassembler.disassemble(targetDex, method)
           val tries = DalvikDisassembler.parseTryBlocks(targetDex, method)
+          val methodCfg = ControlFlowGraphBuilder.build(insns, tries)
           val cCode = Dex2cTranspiler.transpileMethodToC(targetDex, method, cfg)
           val meta = DexHelper.inspectMethodMetadata(targetDex, dexClass, method)
-          MethodInspectionState(method, dexClass, insns, tries, cCode, meta)
+          val methodSmali = SmaliClassDisassembler.disassembleMethod(targetDex, dexClass, method)
+          MethodInspectionState(
+            method = method,
+            dexClass = dexClass,
+            instructions = insns,
+            tryBlocks = tries,
+            transpiledC = cCode,
+            structuralMeta = meta,
+            cfg = methodCfg,
+            methodSmali = methodSmali,
+          )
         }
       _inspection.value = state
     }
+  }
+
+  fun syncSelectionToWildcardRules(isBlacklist: Boolean = false) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val selectedIds = _selectedMethodIds.value
+    if (selectedIds.isEmpty()) {
+      _statusBanner.value = "Select at least one package, class, or method in Classes first."
+      return
+    }
+    val generatedRules =
+      FilterRuleEngine.generateWildcardRulesFromSelection(
+        classes = ready.mergedClasses,
+        selectedMethodIds = selectedIds,
+        allowInit = _config.value.allowInit,
+        isBlacklist = isBlacklist,
+      )
+    if (generatedRules.isEmpty()) return
+    updateConfig { current ->
+      val existingRules = FilterRuleEngine.parseStructuredRules(current.filterRulesText)
+      val existingLines = existingRules.map { it.toFilterLine() }.toSet()
+      val merged = existingRules + generatedRules.filter { it.toFilterLine() !in existingLines }
+      current.copy(filterRulesText = FilterRuleEngine.serializeStructuredRules(merged))
+    }
+    _statusBanner.value = "Synced ${generatedRules.size} wildcard filter rule(s) from selection."
   }
 
   fun updateConfig(transform: (TranspilerConfig) -> TranspilerConfig) {
@@ -1238,6 +1390,7 @@ class Dex2cViewModel @JvmOverloads constructor(
         }
       _cloudSettings.value = resetCloud
       cloudPrefs.saveSettings(resetCloud)
+      recentStore.clearLastBytecodeSummary()
       _statusBanner.value = "All settings restored to factory defaults."
     }
   }
