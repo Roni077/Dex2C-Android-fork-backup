@@ -20,11 +20,11 @@ val syncRobolectricSdkJars by tasks.registering(Copy::class) {
 }
 
 android {
-  namespace = "com.example"
+  namespace = "com.dex2c.studio"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.aistudio.dex2cstudio.vxrkmp"
+    applicationId = "com.dex2c.studio"
     minSdk = 24
     targetSdk = 36
     versionCode = 1
