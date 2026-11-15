@@ -22,7 +22,6 @@ data class SmaliMethodSpan(
 )
 
 data class SmaliDisassemblyResult(
-  val smaliText: String,
   val lines: List<String>,
   val lineCount: Int,
   val methodCount: Int,
@@ -30,7 +29,29 @@ data class SmaliDisassemblyResult(
   val durationMs: Long,
   val methodSpans: List<SmaliMethodSpan> = emptyList(),
   val engineLabel: String = "smali-dexlib2 + baksmali",
-)
+) {
+  val smaliText: String
+    get() = lines.joinToString("\n")
+
+  constructor(
+    smaliText: String,
+    lines: List<String> = if (smaliText.isEmpty()) emptyList() else smaliText.lines(),
+    lineCount: Int = lines.size,
+    methodCount: Int,
+    fieldCount: Int,
+    durationMs: Long,
+    methodSpans: List<SmaliMethodSpan> = emptyList(),
+    engineLabel: String = "smali-dexlib2 + baksmali",
+  ) : this(
+    lines = lines,
+    lineCount = lineCount,
+    methodCount = methodCount,
+    fieldCount = fieldCount,
+    durationMs = durationMs,
+    methodSpans = methodSpans,
+    engineLabel = engineLabel,
+  )
+}
 
 /**
  * In-memory class-level and method-level Smali disassembler and `dexlib2` class indexer powered by
@@ -38,7 +59,7 @@ data class SmaliDisassemblyResult(
  */
 object SmaliClassDisassembler {
 
-  private const val MAX_CACHED_DEX_FILES = 6
+  private const val MAX_CACHED_DEX_FILES = 2
 
   private val dexCache =
     object : LinkedHashMap<String, DexBackedDexFile>(MAX_CACHED_DEX_FILES + 1, 0.75f, true) {
@@ -51,6 +72,25 @@ object SmaliClassDisassembler {
       dexCache.clear()
     }
   }
+
+  fun trimCache(maxEntries: Int = 1) {
+    synchronized(dexCache) {
+      if (maxEntries <= 0) {
+        dexCache.clear()
+        return
+      }
+      val iter = dexCache.entries.iterator()
+      while (dexCache.size > maxEntries && iter.hasNext()) {
+        iter.next()
+        iter.remove()
+      }
+    }
+  }
+
+  fun cachedDexCount(): Int =
+    synchronized(dexCache) {
+      dexCache.size
+    }
 
   /**
    * Uses `DexBackedDexFile` (`smali-dexlib2`) to index classes, fields, and methods from the DEX
@@ -74,28 +114,20 @@ object SmaliClassDisassembler {
       val apiLevel = resolveApiLevelForDexVersion(version)
       val dexBackedFile = getOrParseDexBackedFile(entryName, sha1Hex, rawBytes, apiLevel)
 
-      val typeIndexByDescriptor = HashMap<String, Int>(types.size * 2)
-      types.forEachIndexed { idx, desc -> typeIndexByDescriptor.putIfAbsent(desc, idx) }
-
-      val fieldIndexByKey = HashMap<String, Int>(fields.size * 2)
-      fields.forEachIndexed { idx, f ->
-        fieldIndexByKey.putIfAbsent("${f.definingClass}->${f.name}:${f.type}", idx)
-      }
-
-      val methodIndexByKey = HashMap<String, Int>(methods.size * 2)
-      methods.forEachIndexed { idx, m ->
-        val paramsSig = m.proto.parameterTypes.joinToString("")
-        methodIndexByKey.putIfAbsent("${m.definingClass}->${m.name}($paramsSig)${m.proto.returnType}", idx)
+      val stringInterner = HashMap<String, String>(2048)
+      fun internStr(value: String): String {
+        if (value.length > 96) return value
+        return stringInterner.getOrPut(value) { value }
       }
 
       // Map class descriptor -> raw class_def offsets (annotationsOff, classDataOff, staticValuesOff)
-      data class RawClassOffsets(
+      class RawClassOffsets(
         val classIdx: Int,
         val annotationsOff: Int,
         val classDataOff: Int,
         val staticValuesOff: Int,
-        val directCodeOffsets: List<Int>,
-        val virtualCodeOffsets: List<Int>,
+        val directCodeOffsets: IntArray,
+        val virtualCodeOffsets: IntArray,
       )
 
       val rawOffsetsByDescriptor = HashMap<String, RawClassOffsets>(classDefsSize * 2)
@@ -106,10 +138,10 @@ object SmaliClassDisassembler {
         val annotationsOff = buf.getInt(base + 20)
         val classDataOff = buf.getInt(base + 24)
         val staticValuesOff = buf.getInt(base + 28)
-        val desc = types.getOrElse(classIdx) { "Lunknown/Class$i;" }
+        val desc = types.getOrElse(classIdx) { DexParser.readTypeAt(rawBytes, classIdx) ?: "Lunknown/Class$i;" }
 
-        val directCodeOffs = mutableListOf<Int>()
-        val virtualCodeOffs = mutableListOf<Int>()
+        var directCodeOffs = IntArray(0)
+        var virtualCodeOffs = IntArray(0)
         if (classDataOff != 0 && classDataOff < rawBytes.size) {
           val reader = DexHelper.LebReader(rawBytes, classDataOff)
           val sfSize = reader.readUleb128()
@@ -124,15 +156,19 @@ object SmaliClassDisassembler {
             reader.readUleb128()
             reader.readUleb128()
           }
-          repeat(dmSize) {
-            reader.readUleb128()
-            reader.readUleb128()
-            directCodeOffs += reader.readUleb128()
+          if (dmSize > 0) {
+            directCodeOffs = IntArray(dmSize) {
+              reader.readUleb128()
+              reader.readUleb128()
+              reader.readUleb128()
+            }
           }
-          repeat(vmSize) {
-            reader.readUleb128()
-            reader.readUleb128()
-            virtualCodeOffs += reader.readUleb128()
+          if (vmSize > 0) {
+            virtualCodeOffs = IntArray(vmSize) {
+              reader.readUleb128()
+              reader.readUleb128()
+              reader.readUleb128()
+            }
           }
         }
         rawOffsetsByDescriptor[desc] =
@@ -146,46 +182,50 @@ object SmaliClassDisassembler {
           )
       }
 
+      val canonicalEntryName = internStr(entryName)
+
       dexBackedFile.classes.mapIndexed { idx, classDef ->
-        val descriptor = classDef.type
+        val descriptor = internStr(classDef.type)
         val parsedDesc = parseClassDescriptor(descriptor)
         val fullName = parsedDesc.fullName
-        val pkgName = parsedDesc.packageName
+        val pkgName = internStr(parsedDesc.packageName)
         val simpleName = parsedDesc.simpleName
         val rawOffsets = rawOffsetsByDescriptor[descriptor]
-        val classIdx = rawOffsets?.classIdx ?: typeIndexByDescriptor[descriptor] ?: idx
+        val classIdx = rawOffsets?.classIdx ?: idx
 
         val staticFields =
           classDef.staticFields.mapIndexed { fOrd, field ->
-            toDexEncodedField(field, fOrd, isStatic = true, fieldIndexByKey = fieldIndexByKey)
+            toDexEncodedField(field, fOrd, isStatic = true, intern = ::internStr)
           }
         val instanceFields =
           classDef.instanceFields.mapIndexed { fOrd, field ->
-            toDexEncodedField(field, fOrd, isStatic = false, fieldIndexByKey = fieldIndexByKey)
+            toDexEncodedField(field, fOrd, isStatic = false, intern = ::internStr)
           }
 
         val directMethods =
           classDef.directMethods.mapIndexed { mOrd, method ->
-            val codeOff = rawOffsets?.directCodeOffsets?.getOrNull(mOrd) ?: 0
+            val codeOff =
+              rawOffsets?.directCodeOffsets?.let { if (mOrd < it.size) it[mOrd] else 0 } ?: 0
             toDexEncodedMethod(
               method = method,
               ordinal = mOrd,
               isDirect = true,
-              entryName = entryName,
-              methodIndexByKey = methodIndexByKey,
+              entryName = canonicalEntryName,
               codeMeta = readCodeMeta(codeOff),
+              intern = ::internStr,
             )
           }
         val virtualMethods =
           classDef.virtualMethods.mapIndexed { mOrd, method ->
-            val codeOff = rawOffsets?.virtualCodeOffsets?.getOrNull(mOrd) ?: 0
+            val codeOff =
+              rawOffsets?.virtualCodeOffsets?.let { if (mOrd < it.size) it[mOrd] else 0 } ?: 0
             toDexEncodedMethod(
               method = method,
               ordinal = mOrd,
               isDirect = false,
-              entryName = entryName,
-              methodIndexByKey = methodIndexByKey,
+              entryName = canonicalEntryName,
               codeMeta = readCodeMeta(codeOff),
+              intern = ::internStr,
             )
           }
 
@@ -195,8 +235,10 @@ object SmaliClassDisassembler {
           fullName = fullName,
           simpleName = simpleName,
           packageName = pkgName,
-          superclass = classDef.superclass,
-          interfaces = classDef.interfaces.toList(),
+          superclass = classDef.superclass?.let(::internStr),
+          interfaces =
+            if (classDef.interfaces.isEmpty()) emptyList()
+            else classDef.interfaces.map(::internStr),
           sourceFile = classDef.sourceFile,
           accessFlags = classDef.accessFlags,
           staticFields = staticFields,
@@ -206,7 +248,7 @@ object SmaliClassDisassembler {
           annotationsOffset = rawOffsets?.annotationsOff ?: 0,
           staticValuesOffset = rawOffsets?.staticValuesOff ?: 0,
           classDataOffset = rawOffsets?.classDataOff ?: 0,
-          sourceEntryName = entryName,
+          sourceEntryName = canonicalEntryName,
         )
       }
     }.getOrNull()
@@ -216,20 +258,16 @@ object SmaliClassDisassembler {
     field: com.android.tools.smali.dexlib2.iface.Field,
     ordinal: Int,
     isStatic: Boolean,
-    fieldIndexByKey: Map<String, Int>,
+    intern: (String) -> String,
   ): DexEncodedField {
-    val key = "${field.definingClass}->${field.name}:${field.type}"
-    val fieldIdx =
-      (field as? DexBackedField)?.fieldIndex
-        ?: fieldIndexByKey[key]
-        ?: ordinal
+    val fieldIdx = (field as? DexBackedField)?.fieldIndex ?: ordinal
     return DexEncodedField(
       fieldIndex = fieldIdx,
       fieldRef =
         DexFieldRef(
-          definingClass = field.definingClass,
-          type = field.type,
-          name = field.name,
+          definingClass = intern(field.definingClass),
+          type = intern(field.type),
+          name = intern(field.name),
         ),
       accessFlags = field.accessFlags,
       isStatic = isStatic,
@@ -241,17 +279,16 @@ object SmaliClassDisassembler {
     ordinal: Int,
     isDirect: Boolean,
     entryName: String,
-    methodIndexByKey: Map<String, Int>,
     codeMeta: DexCodeMeta?,
+    intern: (String) -> String,
   ): DexEncodedMethod {
-    val paramTypes = method.parameterTypes.map { it.toString() }
-    val returnType = method.returnType
-    val key = "${method.definingClass}->${method.name}(${paramTypes.joinToString("")})$returnType"
-    val methodIdx =
-      (method as? DexBackedMethod)?.methodIndex
-        ?: methodIndexByKey[key]
-        ?: ordinal
-    val shorty = buildShorty(returnType, paramTypes)
+    val rawParams = method.parameterTypes
+    val paramTypes =
+      if (rawParams.isEmpty()) emptyList()
+      else rawParams.map { intern(it.toString()) }
+    val returnType = intern(method.returnType)
+    val methodIdx = (method as? DexBackedMethod)?.methodIndex ?: ordinal
+    val shorty = intern(buildShorty(returnType, paramTypes))
     val impl = method.implementation
     val resolvedCodeMeta =
       codeMeta
@@ -267,14 +304,15 @@ object SmaliClassDisassembler {
         } else {
           null
         }
+    val defClass = intern(method.definingClass)
     return DexEncodedMethod(
-      id = "$entryName::${method.definingClass}#$methodIdx",
+      id = "$entryName::$defClass#$methodIdx",
       methodIndex = methodIdx,
       methodRef =
         DexMethodRef(
-          definingClass = method.definingClass,
+          definingClass = defClass,
           proto = DexProto(shorty = shorty, returnType = returnType, parameterTypes = paramTypes),
-          name = method.name,
+          name = intern(method.name),
         ),
       accessFlags = method.accessFlags,
       isDirect = isDirect,
@@ -328,7 +366,6 @@ object SmaliClassDisassembler {
     val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
 
     return SmaliDisassemblyResult(
-      smaliText = smaliText,
       lines = lines,
       lineCount = lines.size,
       methodCount = methodCount,

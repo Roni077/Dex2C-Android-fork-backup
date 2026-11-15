@@ -2,38 +2,62 @@ package com.dex2c.studio.dex
 
 import android.content.Context
 import android.net.Uri
+import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 object DexParser {
 
   fun inspectApkOrDexFromUri(context: Context, uri: Uri, displayName: String): Pair<List<ApkDexEntry>, Map<String, ByteArray>> {
-    val bytes =
-      context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+    val stream =
+      context.contentResolver.openInputStream(uri)
         ?: throw IllegalArgumentException("Unable to read selected file.")
-    return extractDexContainers(bytes, displayName)
+    return stream.use { extractDexContainersFromStream(it, displayName) }
   }
 
   fun inspectSelfApk(context: Context): Pair<List<ApkDexEntry>, Map<String, ByteArray>> {
     val sourceApk = File(context.applicationInfo.sourceDir)
-    val bytes = FileInputStream(sourceApk).use { it.readBytes() }
-    return extractDexContainers(bytes, sourceApk.name)
+    val entries = mutableListOf<ApkDexEntry>()
+    val map = linkedMapOf<String, ByteArray>()
+    ZipFile(sourceApk).use { zip ->
+      val enumeration = zip.entries()
+      while (enumeration.hasMoreElements()) {
+        val entry = enumeration.nextElement()
+        if (!entry.isDirectory && entry.name.endsWith(".dex", ignoreCase = true)) {
+          val dexBytes = zip.getInputStream(entry).use { it.readBytes() }
+          entries += ApkDexEntry(entry.name, dexBytes.size)
+          map[entry.name] = dexBytes
+        }
+      }
+    }
+    if (entries.isEmpty()) {
+      throw IllegalArgumentException("No DEX binary found inside ${sourceApk.name}.")
+    }
+    val sorted = entries.sortedWith(compareBy({ it.entryName.length }, { it.entryName }))
+    return sorted to map
   }
 
-  fun extractDexContainers(bytes: ByteArray, fileName: String): Pair<List<ApkDexEntry>, Map<String, ByteArray>> {
-    if (bytes.size >= 4 && bytes[0] == 'd'.code.toByte() && bytes[1] == 'e'.code.toByte() && bytes[2] == 'x'.code.toByte() && bytes[3] == '\n'.code.toByte()) {
+  fun extractDexContainersFromStream(inputStream: InputStream, fileName: String): Pair<List<ApkDexEntry>, Map<String, ByteArray>> {
+    val buffered = BufferedInputStream(inputStream, 32 * 1024)
+    buffered.mark(16)
+    val magic = ByteArray(4)
+    val read = buffered.read(magic)
+    buffered.reset()
+    if (read == 4 && magic[0] == 'd'.code.toByte() && magic[1] == 'e'.code.toByte() && magic[2] == 'x'.code.toByte() && magic[3] == '\n'.code.toByte()) {
+      val bytes = buffered.readBytes()
       val name = if (fileName.endsWith(".dex", ignoreCase = true)) fileName else "classes.dex"
       return listOf(ApkDexEntry(name, bytes.size)) to mapOf(name to bytes)
     }
 
     val entries = mutableListOf<ApkDexEntry>()
     val map = linkedMapOf<String, ByteArray>()
-    ZipInputStream(ByteArrayInputStream(bytes)).use { zis ->
+    ZipInputStream(buffered).use { zis ->
       while (true) {
         val entry = zis.nextEntry ?: break
         if (!entry.isDirectory && entry.name.endsWith(".dex", ignoreCase = true)) {
@@ -44,12 +68,19 @@ object DexParser {
         zis.closeEntry()
       }
     }
-
     if (entries.isEmpty()) {
       throw IllegalArgumentException("No DEX binary or classes*.dex entries found inside \"$fileName\".")
     }
     val sorted = entries.sortedWith(compareBy({ it.entryName.length }, { it.entryName }))
     return sorted to map
+  }
+
+  fun extractDexContainers(bytes: ByteArray, fileName: String): Pair<List<ApkDexEntry>, Map<String, ByteArray>> {
+    if (bytes.size >= 4 && bytes[0] == 'd'.code.toByte() && bytes[1] == 'e'.code.toByte() && bytes[2] == 'x'.code.toByte() && bytes[3] == '\n'.code.toByte()) {
+      val name = if (fileName.endsWith(".dex", ignoreCase = true)) fileName else "classes.dex"
+      return listOf(ApkDexEntry(name, bytes.size)) to mapOf(name to bytes)
+    }
+    return extractDexContainersFromStream(ByteArrayInputStream(bytes), fileName)
   }
 
   fun parseDex(
@@ -565,6 +596,109 @@ object DexParser {
       }
     }
     return out.toString()
+  }
+
+  /**
+   * On-demand O(1) constant pool decoders directly from [rawBytes], enabling [DexParsedFile] to
+   * release its bulk in-memory constant-pool lists (`strings`, `types`, `protos`, `fields`, `methods`)
+   * after class indexing while still supporting full instruction disassembly and metadata inspection.
+   */
+  private fun wrapOrderedBuffer(rawBytes: ByteArray): ByteBuffer? {
+    if (rawBytes.size < 0x70) return null
+    val endianTagLe =
+      ByteBuffer.wrap(rawBytes, 0x28, 4).order(ByteOrder.LITTLE_ENDIAN).int.toLong() and 0xFFFFFFFFL
+    val order =
+      if (endianTagLe == 0x78563412L) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN
+    return ByteBuffer.wrap(rawBytes).order(order)
+  }
+
+  fun readStringAt(rawBytes: ByteArray, stringIdx: Int): String? {
+    val buf = wrapOrderedBuffer(rawBytes) ?: return null
+    val stringIdsSize = buf.getInt(0x38)
+    val stringIdsOff = buf.getInt(0x3C)
+    if (stringIdx < 0 || stringIdx >= stringIdsSize) return null
+    val ptrOff = stringIdsOff + stringIdx * 4
+    if (ptrOff < 0 || ptrOff + 4 > rawBytes.size) return null
+    val strOff = buf.getInt(ptrOff)
+    if (strOff <= 0 || strOff >= rawBytes.size) return ""
+    return readMutf8String(rawBytes, strOff)
+  }
+
+  fun readTypeAt(rawBytes: ByteArray, typeIdx: Int): String? {
+    val buf = wrapOrderedBuffer(rawBytes) ?: return null
+    val typeIdsSize = buf.getInt(0x40)
+    val typeIdsOff = buf.getInt(0x44)
+    if (typeIdx < 0 || typeIdx >= typeIdsSize) return null
+    val ptrOff = typeIdsOff + typeIdx * 4
+    if (ptrOff < 0 || ptrOff + 4 > rawBytes.size) return null
+    val descIdx = buf.getInt(ptrOff)
+    return readStringAt(rawBytes, descIdx)
+  }
+
+  fun readProtoAt(rawBytes: ByteArray, protoIdx: Int): DexProto? {
+    val buf = wrapOrderedBuffer(rawBytes) ?: return null
+    val protoIdsSize = buf.getInt(0x48)
+    val protoIdsOff = buf.getInt(0x4C)
+    if (protoIdx < 0 || protoIdx >= protoIdsSize) return null
+    val base = protoIdsOff + protoIdx * 12
+    if (base < 0 || base + 12 > rawBytes.size) return null
+    val shortyIdx = buf.getInt(base)
+    val returnIdx = buf.getInt(base + 4)
+    val paramsOff = buf.getInt(base + 8)
+    val params =
+      if (paramsOff <= 0 || paramsOff + 4 > rawBytes.size) {
+        emptyList()
+      } else {
+        val count = buf.getInt(paramsOff).coerceIn(0, 256)
+        List(count) { p ->
+          val off = paramsOff + 4 + p * 2
+          if (off + 2 <= rawBytes.size) {
+            val tIdx = buf.getShort(off).toInt() and 0xFFFF
+            readTypeAt(rawBytes, tIdx) ?: "Ljava/lang/Object;"
+          } else {
+            "Ljava/lang/Object;"
+          }
+        }
+      }
+    return DexProto(
+      shorty = readStringAt(rawBytes, shortyIdx) ?: "V",
+      returnType = readTypeAt(rawBytes, returnIdx) ?: "V",
+      parameterTypes = params,
+    )
+  }
+
+  fun readFieldAt(rawBytes: ByteArray, fieldIdx: Int): DexFieldRef? {
+    val buf = wrapOrderedBuffer(rawBytes) ?: return null
+    val fieldIdsSize = buf.getInt(0x50)
+    val fieldIdsOff = buf.getInt(0x54)
+    if (fieldIdx < 0 || fieldIdx >= fieldIdsSize) return null
+    val base = fieldIdsOff + fieldIdx * 8
+    if (base < 0 || base + 8 > rawBytes.size) return null
+    val classIdx = buf.getShort(base).toInt() and 0xFFFF
+    val typeIdx = buf.getShort(base + 2).toInt() and 0xFFFF
+    val nameIdx = buf.getInt(base + 4)
+    return DexFieldRef(
+      definingClass = readTypeAt(rawBytes, classIdx) ?: "Ljava/lang/Object;",
+      type = readTypeAt(rawBytes, typeIdx) ?: "Ljava/lang/Object;",
+      name = readStringAt(rawBytes, nameIdx) ?: "field_$fieldIdx",
+    )
+  }
+
+  fun readMethodAt(rawBytes: ByteArray, methodIdx: Int): DexMethodRef? {
+    val buf = wrapOrderedBuffer(rawBytes) ?: return null
+    val methodIdsSize = buf.getInt(0x58)
+    val methodIdsOff = buf.getInt(0x5C)
+    if (methodIdx < 0 || methodIdx >= methodIdsSize) return null
+    val base = methodIdsOff + methodIdx * 8
+    if (base < 0 || base + 8 > rawBytes.size) return null
+    val classIdx = buf.getShort(base).toInt() and 0xFFFF
+    val protoIdx = buf.getShort(base + 2).toInt() and 0xFFFF
+    val nameIdx = buf.getInt(base + 4)
+    return DexMethodRef(
+      definingClass = readTypeAt(rawBytes, classIdx) ?: "Ljava/lang/Object;",
+      proto = readProtoAt(rawBytes, protoIdx) ?: DexProto("V", "V", emptyList()),
+      name = readStringAt(rawBytes, nameIdx) ?: "method_$methodIdx",
+    )
   }
 
   private class UlebReader(private val bytes: ByteArray, var pos: Int) {

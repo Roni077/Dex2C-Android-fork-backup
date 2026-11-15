@@ -139,12 +139,29 @@ internal fun buildNestedPackageTree(
   defaultPackageLabel: String,
   compactMiddlePackages: Boolean = true,
 ): List<PackageGroup> {
+  if (classes.isEmpty()) return emptyList()
+
   class MutablePkgNode(
     val segment: String,
     val fullPath: String,
     val children: LinkedHashMap<String, MutablePkgNode> = linkedMapOf(),
     val directClasses: MutableList<DexClassInfo> = mutableListOf(),
   )
+
+  val selectedCountByClassKey: Map<String, Int> =
+    if (selectedMethodIds.isEmpty()) {
+      emptyMap()
+    } else {
+      HashMap<String, Int>(classes.size).also { map ->
+        for (cls in classes) {
+          var cnt = 0
+          for (m in cls.allMethods) {
+            if (m.id in selectedMethodIds) cnt++
+          }
+          if (cnt > 0) map[cls.uniqueKey] = cnt
+        }
+      }
+    }
 
   val root = MutablePkgNode("", "")
   for (cls in classes) {
@@ -182,11 +199,26 @@ internal fun buildNestedPackageTree(
       current.children.values.map { child -> compactAndConvert(child, depth + 1) }
     val sortedChildren = sortPackageGroups(convertedChildren, sortOrder)
     val sortedDirectClasses =
-      sortClassesForDisplay(current.directClasses, sortOrder, selectedMethodIds)
-    val allSubtreeClasses = sortedDirectClasses + sortedChildren.flatMap { it.subtreeClasses }
-    val totalBytecode = allSubtreeClasses.sumOf { it.bytecodeMethodCount }
-    val selectedCount =
-      allSubtreeClasses.sumOf { cls -> cls.allMethods.count { it.id in selectedMethodIds } }
+      sortClassesForDisplay(current.directClasses, sortOrder, selectedMethodIds, selectedCountByClassKey)
+
+    var totalSubtreeSize = sortedDirectClasses.size
+    var totalBytecode = 0
+    var selectedCount = 0
+    for (cls in sortedDirectClasses) {
+      totalBytecode += cls.bytecodeMethodCount
+      selectedCount += selectedCountByClassKey[cls.uniqueKey] ?: 0
+    }
+    for (child in sortedChildren) {
+      totalSubtreeSize += child.subtreeClasses.size
+      totalBytecode += child.totalBytecodeMethods
+      selectedCount += child.selectedMethodCount
+    }
+
+    val allSubtreeClasses = ArrayList<DexClassInfo>(totalSubtreeSize)
+    allSubtreeClasses.addAll(sortedDirectClasses)
+    for (child in sortedChildren) {
+      allSubtreeClasses.addAll(child.subtreeClasses)
+    }
 
     return PackageGroup(
       packageName = current.fullPath,
@@ -210,19 +242,21 @@ private fun sortPackageGroups(
   sortOrder: ClassSortOrder,
 ): List<PackageGroup> =
   when (sortOrder) {
-    ClassSortOrder.NAME_ASC -> groups.sortedBy { it.packageName.lowercase() }
-    ClassSortOrder.NAME_DESC -> groups.sortedByDescending { it.packageName.lowercase() }
+    ClassSortOrder.NAME_ASC ->
+      groups.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.packageName })
+    ClassSortOrder.NAME_DESC ->
+      groups.sortedWith(compareByDescending(String.CASE_INSENSITIVE_ORDER) { it.packageName })
     ClassSortOrder.BYTECODE_DESC ->
       groups.sortedWith(
         compareByDescending<PackageGroup> { it.totalBytecodeMethods }
-          .thenBy { it.packageName.lowercase() }
+          .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
       )
     ClassSortOrder.SELECTED_FIRST ->
       groups.sortedWith(
         compareByDescending<PackageGroup> { it.selectedMethodCount > 0 }
           .thenByDescending { it.selectedMethodCount }
           .thenByDescending { it.totalBytecodeMethods }
-          .thenBy { it.packageName.lowercase() }
+          .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
       )
     ClassSortOrder.DEX_ORDER -> groups
   }
@@ -919,7 +953,11 @@ fun ClassesScreen(
             modifier = Modifier.fillMaxSize().testTag("classes_explorer_list"),
             contentPadding = PaddingValues(vertical = 4.dp),
           ) {
-            itemsIndexed(visibleRows, key = { _, item -> item.key }) { _, item ->
+            itemsIndexed(
+              items = visibleRows,
+              key = { _, item -> item.key },
+              contentType = { _, item -> if (item is ExplorerRowItem.PackageRow) 0 else 1 },
+            ) { _, item ->
               when (item) {
                 is ExplorerRowItem.PackageRow -> {
                   PackageFolderRow(
@@ -973,31 +1011,35 @@ private fun sortClassesForDisplay(
   classes: List<DexClassInfo>,
   sortOrder: ClassSortOrder,
   selectedMethodIds: Set<String>,
+  precomputedSelectedCounts: Map<String, Int>? = null,
 ): List<DexClassInfo> =
   when (sortOrder) {
     ClassSortOrder.NAME_ASC ->
       classes.sortedWith(
-        compareBy({ it.simpleName.lowercase() }, { it.packageName.lowercase() }, { it.classIndex })
+        compareBy<DexClassInfo, String>(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
+          .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
+          .thenBy { it.classIndex }
       )
     ClassSortOrder.NAME_DESC ->
       classes.sortedWith(
-        compareByDescending<DexClassInfo> { it.simpleName.lowercase() }
-          .thenBy { it.packageName.lowercase() }
+        compareByDescending<DexClassInfo, String>(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
+          .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
           .thenBy { it.classIndex }
       )
     ClassSortOrder.BYTECODE_DESC ->
       classes.sortedWith(
         compareByDescending<DexClassInfo> { it.bytecodeMethodCount }
-          .thenBy { it.simpleName.lowercase() }
+          .thenBy(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
           .thenBy { it.classIndex }
       )
     ClassSortOrder.SELECTED_FIRST ->
       classes.sortedWith(
         compareByDescending<DexClassInfo> { cls ->
-            cls.allMethods.count { it.id in selectedMethodIds }
+            precomputedSelectedCounts?.get(cls.uniqueKey)
+              ?: if (selectedMethodIds.isEmpty()) 0 else cls.allMethods.count { it.id in selectedMethodIds }
           }
           .thenByDescending { it.bytecodeMethodCount }
-          .thenBy { it.simpleName.lowercase() }
+          .thenBy(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
           .thenBy { it.classIndex }
       )
     ClassSortOrder.DEX_ORDER -> classes
@@ -1018,19 +1060,30 @@ private fun PackageFolderRow(
   onBlacklistPackage: () -> Unit = {},
 ) {
   val targetIds =
-    remember(group, allowInit, methodScopeFilter) {
-      val scoped =
-        group.subtreeClasses.flatMap { cls ->
-          cls.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
-        }
-      val bytecodeIds =
-        scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
-      bytecodeIds.ifEmpty { scoped.map { it.id } }
+    remember(group, allowInit, methodScopeFilter, showSelectionCheckboxes) {
+      if (!showSelectionCheckboxes) {
+        emptyList()
+      } else {
+        val scoped =
+          group.subtreeClasses.flatMap { cls ->
+            cls.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
+          }
+        val bytecodeIds =
+          scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+        bytecodeIds.ifEmpty { scoped.map { it.id } }
+      }
     }
-  val selectedCount = targetIds.count { it in selectedMethodIds }
+  val selectedCount =
+    if (selectedMethodIds.isEmpty()) {
+      0
+    } else if (!showSelectionCheckboxes) {
+      group.selectedMethodCount
+    } else {
+      targetIds.count { it in selectedMethodIds }
+    }
   val toggleState =
     when {
-      targetIds.isEmpty() || selectedCount == 0 -> ToggleableState.Off
+      !showSelectionCheckboxes || targetIds.isEmpty() || selectedCount == 0 -> ToggleableState.Off
       selectedCount >= targetIds.size -> ToggleableState.On
       else -> ToggleableState.Indeterminate
     }
@@ -1197,17 +1250,23 @@ private fun CompactClassRow(
   onBlacklistClass: () -> Unit = {},
   onOpenSmali: () -> Unit,
 ) {
-  val scopedMethods =
-    remember(dexClass, methodScopeFilter) {
-      dexClass.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
-    }
+  val hasAnySelected = selectedMethodIds.isNotEmpty()
   val targetIds =
-    remember(scopedMethods, allowInit) {
-      val bytecodeIds =
-        scopedMethods.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
-      bytecodeIds.ifEmpty { scopedMethods.map { it.id } }
+    remember(dexClass, methodScopeFilter, allowInit, showSelectionCheckboxes, hasAnySelected) {
+      if (!showSelectionCheckboxes && !hasAnySelected) {
+        emptyList()
+      } else {
+        val scoped =
+          if (methodScopeFilter == MethodScopeFilter.ALL) dexClass.allMethods
+          else dexClass.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
+        val bytecodeIds =
+          scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
+        bytecodeIds.ifEmpty { scoped.map { it.id } }
+      }
     }
-  val selectedCount = targetIds.count { it in selectedMethodIds }
+  val selectedCount =
+    if (!hasAnySelected || targetIds.isEmpty()) 0
+    else targetIds.count { it in selectedMethodIds }
   val toggleState =
     when {
       targetIds.isEmpty() || selectedCount == 0 -> ToggleableState.Off

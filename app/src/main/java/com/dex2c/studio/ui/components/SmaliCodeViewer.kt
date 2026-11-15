@@ -150,7 +150,11 @@ fun SmaliSyntaxCodeViewer(
             .padding(horizontal = 12.dp, vertical = 10.dp)
             .testTag("smali_code_list"),
       ) {
-        itemsIndexed(lines) { index, line ->
+        itemsIndexed(
+          items = lines,
+          key = { index, _ -> index },
+          contentType = { _, _ -> 0 },
+        ) { index, line ->
           val isActiveLine = activeMatchLineIndex == index
           val isInspectedLine = inspectedLineIndex == index
           val inActiveMethod = activeMethodRange != null && index in activeMethodRange
@@ -166,16 +170,28 @@ fun SmaliSyntaxCodeViewer(
             }
           val effectiveBg = if (isActiveLine) activeMatchBg else matchBg
           val effectiveFg = if (isActiveLine) activeMatchFg else matchFg
+          val baseHighlighted =
+            remember(line, palette) {
+              highlightSmaliSyntaxBase(line = line, palette = palette)
+            }
+          val hasFallbackQueryMatch =
+            lineMatchRanges == null &&
+              trimmedQuery.isNotEmpty() &&
+              line.contains(trimmedQuery, ignoreCase = true)
           val highlighted =
-            remember(line, palette, trimmedQuery, explicitRanges, effectiveBg, effectiveFg) {
-              highlightSmaliLine(
-                line = line,
-                palette = palette,
-                searchQuery = trimmedQuery,
-                matchBackground = effectiveBg,
-                matchForeground = effectiveFg,
-                matchRanges = explicitRanges,
-              )
+            if (!explicitRanges.isNullOrEmpty() || hasFallbackQueryMatch) {
+              remember(baseHighlighted, line, trimmedQuery, explicitRanges, effectiveBg, effectiveFg) {
+                overlaySmaliSearchHighlights(
+                  base = baseHighlighted,
+                  line = line,
+                  searchQuery = trimmedQuery,
+                  matchBackground = effectiveBg,
+                  matchForeground = effectiveFg,
+                  matchRanges = explicitRanges,
+                )
+              }
+            } else {
+              baseHighlighted
             }
           val rowModifier =
             Modifier.fillMaxWidth()
@@ -311,8 +327,7 @@ fun findSmaliSearchMatches(
     val line = lines[lineIdx]
     val ranges = findLineMatchRanges(line, options, compiledQueryRegex)
     if (ranges.isNotEmpty()) {
-      val enclosingMethod =
-        methodSpans.firstOrNull { lineIdx in it.startLineIndex..it.endLineIndex }?.name
+      val enclosingMethod = findEnclosingMethodName(methodSpans, lineIdx)
       val match =
         SmaliSearchMatch(
           lineIndex = lineIdx,
@@ -333,6 +348,25 @@ fun findSmaliSearchMatches(
     totalOccurrences = totalOccurrences,
     regexError = null,
   )
+}
+
+private fun findEnclosingMethodName(
+  methodSpans: List<SmaliMethodSpan>,
+  lineIdx: Int,
+): String? {
+  if (methodSpans.isEmpty()) return null
+  var low = 0
+  var high = methodSpans.lastIndex
+  while (low <= high) {
+    val mid = (low + high) ushr 1
+    val span = methodSpans[mid]
+    when {
+      lineIdx < span.startLineIndex -> high = mid - 1
+      lineIdx > span.endLineIndex -> low = mid + 1
+      else -> return span.name
+    }
+  }
+  return null
 }
 
 private fun findLineMatchRanges(
@@ -536,14 +570,33 @@ fun highlightSmaliLine(
   matchForeground: Color = Color.Unspecified,
   matchRanges: List<IntRange>? = null,
 ): AnnotatedString {
+  val base = highlightSmaliSyntaxBase(line, palette)
+  if (matchBackground == Color.Unspecified || (matchRanges.isNullOrEmpty() && searchQuery.isEmpty())) {
+    return base
+  }
+  return overlaySmaliSearchHighlights(
+    base = base,
+    line = line,
+    searchQuery = searchQuery,
+    matchBackground = matchBackground,
+    matchForeground = matchForeground,
+    matchRanges = matchRanges,
+  )
+}
+
+fun highlightSmaliSyntaxBase(
+  line: String,
+  palette: SyntaxPalette,
+): AnnotatedString {
   return buildAnnotatedString {
     append(line)
+    if (line.isEmpty()) return@buildAnnotatedString
     addStyle(SpanStyle(color = palette.defaultText), 0, line.length)
 
     val trimmed = line.trimStart()
+    if (trimmed.isEmpty()) return@buildAnnotatedString
     if (trimmed.startsWith("#")) {
       addStyle(SpanStyle(color = palette.comment), 0, line.length)
-      applySearchHighlights(line, searchQuery, matchBackground, matchForeground, matchRanges)
       return@buildAnnotatedString
     }
 
@@ -593,7 +646,7 @@ fun highlightSmaliLine(
     }
 
     // Member call & field targets (->methodName or ->fieldName)
-    if (palette.memberTarget != palette.defaultText) {
+    if (palette.memberTarget != palette.defaultText && codePart.contains("->")) {
       smaliMemberTargetRegex.findAll(codePart).forEach { m ->
         addStyle(
           SpanStyle(
@@ -620,29 +673,44 @@ fun highlightSmaliLine(
     }
 
     // Labels (:cond_0, :goto_1, :try_start_0, :pswitch_0)
-    smaliLabelRegex.findAll(codePart).forEach { m ->
-      addStyle(
-        SpanStyle(
-          color = palette.label,
-          fontWeight = if (palette.isHighContrastBytecode) FontWeight.SemiBold else FontWeight.Normal,
-        ),
-        m.range.first,
-        m.range.last + 1,
-      )
+    if (codePart.contains(':')) {
+      smaliLabelRegex.findAll(codePart).forEach { m ->
+        addStyle(
+          SpanStyle(
+            color = palette.label,
+            fontWeight = if (palette.isHighContrastBytecode) FontWeight.SemiBold else FontWeight.Normal,
+          ),
+          m.range.first,
+          m.range.last + 1,
+        )
+      }
     }
 
     // String literals ("...")
-    smaliStringRegex.findAll(codePart).forEach { m ->
-      addStyle(SpanStyle(color = palette.stringLiteral), m.range.first, m.range.last + 1)
+    if (codePart.contains('"')) {
+      smaliStringRegex.findAll(codePart).forEach { m ->
+        addStyle(SpanStyle(color = palette.stringLiteral), m.range.first, m.range.last + 1)
+      }
     }
 
     if (commentIdx != null) {
       addStyle(SpanStyle(color = palette.comment), commentIdx, line.length)
     }
-
-    applySearchHighlights(line, searchQuery, matchBackground, matchForeground, matchRanges)
   }
 }
+
+private fun overlaySmaliSearchHighlights(
+  base: AnnotatedString,
+  line: String,
+  searchQuery: String,
+  matchBackground: Color,
+  matchForeground: Color,
+  matchRanges: List<IntRange>? = null,
+): AnnotatedString =
+  buildAnnotatedString {
+    append(base)
+    applySearchHighlights(line, searchQuery, matchBackground, matchForeground, matchRanges)
+  }
 
 private val smaliMemberTargetRegex = Regex("->([A-Za-z0-9_$<>-]+)")
 

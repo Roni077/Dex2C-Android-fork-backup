@@ -3182,11 +3182,164 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("pkg_apk_badge_com.crackme.app", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule.onNodeWithTag("pkg_row_com.crackme.app.ui").assertIsDisplayed()
   }
+
+  @Test
+  fun performanceOptimization_memoizedDexModelsAndNestedPackageTreeAggregationWorkCorrectly() {
+    val initMethod =
+      com.dex2c.studio.dex.DexEncodedMethod(
+        id = "Lcom/perf/app/Engine;-><init>()V",
+        methodIndex = 0,
+        methodRef =
+          com.dex2c.studio.dex.DexMethodRef(
+            definingClass = "Lcom/perf/app/Engine;",
+            proto = com.dex2c.studio.dex.DexProto("V", "V", emptyList()),
+            name = "<init>",
+          ),
+        accessFlags = 0x10001,
+        isDirect = true,
+        codeMeta =
+          com.dex2c.studio.dex.DexCodeMeta(
+            registersSize = 1,
+            insSize = 1,
+            outsSize = 1,
+            triesSize = 0,
+            insnsCount = 1,
+            insnsOffsetBytes = 100,
+          ),
+      )
+    val runMethod =
+      com.dex2c.studio.dex.DexEncodedMethod(
+        id = "Lcom/perf/app/Engine;->executeFast(Ljava/lang/String;)I",
+        methodIndex = 1,
+        methodRef =
+          com.dex2c.studio.dex.DexMethodRef(
+            definingClass = "Lcom/perf/app/Engine;",
+            proto = com.dex2c.studio.dex.DexProto("IL", "I", listOf("Ljava/lang/String;")),
+            name = "executeFast",
+          ),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta =
+          com.dex2c.studio.dex.DexCodeMeta(
+            registersSize = 2,
+            insSize = 2,
+            outsSize = 0,
+            triesSize = 0,
+            insnsCount = 1,
+            insnsOffsetBytes = 120,
+          ),
+      )
+    val engineClass =
+      com.dex2c.studio.dex.DexClassInfo(
+        classIndex = 0,
+        descriptor = "Lcom/perf/app/Engine;",
+        fullName = "com.perf.app.Engine",
+        simpleName = "Engine",
+        packageName = "com.perf.app",
+        superclass = "Ljava/lang/Object;",
+        interfaces = emptyList(),
+        sourceFile = "Engine.kt",
+        accessFlags = 0x0001,
+        staticFields = emptyList(),
+        instanceFields = emptyList(),
+        directMethods = listOf(initMethod),
+        virtualMethods = listOf(runMethod),
+      )
+
+    // Verify memoized reference identity and flags without extra duplicate lowercase String fields
+    assertTrue(engineClass.allMethods === engineClass.allMethods)
+    assertEquals(2, engineClass.bytecodeMethodCount)
+    assertTrue(initMethod.isInitConstructor)
+    assertTrue(runMethod.hasBytecode)
+
+    // Verify O(N) bottom-up buildNestedPackageTree aggregation
+    val tree =
+      com.dex2c.studio.ui.screens.buildNestedPackageTree(
+        classes = listOf(engineClass),
+        selectedMethodIds = setOf(runMethod.id),
+        sortOrder = com.dex2c.studio.ui.ClassSortOrder.NAME_ASC,
+        defaultPackageLabel = "(default)",
+      )
+    assertEquals(1, tree.size)
+    val comNode = tree.first()
+    assertEquals("com", comNode.packageName)
+    assertEquals(2, comNode.totalBytecodeMethods)
+    assertEquals(1, comNode.selectedMethodCount)
+    assertEquals(1, comNode.subtreeClasses.size)
+
+    // Verify two-stage Smali base syntax highlight + binary search method span resolution
+    val smaliLines =
+      listOf(
+        ".class public Lcom/perf/app/Engine;",
+        ".method public executeFast(Ljava/lang/String;)I",
+        "    const-string v0, \"fast_token\"",
+        "    return v0",
+        ".end method",
+      )
+    val spans =
+      listOf(
+        com.dex2c.studio.dex.SmaliMethodSpan(
+          name = "executeFast",
+          signature = "executeFast(Ljava/lang/String;)I",
+          startLineIndex = 1,
+          endLineIndex = 4,
+        )
+      )
+    val searchRes =
+      com.dex2c.studio.ui.components.findSmaliSearchMatches(
+        lines = smaliLines,
+        methodSpans = spans,
+        options = com.dex2c.studio.ui.components.SmaliSearchOptions(query = "fast_token"),
+      )
+    assertEquals(1, searchRes.totalOccurrences)
+    assertEquals("executeFast", searchRes.matches.first().enclosingMethodName)
+
+    // Verify memory optimization: releaseTransientPools frees constant-pool lists while preserving lazy Smali text
+    val fakeDexWithPools =
+      com.dex2c.studio.dex.DexParsedFile(
+        sourceLabel = "Perf.apk",
+        entryName = "classes.dex",
+        rawBytes = ByteArray(112),
+        header =
+          com.dex2c.studio.dex.DexHeaderInfo(
+            magic = "dex\\n039\\0",
+            version = "039",
+            checksum = 1L,
+            sha1Hex = "00",
+            fileSize = 112,
+            endianTag = 0x12345678L,
+            stringIdsSize = 1,
+            typeIdsSize = 1,
+            protoIdsSize = 1,
+            fieldIdsSize = 0,
+            methodIdsSize = 1,
+            classDefsSize = 1,
+          ),
+        strings = listOf("Lcom/perf/app/Engine;"),
+        types = listOf("Lcom/perf/app/Engine;"),
+        protos = listOf(com.dex2c.studio.dex.DexProto("V", "V", emptyList())),
+        fields = emptyList(),
+        methods = listOf(initMethod.methodRef),
+        classes = listOf(engineClass),
+      )
+    assertFalse(fakeDexWithPools.areTransientPoolsReleased)
+    assertEquals("Lcom/perf/app/Engine;", fakeDexWithPools.stringAt(0))
+    val trimmedDex = fakeDexWithPools.releaseTransientPools()
+    assertTrue(trimmedDex.areTransientPoolsReleased)
+    assertTrue(trimmedDex.strings.isEmpty())
+    assertTrue(trimmedDex.methods.isEmpty())
+
+    val smaliResult =
+      com.dex2c.studio.dex.SmaliDisassemblyResult(
+        lines = smaliLines,
+        lineCount = smaliLines.size,
+        methodCount = 1,
+        fieldCount = 0,
+        durationMs = 2L,
+        methodSpans = spans,
+      )
+    assertEquals(smaliLines.joinToString("\n"), smaliResult.smaliText)
+  }
 }
-
-
-
-
-
 
 

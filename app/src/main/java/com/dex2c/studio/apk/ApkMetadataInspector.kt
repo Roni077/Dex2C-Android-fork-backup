@@ -7,27 +7,35 @@ import android.os.Build
 import com.dex2c.studio.dex.ApkDexEntry
 import com.dex2c.studio.dex.DexParser
 import com.dex2c.studio.dex.inferDominantDexPackageName
+import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 object ApkMetadataInspector {
 
   fun inspectFromUri(context: Context, uri: Uri, displayName: String): ApkStagingPreview {
-    val bytes =
-      context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+    val totalSize = queryUriByteSize(context, uri)
+    val stream =
+      context.contentResolver.openInputStream(uri)
         ?: throw IllegalArgumentException("Unable to read \"$displayName\". Permission may have expired.")
-    return inspectBytes(
-      context = context,
-      bytes = bytes,
-      sourceLabel = displayName,
-      sourceRef = uri.toString(),
-      sourceType = BinarySourceType.SAF_URI,
-      knownApp = null,
-    )
+    return stream.use { rawStream ->
+      inspectStream(
+        context = context,
+        inputStream = rawStream,
+        knownTotalBytes = totalSize,
+        sourceLabel = displayName,
+        sourceRef = uri.toString(),
+        sourceType = BinarySourceType.SAF_URI,
+        knownApp = null,
+      )
+    }
   }
 
   fun inspectMultipleUris(context: Context, items: List<Pair<Uri, String>>): ApkStagingPreview {
@@ -60,43 +68,57 @@ object ApkMetadataInspector {
     }
 
     items.forEach { (uri, displayName) ->
-      val bytes =
-        context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+      val uriSize = queryUriByteSize(context, uri)
+      val stream =
+        context.contentResolver.openInputStream(uri)
           ?: throw IllegalArgumentException("Unable to read \"$displayName\".")
-      totalBytes += bytes.size.toLong()
-      if (
-        bytes.size >= 8 &&
-          bytes[0] == 'd'.code.toByte() &&
-          bytes[1] == 'e'.code.toByte() &&
-          bytes[2] == 'x'.code.toByte() &&
-          bytes[3] == '\n'.code.toByte()
-      ) {
-        val entryName = if (displayName.endsWith(".dex", ignoreCase = true)) displayName else "$displayName.dex"
-        registerEntry(entryName, bytes)
-      } else {
-        var foundInsideZip = false
-        ZipInputStream(ByteArrayInputStream(bytes)).use { zis ->
-          while (true) {
-            val entry = zis.nextEntry ?: break
-            val name = entry.name
-            if (!entry.isDirectory) {
-              if (name.endsWith(".dex", ignoreCase = true)) {
-                foundInsideZip = true
-                val dexBytes = zis.readBytes()
-                registerEntry("${displayName.substringBeforeLast('.')}/$name", dexBytes)
-              } else if (name.equals("AndroidManifest.xml", ignoreCase = true) && detectedPkgName == null) {
-                val manifestBytes = zis.readBytes()
-                detectedPkgName = extractPackageNameFromManifestBytes(manifestBytes)
-              } else if (name.startsWith("lib/") && name.endsWith(".so")) {
-                val parts = name.split('/')
-                if (parts.size >= 3) abis += parts[1]
+      stream.use { rawInput ->
+        val buffered = BufferedInputStream(rawInput, 32 * 1024)
+        buffered.mark(16)
+        val header = ByteArray(8)
+        val headerRead = buffered.read(header)
+        buffered.reset()
+
+        if (
+          headerRead >= 4 &&
+            header[0] == 'd'.code.toByte() &&
+            header[1] == 'e'.code.toByte() &&
+            header[2] == 'x'.code.toByte() &&
+            header[3] == '\n'.code.toByte()
+        ) {
+          val bytes = buffered.readBytes()
+          totalBytes += if (uriSize > 0L) uriSize else bytes.size.toLong()
+          val entryName = if (displayName.endsWith(".dex", ignoreCase = true)) displayName else "$displayName.dex"
+          registerEntry(entryName, bytes)
+        } else {
+          var foundInsideZip = false
+          var extractedBytesSum = 0L
+          ZipInputStream(buffered).use { zis ->
+            while (true) {
+              val entry = zis.nextEntry ?: break
+              val name = entry.name
+              if (!entry.isDirectory) {
+                if (name.endsWith(".dex", ignoreCase = true)) {
+                  foundInsideZip = true
+                  val dexBytes = zis.readBytes()
+                  extractedBytesSum += dexBytes.size.toLong()
+                  registerEntry("${displayName.substringBeforeLast('.')}/$name", dexBytes)
+                } else if (name.equals("AndroidManifest.xml", ignoreCase = true) && detectedPkgName == null) {
+                  val manifestBytes = zis.readBytes()
+                  extractedBytesSum += manifestBytes.size.toLong()
+                  detectedPkgName = extractPackageNameFromManifestBytes(manifestBytes)
+                } else if (name.startsWith("lib/") && name.endsWith(".so")) {
+                  val parts = name.split('/')
+                  if (parts.size >= 3) abis += parts[1]
+                }
               }
+              zis.closeEntry()
             }
-            zis.closeEntry()
           }
-        }
-        if (!foundInsideZip) {
-          throw IllegalArgumentException("\"$displayName\" is not a valid DEX or APK archive.")
+          totalBytes += if (uriSize > 0L) uriSize else extractedBytesSum
+          if (!foundInsideZip) {
+            throw IllegalArgumentException("\"$displayName\" is not a valid DEX or APK archive.")
+          }
         }
       }
     }
@@ -136,10 +158,9 @@ object ApkMetadataInspector {
     if (!file.exists() || !file.canRead()) {
       throw IllegalArgumentException("APK for ${app.packageName} is no longer accessible.")
     }
-    val bytes = file.readBytes()
-    return inspectBytes(
+    return inspectLocalFile(
       context = context,
-      bytes = bytes,
+      file = file,
       sourceLabel = "${app.appLabel}.apk",
       sourceRef = app.apkPath,
       sourceType = BinarySourceType.INSTALLED_APK,
@@ -152,10 +173,9 @@ object ApkMetadataInspector {
     if (!file.exists() || !file.canRead()) {
       throw IllegalArgumentException("File \"$fallbackLabel\" is not accessible.")
     }
-    val bytes = file.readBytes()
-    return inspectBytes(
+    return inspectLocalFile(
       context = context,
-      bytes = bytes,
+      file = file,
       sourceLabel = fallbackLabel,
       sourceRef = path,
       sourceType = BinarySourceType.INSTALLED_APK,
@@ -163,22 +183,40 @@ object ApkMetadataInspector {
     )
   }
 
-  private fun inspectBytes(
+  private fun queryUriByteSize(context: Context, uri: Uri): Long {
+    return runCatching {
+      context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { afd ->
+        afd.length.takeIf { it > 0L } ?: 0L
+      } ?: 0L
+    }.getOrDefault(0L)
+  }
+
+  /**
+   * Memory-optimized local file inspector: uses random-access [ZipFile] when the file is an APK
+   * so only `classes*.dex` and `AndroidManifest.xml` entries are read into memory, avoiding
+   * allocating a full-APK `ByteArray` on the heap.
+   */
+  private fun inspectLocalFile(
     context: Context,
-    bytes: ByteArray,
+    file: File,
     sourceLabel: String,
     sourceRef: String,
     sourceType: BinarySourceType,
     knownApp: InstalledAppItem?,
   ): ApkStagingPreview {
-    // Check standalone .dex magic ("dex\n")
+    val fileLen = file.length()
+    if (fileLen < 8L) {
+      throw IllegalArgumentException("File \"$sourceLabel\" is too small.")
+    }
+    val magicHeader = ByteArray(8)
+    FileInputStream(file).use { fis -> fis.read(magicHeader) }
     if (
-      bytes.size >= 8 &&
-        bytes[0] == 'd'.code.toByte() &&
-        bytes[1] == 'e'.code.toByte() &&
-        bytes[2] == 'x'.code.toByte() &&
-        bytes[3] == '\n'.code.toByte()
+      magicHeader[0] == 'd'.code.toByte() &&
+        magicHeader[1] == 'e'.code.toByte() &&
+        magicHeader[2] == 'x'.code.toByte() &&
+        magicHeader[3] == '\n'.code.toByte()
     ) {
+      val bytes = file.readBytes()
       val entryName = if (sourceLabel.endsWith(".dex", ignoreCase = true)) sourceLabel else "classes.dex"
       val inferredDexPkg = inferPackageNameFromDexBytes(bytes, sourceLabel)
       return ApkStagingPreview(
@@ -191,7 +229,7 @@ object ApkMetadataInspector {
         versionCode = null,
         minSdk = null,
         targetSdk = null,
-        totalByteSize = bytes.size.toLong(),
+        totalByteSize = fileLen,
         nativeAbis = emptyList(),
         dexEntries = listOf(ApkDexEntry(entryName, bytes.size)),
         dexByteMap = mapOf(entryName to bytes),
@@ -205,17 +243,103 @@ object ApkMetadataInspector {
     val abis = linkedSetOf<String>()
     var manifestBytes: ByteArray? = null
 
-    ZipInputStream(ByteArrayInputStream(bytes)).use { zis ->
+    ZipFile(file).use { zip ->
+      val enumeration = zip.entries()
+      while (enumeration.hasMoreElements()) {
+        val entry = enumeration.nextElement()
+        if (entry.isDirectory) continue
+        val name = entry.name
+        if (name.endsWith(".dex", ignoreCase = true)) {
+          val dexBytes = zip.getInputStream(entry).use { it.readBytes() }
+          entries += ApkDexEntry(name, dexBytes.size)
+          dexMap[name] = dexBytes
+        } else if (name.equals("AndroidManifest.xml", ignoreCase = true)) {
+          manifestBytes = zip.getInputStream(entry).use { it.readBytes() }
+        } else if (name.startsWith("lib/") && name.endsWith(".so")) {
+          val parts = name.split('/')
+          if (parts.size >= 3) abis += parts[1]
+        }
+      }
+    }
+
+    return buildApkStagingPreview(
+      context = context,
+      sourceLabel = sourceLabel,
+      sourceRef = sourceRef,
+      sourceType = sourceType,
+      totalByteSize = fileLen,
+      entries = entries,
+      dexMap = dexMap,
+      abis = abis,
+      manifestBytes = manifestBytes,
+      knownApp = knownApp,
+    )
+  }
+
+  private fun inspectStream(
+    context: Context,
+    inputStream: InputStream,
+    knownTotalBytes: Long,
+    sourceLabel: String,
+    sourceRef: String,
+    sourceType: BinarySourceType,
+    knownApp: InstalledAppItem?,
+  ): ApkStagingPreview {
+    val buffered = BufferedInputStream(inputStream, 32 * 1024)
+    buffered.mark(16)
+    val magic = ByteArray(8)
+    val readCount = buffered.read(magic)
+    buffered.reset()
+
+    if (
+      readCount >= 8 &&
+        magic[0] == 'd'.code.toByte() &&
+        magic[1] == 'e'.code.toByte() &&
+        magic[2] == 'x'.code.toByte() &&
+        magic[3] == '\n'.code.toByte()
+    ) {
+      val bytes = buffered.readBytes()
+      val entryName = if (sourceLabel.endsWith(".dex", ignoreCase = true)) sourceLabel else "classes.dex"
+      val inferredDexPkg = inferPackageNameFromDexBytes(bytes, sourceLabel)
+      return ApkStagingPreview(
+        sourceLabel = sourceLabel,
+        sourceRef = sourceRef,
+        sourceType = sourceType,
+        packageName = inferredDexPkg,
+        appLabel = sourceLabel,
+        versionName = "DEX v" + String(bytes, 4, 3, Charsets.US_ASCII),
+        versionCode = null,
+        minSdk = null,
+        targetSdk = null,
+        totalByteSize = if (knownTotalBytes > 0L) knownTotalBytes else bytes.size.toLong(),
+        nativeAbis = emptyList(),
+        dexEntries = listOf(ApkDexEntry(entryName, bytes.size)),
+        dexByteMap = mapOf(entryName to bytes),
+        isSingleDex = true,
+        iconBitmap = null,
+      )
+    }
+
+    val entries = mutableListOf<ApkDexEntry>()
+    val dexMap = linkedMapOf<String, ByteArray>()
+    val abis = linkedSetOf<String>()
+    var manifestBytes: ByteArray? = null
+    var extractedTotal = 0L
+
+    ZipInputStream(buffered).use { zis ->
       while (true) {
         val entry = zis.nextEntry ?: break
         val name = entry.name
         if (!entry.isDirectory) {
           if (name.endsWith(".dex", ignoreCase = true)) {
             val dexBytes = zis.readBytes()
+            extractedTotal += dexBytes.size.toLong()
             entries += ApkDexEntry(name, dexBytes.size)
             dexMap[name] = dexBytes
           } else if (name.equals("AndroidManifest.xml", ignoreCase = true)) {
-            manifestBytes = zis.readBytes()
+            val mb = zis.readBytes()
+            extractedTotal += mb.size.toLong()
+            manifestBytes = mb
           } else if (name.startsWith("lib/") && name.endsWith(".so")) {
             val parts = name.split('/')
             if (parts.size >= 3) abis += parts[1]
@@ -225,13 +349,38 @@ object ApkMetadataInspector {
       }
     }
 
+    return buildApkStagingPreview(
+      context = context,
+      sourceLabel = sourceLabel,
+      sourceRef = sourceRef,
+      sourceType = sourceType,
+      totalByteSize = if (knownTotalBytes > 0L) knownTotalBytes else extractedTotal,
+      entries = entries,
+      dexMap = dexMap,
+      abis = abis,
+      manifestBytes = manifestBytes,
+      knownApp = knownApp,
+    )
+  }
+
+  private fun buildApkStagingPreview(
+    context: Context,
+    sourceLabel: String,
+    sourceRef: String,
+    sourceType: BinarySourceType,
+    totalByteSize: Long,
+    entries: List<ApkDexEntry>,
+    dexMap: Map<String, ByteArray>,
+    abis: Set<String>,
+    manifestBytes: ByteArray?,
+    knownApp: InstalledAppItem?,
+  ): ApkStagingPreview {
     if (entries.isEmpty()) {
       throw IllegalArgumentException("No DEX binary or classes*.dex entries found inside \"$sourceLabel\".")
     }
 
     val sortedEntries = entries.sortedWith(compareBy({ it.entryName.length }, { it.entryName }))
 
-    // Extract APK archive metadata if not already provided by InstalledAppItem
     var pkgName = knownApp?.packageName
     var appLabel = knownApp?.appLabel
     var verName = knownApp?.versionName
@@ -240,22 +389,23 @@ object ApkMetadataInspector {
     var targetSdk = knownApp?.targetSdk
     var iconBitmap = knownApp?.iconBitmap
 
-    if (pkgName == null) {
-      val archiveMeta = extractArchiveInfo(context, bytes, sourceRef, sourceType)
-      if (archiveMeta != null) {
-        pkgName = archiveMeta.packageName
-        appLabel = archiveMeta.appLabel
-        verName = archiveMeta.versionName
-        verCode = archiveMeta.versionCode
-        minSdk = archiveMeta.minSdk
-        targetSdk = archiveMeta.targetSdk
-        iconBitmap = archiveMeta.iconBitmap
-      }
+    // Fast path: parse binary or text AndroidManifest.xml directly from memory without writing a temp APK
+    if (pkgName.isNullOrBlank() && manifestBytes != null) {
+      pkgName = extractPackageNameFromManifestBytes(manifestBytes)
     }
 
-    // Tier 2 Fallback: Parse binary or text AndroidManifest.xml inside the APK ZIP
-    if (pkgName.isNullOrBlank() && manifestBytes != null) {
-      pkgName = extractPackageNameFromManifestBytes(manifestBytes!!)
+    // If this is a local file path, query PackageManager directly without copying any bytes
+    if (sourceType == BinarySourceType.INSTALLED_APK && File(sourceRef).exists()) {
+      val archiveMeta = extractArchiveInfoFromFile(context, sourceRef)
+      if (archiveMeta != null) {
+        if (pkgName.isNullOrBlank()) pkgName = archiveMeta.packageName
+        if (appLabel.isNullOrBlank()) appLabel = archiveMeta.appLabel
+        if (verName.isNullOrBlank()) verName = archiveMeta.versionName
+        if (verCode == null) verCode = archiveMeta.versionCode
+        if (minSdk == null) minSdk = archiveMeta.minSdk
+        if (targetSdk == null) targetSdk = archiveMeta.targetSdk
+        if (iconBitmap == null) iconBitmap = archiveMeta.iconBitmap
+      }
     }
 
     // Tier 3 Fallback: Infer dominant non-framework package from primary DEX entries
@@ -277,7 +427,7 @@ object ApkMetadataInspector {
       versionCode = verCode,
       minSdk = minSdk,
       targetSdk = targetSdk,
-      totalByteSize = bytes.size.toLong(),
+      totalByteSize = totalByteSize,
       nativeAbis = abis.sorted(),
       dexEntries = sortedEntries,
       dexByteMap = dexMap,
@@ -445,25 +595,12 @@ object ApkMetadataInspector {
     val iconBitmap: android.graphics.Bitmap?,
   )
 
-  private fun extractArchiveInfo(
+  private fun extractArchiveInfoFromFile(
     context: Context,
-    bytes: ByteArray,
-    sourceRef: String,
-    sourceType: BinarySourceType,
+    apkPath: String,
   ): ArchiveMeta? {
     val pm = context.packageManager
-    var tempFile: File? = null
     return try {
-      val apkPath =
-        if (sourceType == BinarySourceType.INSTALLED_APK && File(sourceRef).exists()) {
-          sourceRef
-        } else {
-          File.createTempFile("dex2c_stage_", ".apk", context.cacheDir).also { tmp ->
-            tempFile = tmp
-            FileOutputStream(tmp).use { it.write(bytes) }
-          }.absolutePath
-        }
-
       val pkgInfo =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
           pm.getPackageArchiveInfo(apkPath, PackageManager.PackageInfoFlags.of(0L))
@@ -501,8 +638,6 @@ object ApkMetadataInspector {
       )
     } catch (_: Throwable) {
       null
-    } finally {
-      tempFile?.delete()
     }
   }
 }

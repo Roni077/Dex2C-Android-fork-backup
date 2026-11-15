@@ -91,9 +91,11 @@ object InstalledAppRepository {
     }.getOrNull()
   }
 
-  fun drawableToBitmap(drawable: Drawable, sizePx: Int = 96): Bitmap {
+  fun drawableToBitmap(drawable: Drawable, sizePx: Int = 64): Bitmap {
     if (drawable is BitmapDrawable && drawable.bitmap != null) {
-      return Bitmap.createScaledBitmap(drawable.bitmap, sizePx, sizePx, true)
+      val src = drawable.bitmap
+      if (src.width <= sizePx && src.height <= sizePx) return src
+      return Bitmap.createScaledBitmap(src, sizePx, sizePx, true)
     }
     val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)

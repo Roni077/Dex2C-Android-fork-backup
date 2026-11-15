@@ -9,8 +9,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -74,8 +72,8 @@ import com.dex2c.studio.ui.theme.M3TonalColorEngine
 object ExpressiveMotion {
   fun <T> spatialSpring() =
     spring<T>(
-      dampingRatio = 0.78f,
-      stiffness = Spring.StiffnessMediumLow,
+      dampingRatio = 0.86f,
+      stiffness = Spring.StiffnessMedium,
     )
 
   fun <T> effectsSpring() =
@@ -86,35 +84,32 @@ object ExpressiveMotion {
 
   fun <T> microSpring() =
     spring<T>(
-      dampingRatio = 0.65f,
+      dampingRatio = 0.78f,
       stiffness = Spring.StiffnessMedium,
     )
 
   fun sharedAxisHorizontal(forward: Boolean): ContentTransform {
     val direction = if (forward) 1 else -1
-    val spatial = spring<IntOffset>(dampingRatio = 0.82f, stiffness = Spring.StiffnessMediumLow)
-    return (slideInHorizontally(animationSpec = spatial) { fullWidth -> (fullWidth * 0.22f * direction).toInt() } +
-      fadeIn(animationSpec = tween(220)) +
-      scaleIn(initialScale = 0.96f, animationSpec = tween(220)))
+    val spatial = spring<IntOffset>(dampingRatio = 0.88f, stiffness = Spring.StiffnessMedium)
+    return (slideInHorizontally(animationSpec = spatial) { fullWidth -> (fullWidth * 0.14f * direction).toInt() } +
+      fadeIn(animationSpec = tween(160)))
       .togetherWith(
-        slideOutHorizontally(animationSpec = spatial) { fullWidth -> (-fullWidth * 0.16f * direction).toInt() } +
-          fadeOut(animationSpec = tween(160)) +
-          scaleOut(targetScale = 0.98f, animationSpec = tween(160))
+        slideOutHorizontally(animationSpec = spatial) { fullWidth -> (-fullWidth * 0.10f * direction).toInt() } +
+          fadeOut(animationSpec = tween(120))
       )
   }
 
   fun navEnterTransition(forward: Boolean) =
     slideInHorizontally(
-      animationSpec = spring(dampingRatio = 0.84f, stiffness = Spring.StiffnessMediumLow),
-    ) { w -> (w * (if (forward) 0.18f else -0.18f)).toInt() } +
-      fadeIn(animationSpec = tween(220)) +
-      scaleIn(initialScale = 0.97f, animationSpec = tween(220))
+      animationSpec = spring(dampingRatio = 0.88f, stiffness = Spring.StiffnessMedium),
+    ) { w -> (w * (if (forward) 0.12f else -0.12f)).toInt() } +
+      fadeIn(animationSpec = tween(160))
 
   fun navExitTransition(forward: Boolean) =
     slideOutHorizontally(
-      animationSpec = spring(dampingRatio = 0.84f, stiffness = Spring.StiffnessMediumLow),
-    ) { w -> (w * (if (forward) -0.14f else 0.14f)).toInt() } +
-      fadeOut(animationSpec = tween(160))
+      animationSpec = spring(dampingRatio = 0.88f, stiffness = Spring.StiffnessMedium),
+    ) { w -> (w * (if (forward) -0.10f else 0.10f)).toInt() } +
+      fadeOut(animationSpec = tween(120))
 }
 
 fun Modifier.expressivePressScale(

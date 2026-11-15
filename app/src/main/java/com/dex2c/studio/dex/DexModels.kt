@@ -235,21 +235,20 @@ data class DexEncodedMethod(
   val codeMeta: DexCodeMeta?,
   val sourceEntryName: String = "classes.dex",
 ) {
-  val isStatic: Boolean get() = (accessFlags and 0x0008) != 0
-  val isNative: Boolean get() = (accessFlags and 0x0100) != 0
-  val isAbstract: Boolean get() = (accessFlags and 0x0400) != 0
-  val isSynthetic: Boolean get() = (accessFlags and 0x1000) != 0 || (accessFlags and 0x0040) != 0
-  val isConstructor: Boolean get() = methodRef.name == "<init>" || (accessFlags and 0x10000) != 0
-  val isInitConstructor: Boolean get() = methodRef.name == "<init>"
-  val isCoroutineOrSyntheticArtifact: Boolean
-    get() =
-      isSynthetic ||
-        methodRef.name == "invokeSuspend" ||
-        methodRef.name == "<clinit>" ||
-        methodRef.definingClass.contains("\$\$ExternalSyntheticLambda") ||
-        methodRef.definingClass.contains("ComposableSingletons\$") ||
-        methodRef.definingClass.startsWith("L_COROUTINE/")
-  val hasBytecode: Boolean get() = codeMeta != null && codeMeta.insnsCount > 0
+  val isStatic: Boolean = (accessFlags and 0x0008) != 0
+  val isNative: Boolean = (accessFlags and 0x0100) != 0
+  val isAbstract: Boolean = (accessFlags and 0x0400) != 0
+  val isSynthetic: Boolean = (accessFlags and 0x1000) != 0 || (accessFlags and 0x0040) != 0
+  val isInitConstructor: Boolean = methodRef.name == "<init>"
+  val isConstructor: Boolean = isInitConstructor || (accessFlags and 0x10000) != 0
+  val isCoroutineOrSyntheticArtifact: Boolean =
+    isSynthetic ||
+      methodRef.name == "invokeSuspend" ||
+      methodRef.name == "<clinit>" ||
+      methodRef.definingClass.contains("\$\$ExternalSyntheticLambda") ||
+      methodRef.definingClass.contains("ComposableSingletons\$") ||
+      methodRef.definingClass.startsWith("L_COROUTINE/")
+  val hasBytecode: Boolean = codeMeta != null && codeMeta.insnsCount > 0
 }
 
 data class DexClassInfo(
@@ -271,29 +270,28 @@ data class DexClassInfo(
   val classDataOffset: Int = 0,
   val sourceEntryName: String = "classes.dex",
 ) {
-  val uniqueKey: String
-    get() = "$sourceEntryName::$classIndex::$descriptor"
+  val uniqueKey: String = "$sourceEntryName::$classIndex::$descriptor"
 
-  val allMethods: List<DexEncodedMethod>
-    get() = directMethods + virtualMethods
+  val allMethods: List<DexEncodedMethod> =
+    if (directMethods.isEmpty()) virtualMethods
+    else if (virtualMethods.isEmpty()) directMethods
+    else directMethods + virtualMethods
 
-  val bytecodeMethodCount: Int
-    get() = allMethods.count { it.hasBytecode }
+  val bytecodeMethodCount: Int = allMethods.count { it.hasBytecode }
 
-  val isFrameworkClass: Boolean
-    get() =
-      packageName.startsWith("androidx.") ||
-        packageName.startsWith("android.") ||
-        packageName.startsWith("kotlin.") ||
-        packageName.startsWith("kotlinx.") ||
-        packageName.startsWith("java.") ||
-        packageName.startsWith("javax.") ||
-        packageName.startsWith("com.google.") ||
-        packageName.startsWith("okhttp3") ||
-        packageName.startsWith("okio") ||
-        packageName.startsWith("_COROUTINE") ||
-        packageName.startsWith("org.intellij.") ||
-        packageName.startsWith("org.jetbrains.")
+  val isFrameworkClass: Boolean =
+    packageName.startsWith("androidx.") ||
+      packageName.startsWith("android.") ||
+      packageName.startsWith("kotlin.") ||
+      packageName.startsWith("kotlinx.") ||
+      packageName.startsWith("java.") ||
+      packageName.startsWith("javax.") ||
+      packageName.startsWith("com.google.") ||
+      packageName.startsWith("okhttp3") ||
+      packageName.startsWith("okio") ||
+      packageName.startsWith("_COROUTINE") ||
+      packageName.startsWith("org.intellij.") ||
+      packageName.startsWith("org.jetbrains.")
 
   fun isFrameworkOrLibraryClass(apkPackageName: String? = null): Boolean {
     val cleanApkPkg = apkPackageName?.trim()?.takeIf { it.isNotEmpty() && it != "(default)" }
@@ -432,11 +430,11 @@ data class DexParsedFile(
   val entryName: String,
   val rawBytes: ByteArray,
   val header: DexHeaderInfo,
-  val strings: List<String>,
-  val types: List<String>,
-  val protos: List<DexProto>,
-  val fields: List<DexFieldRef>,
-  val methods: List<DexMethodRef>,
+  val strings: List<String> = emptyList(),
+  val types: List<String> = emptyList(),
+  val protos: List<DexProto> = emptyList(),
+  val fields: List<DexFieldRef> = emptyList(),
+  val methods: List<DexMethodRef> = emptyList(),
   val classes: List<DexClassInfo>,
   val mapItems: List<DexMapItem> = emptyList(),
   val methodHandles: List<DexMethodHandleInfo> = emptyList(),
@@ -445,6 +443,55 @@ data class DexParsedFile(
   val parseDurationMs: Long = 0L,
   val parserEngine: String = "Kotlin DexFile/DexHelper",
 ) {
+  val areTransientPoolsReleased: Boolean
+    get() = strings.isEmpty() && types.isEmpty() && protos.isEmpty() && fields.isEmpty() && methods.isEmpty()
+
+  fun stringAt(index: Int): String? {
+    if (index < 0) return null
+    if (index in strings.indices) return strings[index]
+    return DexParser.readStringAt(rawBytes, index)
+  }
+
+  fun typeAt(index: Int): String? {
+    if (index < 0) return null
+    if (index in types.indices) return types[index]
+    return DexParser.readTypeAt(rawBytes, index)
+  }
+
+  fun protoAt(index: Int): DexProto? {
+    if (index < 0) return null
+    if (index in protos.indices) return protos[index]
+    return DexParser.readProtoAt(rawBytes, index)
+  }
+
+  fun fieldAt(index: Int): DexFieldRef? {
+    if (index < 0) return null
+    if (index in fields.indices) return fields[index]
+    return DexParser.readFieldAt(rawBytes, index)
+  }
+
+  fun methodAt(index: Int): DexMethodRef? {
+    if (index < 0) return null
+    if (index in methods.indices) return methods[index]
+    return DexParser.readMethodAt(rawBytes, index)
+  }
+
+  /**
+   * Releases the bulk `strings`, `types`, `protos`, `fields`, and `methods` constant-pool lists
+   * once class definitions have been indexed. Subsequent disassembler or metadata queries resolve
+   * individual pool entries on demand directly from [rawBytes] via [stringAt], [typeAt], etc.
+   */
+  fun releaseTransientPools(): DexParsedFile {
+    if (areTransientPoolsReleased) return this
+    return copy(
+      strings = emptyList(),
+      types = emptyList(),
+      protos = emptyList(),
+      fields = emptyList(),
+      methods = emptyList(),
+    )
+  }
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is DexParsedFile) return false

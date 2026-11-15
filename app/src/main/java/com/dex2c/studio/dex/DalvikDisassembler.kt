@@ -328,7 +328,7 @@ object DalvikDisassembler {
       fun resolveRef(index: Int): String {
         return when (spec.ref) {
           RefKind.STRING -> {
-            strRef = dex.strings.getOrNull(index)
+            strRef = dex.stringAt(index)
             val escaped =
               (strRef ?: "<str#$index>")
                 .replace("\\", "\\\\")
@@ -338,17 +338,17 @@ object DalvikDisassembler {
             "\"$escaped\""
           }
           RefKind.TYPE -> {
-            typeRef = dex.types.getOrNull(index)
+            typeRef = dex.typeAt(index)
             typeRef ?: "<type#$index>"
           }
           RefKind.FIELD -> {
-            fieldRef = dex.fields.getOrNull(index)
+            fieldRef = dex.fieldAt(index)
             val f = fieldRef
             if (f != null) "${descriptorToSimpleName(f.definingClass)}.${f.name}:${descriptorToSimpleName(f.type)}"
             else "<field#$index>"
           }
           RefKind.METHOD -> {
-            methodRef = dex.methods.getOrNull(index)
+            methodRef = dex.methodAt(index)
             val m = methodRef
             if (m != null) "${descriptorToSimpleName(m.definingClass)}.${m.prettySignature()}"
             else "<method#$index>"
@@ -687,7 +687,7 @@ object DalvikDisassembler {
       repeat(count) {
         val typeIdx = reader.readUleb128()
         val addr = reader.readUleb128()
-        handlers += DexCatchHandler(dex.types.getOrNull(typeIdx), addr)
+        handlers += DexCatchHandler(dex.typeAt(typeIdx), addr)
       }
       if (size <= 0) {
         val catchAllAddr = reader.readUleb128()

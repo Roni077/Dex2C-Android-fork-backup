@@ -240,6 +240,24 @@ fun Dex2cApp(
   LaunchedEffect(appSettings) {
     CloudBuildNotifier.ensureNotificationChannel(context, appSettings)
   }
+  DisposableEffect(context, viewModel) {
+    val callbacks =
+      object : android.content.ComponentCallbacks2 {
+        override fun onConfigurationChanged(newConfig: android.content.res.Configuration) = Unit
+
+        override fun onLowMemory() {
+          viewModel.onTrimMemory(android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+        }
+
+        override fun onTrimMemory(level: Int) {
+          viewModel.onTrimMemory(level)
+        }
+      }
+    context.applicationContext.registerComponentCallbacks(callbacks)
+    onDispose {
+      context.applicationContext.unregisterComponentCallbacks(callbacks)
+    }
+  }
   val cloudSettings by viewModel.cloudSettings.collectAsStateWithLifecycle()
   val deviceAuthState by viewModel.deviceAuthState.collectAsStateWithLifecycle()
   val repoSetupState by viewModel.repoSetupState.collectAsStateWithLifecycle()
@@ -686,6 +704,14 @@ fun Dex2cApp(
             }
 
             composable(ROUTE_METHOD_DETAIL) {
+              DisposableEffect(Unit) {
+                onDispose {
+                  val activeRoutes = navController.currentBackStack.value.mapNotNull { it.destination.route }
+                  if (ROUTE_METHOD_DETAIL !in activeRoutes) {
+                    viewModel.clearMethodInspection()
+                  }
+                }
+              }
               val currentInspection = inspection
               if (currentInspection != null) {
                 MethodDetailScreen(
@@ -693,7 +719,10 @@ fun Dex2cApp(
                   isSelected = currentInspection.method.id in selectedMethodIds,
                   onToggleSelect = { viewModel.toggleMethodSelection(currentInspection.method.id) },
                   onCopyCCode = { copyText(it) },
-                  onBack = { navController.popBackStack() },
+                  onBack = {
+                    viewModel.clearMethodInspection()
+                    navController.popBackStack()
+                  },
                   onOpenClassSmali = {
                     viewModel.inspectClassSmali(
                       currentInspection.dexClass,
@@ -706,6 +735,14 @@ fun Dex2cApp(
             }
 
             composable(ROUTE_SMALI_CLASS) {
+              DisposableEffect(Unit) {
+                onDispose {
+                  val activeRoutes = navController.currentBackStack.value.mapNotNull { it.destination.route }
+                  if (ROUTE_SMALI_CLASS !in activeRoutes) {
+                    viewModel.clearSmaliInspection()
+                  }
+                }
+              }
               val currentSmali = smaliClassState
               if (currentSmali != null) {
                 SmaliClassScreen(
@@ -715,7 +752,10 @@ fun Dex2cApp(
                     pendingSmaliExportText = smaliText
                     exportSmaliLauncher.launch(fileName)
                   },
-                  onBack = { navController.popBackStack() },
+                  onBack = {
+                    viewModel.clearSmaliInspection()
+                    navController.popBackStack()
+                  },
                   selectedMethodIds = selectedMethodIds,
                   onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
                   onInspectMethodC = { method ->

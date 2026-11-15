@@ -61,6 +61,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -85,6 +86,7 @@ import com.dex2c.studio.ui.components.SmaliInteractiveToken
 import com.dex2c.studio.ui.components.SmaliSearchCategory
 import com.dex2c.studio.ui.components.SmaliSearchMatch
 import com.dex2c.studio.ui.components.SmaliSearchOptions
+import com.dex2c.studio.ui.components.SmaliSearchResult
 import com.dex2c.studio.ui.components.SmaliSyntaxCodeViewer
 import com.dex2c.studio.ui.components.SmaliTokenKind
 import com.dex2c.studio.ui.components.TagPill
@@ -93,6 +95,9 @@ import com.dex2c.studio.ui.components.extractQuickMethodTokens
 import com.dex2c.studio.ui.components.findSmaliSearchMatches
 import com.dex2c.studio.ui.components.highlightSmaliLine
 import com.dex2c.studio.ui.theme.BytecodeHighContrastSyntaxPalette
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 import com.dex2c.studio.ui.theme.LocalEditorSettings
 import com.dex2c.studio.ui.theme.LocalSyntaxPalette
@@ -171,14 +176,42 @@ fun SmaliClassScreen(
       )
     }
 
-  val searchResult =
-    remember(lines, methodSpans, searchOptions) {
-      findSmaliSearchMatches(
-        lines = lines,
-        methodSpans = methodSpans,
-        options = searchOptions,
-      )
+  val isLargeFile = lines.size > 1500
+  val immediateSearchResult =
+    remember(lines, methodSpans, searchOptions, isLargeFile) {
+      if (isLargeFile && searchOptions.query.isNotEmpty()) {
+        SmaliSearchResult()
+      } else {
+        findSmaliSearchMatches(
+          lines = lines,
+          methodSpans = methodSpans,
+          options = searchOptions,
+        )
+      }
     }
+  val asyncSearchResult by
+    produceState(
+      initialValue = immediateSearchResult,
+      lines,
+      methodSpans,
+      searchOptions,
+      isLargeFile,
+    ) {
+      if (!isLargeFile || searchOptions.query.isEmpty()) {
+        value = immediateSearchResult
+      } else {
+        delay(75L)
+        value =
+          withContext(Dispatchers.Default) {
+            findSmaliSearchMatches(
+              lines = lines,
+              methodSpans = methodSpans,
+              options = searchOptions,
+            )
+          }
+      }
+    }
+  val searchResult = if (isLargeFile && searchOptions.query.isNotEmpty()) asyncSearchResult else immediateSearchResult
 
   val matchingLines = remember(searchResult) { searchResult.matches.map { it.lineIndex } }
 

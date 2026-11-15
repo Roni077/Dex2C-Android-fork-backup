@@ -74,6 +74,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -91,16 +92,14 @@ sealed interface DexLoadState {
     val loadedDexes: Map<String, DexParsedFile> = mapOf(parsedDex.entryName to parsedDex),
     val apkPackageName: String? = null,
   ) : DexLoadState {
-    val mergedClasses: List<DexClassInfo>
-      get() =
-        if (loadedDexes.size <= 1) parsedDex.classes
-        else loadedDexes.values.flatMap { it.classes }
+    val mergedClasses: List<DexClassInfo> =
+      if (loadedDexes.size <= 1) parsedDex.classes
+      else loadedDexes.values.flatMap { it.classes }
 
-    val loadedEntryNames: List<String>
-      get() = loadedDexes.keys.toList()
+    val loadedEntryNames: List<String> = loadedDexes.keys.toList()
 
-    val resolvedPackageName: String?
-      get() = apkPackageName?.takeIf { it.isNotBlank() } ?: inferDominantDexPackageName(mergedClasses)
+    val resolvedPackageName: String? =
+      apkPackageName?.takeIf { it.isNotBlank() } ?: inferDominantDexPackageName(mergedClasses)
   }
   data class Error(val message: String) : DexLoadState
 }
@@ -135,7 +134,6 @@ sealed interface SmaliClassUiState {
 
   data class Ready(
     override val dexClass: DexClassInfo,
-    val smaliText: String,
     val lines: List<String>,
     val lineCount: Int,
     val methodCount: Int,
@@ -143,7 +141,31 @@ sealed interface SmaliClassUiState {
     val durationMs: Long,
     val initialFocusMethodName: String? = null,
     val methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
-  ) : SmaliClassUiState
+  ) : SmaliClassUiState {
+    val smaliText: String
+      get() = lines.joinToString("\n")
+
+    constructor(
+      dexClass: DexClassInfo,
+      smaliText: String,
+      lines: List<String> = if (smaliText.isEmpty()) emptyList() else smaliText.lines(),
+      lineCount: Int = lines.size,
+      methodCount: Int,
+      fieldCount: Int,
+      durationMs: Long,
+      initialFocusMethodName: String? = null,
+      methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
+    ) : this(
+      dexClass = dexClass,
+      lines = lines,
+      lineCount = lineCount,
+      methodCount = methodCount,
+      fieldCount = fieldCount,
+      durationMs = durationMs,
+      initialFocusMethodName = initialFocusMethodName,
+      methodSpans = methodSpans,
+    )
+  }
 
   data class Error(
     override val dexClass: DexClassInfo,
@@ -265,10 +287,12 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   val filteredInstalledApps: StateFlow<List<InstalledAppItem>> =
     combine(_installedApps, _appSearchQuery) { apps, query ->
-      val q = query.trim().lowercase()
+      val q = query.trim()
       if (q.isEmpty()) apps
-      else apps.filter { it.appLabel.lowercase().contains(q) || it.packageName.lowercase().contains(q) }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+      else apps.filter { it.appLabel.contains(q, ignoreCase = true) || it.packageName.contains(q, ignoreCase = true) }
+    }
+      .flowOn(Dispatchers.Default)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
   val recentFiles: StateFlow<List<RecentBinaryItem>> =
     recentStore.recentItemsFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -336,7 +360,7 @@ class Dex2cViewModel @JvmOverloads constructor(
       val ready = load as? DexLoadState.Ready ?: return@combine emptyList()
       val activeDexFilter =
         filter.dexSourceFilter?.takeIf { it in ready.loadedDexes }
-      val query = filter.searchQuery.trim().lowercase()
+      val query = filter.searchQuery.trim()
       val ruleMatchedIds = ruleMatch?.matchedMethodIds
       val resolvedApkPkg = ready.resolvedPackageName
       val filtered =
@@ -363,11 +387,13 @@ class Dex2cViewModel @JvmOverloads constructor(
             }
           }
           if (query.isNotEmpty()) {
-            val matchesClass = cls.fullName.lowercase().contains(query) || cls.descriptor.lowercase().contains(query)
+            val matchesClass =
+              cls.fullName.contains(query, ignoreCase = true) ||
+                cls.descriptor.contains(query, ignoreCase = true)
             val matchesMethod =
               cls.allMethods.any {
                 matchesMethodScope(it, filter.methodScopeFilter) &&
-                  it.methodRef.name.lowercase().contains(query)
+                  it.methodRef.name.contains(query, ignoreCase = true)
               }
             if (!matchesClass && !matchesMethod) return@filter false
           }
@@ -388,21 +414,41 @@ class Dex2cViewModel @JvmOverloads constructor(
 
       when (filter.sortOrder) {
         ClassSortOrder.NAME_ASC ->
-          packageFiltered.sortedWith(compareBy({ it.simpleName.lowercase() }, { it.packageName.lowercase() }, { it.classIndex }))
-        ClassSortOrder.NAME_DESC ->
-          packageFiltered.sortedWith(compareByDescending<DexClassInfo> { it.simpleName.lowercase() }.thenBy { it.packageName.lowercase() }.thenBy { it.classIndex })
-        ClassSortOrder.BYTECODE_DESC ->
-          packageFiltered.sortedWith(compareByDescending<DexClassInfo> { it.bytecodeMethodCount }.thenBy { it.simpleName.lowercase() }.thenBy { it.classIndex })
-        ClassSortOrder.SELECTED_FIRST ->
           packageFiltered.sortedWith(
-            compareByDescending<DexClassInfo> { cls -> cls.allMethods.count { it.id in selected } }
-              .thenByDescending { it.bytecodeMethodCount }
-              .thenBy { it.simpleName.lowercase() }
+            compareBy<DexClassInfo, String>(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
+              .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
               .thenBy { it.classIndex }
           )
+        ClassSortOrder.NAME_DESC ->
+          packageFiltered.sortedWith(
+            compareByDescending<DexClassInfo, String>(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
+              .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
+              .thenBy { it.classIndex }
+          )
+        ClassSortOrder.BYTECODE_DESC ->
+          packageFiltered.sortedWith(
+            compareByDescending<DexClassInfo> { it.bytecodeMethodCount }
+              .thenBy(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
+              .thenBy { it.classIndex }
+          )
+        ClassSortOrder.SELECTED_FIRST -> {
+          val selectedCounts =
+            if (selected.isEmpty()) emptyMap()
+            else packageFiltered.associate { cls ->
+              cls.uniqueKey to cls.allMethods.count { it.id in selected }
+            }
+          packageFiltered.sortedWith(
+            compareByDescending<DexClassInfo> { selectedCounts[it.uniqueKey] ?: 0 }
+              .thenByDescending { it.bytecodeMethodCount }
+              .thenBy(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
+              .thenBy { it.classIndex }
+          )
+        }
         ClassSortOrder.DEX_ORDER -> packageFiltered
       }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    }
+      .flowOn(Dispatchers.Default)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
   private var hasInitializedFilterDefaults = false
   private var pendingAppSettingsWrites = 0
@@ -650,7 +696,7 @@ class Dex2cViewModel @JvmOverloads constructor(
                     rawBytes = bytes,
                     sourceLabel = label,
                     entryName = entryName,
-                  )
+                  ).releaseTransientPools()
                 }
               }
               .awaitAll()
@@ -659,6 +705,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           _loadState.value = DexLoadState.Error("Selected DEX binaries could not be read.")
           return@launch
         }
+        SmaliClassDisassembler.trimCache(maxEntries = 1)
         val dexMap = linkedMapOf<String, DexParsedFile>()
         parsedList.forEach { dexMap[it.entryName] = it }
         applyParsedDexes(label, preview.dexEntries, preview.dexByteMap, dexMap, preview.packageName)
@@ -721,6 +768,9 @@ class Dex2cViewModel @JvmOverloads constructor(
       if (_inspection.value?.dexClass?.sourceEntryName == entryName) {
         _inspection.value = null
       }
+      if (_smaliClassState.value?.dexClass?.sourceEntryName == entryName) {
+        _smaliClassState.value = null
+      }
       _loadState.value =
         current.copy(
           activeEntryName = nextActive,
@@ -740,8 +790,9 @@ class Dex2cViewModel @JvmOverloads constructor(
               rawBytes = bytes,
               sourceLabel = currentSourceLabel,
               entryName = entryName,
-            )
+            ).releaseTransientPools()
           }
+        SmaliClassDisassembler.trimCache(maxEntries = 1)
         val latest = _loadState.value as? DexLoadState.Ready ?: return@launch
         val orderedMap = linkedMapOf<String, DexParsedFile>()
         latest.dexEntries.forEach { entry ->
@@ -783,11 +834,13 @@ class Dex2cViewModel @JvmOverloads constructor(
     currentSourceLabel = label
     dexByteCache = byteMap
     bundleJob?.cancel()
+    smaliJob?.cancel()
     _isTranspiling.value = false
     _transpileProgress.value = null
     _isBundleDirty.value = false
     _selectedMethodIds.value = emptySet()
     _inspection.value = null
+    _smaliClassState.value = null
     _generatedBundle.value = null
     _filterState.update { it.copy(dexSourceFilter = null) }
     val primary = dexMap.values.first()
@@ -1104,7 +1157,6 @@ class Dex2cViewModel @JvmOverloads constructor(
           _smaliClassState.value =
             SmaliClassUiState.Ready(
               dexClass = dexClass,
-              smaliText = result.smaliText,
               lines = result.lines,
               lineCount = result.lineCount,
               methodCount = result.methodCount,
@@ -1122,6 +1174,50 @@ class Dex2cViewModel @JvmOverloads constructor(
             )
         }
       }
+  }
+
+  fun clearSmaliInspection() {
+    smaliJob?.cancel()
+    smaliJob = null
+    _smaliClassState.value = null
+    SmaliClassDisassembler.trimCache(maxEntries = 1)
+  }
+
+  fun clearMethodInspection() {
+    _inspection.value = null
+  }
+
+  /**
+   * Reclaims transient caches and non-visible buffers on navigation or system memory pressure.
+   */
+  fun onTrimMemory(level: Int = android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+    SmaliClassDisassembler.clearCache()
+    if (!_isPickerOpen.value && _installedApps.value.isNotEmpty()) {
+      _installedApps.value = emptyList()
+    }
+    val current = _loadState.value as? DexLoadState.Ready
+    if (current != null) {
+      val anyUnreleased = current.loadedDexes.values.any { !it.areTransientPoolsReleased }
+      if (anyUnreleased) {
+        val trimmedMap = linkedMapOf<String, DexParsedFile>()
+        current.loadedDexes.forEach { (k, v) -> trimmedMap[k] = v.releaseTransientPools() }
+        val trimmedActive = trimmedMap[current.activeEntryName] ?: trimmedMap.values.first()
+        _loadState.value =
+          current.copy(
+            parsedDex = trimmedActive,
+            loadedDexes = trimmedMap,
+          )
+      }
+      if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && dexByteCache.size > current.loadedDexes.size) {
+        dexByteCache = dexByteCache.filterKeys { it in current.loadedDexes }
+      }
+    }
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    SmaliClassDisassembler.clearCache()
+    dexByteCache = emptyMap()
   }
 
   fun exportSmaliToUri(uri: Uri, smaliText: String) {

@@ -61,7 +61,11 @@ fun SyntaxCodeViewer(
       LazyColumn(
         modifier = Modifier.fillMaxSize().horizontalScroll(hScroll).padding(12.dp)
       ) {
-        itemsIndexed(lines) { index, line ->
+        itemsIndexed(
+          items = lines,
+          key = { index, _ -> index },
+          contentType = { _, _ -> 0 },
+        ) { index, line ->
           val highlighted = remember(line, palette) { highlightCLine(line, palette) }
           Row(modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)) {
             if (editorSettings.showLineNumbers) {
@@ -112,7 +116,11 @@ fun DalvikInstructionViewer(
       LazyColumn(
         modifier = Modifier.fillMaxSize().horizontalScroll(hScroll).padding(12.dp)
       ) {
-        itemsIndexed(instructions) { _, insn ->
+        itemsIndexed(
+          items = instructions,
+          key = { index, insn -> "${insn.offsetWords}_$index" },
+          contentType = { _, _ -> 1 },
+        ) { _, insn ->
           tryStarts[insn.offsetWords]?.forEach { tb ->
             val catches =
               tb.handlers.joinToString(", ") { h ->
@@ -131,6 +139,10 @@ fun DalvikInstructionViewer(
             )
           }
 
+          val hexWordsFormatted = remember(insn.rawWords) { insn.formatHexWords().padEnd(14, ' ') }
+          val highlightedOperands =
+            remember(insn.operandsText, palette) { highlightDalvikOperands(insn.operandsText, palette) }
+
           Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
             if (editorSettings.showLineNumbers) {
               Text(
@@ -143,7 +155,7 @@ fun DalvikInstructionViewer(
               Spacer(Modifier.width(8.dp))
             }
             Text(
-              text = insn.formatHexWords().padEnd(14, ' '),
+              text = hexWordsFormatted,
               color = palette.lineNumber,
               fontFamily = JetBrainsMonoFontFamily,
               fontSize = addrFontSp,
@@ -159,7 +171,7 @@ fun DalvikInstructionViewer(
               lineHeight = lineHeightSp,
             )
             Text(
-              text = highlightDalvikOperands(insn.operandsText, palette),
+              text = highlightedOperands,
               fontFamily = JetBrainsMonoFontFamily,
               fontSize = codeFontSp,
               lineHeight = lineHeightSp,
@@ -209,9 +221,20 @@ private val cTypes =
     "uint8_t", "uint32_t", "uint64_t", "size_t", "char", "NULL", "JNI_OK", "JNI_ERR", "JNI_VERSION_1_6",
   )
 
+private val cStringRegex = Regex("\"([^\"\\\\]|\\\\.)*\"")
+private val cWordRegex = Regex("\\b[A-Za-z_][A-Za-z0-9_]*\\b")
+private val cNumRegex = Regex("\\b(0x[0-9A-Fa-f]+u?|\\d+LL?)\\b")
+private val dalvikRegRegex = Regex("\\bv\\d+\\b")
+private val dalvikLabelRegex = Regex("\\bL_[0-9a-fA-F]+\\b")
+private val dalvikNumberRegex = Regex("#-?(0x[0-9a-fA-F]+|\\d+)")
+
 private fun highlightCLine(line: String, palette: SyntaxPalette): AnnotatedString {
   return buildAnnotatedString {
     val trimmed = line.trimStart()
+    if (trimmed.isEmpty()) {
+      append(line)
+      return@buildAnnotatedString
+    }
     if (trimmed.startsWith("//") || trimmed.startsWith("#") || trimmed.startsWith("/*")) {
       val color = if (trimmed.startsWith("#")) palette.label else palette.comment
       append(line)
@@ -222,29 +245,35 @@ private fun highlightCLine(line: String, palette: SyntaxPalette): AnnotatedStrin
     append(line)
     addStyle(SpanStyle(color = palette.defaultText), 0, line.length)
 
-    val strRegex = Regex("\"([^\"\\\\]|\\\\.)*\"")
-    strRegex.findAll(line).forEach { m ->
-      addStyle(SpanStyle(color = palette.stringLiteral), m.range.first, m.range.last + 1)
+    if (line.contains('"')) {
+      cStringRegex.findAll(line).forEach { m ->
+        addStyle(SpanStyle(color = palette.stringLiteral), m.range.first, m.range.last + 1)
+      }
     }
 
     val commentIdx = line.indexOf("/*")
     val slashIdx = line.indexOf("//")
-    val cStart = listOf(commentIdx, slashIdx).filter { it >= 0 }.minOrNull()
+    val cStart =
+      when {
+        commentIdx >= 0 && slashIdx >= 0 -> minOf(commentIdx, slashIdx)
+        commentIdx >= 0 -> commentIdx
+        slashIdx >= 0 -> slashIdx
+        else -> null
+      }
     if (cStart != null) {
       addStyle(SpanStyle(color = palette.comment), cStart, line.length)
     }
 
     val limit = cStart ?: line.length
-    val wordRegex = Regex("\\b[A-Za-z_][A-Za-z0-9_]*\\b")
-    wordRegex.findAll(line.substring(0, limit)).forEach { m ->
+    val codeSlice = if (limit == line.length) line else line.substring(0, limit)
+    cWordRegex.findAll(codeSlice).forEach { m ->
       when (m.value) {
         in cKeywords -> addStyle(SpanStyle(color = palette.keyword), m.range.first, m.range.last + 1)
         in cTypes -> addStyle(SpanStyle(color = palette.typeName), m.range.first, m.range.last + 1)
       }
     }
 
-    val numRegex = Regex("\\b(0x[0-9A-Fa-f]+u?|\\d+LL?)\\b")
-    numRegex.findAll(line.substring(0, limit)).forEach { m ->
+    cNumRegex.findAll(codeSlice).forEach { m ->
       addStyle(SpanStyle(color = palette.numberLiteral), m.range.first, m.range.last + 1)
     }
   }
@@ -253,19 +282,26 @@ private fun highlightCLine(line: String, palette: SyntaxPalette): AnnotatedStrin
 private fun highlightDalvikOperands(operands: String, palette: SyntaxPalette): AnnotatedString {
   return buildAnnotatedString {
     append(operands)
+    if (operands.isEmpty()) return@buildAnnotatedString
     addStyle(SpanStyle(color = palette.defaultText), 0, operands.length)
 
-    Regex("\\bv\\d+\\b").findAll(operands).forEach { m ->
+    dalvikRegRegex.findAll(operands).forEach { m ->
       addStyle(SpanStyle(color = palette.register), m.range.first, m.range.last + 1)
     }
-    Regex("\\bL_[0-9a-fA-F]+\\b").findAll(operands).forEach { m ->
-      addStyle(SpanStyle(color = palette.label), m.range.first, m.range.last + 1)
+    if (operands.contains("L_")) {
+      dalvikLabelRegex.findAll(operands).forEach { m ->
+        addStyle(SpanStyle(color = palette.label), m.range.first, m.range.last + 1)
+      }
     }
-    Regex("#-?(0x[0-9a-fA-F]+|\\d+)").findAll(operands).forEach { m ->
-      addStyle(SpanStyle(color = palette.numberLiteral), m.range.first, m.range.last + 1)
+    if (operands.contains('#')) {
+      dalvikNumberRegex.findAll(operands).forEach { m ->
+        addStyle(SpanStyle(color = palette.numberLiteral), m.range.first, m.range.last + 1)
+      }
     }
-    Regex("\"([^\"\\\\]|\\\\.)*\"").findAll(operands).forEach { m ->
-      addStyle(SpanStyle(color = palette.stringLiteral), m.range.first, m.range.last + 1)
+    if (operands.contains('"')) {
+      cStringRegex.findAll(operands).forEach { m ->
+        addStyle(SpanStyle(color = palette.stringLiteral), m.range.first, m.range.last + 1)
+      }
     }
   }
 }

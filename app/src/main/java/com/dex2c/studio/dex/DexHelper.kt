@@ -11,9 +11,17 @@ object DexHelper {
 
   fun getClasses(dex: DexParsedFile): List<DexClassInfo> = dex.classes
 
-  fun getMethods(dex: DexParsedFile): List<DexMethodRef> = dex.methods
+  fun getMethods(dex: DexParsedFile): List<DexMethodRef> =
+    if (dex.methods.isNotEmpty() || dex.header.methodIdsSize <= 0) dex.methods
+    else List(dex.header.methodIdsSize) { idx ->
+      dex.methodAt(idx) ?: DexMethodRef("Ljava/lang/Object;", DexProto("V", "V", emptyList()), "method_$idx")
+    }
 
-  fun getFields(dex: DexParsedFile): List<DexFieldRef> = dex.fields
+  fun getFields(dex: DexParsedFile): List<DexFieldRef> =
+    if (dex.fields.isNotEmpty() || dex.header.fieldIdsSize <= 0) dex.fields
+    else List(dex.header.fieldIdsSize) { idx ->
+      dex.fieldAt(idx) ?: DexFieldRef("Ljava/lang/Object;", "Ljava/lang/Object;", "field_$idx")
+    }
 
   fun getMapItem(dex: DexParsedFile, typeCode: Int): DexMapItem? =
     dex.mapItems.firstOrNull { it.typeCode == typeCode }
@@ -80,7 +88,7 @@ object DexHelper {
     val paramNames =
       List(paramsSize) { idx ->
         val nameIdx = reader.readUleb128p1()
-        if (nameIdx >= 0) dex.strings.getOrElse(nameIdx) { "p$idx" } else "p$idx"
+        if (nameIdx >= 0) dex.stringAt(nameIdx) ?: "p$idx" else "p$idx"
       }
 
     var address = 0
@@ -188,12 +196,12 @@ object DexHelper {
       val reader = LebReader(raw, itemOff + 1)
       val typeIdx = reader.readUleb128()
       val elemCount = reader.readUleb128().coerceIn(0, 16)
-      val typeDesc = dex.types.getOrElse(typeIdx) { "Lunknown/Annotation;" }
+      val typeDesc = dex.typeAt(typeIdx) ?: "Lunknown/Annotation;"
       val elems = mutableListOf<String>()
       repeat(elemCount) {
         if (reader.pos >= raw.size) return@repeat
         val nameIdx = reader.readUleb128()
-        val elemName = dex.strings.getOrElse(nameIdx) { "arg" }
+        val elemName = dex.stringAt(nameIdx) ?: "arg"
         val elemVal = readEncodedValuePreview(dex, reader, depth = 0)
         elems += "$elemName = $elemVal"
       }
@@ -236,7 +244,7 @@ object DexHelper {
       0x11 -> "double(${reader.readUnsignedBytes(byteCount)})" // DOUBLE
       0x15 -> { // METHOD_TYPE
         val idx = reader.readUnsignedBytes(byteCount).toInt()
-        dex.protos.getOrNull(idx)?.shorty ?: "proto#$idx"
+        dex.protoAt(idx)?.shorty ?: "proto#$idx"
       }
       0x16 -> { // METHOD_HANDLE
         val idx = reader.readUnsignedBytes(byteCount).toInt()
@@ -244,20 +252,20 @@ object DexHelper {
       }
       0x17 -> { // STRING
         val idx = reader.readUnsignedBytes(byteCount).toInt()
-        "\"${dex.strings.getOrElse(idx) { "str#$idx" }}\""
+        "\"${dex.stringAt(idx) ?: "str#$idx"}\""
       }
       0x18 -> { // TYPE
         val idx = reader.readUnsignedBytes(byteCount).toInt()
-        descriptorToSimpleName(dex.types.getOrElse(idx) { "type#$idx" })
+        descriptorToSimpleName(dex.typeAt(idx) ?: "type#$idx")
       }
       0x19, 0x1B -> { // FIELD / ENUM
         val idx = reader.readUnsignedBytes(byteCount).toInt()
-        dex.fields.getOrNull(idx)?.let { "${descriptorToSimpleName(it.definingClass)}.${it.name}" }
+        dex.fieldAt(idx)?.let { "${descriptorToSimpleName(it.definingClass)}.${it.name}" }
           ?: "field#$idx"
       }
       0x1A -> { // METHOD
         val idx = reader.readUnsignedBytes(byteCount).toInt()
-        dex.methods.getOrNull(idx)?.prettySignature() ?: "method#$idx"
+        dex.methodAt(idx)?.prettySignature() ?: "method#$idx"
       }
       0x1C -> { // ARRAY
         val size = reader.readUleb128().coerceIn(0, 16)
@@ -271,7 +279,7 @@ object DexHelper {
           reader.readUleb128()
           readEncodedValuePreview(dex, reader, depth + 1)
         }
-        "@${descriptorToSimpleName(dex.types.getOrElse(typeIdx) { "Annotation" })}"
+        "@${descriptorToSimpleName(dex.typeAt(typeIdx) ?: "Annotation")}"
       }
       0x1E -> "null" // NULL
       0x1F -> (valueArg != 0).toString() // BOOLEAN
