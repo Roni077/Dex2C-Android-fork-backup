@@ -588,6 +588,7 @@ fun Dex2cApp(
                   classesSubTab = ClassesSubTab.FILTER_RULES
                   navigateTopLevel(ROUTE_CLASSES)
                 },
+                onCopyText = { copyText(it) },
               )
             }
 

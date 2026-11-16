@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountTree
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.BrightnessAuto
 import androidx.compose.material.icons.rounded.Build
@@ -98,6 +99,7 @@ import com.dex2c.studio.data.normalizeHexColor
 import com.dex2c.studio.transpiler.TranspilerConfig
 import com.dex2c.studio.ui.components.AccentColorPickerSection
 import com.dex2c.studio.ui.components.ExpressiveMotion
+import com.dex2c.studio.ui.components.WorkflowGuideDialog
 import com.dex2c.studio.ui.components.SmaliSyntaxCodeViewer
 import com.dex2c.studio.ui.components.SyntaxCodeViewer
 import com.dex2c.studio.ui.components.TagPill
@@ -1191,7 +1193,17 @@ fun SettingsStorageResetSubScreen(
 fun SettingsAboutSubScreen(
   transpilerConfig: TranspilerConfig,
   onReplayOnboarding: () -> Unit,
+  onCopyText: (String) -> Unit = {},
 ) {
+  var showWorkflowGuide by remember { mutableStateOf(false) }
+
+  if (showWorkflowGuide) {
+    WorkflowGuideDialog(
+      onDismiss = { showWorkflowGuide = false },
+      onCopyText = onCopyText,
+    )
+  }
+
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
     contentPadding = PaddingValues(16.dp),
@@ -1205,6 +1217,25 @@ fun SettingsAboutSubScreen(
         AboutRow("Active DEX Engine", "Kotlin DexFile + smali-dexlib2")
         AboutRow("Supported DEX Formats", "035, 037, 038, 039, 040, 041")
         AboutRow("Default Module Name", transpilerConfig.moduleName)
+      }
+    }
+
+    item {
+      SubScreenCard(title = "App Workflow & Architecture (WORKFLOW.md)", icon = Icons.Rounded.AccountTree) {
+        Text(
+          text = "Explore the end-to-end user guide, ASCII pipeline diagrams, multi-DEX streaming, Smali editor & Java decompiler, C++17 transpiler, and memory optimization architecture.",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(12.dp))
+        Button(
+          onClick = { showWorkflowGuide = true },
+          modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("settings_open_workflow_guide_btn"),
+        ) {
+          Icon(Icons.Rounded.AccountTree, contentDescription = null, modifier = Modifier.size(18.dp))
+          Spacer(Modifier.width(8.dp))
+          Text("Open Workflow & Architecture Guide")
+        }
       }
     }
 

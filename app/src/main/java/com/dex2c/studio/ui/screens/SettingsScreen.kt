@@ -518,6 +518,7 @@ private fun SettingsDetailHost(
       SettingsAboutSubScreen(
         transpilerConfig = transpilerConfig,
         onReplayOnboarding = onReplayOnboarding,
+        onCopyText = onCopyText,
       )
   }
 }

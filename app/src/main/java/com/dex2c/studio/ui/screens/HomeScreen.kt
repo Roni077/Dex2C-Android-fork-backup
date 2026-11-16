@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.AccountTree
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -89,6 +90,7 @@ import com.dex2c.studio.ui.components.ExpressiveMotion
 import com.dex2c.studio.ui.components.HomeFilterFocusCard
 import com.dex2c.studio.ui.components.MetricTile
 import com.dex2c.studio.ui.components.TagPill
+import com.dex2c.studio.ui.components.WorkflowGuideDialog
 import com.dex2c.studio.ui.components.expressivePressScale
 import com.dex2c.studio.ui.components.formatApkSize
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
@@ -120,8 +122,17 @@ fun HomeScreen(
   onTogglePresetRule: (String) -> Unit = {},
   onApplyFilterRules: () -> Unit = {},
   onOpenRuleBuilder: () -> Unit = onNavigateToClasses,
+  onCopyText: (String) -> Unit = {},
 ) {
   var activeTab by rememberSaveable { mutableStateOf(HomeTab.OVERVIEW) }
+  var showWorkflowGuide by rememberSaveable { mutableStateOf(false) }
+
+  if (showWorkflowGuide) {
+    WorkflowGuideDialog(
+      onDismiss = { showWorkflowGuide = false },
+      onCopyText = onCopyText,
+    )
+  }
 
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val isWide = maxWidth >= 680.dp
@@ -226,6 +237,7 @@ fun HomeScreen(
                         HeroHomeBanner(
                           onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                           onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+                          onOpenWorkflowGuide = { showWorkflowGuide = true },
                           compact = true,
                         )
                         TranspileActionBanner(
@@ -285,6 +297,7 @@ fun HomeScreen(
                       HeroHomeBanner(
                         onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                         onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+                        onOpenWorkflowGuide = { showWorkflowGuide = true },
                         compact = true,
                       )
                       if (loadState.dexEntries.size > 1) {
@@ -472,6 +485,7 @@ fun HomeScreen(
                 HeroHomeBanner(
                   onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
                   onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+                  onOpenWorkflowGuide = { showWorkflowGuide = true },
                 )
                 if (loadState is DexLoadState.Empty) {
                   BytecodeOverviewCard(
@@ -507,6 +521,7 @@ fun HomeScreen(
             HeroHomeBanner(
               onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
               onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+              onOpenWorkflowGuide = { showWorkflowGuide = true },
             )
             if (loadState is DexLoadState.Empty) {
               BytecodeOverviewCard(
@@ -744,6 +759,7 @@ private fun CompactHeaderCell(
 private fun HeroHomeBanner(
   onOpenPicker: () -> Unit,
   onOpenInstalledApps: () -> Unit,
+  onOpenWorkflowGuide: () -> Unit = {},
   compact: Boolean = false,
 ) {
   val openInteraction = remember { MutableInteractionSource() }
@@ -774,11 +790,40 @@ private fun HeroHomeBanner(
             )
       )
       Column(modifier = Modifier.padding(if (compact) 14.dp else 20.dp)) {
-        TagPill(
-          text = "DALVIK → NATIVE JNI",
-          containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
-          contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          TagPill(
+            text = "DALVIK → NATIVE JNI",
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+          Surface(
+            shape = RoundedCornerShape(14.dp),
+            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.85f),
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier =
+              Modifier
+                .clip(RoundedCornerShape(14.dp))
+                .clickable(onClick = onOpenWorkflowGuide)
+                .testTag("home_open_workflow_guide_btn"),
+          ) {
+            Row(
+              modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+              Icon(Icons.Rounded.AccountTree, contentDescription = null, modifier = Modifier.size(13.dp))
+              Text(
+                text = "WORKFLOW.md",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+              )
+            }
+          }
+        }
         Spacer(Modifier.height(if (compact) 6.dp else 12.dp))
         Text(
           text = stringResource(R.string.hero_title),

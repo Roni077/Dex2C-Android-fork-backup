@@ -3340,6 +3340,31 @@ class ExampleRobolectricTest {
       )
     assertEquals(smaliLines.joinToString("\n"), smaliResult.smaliText)
   }
+
+  @Test
+  fun `workflowGuideDialog renders interactive phases, search filter, and raw WORKFLOW markdown`() {
+    var copiedText = ""
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.dex2c.studio.ui.components.WorkflowGuideDialog(
+          onDismiss = {},
+          onCopyText = { copiedText = it },
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithTag("workflow_guide_dialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("workflow_card_architecture").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("workflow_copy_md_btn").performClick()
+    composeTestRule.waitForIdle()
+    assertTrue(copiedText.contains("Dex2C Studio"))
+
+    // Switch to Raw WORKFLOW.md tab
+    composeTestRule.onNodeWithTag("workflow_mode_raw_btn").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("workflow_raw_markdown_box").assertIsDisplayed()
+  }
 }
+
 
 
