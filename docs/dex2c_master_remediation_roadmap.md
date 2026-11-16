@@ -33,9 +33,9 @@ This master document consolidates all issues, architectural bugs, security vulne
 | **#19** | Phase 3 | **Critical** | Security | `CloudPreferences.kt:21` | GitHub personal OAuth access token stored in plaintext inside DataStore | `- [x]` |
 | **#20** | Phase 3 | **Critical** | Security | `AndroidManifest.xml:17` | `allowBackup="true"` with blank rules leaks OAuth token to Google Cloud Auto-Backup | `- [x]` |
 | **#21** | Phase 3 | **Medium** | Network | `NetworkResilience.kt:73-100` | `ResilientGitHubDns` bypasses VPN/system DNS via hardcoded DoH without user toggle | `- [x]` |
-| **#22** | Phase 4 | **Major** | Tooling | Repository Root | Missing `gradlew`, `gradlew.bat`, and `gradle-wrapper.jar` breaks CLI automation | `- [ ]` |
-| **#23** | Phase 4 | **Major** | Tooling | Repository Root | Missing `local.properties` breaks command-line builds without `ANDROID_HOME` | `- [ ]` |
-| **#24** | Phase 4 | **Medium** | Tooling / Test | `app/src/test/` | Test suite mocks compiler outputs; lacks Clang C++ compilation verification test | `- [ ]` |
+| **#22** | Phase 4 | **Major** | Tooling | Repository Root | Missing `gradlew`, `gradlew.bat`, and `gradle-wrapper.jar` breaks CLI automation | `- [x]` |
+| **#23** | Phase 4 | **Major** | Tooling | Repository Root | Missing `local.properties` breaks command-line builds without `ANDROID_HOME` | `- [x]` |
+| **#24** | Phase 4 | **Medium** | Tooling / Test | `app/src/test/` | Test suite mocks compiler outputs; lacks Clang C++ compilation verification test | `- [x]` |
 | **#25** | Phase 5 | **Major** | Verification | Whole System | Full regression test suite and round-trip bytecode integrity verification | `- [ ]` |
 
 ---
@@ -175,18 +175,18 @@ This master document consolidates all issues, architectural bugs, security vulne
 
 **Goal**: Ensure reproducible, headless CLI compilation and developer tooling compatibility.
 
-- [ ] **Task 4.1: Generate Standard Gradle 9.4.1 Wrapper Scripts**
+- [x] **Task 4.1: Generate Standard Gradle 9.4.1 Wrapper Scripts**
   - **Files**:
     - `gradlew` [NEW]
     - `gradlew.bat` [NEW]
     - `gradle/wrapper/gradle-wrapper.jar` [NEW]
   - **Action**: Place standard wrapper scripts in repository root so `android describe`, CI runners, and local developer terminals can invoke builds without system-wide Gradle.
 
-- [ ] **Task 4.2: Add Local SDK Configuration Template**
+- [x] **Task 4.2: Add Local SDK Configuration Template**
   - **File**: `local.properties` [NEW]
   - **Action**: Create `local.properties` pointing to `sdk.dir=C:\\Users\\roni2\\AppData\\Local\\Android\\Sdk` to unblock local CLI builds.
 
-- [ ] **Task 4.3: Add Automated Clang C++ Syntax Validation Unit Test**
+- [x] **Task 4.3: Add Automated Clang C++ Syntax Validation Unit Test**
   - **File**: `app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt` [NEW]
   - **Action**: Add unit test that transpiles representative bytecode methods (switch, catch blocks, wide arrays) and validates generated C++ syntax against Clang headers.
 

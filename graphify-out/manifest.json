@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\dex2c_master_remediation_roadmap.md": {
-    "mtime": 1794838536.6833012,
-    "ast_hash": "253c83d04d45e9ddff254206af01a968",
+    "mtime": 1794839738.5409,
+    "ast_hash": "8c4b43f9a3f0c58a07924738ee613390",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\public\\assets\\aistudio\\0_dex2c-apk_ee5b4f33.txt": {
@@ -845,13 +845,23 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\TokenEncryptor.kt": {
-    "mtime": 1794837695.0925205,
-    "ast_hash": "e2ee2951cca3209773a9662e64c05530",
+    "mtime": 1794839192.5352402,
+    "ast_hash": "c0efec5c59493bf3e102e44b7c46aebf",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\security\\Phase3SecurityAndNetworkTest.kt": {
     "mtime": 1794838483.5218682,
     "ast_hash": "3726e9bd8546de8b46c16c45f26b9fb3",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\gradlew": {
+    "mtime": 1794839212.2474473,
+    "ast_hash": "65578da0358a01f31a6a78dfcf47e2bf",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\transpiler\\ClangSyntaxValidationTest.kt": {
+    "mtime": 1794839619.6003177,
+    "ast_hash": "e94669a32b8239576186137adf668012",
     "semantic_hash": ""
   }
 }

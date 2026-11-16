@@ -5,6 +5,7 @@ import android.security.keystore.KeyProperties
 import java.security.GeneralSecurityException
 import java.security.Key
 import java.security.KeyStore
+import java.security.KeyStoreException
 import java.security.NoSuchProviderException
 import java.security.SecureRandom
 import javax.crypto.Cipher
