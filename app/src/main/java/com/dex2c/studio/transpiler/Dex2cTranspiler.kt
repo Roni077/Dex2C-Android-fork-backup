@@ -2,6 +2,7 @@ package com.dex2c.studio.transpiler
 
 import com.dex2c.studio.dex.DalvikDisassembler
 import com.dex2c.studio.dex.DalvikInstruction
+import com.dex2c.studio.dex.DalvikPayload
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.DexParsedFile
 import com.dex2c.studio.dex.DexTryBlock
@@ -143,6 +144,20 @@ object Dex2cTranspiler {
   ): String {
     val instructions = DalvikDisassembler.disassemble(dex, method)
     val tryBlocks = DalvikDisassembler.parseTryBlocks(dex, method)
+    return transpileMethodToC(dex, method, instructions, tryBlocks, config)
+  }
+
+  fun transpileMethodToC(
+    dex: DexParsedFile,
+    method: DexEncodedMethod,
+    instructions: List<DalvikInstruction>,
+    tryBlocks: List<DexTryBlock> = emptyList(),
+    config: TranspilerConfig,
+  ): String {
+    val isOverloaded =
+      dex.classes.find { it.descriptor == method.methodRef.definingClass }
+        ?.let { cls -> (cls.directMethods + cls.virtualMethods).count { it.methodRef.name == method.methodRef.name } > 1 }
+        ?: false
     val sb = StringBuilder()
     emitMethodBody(
       out = sb,
@@ -152,6 +167,7 @@ object Dex2cTranspiler {
       config = config,
       methodIndexHint = 0,
       crossUnitLinkage = false,
+      isOverloaded = isOverloaded,
     )
     return sb.toString()
   }
@@ -271,6 +287,10 @@ object Dex2cTranspiler {
           val insns = DalvikDisassembler.disassemble(dex, method)
           val tries = DalvikDisassembler.parseTryBlocks(dex, method)
           totalInstructions += insns.size
+          val isOverloaded =
+            dex.classes.find { it.descriptor == method.methodRef.definingClass }
+              ?.let { cls -> (cls.directMethods + cls.virtualMethods).count { it.methodRef.name == method.methodRef.name } > 1 }
+              ?: (filteredEntries.count { it.second.methodRef.definingClass == method.methodRef.definingClass && it.second.methodRef.name == method.methodRef.name } > 1)
           val regRecord =
             emitMethodBody(
               out = out,
@@ -280,6 +300,7 @@ object Dex2cTranspiler {
               config = config,
               methodIndexHint = globalMethodCounter++,
               crossUnitLinkage = false,
+              isOverloaded = isOverloaded,
             )
           out.appendLine()
           registrationRecords.add(regRecord)
@@ -329,6 +350,10 @@ object Dex2cTranspiler {
             val insns = DalvikDisassembler.disassemble(dex, method)
             val tries = DalvikDisassembler.parseTryBlocks(dex, method)
             totalInstructions += insns.size
+            val isOverloaded =
+              dex.classes.find { it.descriptor == method.methodRef.definingClass }
+                ?.let { cls -> (cls.directMethods + cls.virtualMethods).count { it.methodRef.name == method.methodRef.name } > 1 }
+                ?: (filteredEntries.count { it.second.methodRef.definingClass == method.methodRef.definingClass && it.second.methodRef.name == method.methodRef.name } > 1)
             val regRecord =
               emitMethodBody(
                 out = out,
@@ -338,6 +363,7 @@ object Dex2cTranspiler {
                 config = config,
                 methodIndexHint = globalMethodCounter++,
                 crossUnitLinkage = true,
+                isOverloaded = isOverloaded,
               )
             out.appendLine()
             registrationRecords.add(regRecord)
@@ -490,13 +516,14 @@ object Dex2cTranspiler {
     config: TranspilerConfig,
     methodIndexHint: Int,
     crossUnitLinkage: Boolean,
+    isOverloaded: Boolean = false,
   ): NativeRegRecord {
     val ref = method.methodRef
     val returnJniType = descriptorToJniType(ref.proto.returnType)
     val paramJniTypes = ref.proto.parameterTypes.map { descriptorToJniType(it) }
     val cFuncName =
       if (config.jniStyle == JniBindingStyle.STATIC_SYMBOLS) {
-        mangleStaticJniSymbol(ref.definingClass, ref.name)
+        mangleStaticJniSymbol(ref.definingClass, ref.name, ref.proto.parameterTypes, isOverloaded)
       } else {
         "dex2c_${sanitizeIdent(descriptorToJavaName(ref.definingClass))}_${sanitizeIdent(ref.name)}_$methodIndexHint"
       }
@@ -571,23 +598,51 @@ object Dex2cTranspiler {
       }
     }
     out.appendLine()
+    out.appendLine("    if (${jniCall(config, "PushLocalFrame", "64")} != 0) {")
+    out.appendLine("    ${defaultReturnStmt(ref.proto.returnType)}")
+    out.appendLine("    }")
 
     val branchTargets = buildSet {
       insns.mapNotNullTo(this) { it.targetOffset }
       tryBlocks.forEach { tb -> tb.handlers.forEach { add(it.handlerOffsetWord) } }
+      insns.forEach { insn ->
+        when (val p = insn.payload) {
+          is DalvikPayload.PackedSwitch -> addAll(p.targetOffsets)
+          is DalvikPayload.SparseSwitch -> addAll(p.cases.map { it.second })
+          else -> {}
+        }
+      }
     }
 
     if (config.controlFlowFlattening && insns.isNotEmpty()) {
       val firstOffset = insns.first().offsetWords
       out.appendLine("    uint32_t __cf_pc = ${formatHex4u(firstOffset)};")
       out.appendLine("    while (1) {")
+      out.appendLine("__cf_continue:")
       out.appendLine("        switch (__cf_pc) {")
       insns.forEachIndexed { idx, insn ->
         val nextOffset = insns.getOrNull(idx + 1)?.offsetWords ?: -1
         val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
         out.appendLine("        case ${formatHex4u(insn.offsetWords)}: { /* $commentText */")
-        emitInstructionC(out, insn, config, indent = "            ", flattened = true, returnType = ref.proto.returnType)
-        emitTryCatchDispatchIfApplicable(out, insn, tryBlocks, config, indent = "            ", flattened = true)
+        emitInstructionC(
+          out = out,
+          insn = insn,
+          allInsns = insns,
+          method = method,
+          config = config,
+          indent = "            ",
+          flattened = true,
+          returnType = ref.proto.returnType,
+        )
+        emitTryCatchDispatchIfApplicable(
+          out = out,
+          insn = insn,
+          tryBlocks = tryBlocks,
+          config = config,
+          indent = "            ",
+          flattened = true,
+          returnType = ref.proto.returnType,
+        )
         if (insn.mnemonic != "return-void" && !insn.mnemonic.startsWith("return") && insn.mnemonic != "throw" && !insn.mnemonic.startsWith("goto")) {
           if (nextOffset >= 0) {
             out.appendLine("            __cf_pc = ${formatHex4u(nextOffset)};")
@@ -605,16 +660,35 @@ object Dex2cTranspiler {
       out.appendLine("        }")
       out.appendLine("    }")
       out.appendLine("__dex2c_exit:")
+      out.appendLine("    ${jniCall(config, "PopLocalFrame", "NULL")};")
       out.appendLine(defaultReturnStmt(ref.proto.returnType))
     } else {
       insns.forEach { insn ->
         if (insn.offsetWords in branchTargets) {
           out.appendLine("${formatLabelOffset(insn.offsetWords)}:")
         }
-        emitInstructionC(out, insn, config, indent = "    ", flattened = false, returnType = ref.proto.returnType)
-        emitTryCatchDispatchIfApplicable(out, insn, tryBlocks, config, indent = "    ", flattened = false)
+        emitInstructionC(
+          out = out,
+          insn = insn,
+          allInsns = insns,
+          method = method,
+          config = config,
+          indent = "    ",
+          flattened = false,
+          returnType = ref.proto.returnType,
+        )
+        emitTryCatchDispatchIfApplicable(
+          out = out,
+          insn = insn,
+          tryBlocks = tryBlocks,
+          config = config,
+          indent = "    ",
+          flattened = false,
+          returnType = ref.proto.returnType,
+        )
       }
       if (insns.none { it.mnemonic.startsWith("return") || it.mnemonic == "throw" }) {
+        out.appendLine("    ${jniCall(config, "PopLocalFrame", "NULL")};")
         out.appendLine(defaultReturnStmt(ref.proto.returnType))
       }
     }
@@ -636,6 +710,7 @@ object Dex2cTranspiler {
     config: TranspilerConfig,
     indent: String,
     flattened: Boolean,
+    returnType: String,
   ) {
     val canThrow =
       insn.mnemonic.startsWith("invoke-") ||
@@ -654,9 +729,10 @@ object Dex2cTranspiler {
 
     out.appendLine("${indent}if (${jniCall(config, "ExceptionCheck", "")}) {")
     out.appendLine("${indent}    __exc = ${jniCall(config, "ExceptionOccurred", "")};")
+    out.appendLine("${indent}    ${jniCall(config, "ExceptionClear", "")};")
     activeTries.flatMap { it.handlers }.forEach { handler ->
       val jump =
-        if (flattened) "{ __cf_pc = ${formatHex4u(handler.handlerOffsetWord)}; break; }"
+        if (flattened) "{ __cf_pc = ${formatHex4u(handler.handlerOffsetWord)}; goto __cf_continue; }"
         else "goto ${formatLabelOffset(handler.handlerOffsetWord)};"
       if (handler.typeDescriptor == null) {
         out.appendLine("${indent}    $jump /* catch-all */")
@@ -665,12 +741,21 @@ object Dex2cTranspiler {
         out.appendLine("${indent}    { jclass __hc = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; jboolean __match = (__hc != NULL && ${jniCall(config, "IsInstanceOf", "__exc, __hc")}); if (__hc != NULL) ${jniCall(config, "DeleteLocalRef", "__hc")}; if (__match) $jump }")
       }
     }
+    out.appendLine("${indent}    ${jniCall(config, "Throw", "__exc")};")
+    if (flattened) {
+      out.appendLine("${indent}    goto __dex2c_exit;")
+    } else {
+      out.appendLine("${indent}    ${jniCall(config, "PopLocalFrame", "NULL")};")
+      out.appendLine("${indent}    ${defaultReturnStmt(returnType).trim()}")
+    }
     out.appendLine("${indent}}")
   }
 
   private fun emitInstructionC(
     out: Appendable,
     insn: DalvikInstruction,
+    allInsns: List<DalvikInstruction>,
+    method: DexEncodedMethod,
     config: TranspilerConfig,
     indent: String,
     flattened: Boolean,
@@ -695,12 +780,15 @@ object Dex2cTranspiler {
       "move-result-wide" -> out.appendLine("${indent}v[$a].j = __res.j;")
       "move-result-object" -> out.appendLine("${indent}v[$a].l = __res.l;")
       "move-exception" -> {
-        out.appendLine("${indent}__exc = ${jniCall(config, "ExceptionOccurred", "")};")
-        out.appendLine("${indent}${jniCall(config, "ExceptionClear", "")};")
+        out.appendLine("${indent}if (__exc == NULL) { __exc = ${jniCall(config, "ExceptionOccurred", "")}; ${jniCall(config, "ExceptionClear", "")}; }")
         out.appendLine("${indent}v[$a].l = __exc;")
+        out.appendLine("${indent}__exc = NULL;")
       }
 
-      "return-void" -> out.appendLine("${indent}return;")
+      "return-void" -> {
+        out.appendLine("${indent}${jniCall(config, "PopLocalFrame", "NULL")};")
+        out.appendLine("${indent}return;")
+      }
       "return" -> {
         val cast =
           when (returnType) {
@@ -711,13 +799,17 @@ object Dex2cTranspiler {
             "F" -> "v[$a].f"
             else -> "v[$a].i"
           }
+        out.appendLine("${indent}${jniCall(config, "PopLocalFrame", "NULL")};")
         out.appendLine("${indent}return $cast;")
       }
       "return-wide" -> {
         val cast = if (returnType == "D") "v[$a].d" else "v[$a].j"
+        out.appendLine("${indent}${jniCall(config, "PopLocalFrame", "NULL")};")
         out.appendLine("${indent}return $cast;")
       }
-      "return-object" -> out.appendLine("${indent}return (${descriptorToJniType(returnType)})v[$a].l;")
+      "return-object" -> {
+        out.appendLine("${indent}return (${descriptorToJniType(returnType)})${jniCall(config, "PopLocalFrame", "v[$a].l")};")
+      }
 
       "const/4", "const/16", "const", "const/high16" ->
         out.appendLine("${indent}v[$a].i = (jint)(${lit}LL);")
@@ -754,12 +846,14 @@ object Dex2cTranspiler {
       "monitor-exit" -> out.appendLine("${indent}${jniCall(config, "MonitorExit", "v[$a].l")};")
       "throw" -> {
         out.appendLine("${indent}${jniCall(config, "Throw", "(jthrowable)v[$a].l")};")
+        out.appendLine("${indent}${jniCall(config, "PopLocalFrame", "NULL")};")
         out.appendLine("${indent}${defaultReturnStmt(returnType).trim()}")
       }
 
       "check-cast" -> {
         val jniCls = (insn.typeRef ?: "Ljava/lang/Object;").removePrefix("L").removeSuffix(";")
-        out.appendLine("${indent}{ jclass __t = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; if (v[$a].l != NULL && !${jniCall(config, "IsInstanceOf", "v[$a].l, __t")}) { DEX2C_THROW_CCE(env); } ${jniCall(config, "DeleteLocalRef", "__t")}; }")
+        val throwCceMacro = if (returnType == "V") "DEX2C_THROW_CCE_VOID" else "DEX2C_THROW_CCE"
+        out.appendLine("${indent}{ jclass __t = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; if (v[$a].l != NULL && !${jniCall(config, "IsInstanceOf", "v[$a].l, __t")}) { $throwCceMacro(env); } ${jniCall(config, "DeleteLocalRef", "__t")}; }")
       }
       "instance-of" -> {
         val jniCls = (insn.typeRef ?: "Ljava/lang/Object;").removePrefix("L").removeSuffix(";")
@@ -767,7 +861,8 @@ object Dex2cTranspiler {
       }
 
       "array-length" -> {
-        if (config.nullCheckGuards) out.appendLine("${indent}DEX2C_CHECK_NULL(env, v[$b].l);")
+        val checkNullMacro = if (returnType == "V") "DEX2C_CHECK_NULL_VOID" else "DEX2C_CHECK_NULL"
+        if (config.nullCheckGuards) out.appendLine("${indent}$checkNullMacro(env, v[$b].l);")
         out.appendLine("${indent}v[$a].i = ${jniCall(config, "GetArrayLength", "(jarray)v[$b].l")};")
       }
 
@@ -784,6 +879,41 @@ object Dex2cTranspiler {
         } else {
           val jniCls = elemDesc.removePrefix("L").removeSuffix(";")
           out.appendLine("${indent}{ jclass __c = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")}; v[$a].l = ${jniCall(config, "NewObjectArray", "v[$b].i, __c, NULL")}; ${jniCall(config, "DeleteLocalRef", "__c")}; }")
+        }
+      }
+
+      "packed-switch" -> {
+        val p = insn.payload as? DalvikPayload.PackedSwitch
+          ?: allInsns.find { it.offsetWords == insn.targetOffset }?.payload as? DalvikPayload.PackedSwitch
+        if (p != null) {
+          out.appendLine("${indent}switch (v[$a].i) {")
+          p.targetOffsets.forEachIndexed { idx, tgt ->
+            val key = p.firstKey + idx
+            val jump = if (flattened) "{ __cf_pc = ${formatHex4u(tgt)}; goto __cf_continue; }" else "goto ${formatLabelOffset(tgt)};"
+            out.appendLine("${indent}    case $key: $jump")
+          }
+          out.appendLine("${indent}    default: break;")
+          out.appendLine("${indent}}")
+        } else {
+          val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
+          out.appendLine("${indent}/* $commentText (unresolved payload) */")
+        }
+      }
+
+      "sparse-switch" -> {
+        val p = insn.payload as? DalvikPayload.SparseSwitch
+          ?: allInsns.find { it.offsetWords == insn.targetOffset }?.payload as? DalvikPayload.SparseSwitch
+        if (p != null) {
+          out.appendLine("${indent}switch (v[$a].i) {")
+          p.cases.forEach { (key, tgt) ->
+            val jump = if (flattened) "{ __cf_pc = ${formatHex4u(tgt)}; goto __cf_continue; }" else "goto ${formatLabelOffset(tgt)};"
+            out.appendLine("${indent}    case $key: $jump")
+          }
+          out.appendLine("${indent}    default: break;")
+          out.appendLine("${indent}}")
+        } else {
+          val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
+          out.appendLine("${indent}/* $commentText (unresolved payload) */")
         }
       }
 
@@ -830,9 +960,9 @@ object Dex2cTranspiler {
       else -> {
         when {
           emitMathInstruction(out, insn, indent, a, b, c, lit) -> Unit
-          emitArrayAccessInstruction(out, insn, config, indent, a, b, c) -> Unit
-          emitFieldInstruction(out, insn, config, indent, a, b) -> Unit
-          emitInvokeInstruction(out, insn, config, indent) -> Unit
+          emitArrayAccessInstruction(out, insn, allInsns, method, config, indent, a, b, c, returnType) -> Unit
+          emitFieldInstruction(out, insn, config, indent, a, b, returnType) -> Unit
+          emitInvokeInstruction(out, insn, config, indent, returnType) -> Unit
           else -> {
             val commentText = sanitizeCComment("${insn.mnemonic} ${insn.operandsText}".trim())
             out.appendLine("${indent}/* $commentText */")
@@ -908,28 +1038,111 @@ object Dex2cTranspiler {
     return true
   }
 
+  private fun inferArrayElementType(
+    insns: List<DalvikInstruction>,
+    arrayReg: Int,
+    accessInsn: DalvikInstruction,
+    method: DexEncodedMethod,
+  ): String? {
+    val meta = method.codeMeta
+    if (meta != null) {
+      var regCursor = (meta.registersSize - meta.insSize).coerceAtLeast(0)
+      if (!method.isStatic) regCursor++
+      for (pType in method.methodRef.proto.parameterTypes) {
+        if (regCursor == arrayReg) {
+          if (pType == "[D") return "D"
+          if (pType == "[J") return "J"
+        }
+        regCursor += if (pType == "J" || pType == "D") 2 else 1
+      }
+    }
+
+    for (insn in insns) {
+      if (insn.offsetWords >= accessInsn.offsetWords) break
+      when (insn.mnemonic) {
+        "new-array" -> {
+          if (insn.regA == arrayReg) {
+            val type = insn.typeRef ?: ""
+            if (type.contains("D")) return "D"
+            if (type.contains("J")) return "J"
+          }
+        }
+        "check-cast" -> {
+          if (insn.regA == arrayReg) {
+            val type = insn.typeRef ?: ""
+            if (type == "[D") return "D"
+            if (type == "[J") return "J"
+          }
+        }
+        "iget-object", "sget-object" -> {
+          if (insn.regA == arrayReg) {
+            val type = insn.fieldRef?.type ?: ""
+            if (type == "[D") return "D"
+            if (type == "[J") return "J"
+          }
+        }
+      }
+    }
+
+    val valReg = accessInsn.regA ?: return null
+    for (insn in insns) {
+      val m = insn.mnemonic
+      if (m.endsWith("-double") || m.startsWith("double-to-") || m.endsWith("-to-double")) {
+        if (insn.regA == valReg || insn.regB == valReg || insn.regC == valReg) return "D"
+      }
+      if (m.endsWith("-long") || m.startsWith("long-to-") || m.endsWith("-to-long")) {
+        if (insn.regA == valReg || insn.regB == valReg || insn.regC == valReg) return "J"
+      }
+    }
+
+    if (method.methodRef.proto.returnType == "D") return "D"
+    if (method.methodRef.proto.returnType == "J") return "J"
+
+    return null
+  }
+
   private fun emitArrayAccessInstruction(
     out: Appendable,
     insn: DalvikInstruction,
+    allInsns: List<DalvikInstruction>,
+    method: DexEncodedMethod,
     config: TranspilerConfig,
     indent: String,
     a: Int,
     b: Int,
     c: Int,
+    returnType: String,
   ): Boolean {
     val m = insn.mnemonic
     if (!m.startsWith("aget") && !m.startsWith("aput")) return false
-    if (config.nullCheckGuards) out.appendLine("${indent}DEX2C_CHECK_NULL(env, v[$b].l);")
+    val checkNullMacro = if (returnType == "V") "DEX2C_CHECK_NULL_VOID" else "DEX2C_CHECK_NULL"
+    if (config.nullCheckGuards) out.appendLine("${indent}$checkNullMacro(env, v[$b].l);")
     when (m) {
       "aget-object" ->
         out.appendLine("${indent}v[$a].l = ${jniCall(config, "GetObjectArrayElement", "(jobjectArray)v[$b].l, v[$c].i")};")
       "aput-object" ->
         out.appendLine("${indent}${jniCall(config, "SetObjectArrayElement", "(jobjectArray)v[$b].l, v[$c].i, v[$a].l")};")
-      "aget", "aget-boolean", "aget-byte", "aget-char", "aget-short", "aget-wide" -> {
+      "aget-wide" -> {
+        val elemType = inferArrayElementType(allInsns, b, insn, method)
+        when (elemType) {
+          "D" -> out.appendLine("${indent}{ jdouble __tmp; ${jniCall(config, "GetDoubleArrayRegion", "(jdoubleArray)v[$b].l, v[$c].i, 1, &__tmp")}; v[$a].d = __tmp; }")
+          "J" -> out.appendLine("${indent}{ jlong __tmp; ${jniCall(config, "GetLongArrayRegion", "(jlongArray)v[$b].l, v[$c].i, 1, &__tmp")}; v[$a].j = __tmp; }")
+          else -> out.appendLine("${indent}dex2c_get_wide_elem(env, (jobject)v[$b].l, v[$c].i, &v[$a]);")
+        }
+      }
+      "aput-wide" -> {
+        val elemType = inferArrayElementType(allInsns, b, insn, method)
+        when (elemType) {
+          "D" -> out.appendLine("${indent}{ jdouble __tmp = v[$a].d; ${jniCall(config, "SetDoubleArrayRegion", "(jdoubleArray)v[$b].l, v[$c].i, 1, &__tmp")}; }")
+          "J" -> out.appendLine("${indent}{ jlong __tmp = (jlong)v[$a].j; ${jniCall(config, "SetLongArrayRegion", "(jlongArray)v[$b].l, v[$c].i, 1, &__tmp")}; }")
+          else -> out.appendLine("${indent}dex2c_set_wide_elem(env, (jobject)v[$b].l, v[$c].i, v[$a]);")
+        }
+      }
+      "aget", "aget-boolean", "aget-byte", "aget-char", "aget-short" -> {
         val (arrType, cType, jniGet, field) = arrayMeta(m)
         out.appendLine("${indent}{ $cType __tmp; ${jniCall(config, jniGet, "($arrType)v[$b].l, v[$c].i, 1, &__tmp")}; v[$a].$field = __tmp; }")
       }
-      "aput", "aput-boolean", "aput-byte", "aput-char", "aput-short", "aput-wide" -> {
+      "aput", "aput-boolean", "aput-byte", "aput-char", "aput-short" -> {
         val (arrType, cType, jniSet, field) = arrayMeta(m, isPut = true)
         out.appendLine("${indent}{ $cType __tmp = ($cType)v[$a].$field; ${jniCall(config, jniSet, "($arrType)v[$b].l, v[$c].i, 1, &__tmp")}; }")
       }
@@ -944,6 +1157,7 @@ object Dex2cTranspiler {
     indent: String,
     a: Int,
     b: Int,
+    returnType: String,
   ): Boolean {
     val f = insn.fieldRef ?: return false
     val m = insn.mnemonic
@@ -957,7 +1171,8 @@ object Dex2cTranspiler {
 
     out.appendLine("${indent}{")
     if (!isStatic && config.nullCheckGuards) {
-      out.appendLine("${indent}    DEX2C_CHECK_NULL(env, v[$b].l);")
+      val checkNullMacro = if (returnType == "V") "DEX2C_CHECK_NULL_VOID" else "DEX2C_CHECK_NULL"
+      out.appendLine("${indent}    $checkNullMacro(env, v[$b].l);")
     }
     out.appendLine("${indent}    jclass __fcls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
     val idCall = if (isStatic) "GetStaticFieldID" else "GetFieldID"
@@ -983,6 +1198,7 @@ object Dex2cTranspiler {
     insn: DalvikInstruction,
     config: TranspilerConfig,
     indent: String,
+    returnType: String,
   ): Boolean {
     val ref = insn.methodRef ?: return false
     val m = insn.mnemonic
@@ -990,6 +1206,7 @@ object Dex2cTranspiler {
 
     val isStatic = m.startsWith("invoke-static")
     val isSuper = m.startsWith("invoke-super")
+    val isDirect = m.startsWith("invoke-direct")
     val jniCls = ref.definingClass.removePrefix("L").removeSuffix(";")
     val (retSuffix, retField) = jniTypeSuffixAndField(ref.proto.returnType)
 
@@ -1006,7 +1223,8 @@ object Dex2cTranspiler {
     out.appendLine("${indent}{")
     if (!isStatic && config.nullCheckGuards) {
       val recv = insn.regList.firstOrNull() ?: 0
-      out.appendLine("${indent}    DEX2C_CHECK_NULL(env, v[$recv].l);")
+      val checkNullMacro = if (returnType == "V") "DEX2C_CHECK_NULL_VOID" else "DEX2C_CHECK_NULL"
+      out.appendLine("${indent}    $checkNullMacro(env, v[$recv].l);")
     }
     out.appendLine("${indent}    jclass __mcls = ${jniCall(config, "FindClass", "\"${escapeC(jniCls)}\"")};")
     val getMid = if (isStatic) "GetStaticMethodID" else "GetMethodID"
@@ -1018,7 +1236,7 @@ object Dex2cTranspiler {
     val callExpr =
       when {
         isStatic -> jniCall(config, "CallStatic${retSuffix}Method", "__mcls, __mid$argsTail")
-        isSuper -> jniCall(config, "CallNonvirtual${retSuffix}Method", "v[$recvReg].l, __mcls, __mid$argsTail")
+        isSuper || isDirect -> jniCall(config, "CallNonvirtual${retSuffix}Method", "v[$recvReg].l, __mcls, __mid$argsTail")
         else -> jniCall(config, "Call${retSuffix}Method", "v[$recvReg].l, __mid$argsTail")
       }
 
@@ -1055,22 +1273,90 @@ object Dex2cTranspiler {
     |#ifdef __cplusplus
     |#define DEX2C_FIND_CLASS(env, name) (env)->FindClass(name)
     |#define DEX2C_THROW_NEW(env, cls, msg) (env)->ThrowNew(cls, msg)
+    |#define DEX2C_POP_FRAME(env, res) (env)->PopLocalFrame(res)
+    |#define DEX2C_GET_OBJECT_CLASS(env, obj) (env)->GetObjectClass(obj)
+    |#define DEX2C_IS_SAME_OBJECT(env, ref1, ref2) (env)->IsSameObject(ref1, ref2)
+    |#define DEX2C_DELETE_LOCAL_REF(env, ref) (env)->DeleteLocalRef(ref)
+    |#define DEX2C_GET_DOUBLE_ARRAY_REGION(env, arr, start, len, buf) (env)->GetDoubleArrayRegion(arr, start, len, buf)
+    |#define DEX2C_SET_DOUBLE_ARRAY_REGION(env, arr, start, len, buf) (env)->SetDoubleArrayRegion(arr, start, len, buf)
+    |#define DEX2C_GET_LONG_ARRAY_REGION(env, arr, start, len, buf) (env)->GetLongArrayRegion(arr, start, len, buf)
+    |#define DEX2C_SET_LONG_ARRAY_REGION(env, arr, start, len, buf) (env)->SetLongArrayRegion(arr, start, len, buf)
     |#else
     |#define DEX2C_FIND_CLASS(env, name) (*(env))->FindClass(env, name)
     |#define DEX2C_THROW_NEW(env, cls, msg) (*(env))->ThrowNew(env, cls, msg)
+    |#define DEX2C_POP_FRAME(env, res) (*(env))->PopLocalFrame(env, res)
+    |#define DEX2C_GET_OBJECT_CLASS(env, obj) (*(env))->GetObjectClass(env, obj)
+    |#define DEX2C_IS_SAME_OBJECT(env, ref1, ref2) (*(env))->IsSameObject(env, ref1, ref2)
+    |#define DEX2C_DELETE_LOCAL_REF(env, ref) (*(env))->DeleteLocalRef(env, ref)
+    |#define DEX2C_GET_DOUBLE_ARRAY_REGION(env, arr, start, len, buf) (*(env))->GetDoubleArrayRegion(env, arr, start, len, buf)
+    |#define DEX2C_SET_DOUBLE_ARRAY_REGION(env, arr, start, len, buf) (*(env))->SetDoubleArrayRegion(env, arr, start, len, buf)
+    |#define DEX2C_GET_LONG_ARRAY_REGION(env, arr, start, len, buf) (*(env))->GetLongArrayRegion(env, arr, start, len, buf)
+    |#define DEX2C_SET_LONG_ARRAY_REGION(env, arr, start, len, buf) (*(env))->SetLongArrayRegion(env, arr, start, len, buf)
     |#endif
     |
     |#define DEX2C_THROW_CCE(env) do { \
     |    jclass __ex = DEX2C_FIND_CLASS(env, "java/lang/ClassCastException"); \
     |    if (__ex != NULL) DEX2C_THROW_NEW(env, __ex, "Dex2C cast error"); \
+    |    DEX2C_POP_FRAME(env, NULL); \
+    |    return 0; \
+    |} while (0)
+    |
+    |#define DEX2C_THROW_CCE_VOID(env) do { \
+    |    jclass __ex = DEX2C_FIND_CLASS(env, "java/lang/ClassCastException"); \
+    |    if (__ex != NULL) DEX2C_THROW_NEW(env, __ex, "Dex2C cast error"); \
+    |    DEX2C_POP_FRAME(env, NULL); \
+    |    return; \
     |} while (0)
     |
     |#define DEX2C_CHECK_NULL(env, ref) do { \
     |    if ((ref) == NULL) { \
     |        jclass __npe = DEX2C_FIND_CLASS(env, "java/lang/NullPointerException"); \
     |        if (__npe != NULL) DEX2C_THROW_NEW(env, __npe, "Dex2C null reference"); \
+    |        DEX2C_POP_FRAME(env, NULL); \
+    |        return 0; \
     |    } \
     |} while (0)
+    |
+    |#define DEX2C_CHECK_NULL_VOID(env, ref) do { \
+    |    if ((ref) == NULL) { \
+    |        jclass __npe = DEX2C_FIND_CLASS(env, "java/lang/NullPointerException"); \
+    |        if (__npe != NULL) DEX2C_THROW_NEW(env, __npe, "Dex2C null reference"); \
+    |        DEX2C_POP_FRAME(env, NULL); \
+    |        return; \
+    |    } \
+    |} while (0)
+    |
+    |static inline void dex2c_get_wide_elem(JNIEnv *env, jobject arr, jint idx, jvalue *out_val) {
+    |    if (arr == NULL || out_val == NULL) return;
+    |    jclass cls = DEX2C_GET_OBJECT_CLASS(env, arr);
+    |    jclass dCls = DEX2C_FIND_CLASS(env, "[D");
+    |    if (cls != NULL && dCls != NULL && DEX2C_IS_SAME_OBJECT(env, cls, dCls)) {
+    |        jdouble d = 0.0;
+    |        DEX2C_GET_DOUBLE_ARRAY_REGION(env, (jdoubleArray)arr, idx, 1, &d);
+    |        out_val->d = d;
+    |    } else {
+    |        jlong j = 0;
+    |        DEX2C_GET_LONG_ARRAY_REGION(env, (jlongArray)arr, idx, 1, &j);
+    |        out_val->j = j;
+    |    }
+    |    if (cls != NULL) DEX2C_DELETE_LOCAL_REF(env, cls);
+    |    if (dCls != NULL) DEX2C_DELETE_LOCAL_REF(env, dCls);
+    |}
+    |
+    |static inline void dex2c_set_wide_elem(JNIEnv *env, jobject arr, jint idx, jvalue in_val) {
+    |    if (arr == NULL) return;
+    |    jclass cls = DEX2C_GET_OBJECT_CLASS(env, arr);
+    |    jclass dCls = DEX2C_FIND_CLASS(env, "[D");
+    |    if (cls != NULL && dCls != NULL && DEX2C_IS_SAME_OBJECT(env, cls, dCls)) {
+    |        jdouble d = in_val.d;
+    |        DEX2C_SET_DOUBLE_ARRAY_REGION(env, (jdoubleArray)arr, idx, 1, &d);
+    |    } else {
+    |        jlong j = in_val.j;
+    |        DEX2C_SET_LONG_ARRAY_REGION(env, (jlongArray)arr, idx, 1, &j);
+    |    }
+    |    if (cls != NULL) DEX2C_DELETE_LOCAL_REF(env, cls);
+    |    if (dCls != NULL) DEX2C_DELETE_LOCAL_REF(env, dCls);
+    |}
     |
     |static inline void dex2c_xor_decode(char *dst, const uint8_t *src, size_t len, uint8_t key) {
     |    for (size_t i = 0; i < len; ++i) {
@@ -1282,11 +1568,27 @@ object Dex2cTranspiler {
       else -> "    return NULL;"
     }
 
-  private fun mangleStaticJniSymbol(clsDesc: String, methodName: String): String {
+  private fun mangleStaticJniSymbol(
+    clsDesc: String,
+    methodName: String,
+    paramTypes: List<String> = emptyList(),
+    isOverloaded: Boolean = false,
+  ): String {
     val clsPart = clsDesc.removePrefix("L").removeSuffix(";").replace("_", "_1").replace('/', '_')
     val namePart = methodName.replace("_", "_1").replace("<", "_0003c").replace(">", "_0003e")
-    return "Java_${clsPart}_$namePart"
+    if (!isOverloaded) {
+      return "Java_${clsPart}_$namePart"
+    }
+    val sigPart = paramTypes.joinToString("") { mangleJniType(it) }
+    return "Java_${clsPart}_${namePart}__$sigPart"
   }
+
+  private fun mangleJniType(desc: String): String =
+    desc
+      .replace("_", "_1")
+      .replace(";", "_2")
+      .replace("[", "_3")
+      .replace('/', '_')
 
   private fun sanitizeIdent(raw: String): String =
     raw.replace(Regex("[^A-Za-z0-9_]"), "_").take(48)

@@ -705,9 +705,11 @@ object DexParser {
     fun readUleb128(): Int {
       var result = 0
       var shift = 0
-      while (pos < bytes.size) {
+      var count = 0
+      while (pos < bytes.size && count < 5) {
         val b = bytes[pos++].toInt() and 0xFF
         result = result or ((b and 0x7F) shl shift)
+        count++
         if ((b and 0x80) == 0) break
         shift += 7
       }

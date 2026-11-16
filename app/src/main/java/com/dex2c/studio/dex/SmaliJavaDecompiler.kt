@@ -51,7 +51,7 @@ object SmaliJavaDecompiler {
           appendLine("    $mAcc $retType $methodName($paramList);")
         } else {
           appendLine("    $mAcc $retType $methodName($paramList) {")
-          appendLine(decompileMethodBodyToJava(m))
+          appendLine(decompileMethodBodyToJava(dex, m))
           appendLine("    }")
         }
         appendLine()
@@ -96,15 +96,39 @@ object SmaliJavaDecompiler {
     }.trim()
   }
 
-  private fun decompileMethodBodyToJava(method: DexEncodedMethod): String {
+  private fun decompileMethodBodyToJava(dex: DexParsedFile, method: DexEncodedMethod): String {
     val ret = method.methodRef.proto.returnType
-    return when {
-      method.isInitConstructor -> "        super();"
-      ret == "V" -> "        // TODO: method body"
+    val defaultReturn = when {
+      ret == "V" -> ""
       ret == "Z" -> "        return false;"
       ret == "I" || ret == "J" || ret == "S" || ret == "B" || ret == "C" || ret == "F" || ret == "D" -> "        return 0;"
       else -> "        return null;"
     }
+
+    if (!method.hasBytecode) {
+      return if (defaultReturn.isNotEmpty()) "        // [abstract/native method]\n$defaultReturn" else "        // [abstract/native method]"
+    }
+
+    val insns = DalvikDisassembler.disassemble(dex, method)
+    val sb = StringBuilder()
+    if (method.isInitConstructor) {
+      sb.appendLine("        super();")
+    }
+
+    val previewInsns = insns.take(30)
+    for (insn in previewInsns) {
+      val comment = "[0x%04X] %s %s".format(insn.offsetWords, insn.mnemonic, insn.operandsText).trim()
+      sb.appendLine("        // $comment")
+    }
+    if (insns.size > 30) {
+      sb.appendLine("        // ... and ${insns.size - 30} more instructions")
+    }
+
+    if (defaultReturn.isNotEmpty() && (insns.isEmpty() || !insns.last().mnemonic.startsWith("return"))) {
+      sb.appendLine(defaultReturn)
+    }
+
+    return sb.toString().trimEnd()
   }
 
   private fun formatJavaAccess(accessFlags: Int): String {
