@@ -47,9 +47,12 @@ import com.dex2c.studio.dex.DexParsedFile
 import com.dex2c.studio.dex.DexParser
 import com.dex2c.studio.dex.buildBytecodeOverviewSummary
 import com.dex2c.studio.dex.inferDominantDexPackageName
+import com.dex2c.studio.dex.DexCompileResult
 import com.dex2c.studio.dex.DexTryBlock
 import com.dex2c.studio.dex.MethodControlFlowGraph
 import com.dex2c.studio.dex.SmaliClassDisassembler
+import com.dex2c.studio.dex.SmaliDexCompiler
+import com.dex2c.studio.dex.SmaliJavaDecompiler
 import com.dex2c.studio.dex.SmaliMethodSpan
 import com.dex2c.studio.transpiler.DccConfigCodec
 import com.dex2c.studio.transpiler.Dex2cTranspiler
@@ -62,6 +65,7 @@ import com.dex2c.studio.transpiler.TranspileProgress
 import com.dex2c.studio.transpiler.TranspilerConfig
 import com.dex2c.studio.transpiler.ZipBundleExporter
 import java.io.File
+import java.io.FileInputStream
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -125,6 +129,7 @@ data class MethodInspectionState(
   val structuralMeta: DexMethodStructuralMeta,
   val cfg: MethodControlFlowGraph = ControlFlowGraphBuilder.build(instructions, tryBlocks),
   val methodSmali: String = "",
+  val decompiledJava: String = "",
 )
 
 sealed interface SmaliClassUiState {
@@ -141,6 +146,7 @@ sealed interface SmaliClassUiState {
     val durationMs: Long,
     val initialFocusMethodName: String? = null,
     val methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
+    val decompiledJava: String = "",
   ) : SmaliClassUiState {
     val smaliText: String
       get() = lines.joinToString("\n")
@@ -155,6 +161,7 @@ sealed interface SmaliClassUiState {
       durationMs: Long,
       initialFocusMethodName: String? = null,
       methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
+      decompiledJava: String = "",
     ) : this(
       dexClass = dexClass,
       lines = lines,
@@ -164,6 +171,7 @@ sealed interface SmaliClassUiState {
       durationMs = durationMs,
       initialFocusMethodName = initialFocusMethodName,
       methodSpans = methodSpans,
+      decompiledJava = decompiledJava,
     )
   }
 
@@ -341,7 +349,15 @@ class Dex2cViewModel @JvmOverloads constructor(
   private val _pendingCloudApkSave = MutableStateFlow<CloudDownloadedApk?>(null)
   val pendingCloudApkSave: StateFlow<CloudDownloadedApk?> = _pendingCloudApkSave.asStateFlow()
 
+  private val _isCompilingDex = MutableStateFlow(false)
+  val isCompilingDex: StateFlow<Boolean> = _isCompilingDex.asStateFlow()
+
+  private val _lastCompileError = MutableStateFlow<String?>(null)
+  val lastCompileError: StateFlow<String?> = _lastCompileError.asStateFlow()
+
   private var dexByteCache: Map<String, ByteArray> = emptyMap()
+  private var activeSourceApkUri: Uri? = null
+  private var activeSourceApkFilePath: String? = null
   private var currentSourceLabel: String = ""
   private var bundleJob: Job? = null
   private var smaliJob: Job? = null
@@ -666,15 +682,20 @@ class Dex2cViewModel @JvmOverloads constructor(
     val chosenEntries = preview.dexEntries.map { it.entryName }.filter { it in ready.selectedEntryNames }
     if (chosenEntries.isEmpty()) return
 
-    // Automatically track the selected APK for Cloud Build dispatch too
+    // Automatically track the selected APK for Cloud Build dispatch and patched APK export
     if (preview.sourceLabel.endsWith(".apk", ignoreCase = true) || preview.sourceType == BinarySourceType.INSTALLED_APK) {
+      activeSourceApkUri = if (preview.sourceType == BinarySourceType.SAF_URI) Uri.parse(preview.sourceRef) else null
+      activeSourceApkFilePath = if (preview.sourceType == BinarySourceType.INSTALLED_APK) preview.sourceRef else null
       _cloudApkChoice.value =
         CloudApkChoice(
           label = preview.appLabel?.takeIf { it.isNotBlank() } ?: preview.sourceLabel,
           byteSize = preview.totalByteSize,
-          uri = if (preview.sourceType == BinarySourceType.SAF_URI) Uri.parse(preview.sourceRef) else null,
-          filePath = if (preview.sourceType == BinarySourceType.INSTALLED_APK) preview.sourceRef else null,
+          uri = activeSourceApkUri,
+          filePath = activeSourceApkFilePath,
         )
+    } else {
+      activeSourceApkUri = null
+      activeSourceApkFilePath = null
     }
 
     _stagingState.value = null
@@ -1146,13 +1167,16 @@ class Dex2cViewModel @JvmOverloads constructor(
       ready.loadedDexes[dexClass.sourceEntryName]
         ?: ready.parsedDex
     smaliJob?.cancel()
+    _lastCompileError.value = null
     _smaliClassState.value = SmaliClassUiState.Loading(dexClass)
     smaliJob =
       viewModelScope.launch {
         try {
-          val result =
+          val (result, javaCode) =
             withContext(Dispatchers.Default) {
-              SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
+              val dis = SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
+              val java = SmaliJavaDecompiler.decompileClassToJava(targetDex, dexClass)
+              dis to java
             }
           _smaliClassState.value =
             SmaliClassUiState.Ready(
@@ -1164,6 +1188,7 @@ class Dex2cViewModel @JvmOverloads constructor(
               durationMs = result.durationMs,
               initialFocusMethodName = focusMethodName,
               methodSpans = result.methodSpans,
+              decompiledJava = javaCode,
             )
         } catch (t: Throwable) {
           if (t is CancellationException) throw t
@@ -1179,8 +1204,257 @@ class Dex2cViewModel @JvmOverloads constructor(
   fun clearSmaliInspection() {
     smaliJob?.cancel()
     smaliJob = null
+    _lastCompileError.value = null
     _smaliClassState.value = null
     SmaliClassDisassembler.trimCache(maxEntries = 1)
+  }
+
+  fun clearCompileError() {
+    _lastCompileError.value = null
+  }
+
+  fun compileEditedSmaliClass(
+    dexClass: DexClassInfo,
+    editedSmaliText: String,
+    onSuccess: () -> Unit = {},
+  ) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val entryName = dexClass.sourceEntryName.ifBlank { ready.activeEntryName }
+    val targetDex = ready.loadedDexes[entryName] ?: ready.parsedDex
+    if (_isCompilingDex.value) return
+    _isCompilingDex.value = true
+    _lastCompileError.value = null
+
+    viewModelScope.launch {
+      try {
+        val result =
+          withContext(Dispatchers.Default) {
+            SmaliDexCompiler.compileAndReplaceClass(
+              dex = targetDex,
+              targetClassDescriptor = dexClass.descriptor,
+              editedSmaliText = editedSmaliText,
+            )
+          }
+        when (result) {
+          is DexCompileResult.Success -> {
+            SmaliClassDisassembler.clearCache()
+            val updatedParsed = result.updatedDex.releaseTransientPools()
+            applyReplacedDexEntry(entryName, result.updatedDexBytes, updatedParsed)
+            val updatedClass =
+              updatedParsed.classes.firstOrNull { it.descriptor == dexClass.descriptor }
+                ?: updatedParsed.classes.firstOrNull { it.fullName == dexClass.fullName }
+                ?: dexClass
+            val (disassembled, javaCode) =
+              withContext(Dispatchers.Default) {
+                val dis = SmaliClassDisassembler.disassembleClass(updatedParsed, updatedClass)
+                val java = SmaliJavaDecompiler.decompileClassToJava(updatedParsed, updatedClass)
+                dis to java
+              }
+            _smaliClassState.value =
+              SmaliClassUiState.Ready(
+                dexClass = updatedClass,
+                lines = disassembled.lines,
+                lineCount = disassembled.lineCount,
+                methodCount = disassembled.methodCount,
+                fieldCount = disassembled.fieldCount,
+                durationMs = disassembled.durationMs,
+                methodSpans = disassembled.methodSpans,
+                decompiledJava = javaCode,
+              )
+            _statusBanner.value =
+              "Assembled ${updatedClass.simpleName} into $entryName (${result.durationMs} ms)."
+            markBundleDirty()
+            onSuccess()
+          }
+          is DexCompileResult.Error -> {
+            val linePrefix = result.line?.let { "Line $it: " }.orEmpty()
+            _lastCompileError.value = "$linePrefix${result.message}"
+            _statusBanner.value = "Smali compile error: $linePrefix${result.message}"
+          }
+        }
+      } catch (t: Throwable) {
+        if (t is CancellationException) throw t
+        _lastCompileError.value = t.message ?: "Failed to assemble Smali."
+        _statusBanner.value = "Smali compile failed: ${t.message}"
+      } finally {
+        _isCompilingDex.value = false
+      }
+    }
+  }
+
+  fun deleteDexClasses(descriptors: Set<String>, entryName: String? = null) {
+    if (descriptors.isEmpty()) return
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val targetEntry = entryName ?: ready.activeEntryName
+    val targetDex = ready.loadedDexes[targetEntry] ?: ready.parsedDex
+    if (_isCompilingDex.value) return
+    _isCompilingDex.value = true
+
+    viewModelScope.launch {
+      try {
+        val result =
+          withContext(Dispatchers.Default) {
+            SmaliDexCompiler.deleteClassesFromDex(targetDex, descriptors)
+          }
+        when (result) {
+          is DexCompileResult.Success -> {
+            SmaliClassDisassembler.clearCache()
+            val updatedParsed = result.updatedDex.releaseTransientPools()
+            applyReplacedDexEntry(targetEntry, result.updatedDexBytes, updatedParsed)
+            _statusBanner.value =
+              "Removed ${descriptors.size} class(es) from $targetEntry (${result.durationMs} ms)."
+            markBundleDirty()
+          }
+          is DexCompileResult.Error -> {
+            _statusBanner.value = "Delete class failed: ${result.message}"
+          }
+        }
+      } finally {
+        _isCompilingDex.value = false
+      }
+    }
+  }
+
+  fun replaceStringInActiveDex(
+    searchQuery: String,
+    replacement: String,
+    ignoreCase: Boolean,
+  ) {
+    if (searchQuery.isEmpty()) return
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val targetEntry = ready.activeEntryName
+    val targetDex = ready.loadedDexes[targetEntry] ?: ready.parsedDex
+    if (_isCompilingDex.value) return
+    _isCompilingDex.value = true
+
+    viewModelScope.launch {
+      try {
+        val (result, replacedCount) =
+          withContext(Dispatchers.Default) {
+            SmaliDexCompiler.replaceStringLiteralsInDex(
+              dex = targetDex,
+              searchQuery = searchQuery,
+              replacement = replacement,
+              ignoreCase = ignoreCase,
+            )
+          }
+        when (result) {
+          is DexCompileResult.Success -> {
+            SmaliClassDisassembler.clearCache()
+            val updatedParsed = result.updatedDex.releaseTransientPools()
+            applyReplacedDexEntry(targetEntry, result.updatedDexBytes, updatedParsed)
+            _statusBanner.value =
+              "Replaced $replacedCount string literal(s) in $targetEntry (${result.durationMs} ms)."
+            markBundleDirty()
+          }
+          is DexCompileResult.Error -> {
+            _statusBanner.value = result.message
+          }
+        }
+      } finally {
+        _isCompilingDex.value = false
+      }
+    }
+  }
+
+  private fun applyReplacedDexEntry(
+    entryName: String,
+    updatedBytes: ByteArray,
+    updatedParsed: DexParsedFile,
+  ) {
+    val current = _loadState.value as? DexLoadState.Ready ?: return
+    val newByteCache = LinkedHashMap(dexByteCache)
+    newByteCache[entryName] = updatedBytes
+    dexByteCache = newByteCache
+
+    val updatedLoaded = LinkedHashMap<String, DexParsedFile>()
+    current.loadedDexes.forEach { (k, v) ->
+      updatedLoaded[k] = if (k == entryName) updatedParsed else v
+    }
+    if (entryName !in updatedLoaded) {
+      updatedLoaded[entryName] = updatedParsed
+    }
+    val updatedEntries =
+      current.dexEntries.map { entry ->
+        if (entry.entryName == entryName) entry.copy(byteSize = updatedBytes.size) else entry
+      }
+    val nextParsed =
+      if (current.activeEntryName == entryName) updatedParsed else current.parsedDex
+    _loadState.value =
+      current.copy(
+        dexEntries = updatedEntries,
+        parsedDex = nextParsed,
+        loadedDexes = updatedLoaded,
+      )
+  }
+
+  fun exportPatchedDexToUri(uri: Uri, entryName: String? = null) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val targetEntry = entryName ?: ready.activeEntryName
+    val bytes =
+      dexByteCache[targetEntry]
+        ?: ready.loadedDexes[targetEntry]?.rawBytes
+        ?: ready.parsedDex.rawBytes
+    val context = getApplication<Application>()
+    viewModelScope.launch {
+      try {
+        withContext(Dispatchers.IO) {
+          context.contentResolver.openOutputStream(uri)?.use { out ->
+            out.write(bytes)
+          } ?: throw IllegalStateException("Unable to open output stream for $targetEntry")
+        }
+        _statusBanner.value = "Exported patched $targetEntry (${bytes.size / 1024} KB)."
+      } catch (t: Throwable) {
+        _statusBanner.value = "DEX export failed: ${t.message}"
+      }
+    }
+  }
+
+  fun exportPatchedApkToUri(uri: Uri) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val context = getApplication<Application>()
+    val patchedMap = LinkedHashMap<String, ByteArray>()
+    ready.dexEntries.forEach { entry ->
+      val bytes = dexByteCache[entry.entryName] ?: ready.loadedDexes[entry.entryName]?.rawBytes
+      if (bytes != null) patchedMap[entry.entryName] = bytes
+    }
+    if (patchedMap.isEmpty()) {
+      patchedMap[ready.activeEntryName] = ready.parsedDex.rawBytes
+    }
+    val sourceUri = activeSourceApkUri
+    val sourceFilePath = activeSourceApkFilePath
+
+    viewModelScope.launch {
+      try {
+        withContext(Dispatchers.IO) {
+          context.contentResolver.openOutputStream(uri)?.use { out ->
+            val srcStream =
+              when {
+                sourceUri != null -> context.contentResolver.openInputStream(sourceUri)
+                !sourceFilePath.isNullOrBlank() && File(sourceFilePath).exists() ->
+                  FileInputStream(File(sourceFilePath))
+                else -> null
+              }
+            if (srcStream != null) {
+              srcStream.use { input ->
+                SmaliDexCompiler.repackApkWithPatchedDexes(
+                  originalApkStream = input,
+                  patchedDexByEntryName = patchedMap,
+                  outputStream = out,
+                )
+              }
+            } else {
+              val zipBytes = SmaliDexCompiler.buildDexContainerZip(patchedMap)
+              out.write(zipBytes)
+            }
+          } ?: throw IllegalStateException("Unable to open destination stream.")
+        }
+        _statusBanner.value =
+          "Exported patched archive (${patchedMap.size} DEX file(s)). Note: Re-sign APK with apksigner before installing."
+      } catch (t: Throwable) {
+        _statusBanner.value = "Patched APK export failed: ${t.message}"
+      }
+    }
   }
 
   fun clearMethodInspection() {
@@ -1252,6 +1526,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           val cCode = Dex2cTranspiler.transpileMethodToC(targetDex, method, cfg)
           val meta = DexHelper.inspectMethodMetadata(targetDex, dexClass, method)
           val methodSmali = SmaliClassDisassembler.disassembleMethod(targetDex, dexClass, method)
+          val javaCode = SmaliJavaDecompiler.decompileMethodToJava(targetDex, dexClass, method, insns, tries)
           MethodInspectionState(
             method = method,
             dexClass = dexClass,
@@ -1261,6 +1536,7 @@ class Dex2cViewModel @JvmOverloads constructor(
             structuralMeta = meta,
             cfg = methodCfg,
             methodSmali = methodSmali,
+            decompiledJava = javaCode,
           )
         }
       _inspection.value = state

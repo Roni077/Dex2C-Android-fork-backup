@@ -233,6 +233,8 @@ fun Dex2cApp(
   val stagingState by viewModel.stagingState.collectAsStateWithLifecycle()
   val filterMatchSummary by viewModel.filterMatchSummary.collectAsStateWithLifecycle()
   val smaliClassState by viewModel.smaliClassState.collectAsStateWithLifecycle()
+  val isCompilingDex by viewModel.isCompilingDex.collectAsStateWithLifecycle()
+  val lastCompileError by viewModel.lastCompileError.collectAsStateWithLifecycle()
   var pendingSmaliExportText by remember { mutableStateOf<String?>(null) }
 
   val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
@@ -335,6 +337,20 @@ fun Dex2cApp(
       pendingSmaliExportText = null
       if (uri != null && text != null) {
         viewModel.exportSmaliToUri(uri, text)
+      }
+    }
+
+  val exportPatchedDexLauncher =
+    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
+      if (uri != null) {
+        viewModel.exportPatchedDexToUri(uri)
+      }
+    }
+
+  val exportPatchedApkLauncher =
+    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/vnd.android.package-archive")) { uri ->
+      if (uri != null) {
+        viewModel.exportPatchedApkToUri(uri)
       }
     }
 
@@ -620,6 +636,25 @@ fun Dex2cApp(
                   viewModel.addQuickClassRule(cls, isBlacklist)
                 },
                 initialSubTab = classesSubTab,
+                onReplaceStringInDex = { searchQuery, replacement, ignoreCase ->
+                  viewModel.replaceStringInActiveDex(searchQuery, replacement, ignoreCase)
+                },
+                onCopyText = { copyText(it) },
+                onExportPatchedDex = {
+                  val activeEntry = (loadState as? DexLoadState.Ready)?.activeEntryName ?: "classes.dex"
+                  exportPatchedDexLauncher.launch("patched_$activeEntry")
+                },
+                onExportPatchedApk = {
+                  val baseName =
+                    ((loadState as? DexLoadState.Ready)?.sourceLabel ?: "app")
+                      .removeSuffix(".apk")
+                      .removeSuffix(".dex")
+                      .replace(Regex("[^A-Za-z0-9._-]"), "_")
+                  exportPatchedApkLauncher.launch("${baseName}_patched_unsigned.apk")
+                },
+                onDeleteDexClass = { cls ->
+                  viewModel.deleteDexClasses(setOf(cls.descriptor), cls.sourceEntryName)
+                },
               )
             }
 
@@ -765,6 +800,12 @@ fun Dex2cApp(
                   smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
                   onSelectSmaliSyntaxTheme = { selectedTheme ->
                     viewModel.updateAppSettings { it.copy(smaliSyntaxTheme = selectedTheme) }
+                  },
+                  isCompilingDex = isCompilingDex,
+                  compileError = lastCompileError,
+                  onClearCompileError = { viewModel.clearCompileError() },
+                  onCompileSmali = { editedSmaliText ->
+                    viewModel.compileEditedSmaliClass(currentSmali.dexClass, editedSmaliText)
                   },
                 )
               }

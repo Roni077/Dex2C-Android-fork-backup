@@ -78,7 +78,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dex2c.studio.R
 import com.dex2c.studio.data.SmaliSyntaxTheme
+import androidx.compose.material.icons.automirrored.rounded.Redo
+import androidx.compose.material.icons.automirrored.rounded.Undo
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.FindReplace
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import com.dex2c.studio.dex.DexEncodedMethod
+import com.dex2c.studio.dex.SmaliClassDisassembler
+import com.dex2c.studio.dex.SmaliCompletionSuggestion
+import com.dex2c.studio.dex.SmaliEditorEngine
 import com.dex2c.studio.dex.SmaliMethodSpan
 import com.dex2c.studio.dex.formatAccessFlags
 import com.dex2c.studio.ui.SmaliClassUiState
@@ -89,6 +102,7 @@ import com.dex2c.studio.ui.components.SmaliSearchOptions
 import com.dex2c.studio.ui.components.SmaliSearchResult
 import com.dex2c.studio.ui.components.SmaliSyntaxCodeViewer
 import com.dex2c.studio.ui.components.SmaliTokenKind
+import com.dex2c.studio.ui.components.SyntaxCodeViewer
 import com.dex2c.studio.ui.components.TagPill
 import com.dex2c.studio.ui.components.extractLineInteractiveTokens
 import com.dex2c.studio.ui.components.extractQuickMethodTokens
@@ -105,6 +119,12 @@ import com.dex2c.studio.ui.theme.SyntaxPalette
 import com.dex2c.studio.ui.theme.resolveSmaliSyntaxPalette
 import kotlinx.coroutines.launch
 
+enum class SmaliViewMode(val label: String) {
+  VIEW("Smali"),
+  EDIT("Edit"),
+  JAVA("Java"),
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmaliClassScreen(
@@ -118,6 +138,10 @@ fun SmaliClassScreen(
   onInspectMethodC: (DexEncodedMethod) -> Unit = {},
   smaliSyntaxTheme: SmaliSyntaxTheme? = null,
   onSelectSmaliSyntaxTheme: ((SmaliSyntaxTheme) -> Unit)? = null,
+  isCompilingDex: Boolean = false,
+  compileError: String? = null,
+  onClearCompileError: () -> Unit = {},
+  onCompileSmali: (String) -> Unit = {},
 ) {
   BackHandler(onBack = onBack)
 
@@ -141,10 +165,21 @@ fun SmaliClassScreen(
     onSelectSmaliSyntaxTheme?.invoke(theme)
   }
 
+  var viewModeName by rememberSaveable(state.dexClass.uniqueKey) {
+    mutableStateOf(SmaliViewMode.VIEW.name)
+  }
+  val viewMode =
+    remember(viewModeName) {
+      SmaliViewMode.entries.firstOrNull { it.name == viewModeName } ?: SmaliViewMode.VIEW
+    }
+
   var showSearchBar by rememberSaveable { mutableStateOf(false) }
+  var showReplaceBar by rememberSaveable(state.dexClass.uniqueKey) { mutableStateOf(false) }
   var showMethodsSheet by rememberSaveable { mutableStateOf(false) }
   var showMatchesDrawer by rememberSaveable { mutableStateOf(false) }
   var searchQuery by rememberSaveable(state.dexClass.uniqueKey) { mutableStateOf("") }
+  var replaceQuery by rememberSaveable(state.dexClass.uniqueKey) { mutableStateOf("") }
+  var replaceFeedback by remember(state.dexClass.uniqueKey) { mutableStateOf<String?>(null) }
   var selectedCategoryName by rememberSaveable(state.dexClass.uniqueKey) {
     mutableStateOf(SmaliSearchCategory.ALL.name)
   }
@@ -154,6 +189,7 @@ fun SmaliClassScreen(
   var activeMatchPos by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(0) }
   var pinnedMethodStartLine by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(-1) }
   var inspectedLineIndex by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(-1) }
+  var editingLineIndex by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(0) }
 
   val selectedCategory =
     remember(selectedCategoryName) {
@@ -162,8 +198,49 @@ fun SmaliClassScreen(
     }
 
   val readyState = state as? SmaliClassUiState.Ready
-  val lines = readyState?.lines.orEmpty()
-  val methodSpans = readyState?.methodSpans.orEmpty()
+  var editedLines by remember(readyState?.dexClass?.uniqueKey, readyState?.lines) {
+    mutableStateOf(readyState?.lines.orEmpty())
+  }
+  var undoStack by remember(readyState?.dexClass?.uniqueKey, readyState?.lines) {
+    mutableStateOf<List<List<String>>>(emptyList())
+  }
+  var redoStack by remember(readyState?.dexClass?.uniqueKey, readyState?.lines) {
+    mutableStateOf<List<List<String>>>(emptyList())
+  }
+
+  fun pushEditableLines(newLines: List<String>) {
+    if (newLines == editedLines) return
+    undoStack = (undoStack + listOf(editedLines)).takeLast(25)
+    redoStack = emptyList()
+    editedLines = newLines
+  }
+
+  fun performUndo() {
+    if (undoStack.isEmpty()) return
+    val previous = undoStack.last()
+    undoStack = undoStack.dropLast(1)
+    redoStack = (redoStack + listOf(editedLines)).takeLast(25)
+    editedLines = previous
+  }
+
+  fun performRedo() {
+    if (redoStack.isEmpty()) return
+    val next = redoStack.last()
+    redoStack = redoStack.dropLast(1)
+    undoStack = (undoStack + listOf(editedLines)).takeLast(25)
+    editedLines = next
+  }
+
+  val hasUnsavedChanges = readyState != null && editedLines != readyState.lines
+  val lines = if (readyState != null) editedLines else emptyList()
+  val methodSpans =
+    remember(lines, readyState) {
+      if (readyState != null && lines === readyState.lines) {
+        readyState.methodSpans
+      } else {
+        SmaliClassDisassembler.extractMethodSpans(lines)
+      }
+    }
 
   val searchOptions =
     remember(searchQuery, selectedCategory, caseSensitive, wholeWord, useRegex) {
@@ -278,6 +355,15 @@ fun SmaliClassScreen(
       }
     }
 
+  val inspectedLineLabelJump =
+    remember(lines, inspectedLineIndex) {
+      if (inspectedLineIndex in lines.indices) {
+        SmaliEditorEngine.resolveLabelJumpForLine(lines, inspectedLineIndex)
+      } else {
+        null
+      }
+    }
+
   val quickMethodTokens: List<SmaliInteractiveToken> =
     remember(lines, activeMethodRange, inspectedLineTokens) {
       if (inspectedLineTokens.isNotEmpty()) {
@@ -321,7 +407,12 @@ fun SmaliClassScreen(
       title = {
         Column {
           Text(
-            text = "${state.dexClass.simpleName}.smali",
+            text =
+              when (viewMode) {
+                SmaliViewMode.JAVA -> "${state.dexClass.simpleName}.java"
+                SmaliViewMode.EDIT -> "${state.dexClass.simpleName}.smali (Edit)"
+                SmaliViewMode.VIEW -> "${state.dexClass.simpleName}.smali"
+              },
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -386,7 +477,14 @@ fun SmaliClassScreen(
           )
         }
         IconButton(
-          onClick = { readyState?.let { onCopySmali(it.smaliText) } },
+          onClick = {
+            if (readyState != null) {
+              val copyContent =
+                if (viewMode == SmaliViewMode.JAVA) readyState.decompiledJava
+                else lines.joinToString("\n")
+              onCopySmali(copyContent)
+            }
+          },
           enabled = readyState != null,
           modifier = Modifier.minimumInteractiveComponentSize().testTag("smali_copy_btn"),
         ) {
@@ -399,7 +497,7 @@ fun SmaliClassScreen(
           onClick = {
             readyState?.let {
               val baseName = state.dexClass.simpleName.ifBlank { "Class" }.replace('$', '_')
-              onExportSmali("$baseName.smali", it.smaliText)
+              onExportSmali("$baseName.smali", lines.joinToString("\n"))
             }
           },
           enabled = readyState != null,
@@ -432,11 +530,11 @@ fun SmaliClassScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-            text = "*${state.dexClass.simpleName}",
+            text = if (hasUnsavedChanges) "*${state.dexClass.simpleName} (modified)" else "*${state.dexClass.simpleName}",
             style = MaterialTheme.typography.labelMedium,
             fontFamily = JetBrainsMonoFontFamily,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = if (hasUnsavedChanges) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false),
@@ -448,9 +546,9 @@ fun SmaliClassScreen(
             if (activeMethodSpan != null) {
               val start1 = activeMethodSpan.startLineIndex + 1
               val end1 = activeMethodSpan.endLineIndex + 1
-              "$cursorLine:${readyState.lineCount} | [$start1 - $end1] : ${activeMethodSpan.name}()"
+              "$cursorLine:${lines.size} | [$start1 - $end1] : ${activeMethodSpan.name}()"
             } else {
-              "$cursorLine:${readyState.lineCount} lines"
+              "$cursorLine:${lines.size} lines"
             }
           Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -478,12 +576,134 @@ fun SmaliClassScreen(
       }
     }
 
+    // Mode Switcher (Smali | Edit | Java) + Undo/Redo + Assemble DEX Actions
+    if (readyState != null) {
+      Row(
+        modifier =
+          Modifier.fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        SingleChoiceSegmentedButtonRow {
+          SmaliViewMode.entries.forEachIndexed { idx, mode ->
+            SegmentedButton(
+              selected = viewMode == mode,
+              onClick = { viewModeName = mode.name },
+              shape = SegmentedButtonDefaults.itemShape(idx, SmaliViewMode.entries.size),
+              modifier = Modifier.height(34.dp).testTag("smali_mode_${mode.name.lowercase()}"),
+            ) {
+              Text(text = mode.label, style = MaterialTheme.typography.labelMedium)
+            }
+          }
+        }
+
+        if (viewMode == SmaliViewMode.EDIT || hasUnsavedChanges) {
+          IconButton(
+            onClick = ::performUndo,
+            enabled = undoStack.isNotEmpty() && !isCompilingDex,
+            modifier = Modifier.size(34.dp).testTag("smali_undo_btn"),
+          ) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Rounded.Undo,
+              contentDescription = "Undo Smali edit",
+              modifier = Modifier.size(18.dp),
+            )
+          }
+          IconButton(
+            onClick = ::performRedo,
+            enabled = redoStack.isNotEmpty() && !isCompilingDex,
+            modifier = Modifier.size(34.dp).testTag("smali_redo_btn"),
+          ) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Rounded.Redo,
+              contentDescription = "Redo Smali edit",
+              modifier = Modifier.size(18.dp),
+            )
+          }
+          Button(
+            onClick = { onCompileSmali(lines.joinToString("\n")) },
+            enabled = !isCompilingDex,
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.height(34.dp).testTag("smali_compile_dex_btn"),
+          ) {
+            if (isCompilingDex) {
+              CircularProgressIndicator(
+                modifier = Modifier.size(14.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onPrimary,
+              )
+              Spacer(Modifier.width(6.dp))
+              Text("Assembling…", style = MaterialTheme.typography.labelMedium)
+            } else {
+              Icon(
+                imageVector = Icons.Rounded.Build,
+                contentDescription = null,
+                modifier = Modifier.size(15.dp),
+              )
+              Spacer(Modifier.width(6.dp))
+              Text("Assemble DEX", style = MaterialTheme.typography.labelMedium)
+            }
+          }
+          if (hasUnsavedChanges) {
+            TextButton(
+              onClick = {
+                editedLines = readyState.lines
+                undoStack = emptyList()
+                redoStack = emptyList()
+                onClearCompileError()
+              },
+              contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+              modifier = Modifier.height(32.dp).testTag("smali_reset_edits_btn"),
+            ) {
+              Text("Revert", style = MaterialTheme.typography.labelSmall)
+            }
+          }
+        }
+      }
+    }
+
+    // Inline Smali Assembler Error Banner
+    AnimatedVisibility(visible = !compileError.isNullOrBlank()) {
+      Surface(
+        color = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        shape = RoundedCornerShape(12.dp),
+        modifier =
+          Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 2.dp)
+            .testTag("smali_compile_error_banner"),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+            text = compileError.orEmpty(),
+            style = MaterialTheme.typography.labelSmall,
+            fontFamily = JetBrainsMonoFontFamily,
+            modifier = Modifier.weight(1f),
+          )
+          TextButton(
+            onClick = onClearCompileError,
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+            modifier = Modifier.height(26.dp),
+          ) {
+            Text("Dismiss", style = MaterialTheme.typography.labelSmall)
+          }
+        }
+      }
+    }
+
     // Metadata Pills
     Row(
       modifier =
         Modifier.fillMaxWidth()
           .horizontalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp, vertical = 4.dp),
+          .padding(horizontal = 16.dp, vertical = 2.dp),
       horizontalArrangement = Arrangement.spacedBy(6.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -497,7 +717,7 @@ fun SmaliClassScreen(
           contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         )
         TagPill(text = "${readyState.fieldCount} fields")
-        TagPill(text = "${readyState.lineCount} lines")
+        TagPill(text = "${lines.size} lines")
         TagPill(
           text = "dexlib2 • ${readyState.durationMs} ms",
           containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -529,8 +749,12 @@ fun SmaliClassScreen(
       )
     }
 
-    // Interactive Line Symbol Inspector Bar when a line is tapped outside or inside search mode
-    AnimatedVisibility(visible = inspectedLineIndex in lines.indices && inspectedLineTokens.isNotEmpty()) {
+    // Interactive Line Symbol Inspector + Label Jump Bar when a line is tapped
+    AnimatedVisibility(
+      visible =
+        inspectedLineIndex in lines.indices &&
+          (inspectedLineTokens.isNotEmpty() || inspectedLineLabelJump != null)
+    ) {
       Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
@@ -549,12 +773,43 @@ fun SmaliClassScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-            text = "L${inspectedLineIndex + 1} Symbols:",
+            text = "L${inspectedLineIndex + 1}:",
             style = MaterialTheme.typography.labelSmall,
             fontFamily = JetBrainsMonoFontFamily,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.primary,
           )
+          if (inspectedLineLabelJump != null) {
+            FilledTonalButton(
+              onClick = {
+                val targetIdx = inspectedLineLabelJump.lineIndex
+                inspectedLineIndex = targetIdx
+                scope.launch { listState.animateScrollToItem(targetIdx) }
+              },
+              contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+              shape = RoundedCornerShape(8.dp),
+              modifier = Modifier.height(26.dp).testTag("smali_jump_to_label_btn"),
+            ) {
+              Text(
+                text = "Jump ${inspectedLineLabelJump.label} -> L${inspectedLineLabelJump.lineNumber}",
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = JetBrainsMonoFontFamily,
+              )
+            }
+          }
+          FilledTonalButton(
+            onClick = {
+              editingLineIndex = inspectedLineIndex.coerceAtLeast(0)
+              viewModeName = SmaliViewMode.EDIT.name
+            },
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.height(26.dp).testTag("smali_inspect_edit_line_btn"),
+          ) {
+            Icon(Icons.Rounded.Edit, contentDescription = null, modifier = Modifier.size(12.dp))
+            Spacer(Modifier.width(4.dp))
+            Text("Edit Line", style = MaterialTheme.typography.labelSmall)
+          }
           inspectedLineTokens.forEach { token ->
             SmaliTokenQuickChip(
               token = token,
@@ -589,7 +844,10 @@ fun SmaliClassScreen(
         ) {
           OutlinedTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
+            onValueChange = {
+              searchQuery = it
+              replaceFeedback = null
+            },
             singleLine = true,
             placeholder = {
               Text(
@@ -604,6 +862,7 @@ fun SmaliClassScreen(
                   onClick = {
                     searchQuery = ""
                     selectedCategoryName = SmaliSearchCategory.ALL.name
+                    replaceFeedback = null
                   },
                   modifier = Modifier.minimumInteractiveComponentSize().testTag("smali_search_clear_btn"),
                 ) {
@@ -651,6 +910,20 @@ fun SmaliClassScreen(
             Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Next match")
           }
           IconButton(
+            onClick = { showReplaceBar = !showReplaceBar },
+            modifier =
+              Modifier.minimumInteractiveComponentSize()
+                .testTag("smali_search_replace_toggle_btn"),
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.FindReplace,
+              contentDescription = "Toggle Search and Replace",
+              tint =
+                if (showReplaceBar) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+          IconButton(
             onClick = { showMatchesDrawer = !showMatchesDrawer },
             enabled = matchingLines.isNotEmpty(),
             modifier =
@@ -668,6 +941,79 @@ fun SmaliClassScreen(
                 },
             )
           }
+        }
+
+        // Collapsible Search & Replace Row
+        AnimatedVisibility(visible = showReplaceBar) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            OutlinedTextField(
+              value = replaceQuery,
+              onValueChange = { replaceQuery = it },
+              singleLine = true,
+              placeholder = { Text("Replace with…", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+              shape = RoundedCornerShape(16.dp),
+              modifier = Modifier.weight(1f).testTag("smali_replace_input"),
+            )
+            FilledTonalButton(
+              onClick = {
+                val outcome =
+                  SmaliEditorEngine.replaceMatches(
+                    lines = lines,
+                    methodSpans = methodSpans,
+                    options = searchOptions,
+                    replacement = replaceQuery,
+                    replaceAll = false,
+                    activeLineIndex = activeMatchLineIndex,
+                  )
+                if (outcome.replacedCount > 0) {
+                  pushEditableLines(outcome.updatedLines)
+                  replaceFeedback = "Replaced ${outcome.replacedCount} occurrence on active line."
+                }
+              },
+              enabled = matchingLines.isNotEmpty(),
+              shape = RoundedCornerShape(12.dp),
+              contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+              modifier = Modifier.testTag("smali_replace_one_btn"),
+            ) {
+              Text("Replace", style = MaterialTheme.typography.labelMedium)
+            }
+            Button(
+              onClick = {
+                val outcome =
+                  SmaliEditorEngine.replaceMatches(
+                    lines = lines,
+                    methodSpans = methodSpans,
+                    options = searchOptions,
+                    replacement = replaceQuery,
+                    replaceAll = true,
+                  )
+                if (outcome.replacedCount > 0) {
+                  pushEditableLines(outcome.updatedLines)
+                  replaceFeedback =
+                    "Replaced ${outcome.replacedCount} match(es) across ${outcome.modifiedLineCount} line(s)."
+                }
+              },
+              enabled = matchingLines.isNotEmpty(),
+              shape = RoundedCornerShape(12.dp),
+              contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+              modifier = Modifier.testTag("smali_replace_all_btn"),
+            ) {
+              Text("All", style = MaterialTheme.typography.labelMedium)
+            }
+          }
+        }
+
+        if (!replaceFeedback.isNullOrBlank()) {
+          Text(
+            text = replaceFeedback.orEmpty(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontFamily = JetBrainsMonoFontFamily,
+          )
         }
 
         // Row 2: Match Mode Toggles (Whole-word, Regex, Case) + Category Filter Chips
@@ -850,21 +1196,45 @@ fun SmaliClassScreen(
         }
 
         is SmaliClassUiState.Ready -> {
-          SmaliSyntaxCodeViewer(
-            lines = state.lines,
-            searchQuery = searchOptions.trimmedQuery,
-            activeMatchLineIndex = activeMatchLineIndex,
-            activeMethodRange = activeMethodRange,
-            listState = listState,
-            searchOptions = searchOptions,
-            lineMatchRanges = searchResult.matchesByLine,
-            inspectedLineIndex = inspectedLineIndex.takeIf { it >= 0 },
-            onLineClick = { clickedIdx ->
-              inspectedLineIndex = if (inspectedLineIndex == clickedIdx) -1 else clickedIdx
-            },
-            syntaxThemeOverride = activeSyntaxTheme,
-            modifier = Modifier.fillMaxSize(),
-          )
+          when (viewMode) {
+            SmaliViewMode.JAVA -> {
+              SyntaxCodeViewer(
+                code = state.decompiledJava.ifBlank { "// No Java decompilation available for ${state.dexClass.fullName}" },
+                modifier = Modifier.fillMaxSize(),
+              )
+            }
+            SmaliViewMode.EDIT -> {
+              SmaliInteractiveEditorPane(
+                lines = lines,
+                activeLineIndex = editingLineIndex.coerceIn(0, (lines.size - 1).coerceAtLeast(0)),
+                onSelectLineIndex = { idx ->
+                  editingLineIndex = idx
+                  inspectedLineIndex = idx
+                },
+                onUpdateLines = { updated -> pushEditableLines(updated) },
+                syntaxPalette = activeSyntaxPalette,
+                modifier = Modifier.fillMaxSize(),
+              )
+            }
+            SmaliViewMode.VIEW -> {
+              SmaliSyntaxCodeViewer(
+                lines = lines,
+                searchQuery = searchOptions.trimmedQuery,
+                activeMatchLineIndex = activeMatchLineIndex,
+                activeMethodRange = activeMethodRange,
+                listState = listState,
+                searchOptions = searchOptions,
+                lineMatchRanges = searchResult.matchesByLine,
+                inspectedLineIndex = inspectedLineIndex.takeIf { it >= 0 },
+                onLineClick = { clickedIdx ->
+                  inspectedLineIndex = if (inspectedLineIndex == clickedIdx) -1 else clickedIdx
+                  editingLineIndex = clickedIdx
+                },
+                syntaxThemeOverride = activeSyntaxTheme,
+                modifier = Modifier.fillMaxSize(),
+              )
+            }
+          }
         }
       }
     }
@@ -877,6 +1247,7 @@ fun SmaliClassScreen(
       selectedMethodIds = selectedMethodIds,
       onJumpToSpan = { span ->
         pinnedMethodStartLine = span.startLineIndex
+        editingLineIndex = span.startLineIndex
         showMethodsSheet = false
         scope.launch { listState.animateScrollToItem(span.startLineIndex) }
       },
@@ -887,6 +1258,318 @@ fun SmaliClassScreen(
       },
       onDismiss = { showMethodsSheet = false },
     )
+  }
+}
+
+@Composable
+private fun SmaliInteractiveEditorPane(
+  lines: List<String>,
+  activeLineIndex: Int,
+  onSelectLineIndex: (Int) -> Unit,
+  onUpdateLines: (List<String>) -> Unit,
+  syntaxPalette: SyntaxPalette,
+  modifier: Modifier = Modifier,
+) {
+  var editAllRawMode by rememberSaveable { mutableStateOf(false) }
+  var activeLineDraft by remember(activeLineIndex, lines.getOrNull(activeLineIndex)) {
+    mutableStateOf(lines.getOrElse(activeLineIndex) { "" })
+  }
+  var rawBufferDraft by remember(lines, editAllRawMode) {
+    mutableStateOf(if (editAllRawMode) lines.joinToString("\n") else "")
+  }
+
+  val activeTokenPrefix =
+    remember(activeLineDraft) {
+      val trimmedEnd = activeLineDraft.trimEnd()
+      val lastSpace = trimmedEnd.lastIndexOfAny(charArrayOf(' ', '\t', ',', '{', '}'))
+      if (lastSpace >= 0) trimmedEnd.substring(lastSpace + 1) else trimmedEnd.trimStart()
+    }
+
+  val suggestions: List<SmaliCompletionSuggestion> =
+    remember(activeTokenPrefix, lines) {
+      SmaliEditorEngine.suggestCompletions(
+        currentWordPrefix = activeTokenPrefix,
+        currentLines = lines,
+        maxSuggestions = 10,
+      )
+    }
+
+  val labelJump =
+    remember(lines, activeLineIndex) {
+      if (activeLineIndex in lines.indices) {
+        SmaliEditorEngine.resolveLabelJumpForLine(lines, activeLineIndex)
+      } else null
+    }
+
+  val editorListState = rememberLazyListState()
+  val scope = rememberCoroutineScope()
+
+  Column(
+    modifier = modifier.fillMaxSize().testTag("smali_interactive_editor_pane"),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    // Editor toolbar: Line editor vs Full Buffer toggle + Insert/Delete line + Label Jump
+    Surface(
+      shape = RoundedCornerShape(14.dp),
+      color = MaterialTheme.colorScheme.surfaceContainer,
+      border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Column(
+        modifier = Modifier.fillMaxWidth().padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          FilterChip(
+            selected = !editAllRawMode,
+            onClick = {
+              if (editAllRawMode) {
+                onUpdateLines(rawBufferDraft.lines())
+                editAllRawMode = false
+              }
+            },
+            label = { Text("Line Editor (L${activeLineIndex + 1})", style = MaterialTheme.typography.labelSmall) },
+            modifier = Modifier.height(30.dp).testTag("smali_editor_line_mode_chip"),
+          )
+          FilterChip(
+            selected = editAllRawMode,
+            onClick = {
+              if (!editAllRawMode) {
+                rawBufferDraft = lines.joinToString("\n")
+                editAllRawMode = true
+              }
+            },
+            label = { Text("Full Buffer", style = MaterialTheme.typography.labelSmall) },
+            modifier = Modifier.height(30.dp).testTag("smali_editor_raw_mode_chip"),
+          )
+          if (!editAllRawMode) {
+            FilledTonalButton(
+              onClick = {
+                val mutable = lines.toMutableList()
+                val insertAt = (activeLineIndex + 1).coerceIn(0, mutable.size)
+                mutable.add(insertAt, "    nop")
+                onUpdateLines(mutable)
+                onSelectLineIndex(insertAt)
+              },
+              contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+              shape = RoundedCornerShape(8.dp),
+              modifier = Modifier.height(28.dp).testTag("smali_editor_insert_line_btn"),
+            ) {
+              Text("+ Line", style = MaterialTheme.typography.labelSmall)
+            }
+            FilledTonalButton(
+              onClick = {
+                if (lines.size > 1 && activeLineIndex in lines.indices) {
+                  val mutable = lines.toMutableList()
+                  mutable.removeAt(activeLineIndex)
+                  onUpdateLines(mutable)
+                  onSelectLineIndex(activeLineIndex.coerceAtMost(mutable.lastIndex))
+                }
+              },
+              contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+              shape = RoundedCornerShape(8.dp),
+              modifier = Modifier.height(28.dp).testTag("smali_editor_delete_line_btn"),
+            ) {
+              Text("- Line", style = MaterialTheme.typography.labelSmall)
+            }
+            if (labelJump != null) {
+              FilledTonalButton(
+                onClick = {
+                  onSelectLineIndex(labelJump.lineIndex)
+                  scope.launch { editorListState.animateScrollToItem(labelJump.lineIndex) }
+                },
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.height(28.dp).testTag("smali_editor_label_jump_btn"),
+              ) {
+                Text("Jump ${labelJump.label} (L${labelJump.lineNumber})", style = MaterialTheme.typography.labelSmall)
+              }
+            }
+          } else {
+            Button(
+              onClick = { onUpdateLines(rawBufferDraft.lines()) },
+              contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+              shape = RoundedCornerShape(8.dp),
+              modifier = Modifier.height(28.dp).testTag("smali_editor_apply_raw_btn"),
+            ) {
+              Text("Apply Buffer Changes", style = MaterialTheme.typography.labelSmall)
+            }
+          }
+        }
+
+        if (!editAllRawMode) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            OutlinedTextField(
+              value = activeLineDraft,
+              onValueChange = { activeLineDraft = it },
+              singleLine = true,
+              textStyle =
+                MaterialTheme.typography.bodySmall.copy(
+                  fontFamily = JetBrainsMonoFontFamily,
+                  fontSize = 13.sp,
+                ),
+              label = { Text("Edit Line ${activeLineIndex + 1}") },
+              shape = RoundedCornerShape(12.dp),
+              modifier = Modifier.weight(1f).testTag("smali_active_line_input"),
+            )
+            Button(
+              onClick = {
+                if (activeLineIndex in lines.indices) {
+                  val mutable = lines.toMutableList()
+                  mutable[activeLineIndex] = activeLineDraft
+                  onUpdateLines(mutable)
+                }
+              },
+              shape = RoundedCornerShape(12.dp),
+              contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+              modifier = Modifier.testTag("smali_apply_line_edit_btn"),
+            ) {
+              Text("Set", style = MaterialTheme.typography.labelMedium)
+            }
+          }
+
+          // Auto-complete suggestion chips bar (Dalvik opcodes, directives, and class labels)
+          if (suggestions.isNotEmpty()) {
+            Row(
+              modifier =
+                Modifier.fillMaxWidth()
+                  .horizontalScroll(rememberScrollState())
+                  .testTag("smali_autocomplete_bar"),
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Text(
+                text = "Complete:",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+              suggestions.forEach { item ->
+                Surface(
+                  shape = RoundedCornerShape(8.dp),
+                  color = MaterialTheme.colorScheme.secondaryContainer,
+                  contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                  modifier =
+                    Modifier.clip(RoundedCornerShape(8.dp))
+                      .clickable {
+                        val updatedLine =
+                          if (activeTokenPrefix.isNotEmpty() && activeLineDraft.endsWith(activeTokenPrefix)) {
+                            activeLineDraft.dropLast(activeTokenPrefix.length) + item.token + " "
+                          } else if (activeLineDraft.isBlank()) {
+                            if (item.category == "Directive" && item.token.startsWith(".class")) {
+                              "${item.token} "
+                            } else {
+                              "    ${item.token} "
+                            }
+                          } else {
+                            "$activeLineDraft ${item.token}"
+                          }
+                        activeLineDraft = updatedLine
+                      }
+                      .testTag("smali_autocomplete_chip_${item.token}"),
+                ) {
+                  Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                  ) {
+                    Text(
+                      text = item.token,
+                      style = MaterialTheme.typography.labelSmall,
+                      fontFamily = JetBrainsMonoFontFamily,
+                      fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                      text = item.category,
+                      style = MaterialTheme.typography.labelSmall,
+                      fontSize = 9.sp,
+                      color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                    )
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (editAllRawMode) {
+      OutlinedTextField(
+        value = rawBufferDraft,
+        onValueChange = { rawBufferDraft = it },
+        textStyle =
+          MaterialTheme.typography.bodySmall.copy(
+            fontFamily = JetBrainsMonoFontFamily,
+            fontSize = 12.sp,
+          ),
+        shape = RoundedCornerShape(14.dp),
+        modifier = Modifier.weight(1f).fillMaxWidth().testTag("smali_raw_buffer_input"),
+      )
+    } else {
+      Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = syntaxPalette.codeBackground,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        modifier = Modifier.weight(1f).fillMaxWidth(),
+      ) {
+        val matchBg = MaterialTheme.colorScheme.primaryContainer
+        val matchFg = MaterialTheme.colorScheme.onPrimaryContainer
+        LazyColumn(
+          state = editorListState,
+          modifier = Modifier.fillMaxSize().testTag("smali_editor_lines_list"),
+          contentPadding = PaddingValues(vertical = 6.dp),
+        ) {
+          itemsIndexed(lines) { idx, line ->
+            val isSelected = idx == activeLineIndex
+            val highlighted =
+              remember(line, syntaxPalette, matchBg, matchFg) {
+                highlightSmaliLine(
+                  line = line,
+                  palette = syntaxPalette,
+                  matchBackground = matchBg,
+                  matchForeground = matchFg,
+                )
+              }
+            Row(
+              modifier =
+                Modifier.fillMaxWidth()
+                  .background(
+                    if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.28f)
+                    else Color.Transparent
+                  )
+                  .clickable { onSelectLineIndex(idx) }
+                  .padding(horizontal = 10.dp, vertical = 3.dp)
+                  .testTag("smali_editor_line_$idx"),
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Text(
+                text = "${idx + 1}".padStart(4, ' '),
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = JetBrainsMonoFontFamily,
+                color =
+                  if (isSelected) MaterialTheme.colorScheme.primary
+                  else syntaxPalette.lineNumber,
+                modifier = Modifier.width(42.dp),
+              )
+              Text(
+                text = highlighted,
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = JetBrainsMonoFontFamily,
+                fontSize = 12.sp,
+              )
+            }
+          }
+        }
+      }
+    }
   }
 }
 

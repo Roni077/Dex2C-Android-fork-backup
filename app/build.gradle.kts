@@ -154,6 +154,7 @@ dependencies {
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.smali.dexlib2)
   implementation(libs.smali.baksmali)
+  implementation(libs.smali.assembler)
   // implementation(libs.logging.interceptor)
   // implementation(libs.moshi.kotlin)
   implementation(libs.okhttp)

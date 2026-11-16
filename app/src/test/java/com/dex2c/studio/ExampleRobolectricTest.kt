@@ -2700,11 +2700,11 @@ class ExampleRobolectricTest {
     assertTrue(cfg.filterRulesText.contains("com/crackme/.*;.*"))
 
     // Switch to FILTER RULES sub-tab and verify Whitelist/Blacklist cards and presets
-    composeTestRule.onNodeWithTag("classes_subtab_rules").performClick()
+    composeTestRule.onNodeWithTag("classes_subtab_rules").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("summary_card_whitelist").assertIsDisplayed()
     composeTestRule.onNodeWithTag("summary_card_blacklist").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("preset_lifecycle_onCreate").performClick()
+    composeTestRule.onNodeWithTag("preset_lifecycle_onCreate").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     assertTrue(cfg.filterRulesText.contains(".*;onCreate\\(.*"))
   }

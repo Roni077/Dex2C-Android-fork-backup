@@ -101,6 +101,7 @@ googleid = { group = "com.google.android.libraries.identity.googleid", name = "g
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 smali-dexlib2 = { group = "com.android.tools.smali", name = "smali-dexlib2", version.ref = "smali" }
 smali-baksmali = { group = "com.android.tools.smali", name = "smali-baksmali", version.ref = "smali" }
+smali-assembler = { group = "com.android.tools.smali", name = "smali", version.ref = "smali" }
 
 
 [plugins]

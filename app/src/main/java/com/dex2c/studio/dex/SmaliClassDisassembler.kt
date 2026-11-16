@@ -483,6 +483,13 @@ object SmaliClassDisassembler {
       this.implicitReferences = false
     }
 
+  fun getOrParseDexBackedFileStatic(
+    entryName: String,
+    sha1Hex: String,
+    rawBytes: ByteArray,
+    apiLevel: Int,
+  ): DexBackedDexFile = getOrParseDexBackedFile(entryName, sha1Hex, rawBytes, apiLevel)
+
   private fun getOrParseDexBackedFile(
     entryName: String,
     sha1Hex: String,
