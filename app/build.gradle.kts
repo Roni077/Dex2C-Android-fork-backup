@@ -35,7 +35,7 @@ android {
     val enableDexEditing =
       providers.gradleProperty("dex2c.enableDexEditing")
         .map { it.toBoolean() }
-        .getOrElse(false)
+        .getOrElse(true)
 
     buildConfigField("boolean", "ENABLE_DEX_EDITING", enableDexEditing.toString())
   }

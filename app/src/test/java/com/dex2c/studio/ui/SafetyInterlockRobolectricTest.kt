@@ -1,10 +1,12 @@
 package com.dex2c.studio.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexHeaderInfo
 import com.dex2c.studio.dex.DexParsedFile
@@ -123,6 +125,63 @@ class SafetyInterlockRobolectricTest {
 
     composeTestRule.onNodeWithTag("strings_editing_disabled_note").assertIsDisplayed()
     composeTestRule.onNodeWithTag("strings_replace_btn").assertIsNotEnabled()
+  }
+
+  @Test
+  fun testSmaliClassScreenAssemblyEnabledWhenFlagOn() {
+    val cls = createDummyClass()
+    val state = SmaliClassUiState.Ready(
+      dexClass = cls,
+      lines = listOf(".class public Lcom/example/MyClass;", ".super Ljava/lang/Object;"),
+      lineCount = 2,
+      methodCount = 0,
+      fieldCount = 0,
+      durationMs = 5L,
+    )
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        SmaliClassScreen(
+          state = state,
+          onCopySmali = {},
+          onExportSmali = { _, _ -> },
+          onBack = {},
+          dexEditingEnabled = true,
+        )
+      }
+    }
+
+    // Switch to edit mode
+    composeTestRule.onNodeWithTag("smali_mode_edit").performClick()
+    composeTestRule.waitForIdle()
+
+    // Banner must NOT be displayed
+    composeTestRule.onNodeWithTag("smali_assembly_disabled_banner").assertDoesNotExist()
+
+    // Assemble button must be enabled
+    composeTestRule.onNodeWithTag("smali_compile_dex_btn").assertIsEnabled()
+  }
+
+  @Test
+  fun testStringsExplorerTabEnabledWhenFlagOn() {
+    val dex = createDummyDex(listOf(createDummyClass()))
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        DexStringsExplorerTab(
+          parsedDex = dex,
+          onReplaceStringInDex = { _, _, _ -> },
+          onCopyString = {},
+          dexEditingEnabled = true,
+        )
+      }
+    }
+
+    composeTestRule.onNodeWithTag("strings_editing_disabled_note").assertDoesNotExist()
+    // When search query is entered, replace button is enabled
+    composeTestRule.onNodeWithTag("strings_explorer_search").performTextInput("hello")
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("strings_replace_btn").assertIsEnabled()
   }
 
   @Test

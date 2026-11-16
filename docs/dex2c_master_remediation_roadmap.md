@@ -36,7 +36,7 @@ This master document consolidates all issues, architectural bugs, security vulne
 | **#22** | Phase 4 | **Major** | Tooling | Repository Root | Missing `gradlew`, `gradlew.bat`, and `gradle-wrapper.jar` breaks CLI automation | `- [x]` |
 | **#23** | Phase 4 | **Major** | Tooling | Repository Root | Missing `local.properties` breaks command-line builds without `ANDROID_HOME` | `- [x]` |
 | **#24** | Phase 4 | **Medium** | Tooling / Test | `app/src/test/` | Test suite mocks compiler outputs; lacks Clang C++ compilation verification test | `- [x]` |
-| **#25** | Phase 5 | **Major** | Verification | Whole System | Full regression test suite and round-trip bytecode integrity verification | `- [ ]` |
+| **#25** | Phase 5 | **Major** | Verification | Whole System | Full regression test suite and round-trip bytecode integrity verification | `- [x]` |
 
 ---
 
@@ -196,22 +196,22 @@ This master document consolidates all issues, architectural bugs, security vulne
 
 **Goal**: Full verification of patched components, zero regressions, and complete end-to-end testing.
 
-- [ ] **Task 5.1: Execute Full Unit Test Suite**
+- [x] **Task 5.1: Execute Full Unit Test Suite**
   - **Command**: `gradle :app:testDebugUnitTest`
-  - **Expected Result**: 100% tests passing across all 7 test files.
+  - **Expected Result**: 100% tests passing across all 14 test files (112 tests total).
 
-- [ ] **Task 5.2: Verify Smali Re-Assembly Round-Trip**
+- [x] **Task 5.2: Verify Smali Re-Assembly Round-Trip**
   - **Action**: Parse a DEX, edit an instruction in Smali, compile via `SmaliDexCompiler`, and assert:
     - Target class exists in output DEX.
     - Updated instruction bytecode matches edited Smali.
     - Class count matches original DEX class count.
 
-- [ ] **Task 5.3: Verify C++ Switch CodeGen and JNI Guard Execution**
+- [x] **Task 5.3: Verify C++ Switch CodeGen and JNI Guard Execution**
   - **Action**: Transpile a class with `packed-switch` and `sparse-switch`, compile generated C++ with Android NDK Clang, and verify zero compiler warnings or errors.
 
-- [ ] **Task 5.4: Verify APK Repacking Alignment & Clean Signatures**
+- [x] **Task 5.4: Verify APK Repacking Alignment & Clean Signatures**
   - **Action**: Repack an APK, verify that `META-INF` digests are removed, and assert `zipalign -c 4` and `16KB` alignment succeed.
 
-- [ ] **Task 5.5: Update Safety Flag (`ENABLE_DEX_EDITING = true`)**
+- [x] **Task 5.5: Update Safety Flag (`ENABLE_DEX_EDITING = true`)**
   - **File**: `app/build.gradle.kts`
   - **Action**: Enable `ENABLE_DEX_EDITING` once Phase 1–4 validations pass.

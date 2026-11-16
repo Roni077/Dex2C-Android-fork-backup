@@ -2,6 +2,7 @@ package com.dex2c.studio.dex
 
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.dexbacked.instruction.DexBackedInstruction
 import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21c
@@ -243,6 +244,9 @@ object SmaliDexCompiler {
       )
 
       var replacementCount = 0
+      val seenInstructionOffsets = mutableSetOf<Int>()
+      val seenFallbackInstructions = java.util.Collections.newSetFromMap(java.util.IdentityHashMap<Instruction, Boolean>())
+      val seenRawEncodedValues = java.util.Collections.newSetFromMap(java.util.IdentityHashMap<EncodedValue, Boolean>())
 
       fun replaceInString(source: String): Pair<String, Int> {
         if (!source.contains(searchQuery, ignoreCase = ignoreCase)) {
@@ -269,6 +273,8 @@ object SmaliDexCompiler {
         override fun getInstructionRewriter(rewriters: Rewriters): Rewriter<Instruction> {
           val defaultRewriter = super.getInstructionRewriter(rewriters)
           return Rewriter { rawInsn ->
+            val offset = (rawInsn as? DexBackedInstruction)?.instructionStart
+            val isFirstVisit = if (offset != null) seenInstructionOffsets.add(offset) else seenFallbackInstructions.add(rawInsn)
             val insn = defaultRewriter.rewrite(rawInsn)
             when (insn.opcode) {
               Opcode.CONST_STRING -> {
@@ -277,7 +283,7 @@ object SmaliDexCompiler {
                 if (stringRef != null) {
                   val (newStr, count) = replaceInString(stringRef.string)
                   if (count > 0) {
-                    replacementCount += count
+                    if (isFirstVisit) replacementCount += count
                     ImmutableInstruction21c(Opcode.CONST_STRING, refInsn.registerA, ImmutableStringReference(newStr))
                   } else {
                     insn
@@ -292,7 +298,7 @@ object SmaliDexCompiler {
                 if (stringRef != null) {
                   val (newStr, count) = replaceInString(stringRef.string)
                   if (count > 0) {
-                    replacementCount += count
+                    if (isFirstVisit) replacementCount += count
                     ImmutableInstruction31c(Opcode.CONST_STRING_JUMBO, refInsn.registerA, ImmutableStringReference(newStr))
                   } else {
                     insn
@@ -309,11 +315,12 @@ object SmaliDexCompiler {
         override fun getEncodedValueRewriter(rewriters: Rewriters): Rewriter<EncodedValue> {
           val defaultRewriter = super.getEncodedValueRewriter(rewriters)
           return Rewriter { rawValue ->
+            val isFirstVisit = seenRawEncodedValues.add(rawValue)
             val value = defaultRewriter.rewrite(rawValue)
             if (value is StringEncodedValue) {
               val (newStr, count) = replaceInString(value.value)
               if (count > 0) {
-                replacementCount += count
+                if (isFirstVisit) replacementCount += count
                 ImmutableStringEncodedValue(newStr)
               } else {
                 value

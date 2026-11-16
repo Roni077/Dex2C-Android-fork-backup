@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\build.gradle.kts": {
-    "mtime": 1794831066.230031,
-    "ast_hash": "ebdf907a287905cb92aada0e75dd19f8",
+    "mtime": 1794841317.475918,
+    "ast_hash": "654d9da204f1f9b3d54f438dc7e444c6",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\androidTest\\java\\com\\dex2c\\studio\\ExampleInstrumentedTest.kt": {
@@ -130,8 +130,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\dex\\SmaliDexCompiler.kt": {
-    "mtime": 1794834389.1412191,
-    "ast_hash": "b9dd526c0d832836fa6f274f50428e62",
+    "mtime": 1794842137.9895558,
+    "ast_hash": "3782a00c43573b4250a6019df44e9dee",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\dex\\SmaliEditorEngine.kt": {
@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\dex2c_master_remediation_roadmap.md": {
-    "mtime": 1794839738.5409,
-    "ast_hash": "8c4b43f9a3f0c58a07924738ee613390",
+    "mtime": 1794842631.0657513,
+    "ast_hash": "f3ca718e3ef162844a2508a41ef76580",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\public\\assets\\aistudio\\0_dex2c-apk_ee5b4f33.txt": {
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ui\\SafetyInterlockRobolectricTest.kt": {
-    "mtime": 1794832734.2228754,
-    "ast_hash": "96fa6cb0d8acb8e90096b984564b244e",
+    "mtime": 1794842372.4901855,
+    "ast_hash": "93b58bc84110c7ad7b68877a30a7c9ff",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.agents\\rules\\graphify.md": {
@@ -862,6 +862,11 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\transpiler\\ClangSyntaxValidationTest.kt": {
     "mtime": 1794839619.6003177,
     "ast_hash": "e94669a32b8239576186137adf668012",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\verification\\Phase5VerificationTest.kt": {
+    "mtime": 1794842261.3464994,
+    "ast_hash": "3f204e88cac338aa28f719f5516d9197",
     "semantic_hash": ""
   }
 }
