@@ -60,13 +60,14 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1015 nodes, 1901 edges, 56 communities. Commit: 5ffa7a6</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1063 nodes, 1960 edges, 62 communities. Commit: 9360011</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
     <a href="#extract-pipeline">Extraction Pipeline</a>
     <a href="#build-graph">Graph Build</a>
     <a href="#analysis-clustering">Analysis &amp; Clustering</a>
+    <a href="#outputs-docs">Outputs &amp; Docs</a>
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#community-10">Community 10</a>
     <a href="#community-36">Community 36</a>
@@ -82,12 +83,14 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>946 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>957 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>7 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>12 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>37 nodes</small>")
+    class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>22 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
     COMMUNITY_10_48432F59("Community 10<br/><small>22 nodes</small>")
@@ -102,7 +105,8 @@ flowchart LR
     class COMMUNITY_63_C6650F45 module;
     EXTRACT_PIPELINE_5F350230 -.-> BUILD_GRAPH_321CBB04
     BUILD_GRAPH_321CBB04 -.-> ANALYSIS_CLUSTERING_C79796DA
-    ANALYSIS_CLUSTERING_C79796DA -.-> CLI_SKILLS_9964CBB8
+    ANALYSIS_CLUSTERING_C79796DA -.-> OUTPUTS_DOCS_ED82387C
+    OUTPUTS_DOCS_ED82387C -.-> CLI_SKILLS_9964CBB8
     CLI_SKILLS_9964CBB8 -.-> COMMUNITY_10_48432F59
     COMMUNITY_10_48432F59 -.-> COMMUNITY_36_F6473446
     COMMUNITY_36_F6473446 -.-> COMMUNITY_42_BA46CB2A
@@ -124,20 +128,20 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>946</td><td><code>16, 19, 15, 1, 0, 4, 20, 5, 21, 13, 6, 7, 25, 17, 8, 11, 12, 3, 14, 64, 2, 18, 23, 24, 26, 27, 34, 28, 48, 32, 22, 38, 39, 41, 43, 44, 45, 35, 51, 52, 54, 55, 56, 57, 58, 29</code></td></tr><tr><td>Graph Build</td><td>7</td><td><code>49, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>22</td><td><code>9</code></td></tr><tr><td>Community 10</td><td>22</td><td><code>10</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>957</td><td><code>16, 19, 0, 1, 18, 4, 20, 6, 5, 21, 13, 7, 17, 25, 8, 11, 12, 15, 26, 14, 23, 24, 27, 29, 48, 34, 2, 30, 28, 3, 32, 40, 33, 37, 38, 39, 47, 43, 44, 45, 41, 35, 46, 51, 52, 54, 55, 56, 57, 58, 50</code></td></tr><tr><td>Graph Build</td><td>7</td><td><code>49, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>37</td><td><code>22</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>22</td><td><code>9</code></td></tr><tr><td>Community 10</td><td>22</td><td><code>10</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; CLI &amp; Skill Installers -&gt; Community 10 -&gt; Community 36 -&gt; Community 42</div>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Community 10 -&gt; Community 36</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1015 nodes · 1901 edges · 56 communities (37 shown, 19 thin omitted)</li>
-      <li>Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 358 edges (avg confidence: 0.8)</li>
+      <li>1063 nodes · 1960 edges · 62 communities (39 shown, 23 thin omitted)</li>
+      <li>Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 365 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Dex2cViewModel` - 102 edges</li>
       <li>2. `TagPill()` - 40 edges</li>
@@ -148,12 +152,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 946 nodes and 1842 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 957 nodes and 1865 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (946 nodes, 1842 edges)
+    %% Section: Extraction Pipeline (957 nodes, 1865 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -189,7 +193,7 @@ flowchart LR
     apk_apkmetadatainspector_apkmetadatainspector_57261a53 -->|method| apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad
     apk_apkmetadatainspector_apkmetadatainspector_57261a53 -->|method| apk_apkmetadatainspector_apkmetadatainspector_in_bfc320be
     apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad -->|calls| apk_apkmetadatainspector_apkmetadatainspector_in_bfc320be
-    %% Omitted for readability: 928 nodes, 0 edges
+    %% Omitted for readability: 939 nodes, 0 edges
     class studio_mainactivity_navdestinationitem_e24ab693 klass;
     class studio_mainactivity_dex2capp_fbfa3080 function;
     class studio_mainactivity_mainactivity_8e09f945 klass;
@@ -231,14 +235,6 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>.append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>buildShorty()</code><br><small style="color:var(--muted)">studio/dex/SmaliClassDisassembler.kt</small><br><code>disassembleMethod()</code><br><small style="color:var(--muted)">studio/dex/SmaliClassDisassembler.kt</small><br><code>escape()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+4 more</td>
-  <td><code>emitMethodBody()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>highlightCLine()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small><br><code>highlightDalvikOperands()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small><br>+6 more</td>
-  <td>.append() node in studio/transpiler/Dex2cTranspiler.kt.</td>
-</tr>
-<tr>
-  <td>2</td>
   <td><code>ApkPickerSheet.kt</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -246,7 +242,7 @@ flowchart LR
   <td>ApkPickerSheet.kt node in ui/components/ApkPickerSheet.kt.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>2</td>
   <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>Dex2cApp()</code><br><small style="color:var(--muted)">dex2c/studio/MainActivity.kt</small></td>
@@ -254,7 +250,7 @@ flowchart LR
   <td>ApkPickerSheet() node in ui/components/ApkPickerSheet.kt.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>3</td>
   <td><code>StoragePickerTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
@@ -262,7 +258,7 @@ flowchart LR
   <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>4</td>
   <td><code>InstalledAppsTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
@@ -270,7 +266,7 @@ flowchart LR
   <td>InstalledAppsTab() node in ui/components/ApkPickerSheet.kt.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>5</td>
   <td><code>InstalledAppRow()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>InstalledAppsTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
@@ -278,7 +274,7 @@ flowchart LR
   <td>InstalledAppRow() node in ui/components/ApkPickerSheet.kt.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>6</td>
   <td><code>RecentBinariesTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
@@ -286,7 +282,7 @@ flowchart LR
   <td>RecentBinariesTab() node in ui/components/ApkPickerSheet.kt.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>7</td>
   <td><code>formatApkSize()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>InstalledAppRow()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small><br><code>RecentBinariesTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
@@ -294,7 +290,7 @@ flowchart LR
   <td>formatApkSize() node in ui/components/ApkPickerSheet.kt.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>8</td>
   <td><code>ApkPreviewSheet.kt</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -302,7 +298,7 @@ flowchart LR
   <td>ApkPreviewSheet.kt node in ui/components/ApkPreviewSheet.kt.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>9</td>
   <td><code>ApkPreviewSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>Dex2cApp()</code><br><small style="color:var(--muted)">dex2c/studio/MainActivity.kt</small></td>
@@ -310,7 +306,7 @@ flowchart LR
   <td>ApkPreviewSheet() node in ui/components/ApkPreviewSheet.kt.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>10</td>
   <td><code>PreviewReadyContent()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ApkPreviewSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small><br><code>formatApkSize()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
@@ -318,7 +314,55 @@ flowchart LR
   <td>PreviewReadyContent() node in ui/components/ApkPreviewSheet.kt.</td>
 </tr>
 <tr>
+  <td>11</td>
+  <td><code>BuildMonitorCard.kt</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BuildMonitorCard.kt node in ui/components/BuildMonitorCard.kt.</td>
+</tr>
+<tr>
   <td>12</td>
+  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>`onboarding github card shows inline repo initialization status and BuildMonitor shows reconnecting and retry`()</code><br><small style="color:var(--muted)">dex2c/studio/ExampleRobolectricTest.kt</small><br><code>CloudBuildScreen()</code><br><small style="color:var(--muted)">ui/screens/CloudBuildScreen.kt</small><br><code>formatArtifactBytes()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small><br>+3 more</td>
+  <td>BuildMonitorCard() node in ui/components/BuildMonitorCard.kt.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>MonitorGaugeBlock()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
+  <td>MonitorGaugeBlock() node in ui/components/BuildMonitorCard.kt.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>StepProgressList()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>StepProgressList() node in ui/components/BuildMonitorCard.kt.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>TransferProgressPanel()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>TransferProgressPanel() node in ui/components/BuildMonitorCard.kt.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>formatArtifactBytes()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>formatArtifactBytes() node in ui/components/BuildMonitorCard.kt.</td>
+</tr>
+<tr>
+  <td>17</td>
   <td><code>BytecodeOverviewCard.kt</code><br><small style="color:var(--muted)">ui/components/BytecodeOverviewCard.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -326,7 +370,7 @@ flowchart LR
   <td>BytecodeOverviewCard.kt node in ui/components/BytecodeOverviewCard.kt.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>18</td>
   <td><code>BytecodeOverviewCard()</code><br><small style="color:var(--muted)">ui/components/BytecodeOverviewCard.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -334,7 +378,7 @@ flowchart LR
   <td>BytecodeOverviewCard() node in ui/components/BytecodeOverviewCard.kt.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>19</td>
   <td><code>OverviewStatBox()</code><br><small style="color:var(--muted)">ui/components/BytecodeOverviewCard.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>BytecodeOverviewCard()</code><br><small style="color:var(--muted)">ui/components/BytecodeOverviewCard.kt</small></td>
@@ -342,7 +386,7 @@ flowchart LR
   <td>OverviewStatBox() node in ui/components/BytecodeOverviewCard.kt.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>20</td>
   <td><code>TopClassDefinitionRow()</code><br><small style="color:var(--muted)">ui/components/BytecodeOverviewCard.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>BytecodeOverviewCard()</code><br><small style="color:var(--muted)">ui/components/BytecodeOverviewCard.kt</small></td>
@@ -350,7 +394,7 @@ flowchart LR
   <td>TopClassDefinitionRow() node in ui/components/BytecodeOverviewCard.kt.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>21</td>
   <td><code>CfgViewer.kt</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -358,7 +402,7 @@ flowchart LR
   <td>CfgViewer.kt node in ui/components/CfgViewer.kt.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>22</td>
   <td><code>DalvikCfgViewer()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -366,7 +410,7 @@ flowchart LR
   <td>DalvikCfgViewer() node in ui/components/CfgViewer.kt.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>23</td>
   <td><code>BasicBlockCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DalvikCfgViewer()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
@@ -374,7 +418,7 @@ flowchart LR
   <td>BasicBlockCard() node in ui/components/CfgViewer.kt.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>24</td>
   <td><code>CfgEdgePill()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>BasicBlockCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
@@ -382,52 +426,12 @@ flowchart LR
   <td>CfgEdgePill() node in ui/components/CfgViewer.kt.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>25</td>
   <td><code>PayloadDetailCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DalvikCfgViewer()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
   <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
   <td>PayloadDetailCard() node in ui/components/CfgViewer.kt.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>CodeViewer.kt</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>CodeViewer.kt node in ui/components/CodeViewer.kt.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>SyntaxCodeViewer()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>highlightCLine()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small><br><code>MethodDetailScreen()</code><br><small style="color:var(--muted)">ui/screens/MethodDetailScreen.kt</small><br><code>OutputExportScreen()</code><br><small style="color:var(--muted)">ui/screens/OutputExportScreen.kt</small><br>+3 more</td>
-  <td>SyntaxCodeViewer() node in ui/components/CodeViewer.kt.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>DalvikInstructionViewer()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>highlightDalvikOperands()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small><br><code>MethodDetailScreen()</code><br><small style="color:var(--muted)">ui/screens/MethodDetailScreen.kt</small></td>
-  <td>DalvikInstructionViewer() node in ui/components/CodeViewer.kt.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>highlightCLine()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td><span class="tag tag-cmd">Entry</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>SyntaxCodeViewer()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>highlightCLine() node in ui/components/CodeViewer.kt.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>highlightDalvikOperands()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>DalvikInstructionViewer()</code><br><small style="color:var(--muted)">ui/components/CodeViewer.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>highlightDalvikOperands() node in ui/components/CodeViewer.kt.</td>
 </tr>
 <tr>
   <td>26</td>
@@ -488,7 +492,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x615, method x483, contains x386. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x622, method x483, contains x395. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -794,8 +798,348 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 5. CLI & Skill Installers ====== -->
-<h2 id="cli-skills">5. CLI &amp; Skill Installers</h2>
+<!-- ====== 5. Outputs & Docs ====== -->
+<h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
+<p>Outputs &amp; Docs groups implementation around detailed, workflow, app, usagesmd, mostly in docs/detailed_app_workflow_and_usages.md. This section covers 37 nodes and 36 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Outputs &amp; Docs (37 nodes, 36 edges)
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b("3. Deep-Dive Operational Workflows (Ste...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a("4. Real-World Practical Usage Recipes<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7("Dex2C Studio — Comprehensive Applicatio...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc("Phase 1: Binary Selection &amp; Multi-DEX S...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_phase_2_in_7ce897f0("Phase 2: In-Memory DEX Parsing &amp; Header...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_phase_4_in_8ce56d31("Phase 4: Interactive Smali Disassembly,...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2("Phase 5: Dalvik Control Flow Graph (CFG...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604("Phase 7: Patched DEX &amp; 16KB-Aligned APK...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1("Phase 8: Zero-NDK Remote Cloud CI via G...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_1_high_lev_cdae563f("1. High-Level System Architecture &amp; In-...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_2_user_nav_57ce7e6f("2. User Navigation &amp; Screen State Machine<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_recipe_2_l_fe284597("Recipe 2: Live In-Memory Smali Patching...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_5_performa_1476d2a3("5. Performance &amp; Memory Safeguards Summary<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_detailed_o_18ff107d("Detailed Operational Steps:<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_detailed_o_ad8b0e91("Detailed Operational Steps:<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_detailed_o_2961830f("Detailed Operational Steps:<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_detailed_o_eeb116b6("Detailed Operational Steps:<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_detailed_o_941f6bad("Detailed Operational Steps:<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
+    docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_1_high_lev_cdae563f
+    docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_2_user_nav_57ce7e6f
+    docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b
+    docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a
+    docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_5_performa_1476d2a3
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_2_in_7ce897f0
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_4_in_8ce56d31
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604
+    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1
+    docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc -->|contains| docs_detailed_app_workflow_and_usages_detailed_o_18ff107d
+    docs_detailed_app_workflow_and_usages_phase_2_in_7ce897f0 -->|contains| docs_detailed_app_workflow_and_usages_detailed_o_ad8b0e91
+    docs_detailed_app_workflow_and_usages_phase_4_in_8ce56d31 -->|contains| docs_detailed_app_workflow_and_usages_detailed_o_2961830f
+    docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2 -->|contains| docs_detailed_app_workflow_and_usages_detailed_o_eeb116b6
+    docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604 -->|contains| docs_detailed_app_workflow_and_usages_detailed_o_941f6bad
+    docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a -->|contains| docs_detailed_app_workflow_and_usages_recipe_2_l_fe284597
+    %% Omitted for readability: 19 nodes, 0 edges
+    class docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b concept;
+    class docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a concept;
+    class docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 concept;
+    class docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc concept;
+    class docs_detailed_app_workflow_and_usages_phase_2_in_7ce897f0 concept;
+    class docs_detailed_app_workflow_and_usages_phase_4_in_8ce56d31 concept;
+    class docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2 concept;
+    class docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604 concept;
+    class docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1 concept;
+    class docs_detailed_app_workflow_and_usages_1_high_lev_cdae563f concept;
+    class docs_detailed_app_workflow_and_usages_2_user_nav_57ce7e6f concept;
+    class docs_detailed_app_workflow_and_usages_recipe_2_l_fe284597 concept;
+    class docs_detailed_app_workflow_and_usages_5_performa_1476d2a3 concept;
+    class docs_detailed_app_workflow_and_usages_detailed_o_18ff107d concept;
+    class docs_detailed_app_workflow_and_usages_detailed_o_ad8b0e91 concept;
+    class docs_detailed_app_workflow_and_usages_detailed_o_2961830f concept;
+    class docs_detailed_app_workflow_and_usages_detailed_o_eeb116b6 concept;
+    class docs_detailed_app_workflow_and_usages_detailed_o_941f6bad concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>detailed_app_workflow_and_usages.md</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing detailed_app_workflow_and_usages.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Dex2C Studio — Comprehensive Application Workflow &amp; Usages Blueprint</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Dex2C Studio — Comprehensive Application Workflow &amp; Usages Blueprint.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Overview</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Overview.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>1. High-Level System Architecture &amp; In-Memory Data Pipeline</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. High-Level System Architecture &amp; In-Memory Data Pipeline.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>code:mermaid (flowchart TD)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (flowchart TD).</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>2. User Navigation &amp; Screen State Machine</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. User Navigation &amp; Screen State Machine.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>code:mermaid (stateDiagram-v2)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (stateDiagram-v2).</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>3. Deep-Dive Operational Workflows (Step-by-Step)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Deep-Dive Operational Workflows (Step-by-Step).</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Phase 1: Binary Selection &amp; Multi-DEX Staging</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 1: Binary Selection &amp; Multi-DEX Staging.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>code:mermaid (sequenceDiagram)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (sequenceDiagram).</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Detailed Operational Steps:</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detailed Operational Steps:.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Phase 2: In-Memory DEX Parsing &amp; Header Audit</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 2: In-Memory DEX Parsing &amp; Header Audit.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>code:mermaid (flowchart TD)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (flowchart TD).</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Detailed Operational Steps:</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detailed Operational Steps:.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Phase 3: DEX Explorer, Global Search &amp; Constant Inspection</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 3: DEX Explorer, Global Search &amp; Constant Inspection.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Phase 4: Interactive Smali Disassembly, Editing &amp; In-Memory DEX Assembly</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 4: Interactive Smali Disassembly, Editing &amp; In-Memory DEX Assembly.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>code:mermaid (flowchart LR)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (flowchart LR).</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Detailed Operational Steps:</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detailed Operational Steps:.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Phase 5: Dalvik Control Flow Graph (CFG) &amp; C++17 Transpiler</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 5: Dalvik Control Flow Graph (CFG) &amp; C++17 Transpiler.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>code:mermaid (flowchart TD)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (flowchart TD).</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Detailed Operational Steps:</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detailed Operational Steps:.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Phase 6: Build Hub (Pipeline Configuration &amp; Local NDK Export)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 6: Build Hub (Pipeline Configuration &amp; Local NDK Export).</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Phase 7: Patched DEX &amp; 16KB-Aligned APK Repackaging</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 7: Patched DEX &amp; 16KB-Aligned APK Repackaging.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>code:mermaid (flowchart LR)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (flowchart LR).</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Detailed Operational Steps:</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detailed Operational Steps:.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Phase 8: Zero-NDK Remote Cloud CI via GitHub Actions</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Phase 8: Zero-NDK Remote Cloud CI via GitHub Actions.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>code:mermaid (sequenceDiagram)</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (sequenceDiagram).</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Detailed Operational Steps:</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detailed Operational Steps:.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>4. Real-World Practical Usage Recipes</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Real-World Practical Usage Recipes.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Recipe 1: Triage &amp; Audit an Unknown Commercial APK</code><br><small style="color:var(--muted)">docs/detailed_app_workflow_and_usages.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Recipe 1: Triage &amp; Audit an Unknown Commercial APK.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/detailed_app_workflow_and_usages.md</code></td><td>37 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x36. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">6. CLI &amp; Skill Installers</h2>
 <p>CLI &amp; Skill Installers groups implementation around workflowmd, app, assets, workflow, mostly in main/assets/WORKFLOW.md. This section covers 22 nodes and 21 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1070,8 +1414,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 6. Community 10 ====== -->
-<h2 id="community-10">6. Community 10</h2>
+<!-- ====== 7. Community 10 ====== -->
+<h2 id="community-10">7. Community 10</h2>
 <p>Community 10 groups implementation around workflowmd, workflow, architecture, phase, mostly in WORKFLOW.md. This section covers 22 nodes and 21 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1346,8 +1690,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Community 36 ====== -->
-<h2 id="community-36">7. Community 36</h2>
+<!-- ====== 8. Community 36 ====== -->
+<h2 id="community-36">8. Community 36</h2>
 <p>Community 36 groups implementation around graphifymd, agents, rules, graphify, mostly in .agents/rules/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1413,8 +1757,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 8. Community 42 ====== -->
-<h2 id="community-42">8. Community 42</h2>
+<!-- ====== 9. Community 42 ====== -->
+<h2 id="community-42">9. Community 42</h2>
 <p>Community 42 groups implementation around graphifymd, agents, workflows, workflow, mostly in .agents/workflows/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1480,8 +1824,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. Community 61 ====== -->
-<h2 id="community-61">9. Community 61</h2>
+<!-- ====== 10. Community 61 ====== -->
+<h2 id="community-61">10. Community 61</h2>
 <p>Community 61 groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1536,8 +1880,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. Community 63 ====== -->
-<h2 id="community-63">10. Community 63</h2>
+<!-- ====== 11. Community 63 ====== -->
+<h2 id="community-63">11. Community 63</h2>
 <p>Community 63 groups implementation around typekt, app, com, dex2c, mostly in ui/theme/Type.kt. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1598,18 +1942,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1015</td></tr>
-      <tr><td>Edges</td><td>1901</td></tr>
+      <tr><td>Nodes</td><td>1063</td></tr>
+      <tr><td>Edges</td><td>1960</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>56</td></tr>
-      <tr><td>Documented Sections</td><td>9</td></tr>
+      <tr><td>Communities</td><td>62</td></tr>
+      <tr><td>Documented Sections</td><td>10</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1543</td></tr>
-      <tr><td>INFERRED</td><td>358</td></tr>
+      <tr><td>EXTRACTED</td><td>1595</td></tr>
+      <tr><td>INFERRED</td><td>365</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -1617,7 +1961,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-16 15:24 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-16 16:32 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
