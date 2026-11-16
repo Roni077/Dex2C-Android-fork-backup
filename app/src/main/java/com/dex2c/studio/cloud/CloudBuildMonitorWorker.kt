@@ -30,7 +30,7 @@ class CloudBuildMonitorWorker(
 
     val owner = settings.effectiveOwner
     val repo = settings.repoName
-    val client = GitHubApiClient()
+    val client = GitHubApiClient(isDohEnabled = { settings.dohFallbackEnabled })
     val pollMs = settings.pollIntervalSeconds.coerceIn(5, 30) * 1000L
 
     // Poll up to ~8 minutes per WorkManager execution slice before rescheduling

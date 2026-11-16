@@ -246,7 +246,7 @@ data class CloudApkChoice(
 
 class Dex2cViewModel @JvmOverloads constructor(
   application: Application,
-  private val gitHubClient: GitHubApiClient = GitHubApiClient(),
+  gitHubClient: GitHubApiClient? = null,
 ) : AndroidViewModel(application) {
 
   private val prefs = TranspilerPreferences(application)
@@ -329,6 +329,9 @@ class Dex2cViewModel @JvmOverloads constructor(
   // GitHub Device Flow & Cloud Build orchestration states
   private val _cloudSettings = MutableStateFlow(CloudSettings())
   val cloudSettings: StateFlow<CloudSettings> = _cloudSettings.asStateFlow()
+
+  private val gitHubClient: GitHubApiClient =
+    gitHubClient ?: GitHubApiClient(isDohEnabled = { _cloudSettings.value.dohFallbackEnabled })
 
   private val _deviceAuthState = MutableStateFlow<DeviceAuthState>(DeviceAuthState.Idle)
   val deviceAuthState: StateFlow<DeviceAuthState> = _deviceAuthState.asStateFlow()

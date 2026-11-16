@@ -30,9 +30,9 @@ This master document consolidates all issues, architectural bugs, security vulne
 | **#16** | Phase 2 | **Major** | Transpiler | `Dex2cTranspiler.kt:1285-1289` | Static JNI symbol naming collides on overloaded methods (`Java_pkg_Cls_method`) | `- [x]` |
 | **#17** | Phase 2 | **Major** | Transpiler | `Dex2cTranspiler.kt:1006-1031` | JNI local reference exhaustion on long methods (exceeds ART 512 table limit) | `- [x]` |
 | **#18** | Phase 2 | **Minor** | Decompiler | `SmaliJavaDecompiler.kt:99-108` | Class Java preview outputs dummy method bodies (`// TODO: method body`, `return 0;`) | `- [x]` |
-| **#19** | Phase 3 | **Critical** | Security | `CloudPreferences.kt:21` | GitHub personal OAuth access token stored in plaintext inside DataStore | `- [ ]` |
-| **#20** | Phase 3 | **Critical** | Security | `AndroidManifest.xml:17` | `allowBackup="true"` with blank rules leaks OAuth token to Google Cloud Auto-Backup | `- [ ]` |
-| **#21** | Phase 3 | **Medium** | Network | `NetworkResilience.kt:73-100` | `ResilientGitHubDns` bypasses VPN/system DNS via hardcoded DoH without user toggle | `- [ ]` |
+| **#19** | Phase 3 | **Critical** | Security | `CloudPreferences.kt:21` | GitHub personal OAuth access token stored in plaintext inside DataStore | `- [x]` |
+| **#20** | Phase 3 | **Critical** | Security | `AndroidManifest.xml:17` | `allowBackup="true"` with blank rules leaks OAuth token to Google Cloud Auto-Backup | `- [x]` |
+| **#21** | Phase 3 | **Medium** | Network | `NetworkResilience.kt:73-100` | `ResilientGitHubDns` bypasses VPN/system DNS via hardcoded DoH without user toggle | `- [x]` |
 | **#22** | Phase 4 | **Major** | Tooling | Repository Root | Missing `gradlew`, `gradlew.bat`, and `gradle-wrapper.jar` breaks CLI automation | `- [ ]` |
 | **#23** | Phase 4 | **Major** | Tooling | Repository Root | Missing `local.properties` breaks command-line builds without `ANDROID_HOME` | `- [ ]` |
 | **#24** | Phase 4 | **Medium** | Tooling / Test | `app/src/test/` | Test suite mocks compiler outputs; lacks Clang C++ compilation verification test | `- [ ]` |
@@ -150,7 +150,7 @@ This master document consolidates all issues, architectural bugs, security vulne
 
 **Goal**: Seal credential leakage pathways and ensure compliance with Android security best practices.
 
-- [ ] **Task 3.1: Exclude Cloud Preferences from Android Auto-Backup**
+- [x] **Task 3.1: Exclude Cloud Preferences from Android Auto-Backup**
   - **Files**:
     - [`app/src/main/res/xml/backup_rules.xml`](file:///C:/Users/roni2/Downloads/Github-Projects/Dex2c-Android/app/src/main/res/xml/backup_rules.xml)
     - [`app/src/main/res/xml/data_extraction_rules.xml`](file:///C:/Users/roni2/Downloads/Github-Projects/Dex2c-Android/app/src/main/res/xml/data_extraction_rules.xml)
@@ -159,11 +159,11 @@ This master document consolidates all issues, architectural bugs, security vulne
     <exclude domain="sharedpref" path="dex2c_cloud_prefs.preferences_pb" />
     ```
 
-- [ ] **Task 3.2: Encrypt Sensitive GitHub OAuth Tokens at Rest**
+- [x] **Task 3.2: Encrypt Sensitive GitHub OAuth Tokens at Rest**
   - **File**: [`app/src/main/java/com/dex2c/studio/data/CloudPreferences.kt`](file:///C:/Users/roni2/Downloads/Github-Projects/Dex2c-Android/app/src/main/java/com/dex2c/studio/data/CloudPreferences.kt)
   - **Action**: Integrate Android Keystore or AES-GCM encryption for `github_access_token` so credentials are never stored in raw plaintext on disk.
 
-- [ ] **Task 3.3: Add Settings Toggle for DNS-over-HTTPS (DoH) Fallback**
+- [x] **Task 3.3: Add Settings Toggle for DNS-over-HTTPS (DoH) Fallback**
   - **Files**:
     - [`app/src/main/java/com/dex2c/studio/cloud/NetworkResilience.kt`](file:///C:/Users/roni2/Downloads/Github-Projects/Dex2c-Android/app/src/main/java/com/dex2c/studio/cloud/NetworkResilience.kt)
     - [`app/src/main/java/com/dex2c/studio/ui/screens/SettingsScreen.kt`](file:///C:/Users/roni2/Downloads/Github-Projects/Dex2c-Android/app/src/main/java/com/dex2c/studio/ui/screens/SettingsScreen.kt)

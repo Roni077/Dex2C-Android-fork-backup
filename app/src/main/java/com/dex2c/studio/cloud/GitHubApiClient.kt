@@ -37,7 +37,8 @@ data class GitHubRepoInfo(
 class GitHubApiClient(
   private val oauthBaseUrl: String = "https://github.com",
   private val apiBaseUrl: String = "https://api.github.com",
-  private val httpClient: OkHttpClient = defaultClient(),
+  private val isDohEnabled: () -> Boolean = { false },
+  private val httpClient: OkHttpClient = defaultClient(isDohEnabled),
 ) {
 
   private val noRedirectClient: OkHttpClient by lazy {
@@ -534,9 +535,9 @@ class GitHubApiClient(
   companion object {
     private val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
 
-    private fun defaultClient(): OkHttpClient =
+    fun defaultClient(isDohEnabled: () -> Boolean = { false }): OkHttpClient =
       OkHttpClient.Builder()
-        .dns(ResilientGitHubDns())
+        .dns(ResilientGitHubDns(isDohEnabled = isDohEnabled))
         .retryOnConnectionFailure(true)
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)

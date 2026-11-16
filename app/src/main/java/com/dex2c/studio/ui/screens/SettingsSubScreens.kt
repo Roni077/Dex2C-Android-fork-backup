@@ -718,6 +718,18 @@ fun SettingsGitHubCloudSubScreen(
         }
       }
     }
+
+    item {
+      SubScreenCard(title = "Network & DNS Resilience", icon = Icons.Rounded.CloudQueue) {
+        SettingsToggleRow(
+          title = "DNS-over-HTTPS (DoH) Fallback",
+          subtitle = "Query Cloudflare (1.1.1.1) and Google (8.8.8.8) if system DNS resolution fails. Keep disabled when using corporate or private VPNs.",
+          checked = cloudSettings.dohFallbackEnabled,
+          onCheckedChange = { enabled -> onUpdateCloudSettings { it.copy(dohFallbackEnabled = enabled) } },
+          testTag = "settings_doh_fallback_switch",
+        )
+      }
+    }
   }
 }
 

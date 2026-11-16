@@ -32,6 +32,7 @@ data class CloudSettings(
   val maxDirectUploadMb: Int = 45,
   val notificationsEnabled: Boolean = true,
   val lastNotifiedRunId: Long = 0L,
+  val dohFallbackEnabled: Boolean = false,
 ) {
   val isAuthenticated: Boolean get() = accessToken.isNotBlank() && githubUsername.isNotBlank()
   val effectiveOwner: String get() = repoOwner.ifBlank { githubUsername }

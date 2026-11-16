@@ -26,10 +26,11 @@ import okhttp3.Request
  *
  * Order of resolution:
  * 1. System DNS (with IPv4 prioritized first to prevent stalled IPv6 sockets)
- * 2. Quick second System DNS retry after brief pause
- * 3. Direct IP-literal DNS-over-HTTPS fallback (1.1.1.1 & 8.8.8.8)
+ * 2. Immediate second System DNS retry for transient Android netd blips
+ * 3. Direct IP-literal DNS-over-HTTPS fallback (1.1.1.1 & 8.8.8.8) ONLY when opted in via user toggle
  */
 class ResilientGitHubDns(
+  private val isDohEnabled: () -> Boolean = { false },
   private val dohClient: OkHttpClient = defaultDohClient(),
 ) : Dns {
 
@@ -51,20 +52,20 @@ class ResilientGitHubDns(
         e
       }
 
-    // Brief pause and second system DNS attempt for transient Android netd blips
+    // Immediate second system DNS attempt without thread sleep for transient Android netd blips
     try {
-      Thread.sleep(150L)
       val retryAddrs = Dns.SYSTEM.lookup(trimmed)
       if (retryAddrs.isNotEmpty()) return prioritizeIpv4(retryAddrs)
-    } catch (_: InterruptedException) {
-      Thread.currentThread().interrupt()
     } catch (_: UnknownHostException) {
-      // Fall through to DoH
+      // System DNS failed
     }
 
-    val dohAddrs = resolveViaDoh(trimmed)
-    if (dohAddrs.isNotEmpty()) {
-      return dohAddrs
+    // Query DoH endpoints (1.1.1.1 & 8.8.8.8) ONLY if the user explicitly enabled DoH fallback
+    if (isDohEnabled()) {
+      val dohAddrs = resolveViaDoh(trimmed)
+      if (dohAddrs.isNotEmpty()) {
+        return dohAddrs
+      }
     }
 
     throw firstError ?: UnknownHostException("Unable to resolve host \"$trimmed\"")

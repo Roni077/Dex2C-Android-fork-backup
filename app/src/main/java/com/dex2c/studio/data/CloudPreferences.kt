@@ -14,7 +14,10 @@ import kotlinx.coroutines.flow.map
 
 private val Context.cloudDataStore by preferencesDataStore(name = "dex2c_cloud_prefs")
 
-class CloudPreferences(private val context: Context) {
+class CloudPreferences(
+  private val context: Context,
+  private val tokenEncryptor: TokenEncryptor = KeystoreTokenEncryptor(),
+) {
 
   private object Keys {
     val CLIENT_ID = stringPreferencesKey("github_client_id")
@@ -32,14 +35,20 @@ class CloudPreferences(private val context: Context) {
     val MAX_UPLOAD_MB = intPreferencesKey("max_direct_upload_mb")
     val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
     val LAST_NOTIFIED_RUN_ID = longPreferencesKey("last_notified_run_id")
+    val DOH_FALLBACK_ENABLED = booleanPreferencesKey("doh_fallback_enabled")
   }
 
   val settingsFlow: Flow<CloudSettings> =
     context.cloudDataStore.data.map { prefs ->
       val defaults = CloudSettings()
+      val storedToken = prefs[Keys.ACCESS_TOKEN].orEmpty()
+      val decryptedToken =
+        if (storedToken.isBlank()) ""
+        else runCatching { tokenEncryptor.decrypt(storedToken) }.getOrDefault("")
+
       CloudSettings(
         githubClientId = prefs[Keys.CLIENT_ID] ?: defaults.githubClientId,
-        accessToken = prefs[Keys.ACCESS_TOKEN] ?: defaults.accessToken,
+        accessToken = decryptedToken,
         githubUsername = prefs[Keys.USERNAME] ?: defaults.githubUsername,
         repoOwner = prefs[Keys.REPO_OWNER] ?: defaults.repoOwner,
         repoName = prefs[Keys.REPO_NAME] ?: defaults.repoName,
@@ -55,13 +64,18 @@ class CloudPreferences(private val context: Context) {
         maxDirectUploadMb = prefs[Keys.MAX_UPLOAD_MB] ?: defaults.maxDirectUploadMb,
         notificationsEnabled = prefs[Keys.NOTIFICATIONS_ENABLED] ?: defaults.notificationsEnabled,
         lastNotifiedRunId = prefs[Keys.LAST_NOTIFIED_RUN_ID] ?: defaults.lastNotifiedRunId,
+        dohFallbackEnabled = prefs[Keys.DOH_FALLBACK_ENABLED] ?: defaults.dohFallbackEnabled,
       )
     }
 
   suspend fun saveSettings(settings: CloudSettings) {
+    val encryptedToken =
+      if (settings.accessToken.isBlank()) ""
+      else runCatching { tokenEncryptor.encrypt(settings.accessToken) }.getOrDefault("")
+
     context.cloudDataStore.edit { prefs ->
       prefs[Keys.CLIENT_ID] = settings.githubClientId
-      prefs[Keys.ACCESS_TOKEN] = settings.accessToken
+      prefs[Keys.ACCESS_TOKEN] = encryptedToken
       prefs[Keys.USERNAME] = settings.githubUsername
       prefs[Keys.REPO_OWNER] = settings.repoOwner
       prefs[Keys.REPO_NAME] = settings.repoName
@@ -75,6 +89,7 @@ class CloudPreferences(private val context: Context) {
       prefs[Keys.MAX_UPLOAD_MB] = settings.maxDirectUploadMb
       prefs[Keys.NOTIFICATIONS_ENABLED] = settings.notificationsEnabled
       prefs[Keys.LAST_NOTIFIED_RUN_ID] = settings.lastNotifiedRunId
+      prefs[Keys.DOH_FALLBACK_ENABLED] = settings.dohFallbackEnabled
     }
   }
 
