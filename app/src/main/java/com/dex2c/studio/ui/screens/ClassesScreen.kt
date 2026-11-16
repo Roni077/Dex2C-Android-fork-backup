@@ -39,7 +39,9 @@ import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.UnfoldLess
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
@@ -409,6 +411,71 @@ fun ClassesScreen(
   val hasAnyExpandedPackage =
     viewMode == ClassesViewMode.TREE &&
       visibleRows.any { it is ExplorerRowItem.PackageRow && it.expanded }
+
+  var pendingDeleteClass by remember { mutableStateOf<DexClassInfo?>(null) }
+
+  if (pendingDeleteClass != null) {
+    val targetClass = pendingDeleteClass!!
+    AlertDialog(
+      onDismissRequest = { pendingDeleteClass = null },
+      title = { Text("Delete class from DEX?") },
+      text = {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text(
+            text = "Are you sure you want to permanently delete this class from ${targetClass.sourceEntryName.ifBlank { "active DEX" }}?",
+            style = MaterialTheme.typography.bodyMedium,
+          )
+          Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            Column(modifier = Modifier.padding(8.dp)) {
+              Text(
+                text = targetClass.fullName,
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = JetBrainsMonoFontFamily,
+                fontWeight = FontWeight.Bold,
+              )
+              Text(
+                text = targetClass.descriptor,
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = JetBrainsMonoFontFamily,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+          Text(
+            text = "Warning: References to this class from other classes will not be automatically rewritten.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+          )
+        }
+      },
+      confirmButton = {
+        Button(
+          onClick = {
+            val toDelete = targetClass
+            pendingDeleteClass = null
+            onDeleteDexClass(toDelete)
+          },
+          colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+          modifier = Modifier.testTag("delete_class_confirm_btn"),
+        ) {
+          Text("Delete", color = MaterialTheme.colorScheme.onError)
+        }
+      },
+      dismissButton = {
+        TextButton(
+          onClick = { pendingDeleteClass = null },
+          modifier = Modifier.testTag("delete_class_cancel_btn"),
+        ) {
+          Text("Cancel")
+        }
+      },
+      modifier = Modifier.testTag("delete_class_dialog"),
+    )
+  }
 
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     Column(modifier = Modifier.fillMaxSize().widthIn(max = 840.dp)) {
@@ -1054,7 +1121,7 @@ fun ClassesScreen(
                     onToggleClassSelect = { onToggleClassSelection(item.dexClass) },
                     onWhitelistClass = { onQuickClassRule(item.dexClass, false) },
                     onBlacklistClass = { onQuickClassRule(item.dexClass, true) },
-                    onDeleteClass = { onDeleteDexClass(item.dexClass) },
+                    onDeleteClass = { pendingDeleteClass = item.dexClass },
                     onOpenSmali = { onInspectClassSmali(item.dexClass) },
                   )
                 }
@@ -1459,7 +1526,7 @@ private fun CompactClassRow(
       Spacer(Modifier.width(2.dp))
       IconButton(
         onClick = onDeleteClass,
-        modifier = Modifier.size(28.dp).testTag("class_delete_btn_${dexClass.classIndex}"),
+        modifier = Modifier.minimumInteractiveComponentSize().size(40.dp).testTag("class_delete_btn_${dexClass.classIndex}"),
       ) {
         Icon(
           imageVector = Icons.Rounded.DeleteOutline,

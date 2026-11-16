@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.dex2c.studio.BuildConfig
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.DexParsedFile
@@ -228,14 +230,46 @@ fun DexStringsExplorerTab(
   onReplaceStringInDex: (searchQuery: String, replacement: String, ignoreCase: Boolean) -> Unit,
   onCopyString: (String) -> Unit,
   modifier: Modifier = Modifier,
+  dexEditingEnabled: Boolean = BuildConfig.ENABLE_DEX_EDITING,
 ) {
   var searchQuery by rememberSaveable { mutableStateOf("") }
   var replaceQuery by rememberSaveable { mutableStateOf("") }
+  var showReplaceConfirmation by remember { mutableStateOf(false) }
 
   val strings = parsedDex.strings
   val filteredStrings = remember(strings, searchQuery) {
     val q = searchQuery.trim()
     if (q.isEmpty()) strings else strings.filter { it.contains(q, ignoreCase = true) }
+  }
+
+  if (showReplaceConfirmation) {
+    AlertDialog(
+      onDismissRequest = { showReplaceConfirmation = false },
+      title = { Text("Confirm String Replacement") },
+      text = {
+        Text("Replace all occurrences of \"$searchQuery\" with \"$replaceQuery\" in active DEX? (${filteredStrings.size} matching constants found)")
+      },
+      confirmButton = {
+        Button(
+          onClick = {
+            showReplaceConfirmation = false
+            onReplaceStringInDex(searchQuery, replaceQuery, false)
+          },
+          modifier = Modifier.testTag("strings_replace_confirm_btn"),
+        ) {
+          Text("Replace")
+        }
+      },
+      dismissButton = {
+        TextButton(
+          onClick = { showReplaceConfirmation = false },
+          modifier = Modifier.testTag("strings_replace_cancel_btn"),
+        ) {
+          Text("Cancel")
+        }
+      },
+      modifier = Modifier.testTag("strings_replace_confirm_dialog"),
+    )
   }
 
   Surface(
@@ -271,14 +305,40 @@ fun DexStringsExplorerTab(
         Button(
           onClick = {
             if (searchQuery.isNotEmpty()) {
-              onReplaceStringInDex(searchQuery, replaceQuery, false)
+              showReplaceConfirmation = true
             }
           },
-          enabled = searchQuery.isNotEmpty(),
+          enabled = searchQuery.isNotEmpty() && dexEditingEnabled,
           shape = RoundedCornerShape(12.dp),
           modifier = Modifier.testTag("strings_replace_btn"),
         ) {
           Text("Replace")
+        }
+      }
+      if (!dexEditingEnabled) {
+        Spacer(Modifier.height(4.dp))
+        Surface(
+          color = MaterialTheme.colorScheme.surfaceVariant,
+          shape = RoundedCornerShape(10.dp),
+          modifier = Modifier.fillMaxWidth().testTag("strings_editing_disabled_note"),
+        ) {
+          Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.Info,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.primary,
+              modifier = Modifier.size(16.dp),
+            )
+            Text(
+              text = "DEX string replacement is temporarily disabled while the compiler is being upgraded.",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
         }
       }
       Spacer(Modifier.height(8.dp))

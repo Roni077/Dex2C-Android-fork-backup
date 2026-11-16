@@ -31,6 +31,13 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    val enableDexEditing =
+      providers.gradleProperty("dex2c.enableDexEditing")
+        .map { it.toBoolean() }
+        .getOrElse(false)
+
+    buildConfigField("boolean", "ENABLE_DEX_EDITING", enableDexEditing.toString())
   }
 
   // Do not remove or modify these signingConfigs. They are necessary for building, installing,

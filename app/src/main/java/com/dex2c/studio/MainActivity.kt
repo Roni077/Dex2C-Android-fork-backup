@@ -63,8 +63,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -235,6 +237,7 @@ fun Dex2cApp(
   val smaliClassState by viewModel.smaliClassState.collectAsStateWithLifecycle()
   val isCompilingDex by viewModel.isCompilingDex.collectAsStateWithLifecycle()
   val lastCompileError by viewModel.lastCompileError.collectAsStateWithLifecycle()
+  val dexEditUndoPrompt by viewModel.dexEditUndoPrompt.collectAsStateWithLifecycle()
   var pendingSmaliExportText by remember { mutableStateOf<String?>(null) }
 
   val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
@@ -374,6 +377,20 @@ fun Dex2cApp(
     val msg = statusBanner ?: return@LaunchedEffect
     snackbarHostState.showSnackbar(msg)
     viewModel.clearStatusBanner()
+  }
+
+  LaunchedEffect(dexEditUndoPrompt) {
+    val prompt = dexEditUndoPrompt ?: return@LaunchedEffect
+    val result =
+      snackbarHostState.showSnackbar(
+        message = prompt.message,
+        actionLabel = "Undo",
+        duration = SnackbarDuration.Long,
+      )
+    if (result == SnackbarResult.ActionPerformed) {
+      viewModel.undoLastDexModification()
+    }
+    viewModel.clearDexEditUndoPrompt()
   }
 
   LaunchedEffect(pendingCloudApkSave) {

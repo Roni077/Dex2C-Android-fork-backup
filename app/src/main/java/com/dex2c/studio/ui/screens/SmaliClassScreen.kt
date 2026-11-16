@@ -76,6 +76,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dex2c.studio.BuildConfig
 import com.dex2c.studio.R
 import com.dex2c.studio.data.SmaliSyntaxTheme
 import androidx.compose.material.icons.automirrored.rounded.Redo
@@ -83,6 +84,7 @@ import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FindReplace
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.SegmentedButton
@@ -142,6 +144,7 @@ fun SmaliClassScreen(
   compileError: String? = null,
   onClearCompileError: () -> Unit = {},
   onCompileSmali: (String) -> Unit = {},
+  dexEditingEnabled: Boolean = BuildConfig.ENABLE_DEX_EDITING,
 ) {
   BackHandler(onBack = onBack)
 
@@ -624,7 +627,7 @@ fun SmaliClassScreen(
           }
           Button(
             onClick = { onCompileSmali(lines.joinToString("\n")) },
-            enabled = !isCompilingDex,
+            enabled = !isCompilingDex && dexEditingEnabled,
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier.height(34.dp).testTag("smali_compile_dex_btn"),
@@ -661,6 +664,35 @@ fun SmaliClassScreen(
               Text("Revert", style = MaterialTheme.typography.labelSmall)
             }
           }
+        }
+      }
+    }
+
+    if (!dexEditingEnabled) {
+      Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(12.dp),
+        modifier =
+          Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .testTag("smali_assembly_disabled_banner"),
+      ) {
+        Row(
+          modifier = Modifier.padding(10.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Icon(
+            imageVector = Icons.Rounded.Info,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(18.dp),
+          )
+          Text(
+            text = "Smali re-assembly is temporarily disabled while the in-memory compiler is being upgraded.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
         }
       }
     }

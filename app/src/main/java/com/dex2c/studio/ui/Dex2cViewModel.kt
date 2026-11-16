@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.dex2c.studio.BuildConfig
 import com.dex2c.studio.apk.ApkMetadataInspector
 import com.dex2c.studio.apk.ApkStagingPreview
 import com.dex2c.studio.apk.BinarySourceType
@@ -40,6 +41,11 @@ import com.dex2c.studio.dex.ControlFlowGraphBuilder
 import com.dex2c.studio.dex.DalvikDisassembler
 import com.dex2c.studio.dex.DalvikInstruction
 import com.dex2c.studio.dex.DexClassInfo
+import com.dex2c.studio.dex.DexCompileResult
+import com.dex2c.studio.dex.DexEditSession
+import com.dex2c.studio.dex.DexEditUndoEntry
+import com.dex2c.studio.dex.DexEditUndoPrompt
+import com.dex2c.studio.dex.DexEditVerifier
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.DexHelper
 import com.dex2c.studio.dex.DexMethodStructuralMeta
@@ -47,7 +53,6 @@ import com.dex2c.studio.dex.DexParsedFile
 import com.dex2c.studio.dex.DexParser
 import com.dex2c.studio.dex.buildBytecodeOverviewSummary
 import com.dex2c.studio.dex.inferDominantDexPackageName
-import com.dex2c.studio.dex.DexCompileResult
 import com.dex2c.studio.dex.DexTryBlock
 import com.dex2c.studio.dex.MethodControlFlowGraph
 import com.dex2c.studio.dex.SmaliClassDisassembler
@@ -354,6 +359,14 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   private val _lastCompileError = MutableStateFlow<String?>(null)
   val lastCompileError: StateFlow<String?> = _lastCompileError.asStateFlow()
+
+  // Session-scoped bounded DEX byte undo buffer
+  private val dexEditSession = DexEditSession(maxEntries = 3)
+  private val _dexEditUndoPrompt = MutableStateFlow<DexEditUndoPrompt?>(null)
+  val dexEditUndoPrompt: StateFlow<DexEditUndoPrompt?> = _dexEditUndoPrompt.asStateFlow()
+
+  private val _canUndoDexEdit = MutableStateFlow(false)
+  val canUndoDexEdit: StateFlow<Boolean> = _canUndoDexEdit.asStateFlow()
 
   private var dexByteCache: Map<String, ByteArray> = emptyMap()
   private var activeSourceApkUri: Uri? = null
@@ -854,6 +867,9 @@ class Dex2cViewModel @JvmOverloads constructor(
   ) {
     currentSourceLabel = label
     dexByteCache = byteMap
+    dexEditSession.clear()
+    _dexEditUndoPrompt.value = null
+    _canUndoDexEdit.value = false
     bundleJob?.cancel()
     smaliJob?.cancel()
     _isTranspiling.value = false
@@ -1213,17 +1229,57 @@ class Dex2cViewModel @JvmOverloads constructor(
     _lastCompileError.value = null
   }
 
+  fun clearDexEditUndoPrompt() {
+    _dexEditUndoPrompt.value = null
+  }
+
+  fun undoLastDexModification() {
+    if (_isCompilingDex.value) return
+    val current = _loadState.value as? DexLoadState.Ready ?: return
+    val entry = dexEditSession.pop() ?: return
+    _canUndoDexEdit.value = dexEditSession.canUndo
+
+    viewModelScope.launch {
+      try {
+        val restoredParsed = withContext(Dispatchers.Default) {
+          DexParser.parseDex(
+            rawBytes = entry.beforeBytes,
+            sourceLabel = currentSourceLabel,
+            entryName = entry.entryName,
+          )
+        }
+        SmaliClassDisassembler.clearCache()
+        applyReplacedDexEntry(entry.entryName, entry.beforeBytes, restoredParsed)
+        val nextUndo = dexEditSession.peek()
+        _dexEditUndoPrompt.value = nextUndo?.let {
+          DexEditUndoPrompt(it.id, "Undo available: ${it.label}", it.entryName)
+        }
+        _statusBanner.value = "Restored previous DEX state for ${entry.entryName} (${entry.label})."
+      } catch (t: Throwable) {
+        if (t is CancellationException) throw t
+        _statusBanner.value = "Failed to restore DEX state: ${t.message}"
+      }
+    }
+  }
+
   fun compileEditedSmaliClass(
     dexClass: DexClassInfo,
     editedSmaliText: String,
     onSuccess: () -> Unit = {},
   ) {
+    if (!BuildConfig.ENABLE_DEX_EDITING) {
+      _statusBanner.value = "Smali re-assembly is disabled in this build."
+      _lastCompileError.value = "Smali re-assembly is temporarily disabled while the compiler is being upgraded."
+      return
+    }
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val entryName = dexClass.sourceEntryName.ifBlank { ready.activeEntryName }
     val targetDex = ready.loadedDexes[entryName] ?: ready.parsedDex
     if (_isCompilingDex.value) return
     _isCompilingDex.value = true
     _lastCompileError.value = null
+
+    val beforeBytes = targetDex.rawBytes.copyOf()
 
     viewModelScope.launch {
       try {
@@ -1237,19 +1293,32 @@ class Dex2cViewModel @JvmOverloads constructor(
           }
         when (result) {
           is DexCompileResult.Success -> {
-            SmaliClassDisassembler.clearCache()
             val updatedParsed = result.updatedDex.releaseTransientPools()
-            applyReplacedDexEntry(entryName, result.updatedDexBytes, updatedParsed)
+            val verifyError = DexEditVerifier.verifyClassPresent(updatedParsed, dexClass.descriptor)
+            if (verifyError != null) {
+              _lastCompileError.value = verifyError
+              _statusBanner.value = "Smali compile error: $verifyError"
+              return@launch
+            }
+
             val updatedClass =
               updatedParsed.classes.firstOrNull { it.descriptor == dexClass.descriptor }
                 ?: updatedParsed.classes.firstOrNull { it.fullName == dexClass.fullName }
                 ?: dexClass
+
             val (disassembled, javaCode) =
               withContext(Dispatchers.Default) {
                 val dis = SmaliClassDisassembler.disassembleClass(updatedParsed, updatedClass)
                 val java = SmaliJavaDecompiler.decompileClassToJava(updatedParsed, updatedClass)
                 dis to java
               }
+
+            SmaliClassDisassembler.clearCache()
+            applyReplacedDexEntry(entryName, result.updatedDexBytes, updatedParsed)
+            val undoEntry = dexEditSession.record("Smali edit ${updatedClass.simpleName}", entryName, beforeBytes)
+            _canUndoDexEdit.value = dexEditSession.canUndo
+            _dexEditUndoPrompt.value = DexEditUndoPrompt(undoEntry.id, "Assembled ${updatedClass.simpleName} into $entryName", entryName)
+
             _smaliClassState.value =
               SmaliClassUiState.Ready(
                 dexClass = updatedClass,
@@ -1290,6 +1359,8 @@ class Dex2cViewModel @JvmOverloads constructor(
     if (_isCompilingDex.value) return
     _isCompilingDex.value = true
 
+    val beforeBytes = targetDex.rawBytes.copyOf()
+
     viewModelScope.launch {
       try {
         val result =
@@ -1298,9 +1369,17 @@ class Dex2cViewModel @JvmOverloads constructor(
           }
         when (result) {
           is DexCompileResult.Success -> {
-            SmaliClassDisassembler.clearCache()
             val updatedParsed = result.updatedDex.releaseTransientPools()
+            val verifyError = DexEditVerifier.verifyClassesDeleted(updatedParsed, descriptors)
+            if (verifyError != null) {
+              _statusBanner.value = "Delete class failed: $verifyError"
+              return@launch
+            }
+            SmaliClassDisassembler.clearCache()
             applyReplacedDexEntry(targetEntry, result.updatedDexBytes, updatedParsed)
+            val undoEntry = dexEditSession.record("Delete ${descriptors.size} class(es)", targetEntry, beforeBytes)
+            _canUndoDexEdit.value = dexEditSession.canUndo
+            _dexEditUndoPrompt.value = DexEditUndoPrompt(undoEntry.id, "Deleted ${descriptors.size} class(es) from $targetEntry", targetEntry)
             _statusBanner.value =
               "Removed ${descriptors.size} class(es) from $targetEntry (${result.durationMs} ms)."
             markBundleDirty()
@@ -1309,6 +1388,9 @@ class Dex2cViewModel @JvmOverloads constructor(
             _statusBanner.value = "Delete class failed: ${result.message}"
           }
         }
+      } catch (t: Throwable) {
+        if (t is CancellationException) throw t
+        _statusBanner.value = "Delete class failed: ${t.message}"
       } finally {
         _isCompilingDex.value = false
       }
@@ -1320,12 +1402,18 @@ class Dex2cViewModel @JvmOverloads constructor(
     replacement: String,
     ignoreCase: Boolean,
   ) {
+    if (!BuildConfig.ENABLE_DEX_EDITING) {
+      _statusBanner.value = "DEX string replacement is disabled in this build."
+      return
+    }
     if (searchQuery.isEmpty()) return
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val targetEntry = ready.activeEntryName
     val targetDex = ready.loadedDexes[targetEntry] ?: ready.parsedDex
     if (_isCompilingDex.value) return
     _isCompilingDex.value = true
+
+    val beforeBytes = targetDex.rawBytes.copyOf()
 
     viewModelScope.launch {
       try {
@@ -1338,11 +1426,19 @@ class Dex2cViewModel @JvmOverloads constructor(
               ignoreCase = ignoreCase,
             )
           }
+        val countError = DexEditVerifier.verifyReplacementCount(replacedCount, searchQuery)
+        if (countError != null) {
+          _statusBanner.value = countError
+          return@launch
+        }
         when (result) {
           is DexCompileResult.Success -> {
             SmaliClassDisassembler.clearCache()
             val updatedParsed = result.updatedDex.releaseTransientPools()
             applyReplacedDexEntry(targetEntry, result.updatedDexBytes, updatedParsed)
+            val undoEntry = dexEditSession.record("Replace string '$searchQuery'", targetEntry, beforeBytes)
+            _canUndoDexEdit.value = dexEditSession.canUndo
+            _dexEditUndoPrompt.value = DexEditUndoPrompt(undoEntry.id, "Replaced $replacedCount string(s) in $targetEntry", targetEntry)
             _statusBanner.value =
               "Replaced $replacedCount string literal(s) in $targetEntry (${result.durationMs} ms)."
             markBundleDirty()
@@ -1351,6 +1447,9 @@ class Dex2cViewModel @JvmOverloads constructor(
             _statusBanner.value = result.message
           }
         }
+      } catch (t: Throwable) {
+        if (t is CancellationException) throw t
+        _statusBanner.value = "String replacement failed: ${t.message}"
       } finally {
         _isCompilingDex.value = false
       }
