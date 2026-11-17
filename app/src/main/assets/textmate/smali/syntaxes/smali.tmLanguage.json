@@ -98,7 +98,7 @@
         },
         {
           "name": "keyword.operator.opcode.field.smali",
-          "match": "\\b([is][get|put]+(-wide|-object|-boolean|-byte|-char|-short)?)\\b"
+          "match": "\\b([is](?:get|put)(?:-wide|-object|-boolean|-byte|-char|-short|-quick)?)\\b"
         },
         {
           "name": "keyword.operator.opcode.array.smali",

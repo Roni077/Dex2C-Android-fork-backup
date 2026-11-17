@@ -213,7 +213,7 @@ fun matchesMethodScope(method: DexEncodedMethod, scope: MethodScopeFilter): Bool
 
 data class ClassFilterState(
   val searchQuery: String = "",
-  val hideFramework: Boolean = true,
+  val hideFramework: Boolean = false,
   val onlyWithBytecode: Boolean = true,
   val onlySelected: Boolean = false,
   val onlyMatchingFilterRules: Boolean = false,

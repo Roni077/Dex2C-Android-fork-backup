@@ -15,12 +15,15 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.model.DefaultGrammarDefinition
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.InputStream
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.atomic.AtomicBoolean
 
 object SmaliEditorManager {
@@ -45,7 +48,26 @@ object SmaliEditorManager {
         themeRegistry.setTheme(THEME_DARCULA)
 
         val grammarRegistry = GrammarRegistry.getInstance()
-        grammarRegistry.loadGrammars("textmate/smali/syntaxes.json")
+        try {
+          grammarRegistry.loadGrammars("textmate/smali/syntaxes.json")
+        } catch (e: Throwable) {
+          android.util.Log.w("SmaliEditorManager", "loadGrammars JSON fallback: ${e.message}")
+        }
+
+        // Programmatic fallback to guarantee registration if not already present
+        if (grammarRegistry.findGrammar(SCOPE_SMALI) == null) {
+          val grammarStream = fileProviderRegistry.tryGetInputStream("textmate/smali/syntaxes/smali.tmLanguage.json")
+          if (grammarStream != null) {
+            val grammarSource = IGrammarSource.fromInputStream(grammarStream, "smali.tmLanguage.json", StandardCharsets.UTF_8)
+            val grammarDef = DefaultGrammarDefinition.withLanguageConfiguration(
+              grammarSource,
+              "textmate/smali/language-configuration.json",
+              "smali",
+              SCOPE_SMALI
+            )
+            grammarRegistry.loadGrammar(grammarDef)
+          }
+        }
 
         initialized.set(true)
       } catch (e: Throwable) {

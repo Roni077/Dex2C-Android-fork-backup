@@ -224,10 +224,18 @@ fun InteractiveFilterRuleBuilderPanel(
           }
         }
 
+        val hasBlacklist = blacklistCount > 0
         Surface(
           shape = RoundedCornerShape(14.dp),
-          color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f),
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.35f)),
+          color =
+            if (hasBlacklist) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f)
+            else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f),
+          border =
+            BorderStroke(
+              1.dp,
+              if (hasBlacklist) MaterialTheme.colorScheme.error.copy(alpha = 0.35f)
+              else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
+            ),
           modifier = Modifier.weight(1f).testTag("summary_card_blacklist"),
         ) {
           Row(
@@ -238,7 +246,7 @@ fun InteractiveFilterRuleBuilderPanel(
             Icon(
               imageVector = Icons.Rounded.Block,
               contentDescription = null,
-              tint = MaterialTheme.colorScheme.error,
+              tint = if (hasBlacklist) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.size(16.dp),
             )
             Column {
@@ -246,13 +254,13 @@ fun InteractiveFilterRuleBuilderPanel(
                 text = "BLACKLIST ($blacklistCount)",
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onErrorContainer,
+                color = if (hasBlacklist) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
               )
               Text(
-                text = "Skip / exclude",
+                text = if (hasBlacklist) "Skip / exclude" else "None active",
                 style = MaterialTheme.typography.labelSmall,
                 fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
+                color = if (hasBlacklist) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
               )
             }
           }

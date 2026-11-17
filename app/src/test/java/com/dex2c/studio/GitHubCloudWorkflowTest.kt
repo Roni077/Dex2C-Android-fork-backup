@@ -95,10 +95,7 @@ class GitHubCloudWorkflowTest {
   fun filterRuleEngine_excludesCoroutinesSyntheticsAndThirdPartyAndScopesSelectedMethods() {
     val cfg = TranspilerConfig()
     assertTrue(cfg.skipSynthetic)
-    assertTrue(cfg.filterRulesText.contains("okhttp3"))
-    assertTrue(cfg.filterRulesText.contains("_COROUTINE"))
-    assertTrue(cfg.filterRulesText.contains("ExternalSyntheticLambda"))
-    assertTrue(cfg.filterRulesText.contains("invokeSuspend"))
+    assertEquals(".*", cfg.filterRulesText.trim())
 
     val protoObj = com.dex2c.studio.dex.DexProto("LL", "Ljava/lang/Object;", listOf("Ljava/lang/Object;"))
     val protoVoid = com.dex2c.studio.dex.DexProto("V", "V", emptyList())
@@ -262,7 +259,7 @@ class GitHubCloudWorkflowTest {
     assertEquals(12, defaults.codeFontSizeSp)
     assertTrue(defaults.showLineNumbers)
     assertEquals(2500, defaults.maxCodePreviewLines)
-    assertTrue(defaults.defaultHideFramework)
+    assertFalse(defaults.defaultHideFramework)
     assertTrue(defaults.defaultOnlyBytecode)
     assertEquals(32, defaults.autoSelectMethodLimit)
     assertFalse(defaults.hasCompletedOnboarding)

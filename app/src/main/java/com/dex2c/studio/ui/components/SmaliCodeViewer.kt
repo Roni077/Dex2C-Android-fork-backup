@@ -272,7 +272,7 @@ private val smaliModifierKeywords =
     "test-api",
   )
 private val smaliTypeDescriptorRegex = Regex("\\[*(?:L[A-Za-z0-9_$/-]+;|[VZBSCIJFD](?![A-Za-z0-9_]))")
-private val smaliLabelRegex = Regex(":[A-Za-z_][A-Za-z0-9_]*")
+private val smaliLabelRegex = Regex(":[A-Za-z0-9_$-]+")
 private val smaliRegisterRegex = Regex("\\b[vp]\\d+\\b")
 private val smaliStringRegex = Regex("\"([^\"\\\\]|\\\\.)*\"")
 private val smaliNumberRegex = Regex("(?<![A-Za-z0-9_])-?(?:0x[0-9A-Fa-f]+[tTsSlL]?|\\d+[lLsStT]?)\\b")

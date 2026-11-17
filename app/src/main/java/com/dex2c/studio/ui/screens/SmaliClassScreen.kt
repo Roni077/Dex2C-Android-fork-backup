@@ -226,20 +226,6 @@ fun SmaliClassScreen(
       .ifEmpty { state.dexClass.allMethods }
   }
 
-  fun handleToggleClassSelection() {
-    if (onToggleClassSelection != null) {
-      onToggleClassSelection(state.dexClass)
-    } else {
-      val allIds = allClassBytecodeMethods.map { it.id }.toSet()
-      val isAllSelected = allIds.isNotEmpty() && allIds.all { it in selectedMethodIds }
-      if (isAllSelected) {
-        allIds.forEach { onToggleMethodSelection(it) }
-      } else {
-        allIds.filterNot { it in selectedMethodIds }.forEach { onToggleMethodSelection(it) }
-      }
-    }
-  }
-
   fun handleSelectAllMethods() {
     if (onSelectAllMethodsInClass != null) {
       onSelectAllMethodsInClass(state.dexClass)
@@ -620,11 +606,9 @@ fun SmaliClassScreen(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         val accessLabel = formatAccessFlags(state.dexClass.accessFlags).ifBlank { "public" }
-        val allSelected = allClassBytecodeMethods.isNotEmpty() && allClassBytecodeMethods.all { it.id in selectedMethodIds }
-        val anySelected = allClassBytecodeMethods.any { it.id in selectedMethodIds }
 
         Row(
-          modifier = Modifier.weight(1f).horizontalScroll(rememberScrollState()),
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
           horizontalArrangement = Arrangement.spacedBy(6.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -644,20 +628,6 @@ fun SmaliClassScreen(
               contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             )
           }
-        }
-
-        FilledTonalButton(
-          onClick = ::handleToggleClassSelection,
-          shape = RoundedCornerShape(20.dp),
-          modifier = Modifier.testTag("smali_toggle_queue_btn"),
-        ) {
-          Icon(
-            imageVector = if (allSelected) Icons.Rounded.CheckCircle else Icons.Rounded.AddCircleOutline,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-          )
-          Spacer(Modifier.width(6.dp))
-          Text(if (allSelected) "Queued for C" else if (anySelected) "Partial (${selectedMethodIds.count { id -> allClassBytecodeMethods.any { it.id == id } }})" else "Queue for C")
         }
       }
 

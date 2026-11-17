@@ -38,14 +38,7 @@ val MANDATORY_CLOUD_SAFETY_EXCLUSIONS =
     "!.*->(invokeSuspend|<clinit>)\\(.*",
   )
 
-const val DEFAULT_FILTER_RULES =
-  """# Kirlif/d2c & codehasan/dex2c filter.txt rules
-# Lines starting with ! exclude matching classes/methods
-!^L(androidx|android|kotlin|kotlinx|java|javax|com/google|okhttp3|okio|org/jetbrains|org/intellij|_COROUTINE)/.*
-!.*(\${'$'}\${'$'}ExternalSyntheticLambda|ComposableSingletons\${'$'}|/R\${'$'}|/R${'$'}|/BuildConfig${'$'}).*
-!.*;(invokeSuspend|<clinit>).*
-!.*->(invokeSuspend|<clinit>)\(.*
-.*"""
+const val DEFAULT_FILTER_RULES = ".*"
 
 data class TranspilerConfig(
   val jniStyle: JniBindingStyle = JniBindingStyle.REGISTER_NATIVES,

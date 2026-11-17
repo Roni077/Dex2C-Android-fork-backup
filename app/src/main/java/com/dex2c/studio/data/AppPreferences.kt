@@ -74,7 +74,7 @@ data class AppSettings(
   val showLineNumbers: Boolean = true,
   val maxCodePreviewLines: Int = 2500,
   val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
-  val defaultHideFramework: Boolean = true,
+  val defaultHideFramework: Boolean = false,
   val defaultOnlyBytecode: Boolean = true,
   val autoSelectMethodLimit: Int = 32,
   val hasCompletedOnboarding: Boolean = false,

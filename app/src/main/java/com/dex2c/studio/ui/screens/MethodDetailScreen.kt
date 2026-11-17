@@ -159,7 +159,7 @@ fun MethodDetailScreen(
     ) {
       val meta = inspection.method.codeMeta
       Row(
-        modifier = Modifier.weight(1f).horizontalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -184,20 +184,6 @@ fun MethodDetailScreen(
         } else {
           TagPill("No bytecode")
         }
-      }
-
-      FilledTonalButton(
-        onClick = onToggleSelect,
-        shape = RoundedCornerShape(20.dp),
-        modifier = Modifier.testTag("method_toggle_queue_btn"),
-      ) {
-        Icon(
-          imageVector = if (isSelected) Icons.Rounded.CheckCircle else Icons.Rounded.AddCircleOutline,
-          contentDescription = null,
-          modifier = Modifier.size(16.dp),
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(if (isSelected) "Queued for C" else "Queue for C")
       }
     }
 
