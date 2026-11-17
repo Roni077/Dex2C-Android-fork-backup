@@ -1110,6 +1110,62 @@ class Dex2cViewModel @JvmOverloads constructor(
     markBundleDirty()
   }
 
+  fun selectAllClasses(classes: List<DexClassInfo>) {
+    val cfg = _config.value
+    val allowInit = cfg.allowInit
+    val skipSynth = cfg.skipSynthetic
+    val scope = _filterState.value.methodScopeFilter
+    val targetIds = LinkedHashSet<String>()
+    for (cls in classes) {
+      val scoped = cls.allMethods.filter { matchesMethodScope(it, scope) }
+      val bytecodeIds =
+        scoped.filter {
+          it.hasBytecode &&
+            (allowInit || !it.isInitConstructor) &&
+            (!skipSynth || !it.isCoroutineOrSyntheticArtifact)
+        }.map { it.id }
+      targetIds.addAll(bytecodeIds.ifEmpty { scoped.map { it.id } })
+    }
+    if (targetIds.isEmpty()) return
+    _selectedMethodIds.update { it + targetIds }
+    markBundleDirty()
+  }
+
+  fun deselectAllClasses(classes: List<DexClassInfo>? = null) {
+    if (classes == null) {
+      clearSelection()
+    } else {
+      val toRemove = classes.flatMap { it.allMethods }.map { it.id }.toSet()
+      _selectedMethodIds.update { it - toRemove }
+      markBundleDirty()
+    }
+  }
+
+  fun invertClassSelection(classes: List<DexClassInfo>) {
+    val cfg = _config.value
+    val allowInit = cfg.allowInit
+    val skipSynth = cfg.skipSynthetic
+    val scope = _filterState.value.methodScopeFilter
+    val targetIds = LinkedHashSet<String>()
+    for (cls in classes) {
+      val scoped = cls.allMethods.filter { matchesMethodScope(it, scope) }
+      val bytecodeIds =
+        scoped.filter {
+          it.hasBytecode &&
+            (allowInit || !it.isInitConstructor) &&
+            (!skipSynth || !it.isCoroutineOrSyntheticArtifact)
+        }.map { it.id }
+      targetIds.addAll(bytecodeIds.ifEmpty { scoped.map { it.id } })
+    }
+    if (targetIds.isEmpty()) return
+    _selectedMethodIds.update { current ->
+      val toAdd = targetIds.filter { it !in current }
+      val toRemove = targetIds.filter { it in current }
+      (current - toRemove.toSet()) + toAdd.toSet()
+    }
+    markBundleDirty()
+  }
+
   fun autoSelectAppMethods() {
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val cfg = _config.value

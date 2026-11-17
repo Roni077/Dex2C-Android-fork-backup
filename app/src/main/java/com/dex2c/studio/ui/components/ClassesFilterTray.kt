@@ -10,19 +10,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FilterAlt
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -51,6 +56,12 @@ fun ClassesFilterTray(
   onMethodScopeFilterChange: (MethodScopeFilter) -> Unit,
   onResetExtraFilters: () -> Unit,
   modifier: Modifier = Modifier,
+  onToggleHideFramework: (() -> Unit)? = null,
+  onToggleOnlyBytecode: (() -> Unit)? = null,
+  onToggleOnlySelected: (() -> Unit)? = null,
+  onToggleOnlyMatchingFilterRules: (() -> Unit)? = null,
+  compactMiddlePackages: Boolean = false,
+  onToggleCompactPackages: (() -> Unit)? = null,
 ) {
   AnimatedVisibility(
     visible = visible,
@@ -63,61 +74,109 @@ fun ClassesFilterTray(
       modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp),
     ) {
       Column(
-        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        // Row 1: Class Type Filters & Inner/NonEmpty Toggles
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-          ClassTypeFilter.entries.forEach { typeFilter ->
-            item {
+        // Section 1: Scope & Rules
+        if (onToggleHideFramework != null || onToggleOnlyBytecode != null || onToggleOnlyMatchingFilterRules != null || onToggleOnlySelected != null) {
+          Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            if (onToggleHideFramework != null) {
               FilterChip(
-                selected = filterState.classTypeFilter == typeFilter,
-                onClick = { onClassTypeFilterChange(typeFilter) },
-                label = { Text(typeFilter.label) },
-                modifier = Modifier.testTag("filter_class_type_${typeFilter.name}"),
+                selected = filterState.hideFramework,
+                onClick = onToggleHideFramework,
+                label = { Text("App Only") },
+                modifier = Modifier.testTag("chip_hide_framework"),
+              )
+            }
+            if (onToggleOnlyBytecode != null) {
+              FilterChip(
+                selected = filterState.onlyWithBytecode,
+                onClick = onToggleOnlyBytecode,
+                label = { Text("Has Bytecode") },
+                modifier = Modifier.testTag("chip_has_bytecode"),
+              )
+            }
+            if (onToggleOnlyMatchingFilterRules != null) {
+              FilterChip(
+                selected = filterState.onlyMatchingFilterRules,
+                onClick = onToggleOnlyMatchingFilterRules,
+                label = { Text("Match Rules") },
+                modifier = Modifier.testTag("chip_match_filter_rules"),
+              )
+            }
+            if (onToggleOnlySelected != null) {
+              FilterChip(
+                selected = filterState.onlySelected,
+                onClick = onToggleOnlySelected,
+                label = { Text("Selected Only") },
+                modifier = Modifier.testTag("chip_selected_only"),
+              )
+            }
+            if (onToggleCompactPackages != null) {
+              FilterChip(
+                selected = compactMiddlePackages,
+                onClick = onToggleCompactPackages,
+                label = { Text("Compact Levels") },
+                modifier = Modifier.testTag("chip_folder_levels_toggle"),
               )
             }
           }
-          item {
-            FilterChip(
-              selected = filterState.hideInnerClasses,
-              onClick = onToggleHideInnerClasses,
-              label = { Text("Hide \$Inner") },
-              modifier = Modifier.testTag("filter_hide_inner"),
-            )
-          }
-          item {
-            FilterChip(
-              selected = filterState.nonEmptyPackagesOnly,
-              onClick = onToggleNonEmptyPackages,
-              label = { Text("Non-Empty Pkgs") },
-              modifier = Modifier.testTag("filter_non_empty_pkgs"),
-            )
-          }
         }
 
-        // Row 2: Method Scope Filters & Reset Action
+        // Section 2: Class Type Filters & Inner/NonEmpty Toggles
+        Row(
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+          ClassTypeFilter.entries.forEach { typeFilter ->
+            FilterChip(
+              selected = filterState.classTypeFilter == typeFilter,
+              onClick = { onClassTypeFilterChange(typeFilter) },
+              label = { Text(typeFilter.label) },
+              modifier = Modifier.testTag("filter_class_type_${typeFilter.name}"),
+            )
+          }
+          FilterChip(
+            selected = filterState.hideInnerClasses,
+            onClick = onToggleHideInnerClasses,
+            label = { Text("Hide \$Inner") },
+            modifier = Modifier.testTag("filter_hide_inner"),
+          )
+          FilterChip(
+            selected = filterState.nonEmptyPackagesOnly,
+            onClick = onToggleNonEmptyPackages,
+            label = { Text("Non-Empty Pkgs") },
+            modifier = Modifier.testTag("filter_non_empty_pkgs"),
+          )
+        }
+
+        // Section 3: Method Scope Filters & Reset Action
         Row(
           modifier = Modifier.fillMaxWidth(),
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          LazyRow(
-            modifier = Modifier.weight(1f),
+          Row(
+            modifier = Modifier.weight(1f).horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
           ) {
             MethodScopeFilter.entries.forEach { scope ->
-              item {
-                FilterChip(
-                  selected = filterState.methodScopeFilter == scope,
-                  onClick = { onMethodScopeFilterChange(scope) },
-                  label = { Text(scope.label) },
-                  modifier = Modifier.testTag("filter_method_scope_${scope.name}"),
-                )
-              }
+              FilterChip(
+                selected = filterState.methodScopeFilter == scope,
+                onClick = { onMethodScopeFilterChange(scope) },
+                label = { Text(scope.label) },
+                modifier = Modifier.testTag("filter_method_scope_${scope.name}"),
+              )
             }
           }
 
           if (filterState.extraFilterCount > 0) {
+            Spacer(Modifier.width(6.dp))
             TextButton(
               onClick = onResetExtraFilters,
               contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
@@ -266,6 +325,197 @@ private fun ActiveFilterPill(
           tint = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.size(12.dp),
         )
+      }
+    }
+  }
+}
+
+/**
+ * Modern modal bottom sheet organizing DEX Classes Explorer filters into clean sections.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ClassesFilterSheet(
+  visible: Boolean,
+  filterState: ClassFilterState,
+  onDismiss: () -> Unit,
+  onToggleHideFramework: () -> Unit,
+  onToggleOnlyBytecode: () -> Unit,
+  onToggleOnlySelected: () -> Unit,
+  onToggleOnlyMatchingFilterRules: () -> Unit,
+  onClassTypeFilterChange: (ClassTypeFilter) -> Unit,
+  onToggleHideInnerClasses: () -> Unit,
+  onToggleNonEmptyPackages: () -> Unit,
+  onMethodScopeFilterChange: (MethodScopeFilter) -> Unit,
+  onResetExtraFilters: () -> Unit,
+  compactMiddlePackages: Boolean = false,
+  onToggleCompactPackages: (() -> Unit)? = null,
+  modifier: Modifier = Modifier,
+) {
+  if (visible) {
+    ModalBottomSheet(
+      onDismissRequest = onDismiss,
+      shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+      containerColor = MaterialTheme.colorScheme.surfaceContainer,
+      modifier = modifier.testTag("classes_filter_sheet"),
+    ) {
+      Column(
+        modifier =
+          Modifier.fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.FilterAlt,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.primary,
+              modifier = Modifier.size(20.dp),
+            )
+            Text(
+              text = "Filters",
+              style = MaterialTheme.typography.titleMedium,
+              fontWeight = FontWeight.Bold,
+            )
+          }
+
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(
+              onClick = onResetExtraFilters,
+              modifier = Modifier.testTag("filter_reset_extra_btn"),
+            ) {
+              Text("Reset All", style = MaterialTheme.typography.labelMedium)
+            }
+            IconButton(onClick = onDismiss) {
+              Icon(Icons.Rounded.Close, contentDescription = "Close filters")
+            }
+          }
+        }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+        // Section 1: Scope & Rules
+        Text(
+          text = "Scope & Rules",
+          style = MaterialTheme.typography.labelMedium,
+          fontWeight = FontWeight.SemiBold,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Row(
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          FilterChip(
+            selected = filterState.hideFramework,
+            onClick = onToggleHideFramework,
+            label = { Text("App Only") },
+            modifier = Modifier.testTag("chip_hide_framework"),
+          )
+          FilterChip(
+            selected = filterState.onlyWithBytecode,
+            onClick = onToggleOnlyBytecode,
+            label = { Text("Has Bytecode") },
+            modifier = Modifier.testTag("chip_has_bytecode"),
+          )
+          FilterChip(
+            selected = filterState.onlyMatchingFilterRules,
+            onClick = onToggleOnlyMatchingFilterRules,
+            label = { Text("Match Rules") },
+            modifier = Modifier.testTag("chip_match_filter_rules"),
+          )
+          FilterChip(
+            selected = filterState.onlySelected,
+            onClick = onToggleOnlySelected,
+            label = { Text("Selected Only") },
+            modifier = Modifier.testTag("chip_selected_only"),
+          )
+        }
+
+        // Section 2: Hierarchy & Structure
+        Text(
+          text = "Hierarchy & Structure",
+          style = MaterialTheme.typography.labelMedium,
+          fontWeight = FontWeight.SemiBold,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Row(
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          if (onToggleCompactPackages != null) {
+            FilterChip(
+              selected = compactMiddlePackages,
+              onClick = onToggleCompactPackages,
+              label = { Text("Compact Levels") },
+              modifier = Modifier.testTag("chip_folder_levels_toggle"),
+            )
+          }
+          FilterChip(
+            selected = filterState.hideInnerClasses,
+            onClick = onToggleHideInnerClasses,
+            label = { Text("Hide \$Inner") },
+            modifier = Modifier.testTag("filter_hide_inner"),
+          )
+          FilterChip(
+            selected = filterState.nonEmptyPackagesOnly,
+            onClick = onToggleNonEmptyPackages,
+            label = { Text("Non-Empty Pkgs") },
+            modifier = Modifier.testTag("filter_non_empty_pkgs"),
+          )
+        }
+
+        // Section 3: Class Type
+        Text(
+          text = "Class Type",
+          style = MaterialTheme.typography.labelMedium,
+          fontWeight = FontWeight.SemiBold,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Row(
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          ClassTypeFilter.entries.forEach { typeFilter ->
+            FilterChip(
+              selected = filterState.classTypeFilter == typeFilter,
+              onClick = { onClassTypeFilterChange(typeFilter) },
+              label = { Text(typeFilter.label) },
+              modifier = Modifier.testTag("filter_class_type_${typeFilter.name}"),
+            )
+          }
+        }
+
+        // Section 4: Method Scope
+        Text(
+          text = "Method Scope",
+          style = MaterialTheme.typography.labelMedium,
+          fontWeight = FontWeight.SemiBold,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Row(
+          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          MethodScopeFilter.entries.forEach { scope ->
+            FilterChip(
+              selected = filterState.methodScopeFilter == scope,
+              onClick = { onMethodScopeFilterChange(scope) },
+              label = { Text(scope.label) },
+              modifier = Modifier.testTag("filter_method_scope_${scope.name}"),
+            )
+          }
+        }
+
+        Spacer(Modifier.height(16.dp))
       }
     }
   }

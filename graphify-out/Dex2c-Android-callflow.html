@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1179 nodes, 2109 edges, 75 communities. Commit: 0e85c64</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1183 nodes, 2119 edges, 89 communities. Commit: bce9853</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -82,7 +82,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1017 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1021 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>56 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -124,7 +124,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>1017</td><td><code>30, 19, 1, 0, 20, 13, 5, 21, 8, 6, 7, 17, 25, 11, 23, 15, 18, 14, 4, 16, 2, 26, 27, 29, 3, 40, 34, 41, 46, 28, 24, 32, 66, 39, 50, 53, 59, 71, 33, 37, 38, 47, 64, 43, 44, 45, 65, 75, 35, 67, 51, 52, 70, 48, 54, 55, 56, 57, 58, 72</code></td></tr><tr><td>Graph Build</td><td>56</td><td><code>12, 68, 69, 49, 60, 62, 78</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>65</td><td><code>22, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>1021</td><td><code>1, 0, 29, 20, 5, 21, 8, 13, 6, 7, 25, 15, 18, 11, 23, 4, 17, 19, 14, 27, 40, 16, 2, 26, 3, 30, 34, 33, 46, 28, 37, 41, 24, 32, 66, 50, 59, 70, 71, 73, 74, 38, 39, 53, 76, 77, 79, 47, 64, 80, 81, 43, 44, 45, 65, 82, 75, 83, 84, 85, 86, 35, 67, 51, 52, 87, 88, 48, 54, 55, 56, 57, 58, 72</code></td></tr><tr><td>Graph Build</td><td>56</td><td><code>12, 68, 69, 49, 60, 62, 78</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>65</td><td><code>22, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -136,10 +136,10 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1179 nodes · 2109 edges · 75 communities (47 shown, 28 thin omitted)</li>
+      <li>1183 nodes · 2119 edges · 89 communities (58 shown, 31 thin omitted)</li>
       <li>Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 394 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `Dex2cViewModel` - 111 edges</li>
+      <li>1. `Dex2cViewModel` - 114 edges</li>
       <li>2. `TagPill()` - 40 edges</li>
       <li>3. `Dex2cTranspiler` - 35 edges</li>
     </ul>
@@ -148,12 +148,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 1017 nodes and 1960 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 1021 nodes and 1970 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (1017 nodes, 1960 edges)
+    %% Section: Extraction Pipeline (1021 nodes, 1970 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -189,7 +189,7 @@ flowchart LR
     apk_apkmetadatainspector_apkmetadatainspector_57261a53 -->|method| apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad
     apk_apkmetadatainspector_apkmetadatainspector_57261a53 -->|method| apk_apkmetadatainspector_apkmetadatainspector_in_bfc320be
     apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad -->|calls| apk_apkmetadatainspector_apkmetadatainspector_in_bfc320be
-    %% Omitted for readability: 999 nodes, 0 edges
+    %% Omitted for readability: 1003 nodes, 0 edges
     class studio_mainactivity_navdestinationitem_e24ab693 klass;
     class studio_mainactivity_dex2capp_fbfa3080 function;
     class studio_mainactivity_mainactivity_8e09f945 klass;
@@ -231,243 +231,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>ApkPickerSheet.kt</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ApkPickerSheet.kt node in ui/components/ApkPickerSheet.kt.</td>
+  <td><code>`build monitor survives transient UnknownHostException during active poll and recovers to completed`()</code><br><small style="color:var(--muted)">dex2c/studio/ExampleRobolectricTest.kt</small><br><code>`github sign in completion automatically initializes private repo and commits workflow despite transient dns error`()</code><br><small style="color:var(--muted)">dex2c/studio/ExampleRobolectricTest.kt</small><br><code>addQuickClassRule()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br>+110 more</td>
+  <td>Dex2cViewModel node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>.openPicker()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cApp()</code><br><small style="color:var(--muted)">dex2c/studio/MainActivity.kt</small></td>
-  <td><code>InstalledAppsTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small><br><code>RecentBinariesTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small><br><code>StoragePickerTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td>ApkPickerSheet() node in ui/components/ApkPickerSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>loadInstalledApps()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.openPicker() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>StoragePickerTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>.closePicker()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.closePicker() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>InstalledAppsTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>.setPickerTab()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td><code>InstalledAppRow()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td>InstalledAppsTab() node in ui/components/ApkPickerSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>loadInstalledApps()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.setPickerTab() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>InstalledAppRow()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>.updateAppSearchQuery()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>InstalledAppsTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td><code>formatApkSize()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small><br><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>InstalledAppRow() node in ui/components/ApkPickerSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.updateAppSearchQuery() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>RecentBinariesTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>.loadInstalledApps()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>ApkPickerSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td><code>formatApkSize()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small><br><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>RecentBinariesTab() node in ui/components/ApkPickerSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>openPicker()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>setPickerTab()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.loadInstalledApps() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>formatApkSize()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
+  <td><code>.toggleStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>InstalledAppRow()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small><br><code>RecentBinariesTab()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td><code>PreviewReadyContent()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small><br><code>RecentQuickStrip()</code><br><small style="color:var(--muted)">ui/screens/HomeScreen.kt</small></td>
-  <td>formatApkSize() node in ui/components/ApkPickerSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>selectStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.toggleStagedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>ApkPreviewSheet.kt</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.selectStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>toggleStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>ApkPreviewSheet.kt node in ui/components/ApkPreviewSheet.kt.</td>
+  <td>.selectStagedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>ApkPreviewSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
+  <td><code>.selectAllStagedDexEntries()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cApp()</code><br><small style="color:var(--muted)">dex2c/studio/MainActivity.kt</small></td>
-  <td><code>PreviewReadyContent()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
-  <td>ApkPreviewSheet() node in ui/components/ApkPreviewSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectAllStagedDexEntries() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>PreviewReadyContent()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small></td>
+  <td><code>.selectPrimaryStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>ApkPreviewSheet()</code><br><small style="color:var(--muted)">ui/components/ApkPreviewSheet.kt</small><br><code>formatApkSize()</code><br><small style="color:var(--muted)">ui/components/ApkPickerSheet.kt</small></td>
-  <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>PreviewReadyContent() node in ui/components/ApkPreviewSheet.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectPrimaryStagedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>BuildMonitorCard.kt</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.dismissStagingPreview()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>BuildMonitorCard.kt node in ui/components/BuildMonitorCard.kt.</td>
+  <td>.dismissStagingPreview() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>.removeRecentItem()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>`onboarding github card shows inline repo initialization status and BuildMonitor shows reconnecting and retry`()</code><br><small style="color:var(--muted)">dex2c/studio/ExampleRobolectricTest.kt</small><br><code>CloudBuildScreen()</code><br><small style="color:var(--muted)">ui/screens/CloudBuildScreen.kt</small><br><code>formatArtifactBytes()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small><br>+3 more</td>
-  <td>BuildMonitorCard() node in ui/components/BuildMonitorCard.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.removeRecentItem() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>MonitorGaugeBlock()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>.clearRecentHistory()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
-  <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>MonitorGaugeBlock() node in ui/components/BuildMonitorCard.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.clearRecentHistory() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>StepProgressList()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>.updateSearchQuery()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>StepProgressList() node in ui/components/BuildMonitorCard.kt.</td>
+  <td>.updateSearchQuery() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>TransferProgressPanel()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>.toggleHideFramework()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>TransferProgressPanel() node in ui/components/BuildMonitorCard.kt.</td>
+  <td>.toggleHideFramework() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>formatArtifactBytes()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>.toggleOnlyWithBytecode()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BuildMonitorCard()</code><br><small style="color:var(--muted)">ui/components/BuildMonitorCard.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>formatArtifactBytes() node in ui/components/BuildMonitorCard.kt.</td>
+  <td>.toggleOnlyWithBytecode() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>CfgViewer.kt</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.toggleOnlySelected()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>CfgViewer.kt node in ui/components/CfgViewer.kt.</td>
+  <td>.toggleOnlySelected() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>DalvikCfgViewer()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
+  <td><code>.toggleOnlyMatchingFilterRules()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>BasicBlockCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small><br><code>MethodDetailScreen()</code><br><small style="color:var(--muted)">ui/screens/MethodDetailScreen.kt</small><br><code>PayloadDetailCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small><br>+1 more</td>
-  <td>DalvikCfgViewer() node in ui/components/CfgViewer.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toggleOnlyMatchingFilterRules() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>BasicBlockCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
+  <td><code>.setClassSortOrder()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikCfgViewer()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
-  <td><code>CfgEdgePill()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small><br><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>BasicBlockCard() node in ui/components/CfgViewer.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.setClassSortOrder() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>CfgEdgePill()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
+  <td><code>.setClassTypeFilter()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>BasicBlockCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>CfgEdgePill() node in ui/components/CfgViewer.kt.</td>
+  <td>.setClassTypeFilter() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>PayloadDetailCard()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikCfgViewer()</code><br><small style="color:var(--muted)">ui/components/CfgViewer.kt</small></td>
-  <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>PayloadDetailCard() node in ui/components/CfgViewer.kt.</td>
+  <td><code>.toggleHideInnerClasses()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toggleHideInnerClasses() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>DexMapAndMetaComponents.kt</code><br><small style="color:var(--muted)">ui/components/DexMapAndMetaComponents.kt</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.setMethodScopeFilter()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>DexMapAndMetaComponents.kt node in ui/components/DexMapAndMetaComponents.kt.</td>
+  <td>.setMethodScopeFilter() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>DexMethodMetaViewer()</code><br><small style="color:var(--muted)">ui/components/DexMapAndMetaComponents.kt</small></td>
+  <td><code>.toggleNonEmptyPackagesOnly()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>AnnotationBadgeRow()</code><br><small style="color:var(--muted)">ui/components/DexMapAndMetaComponents.kt</small><br><code>HeaderKeyValueRow()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small><br><code>MethodDetailScreen()</code><br><small style="color:var(--muted)">ui/screens/MethodDetailScreen.kt</small><br>+1 more</td>
-  <td>DexMethodMetaViewer() node in ui/components/DexMapAndMetaComponents.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toggleNonEmptyPackagesOnly() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>AnnotationBadgeRow()</code><br><small style="color:var(--muted)">ui/components/DexMapAndMetaComponents.kt</small></td>
+  <td><code>.setDexSourceFilter()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>descriptorToJavaName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexMethodMetaViewer()</code><br><small style="color:var(--muted)">ui/components/DexMapAndMetaComponents.kt</small></td>
-  <td><code>TagPill()</code><br><small style="color:var(--muted)">ui/components/HomeComponents.kt</small></td>
-  <td>AnnotationBadgeRow() node in ui/components/DexMapAndMetaComponents.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.setDexSourceFilter() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>FilterRuleBuilderComponents.kt</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.resetExtraClassFilters()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>FilterRuleBuilderComponents.kt node in ui/components/FilterRuleBuilderComponents.kt.</td>
+  <td>.resetExtraClassFilters() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>FilterEditorSubMode</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>FilterEditorSubMode node in ui/components/FilterRuleBuilderComponents.kt.</td>
+  <td><code>.togglePresetRuleLine()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>updateConfig()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.togglePresetRuleLine() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>InteractiveFilterRuleBuilderPanel()</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small></td>
+  <td><code>.importFilterTxtFromUri()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>ClassesScreen()</code><br><small style="color:var(--muted)">ui/screens/ClassesScreen.kt</small><br><code>FilterRuleDialogSheet()</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small><br><code>FilterRulesCard()</code><br><small style="color:var(--muted)">ui/screens/PipelineConfigScreen.kt</small><br>+2 more</td>
-  <td>InteractiveFilterRuleBuilderPanel() node in ui/components/FilterRuleBuilderComponents.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>updateConfig()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.importFilterTxtFromUri() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>StructuredRuleItemCard()</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small></td>
+  <td><code>.importDccCfgFromUri()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>InteractiveFilterRuleBuilderPanel()</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>StructuredRuleItemCard() node in ui/components/FilterRuleBuilderComponents.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>updateConfig()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.importDccCfgFromUri() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>FilterRuleDialogSheet()</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small></td>
+  <td><code>.clearSmaliInspection()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>InteractiveFilterRuleBuilderPanel()</code><br><small style="color:var(--muted)">ui/components/FilterRuleBuilderComponents.kt</small><br><code>StructuredFilterRule</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>FilterRuleDialogSheet() node in ui/components/FilterRuleBuilderComponents.kt.</td>
+  <td>.clearSmaliInspection() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>GitHubDeviceAuthCard.kt</code><br><small style="color:var(--muted)">ui/components/GitHubDeviceAuthCard.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.closeAllTabs()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>Turns a local path or remote repository into analysis context.</td>
+  <td>.closeAllTabs() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 </table>
 
@@ -476,7 +476,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>studio/ui/Dex2cViewModel.kt</code></td><td>124 nodes</td></tr>
+      <tr><td><code>studio/ui/Dex2cViewModel.kt</code></td><td>127 nodes</td></tr>
 <tr><td><code>studio/dex/DexModels.kt</code></td><td>49 nodes</td></tr>
 <tr><td><code>studio/transpiler/Dex2cTranspiler.kt</code></td><td>42 nodes</td></tr>
 <tr><td><code>studio/cloud/CloudModels.kt</code></td><td>35 nodes</td></tr>
@@ -488,7 +488,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x640, method x509, contains x417. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x646, method x512, contains x418. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1902,17 +1902,17 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1179</td></tr>
-      <tr><td>Edges</td><td>2109</td></tr>
+      <tr><td>Nodes</td><td>1183</td></tr>
+      <tr><td>Edges</td><td>2119</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>75</td></tr>
+      <tr><td>Communities</td><td>89</td></tr>
       <tr><td>Documented Sections</td><td>9</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1715</td></tr>
+      <tr><td>EXTRACTED</td><td>1725</td></tr>
       <tr><td>INFERRED</td><td>394</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
@@ -1921,7 +1921,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-17 05:59 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-17 08:29 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

@@ -30,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircleOutline
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Code
@@ -500,11 +502,7 @@ fun SmaliClassScreen(
       title = {
         Column {
           Text(
-            text =
-              when (viewMode) {
-                SmaliViewMode.EDIT -> "${state.dexClass.simpleName}.smali (Edit)"
-                SmaliViewMode.VIEW -> "${state.dexClass.simpleName}.smali"
-              },
+            text = "${state.dexClass.simpleName}.smali",
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -612,22 +610,61 @@ fun SmaliClassScreen(
       },
     )
 
-    // Primary Class & Method Selection Banner
-    ClassSelectionHeader(
-      dexClass = state.dexClass,
-      selectedMethodIds = selectedMethodIds,
-      onToggleSelectClass = ::handleToggleClassSelection,
-      onSelectAllMethods = ::handleSelectAllMethods,
-      onDeselectAllMethods = ::handleDeselectAllMethods,
-      onInvertMethodSelection = ::handleInvertMethodSelection,
-      onOpenMethodsSheet = { showMethodsSheet = true },
-    )
-
-    // Dex Editor Plus style Sub-Header Bar: *ClassName on left, line & [start - end] : methodName() on right
+    // Single Clean Sub-Header Row matching Screenshot 122125 (Metadata on left, Queue Button on right)
     if (readyState != null) {
+      Row(
+        modifier =
+          Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        val accessLabel = formatAccessFlags(state.dexClass.accessFlags).ifBlank { "public" }
+        val allSelected = allClassBytecodeMethods.isNotEmpty() && allClassBytecodeMethods.all { it.id in selectedMethodIds }
+        val anySelected = allClassBytecodeMethods.any { it.id in selectedMethodIds }
+
+        Row(
+          modifier = Modifier.weight(1f).horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.spacedBy(6.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          TagPill(text = accessLabel)
+          TagPill(text = state.dexClass.sourceEntryName)
+          TagPill(
+            text = "${readyState.methodCount} methods",
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+          TagPill(text = "${readyState.fieldCount} fields")
+          TagPill(text = "${lines.size} lines")
+          activeMethodSpan?.let { span ->
+            TagPill(
+              text = "${span.name}()",
+              containerColor = MaterialTheme.colorScheme.secondaryContainer,
+              contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+          }
+        }
+
+        FilledTonalButton(
+          onClick = ::handleToggleClassSelection,
+          shape = RoundedCornerShape(20.dp),
+          modifier = Modifier.testTag("smali_toggle_queue_btn"),
+        ) {
+          Icon(
+            imageVector = if (allSelected) Icons.Rounded.CheckCircle else Icons.Rounded.AddCircleOutline,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+          )
+          Spacer(Modifier.width(6.dp))
+          Text(if (allSelected) "Queued for C" else if (anySelected) "Partial (${selectedMethodIds.count { id -> allClassBytecodeMethods.any { it.id == id } }})" else "Queue for C")
+        }
+      }
+
+      // Compact Sub-Header Bar: *ClassName on left, line & [start - end] : methodName() on right
       Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f),
+        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
         modifier =
           Modifier
             .fillMaxWidth()
@@ -637,16 +674,16 @@ fun SmaliClassScreen(
             .testTag("smali_method_range_bar"),
       ) {
         Row(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 6.dp),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-            text = if (hasUnsavedChanges) "*${state.dexClass.simpleName} (modified)" else "*${state.dexClass.simpleName}",
-            style = MaterialTheme.typography.labelMedium,
+            text = "*${state.dexClass.simpleName}",
+            style = MaterialTheme.typography.labelSmall,
             fontFamily = JetBrainsMonoFontFamily,
             fontWeight = FontWeight.SemiBold,
-            color = if (hasUnsavedChanges) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false),
@@ -680,205 +717,11 @@ fun SmaliClassScreen(
                 imageVector = Icons.Rounded.KeyboardArrowDown,
                 contentDescription = "Jump to method",
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(16.dp),
-              )
-            }
-          }
-        }
-      }
-    }
-
-    // Mode Switcher (Smali | Edit) + Undo/Redo + Assemble DEX Actions
-    if (readyState != null) {
-      Row(
-        modifier =
-          Modifier.fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        SingleChoiceSegmentedButtonRow {
-          SmaliViewMode.entries.forEachIndexed { idx, mode ->
-            SegmentedButton(
-              selected = viewMode == mode,
-              onClick = { viewModeName = mode.name },
-              shape = SegmentedButtonDefaults.itemShape(idx, SmaliViewMode.entries.size),
-              modifier = Modifier.height(34.dp).testTag("smali_mode_${mode.name.lowercase()}"),
-            ) {
-              Text(text = mode.label, style = MaterialTheme.typography.labelMedium)
-            }
-          }
-        }
-
-        if (viewMode == SmaliViewMode.EDIT || hasUnsavedChanges) {
-          IconButton(
-            onClick = ::performUndo,
-            enabled = undoStack.isNotEmpty() && !isCompilingDex,
-            modifier = Modifier.size(34.dp).testTag("smali_undo_btn"),
-          ) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Rounded.Undo,
-              contentDescription = "Undo Smali edit",
-              modifier = Modifier.size(18.dp),
-            )
-          }
-          IconButton(
-            onClick = ::performRedo,
-            enabled = redoStack.isNotEmpty() && !isCompilingDex,
-            modifier = Modifier.size(34.dp).testTag("smali_redo_btn"),
-          ) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Rounded.Redo,
-              contentDescription = "Redo Smali edit",
-              modifier = Modifier.size(18.dp),
-            )
-          }
-          Button(
-            onClick = { onCompileSmali(lines.joinToString("\n")) },
-            enabled = !isCompilingDex && dexEditingEnabled,
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.height(34.dp).testTag("smali_compile_dex_btn"),
-          ) {
-            if (isCompilingDex) {
-              CircularProgressIndicator(
                 modifier = Modifier.size(14.dp),
-                strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary,
               )
-              Spacer(Modifier.width(6.dp))
-              Text("Assembling…", style = MaterialTheme.typography.labelMedium)
-            } else {
-              Icon(
-                imageVector = Icons.Rounded.Build,
-                contentDescription = null,
-                modifier = Modifier.size(15.dp),
-              )
-              Spacer(Modifier.width(6.dp))
-              Text("Assemble DEX", style = MaterialTheme.typography.labelMedium)
-            }
-          }
-          if (hasUnsavedChanges) {
-            TextButton(
-              onClick = {
-                editedLines = readyState.lines
-                undoStack = emptyList()
-                redoStack = emptyList()
-                onClearCompileError()
-              },
-              contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-              modifier = Modifier.height(32.dp).testTag("smali_reset_edits_btn"),
-            ) {
-              Text("Revert", style = MaterialTheme.typography.labelSmall)
             }
           }
         }
-      }
-    }
-
-    if (!dexEditingEnabled) {
-      Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(12.dp),
-        modifier =
-          Modifier.fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .testTag("smali_assembly_disabled_banner"),
-      ) {
-        Row(
-          modifier = Modifier.padding(10.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-          Icon(
-            imageVector = Icons.Rounded.Info,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(18.dp),
-          )
-          Text(
-            text = "Smali re-assembly is temporarily disabled while the in-memory compiler is being upgraded.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-    }
-
-    // Inline Smali Assembler Error Banner
-    AnimatedVisibility(visible = !compileError.isNullOrBlank()) {
-      Surface(
-        color = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        shape = RoundedCornerShape(12.dp),
-        modifier =
-          Modifier.fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 2.dp)
-            .testTag("smali_compile_error_banner"),
-      ) {
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(
-            text = compileError.orEmpty(),
-            style = MaterialTheme.typography.labelSmall,
-            fontFamily = JetBrainsMonoFontFamily,
-            modifier = Modifier.weight(1f),
-          )
-          TextButton(
-            onClick = onClearCompileError,
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
-            modifier = Modifier.height(26.dp),
-          ) {
-            Text("Dismiss", style = MaterialTheme.typography.labelSmall)
-          }
-        }
-      }
-    }
-
-    // Metadata Pills
-    Row(
-      modifier =
-        Modifier.fillMaxWidth()
-          .horizontalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp, vertical = 2.dp),
-      horizontalArrangement = Arrangement.spacedBy(6.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      val accessLabel = formatAccessFlags(state.dexClass.accessFlags).ifBlank { "package-private" }
-      TagPill(text = accessLabel)
-      TagPill(text = state.dexClass.sourceEntryName)
-      if (readyState != null) {
-        TagPill(
-          text = "${readyState.methodCount} methods",
-          containerColor = MaterialTheme.colorScheme.primaryContainer,
-          contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
-        TagPill(text = "${readyState.fieldCount} fields")
-        TagPill(text = "${lines.size} lines")
-        TagPill(
-          text = "dexlib2 • ${readyState.durationMs} ms",
-          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-          contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-        TagPill(
-          text = activeSyntaxTheme.shortLabel,
-          containerColor =
-            if (activeSyntaxTheme == SmaliSyntaxTheme.BYTECODE_HIGH_CONTRAST) {
-              MaterialTheme.colorScheme.tertiaryContainer
-            } else {
-              MaterialTheme.colorScheme.surfaceContainerHigh
-            },
-          contentColor =
-            if (activeSyntaxTheme == SmaliSyntaxTheme.BYTECODE_HIGH_CONTRAST) {
-              MaterialTheme.colorScheme.onTertiaryContainer
-            } else {
-              MaterialTheme.colorScheme.onSurfaceVariant
-            },
-        )
       }
     }
 
@@ -937,19 +780,6 @@ fun SmaliClassScreen(
                 fontFamily = JetBrainsMonoFontFamily,
               )
             }
-          }
-          FilledTonalButton(
-            onClick = {
-              editingLineIndex = inspectedLineIndex.coerceAtLeast(0)
-              viewModeName = SmaliViewMode.EDIT.name
-            },
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.height(26.dp).testTag("smali_inspect_edit_line_btn"),
-          ) {
-            Icon(Icons.Rounded.Edit, contentDescription = null, modifier = Modifier.size(12.dp))
-            Spacer(Modifier.width(4.dp))
-            Text("Edit Line", style = MaterialTheme.typography.labelSmall)
           }
           inspectedLineTokens.forEach { token ->
             SmaliTokenQuickChip(
@@ -1337,65 +1167,31 @@ fun SmaliClassScreen(
         }
 
         is SmaliClassUiState.Ready -> {
-          when (viewMode) {
-            SmaliViewMode.EDIT -> {
-              SmaliSoraEditor(
-                text = lines.joinToString("\n"),
-                isReadOnly = false,
-                activeLineIndex = editingLineIndex.coerceIn(0, (lines.size - 1).coerceAtLeast(0)),
-                onTextChanged = { updatedText ->
-                  pushEditableLines(updatedText.lines())
-                },
-                onLineClick = { idx ->
-                  editingLineIndex = idx
-                  inspectedLineIndex = idx
-                },
-                onLabelJump = { targetLine ->
-                  editingLineIndex = targetLine
-                  inspectedLineIndex = targetLine
-                },
-                syntaxTheme = activeSyntaxTheme,
-                fontSizeSp = editorSettings.fontSizeSp,
-                showLineNumbers = editorSettings.showLineNumbers,
-                modifier = Modifier.fillMaxSize().testTag("smali_interactive_editor_pane"),
-              )
-            }
-            SmaliViewMode.VIEW -> {
-              SmaliSoraEditor(
-                text = lines.joinToString("\n"),
-                isReadOnly = true,
-                activeLineIndex = activeMatchLineIndex ?: inspectedLineIndex.takeIf { it >= 0 },
-                onLineClick = { clickedIdx ->
-                  inspectedLineIndex = if (inspectedLineIndex == clickedIdx) -1 else clickedIdx
-                  editingLineIndex = clickedIdx
-                },
-                onLabelJump = { targetLine ->
-                  inspectedLineIndex = targetLine
-                  editingLineIndex = targetLine
-                },
-                syntaxTheme = activeSyntaxTheme,
-                fontSizeSp = editorSettings.fontSizeSp,
-                showLineNumbers = editorSettings.showLineNumbers,
-                modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
-              )
-            }
+          Box(
+            modifier =
+              Modifier.fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+          ) {
+            SmaliSoraEditor(
+              text = lines.joinToString("\n"),
+              isReadOnly = true,
+              activeLineIndex = activeMatchLineIndex ?: inspectedLineIndex.takeIf { it >= 0 },
+              onLineClick = { clickedIdx ->
+                inspectedLineIndex = if (inspectedLineIndex == clickedIdx) -1 else clickedIdx
+                editingLineIndex = clickedIdx
+              },
+              onLabelJump = { targetLine ->
+                inspectedLineIndex = targetLine
+                editingLineIndex = targetLine
+              },
+              syntaxTheme = activeSyntaxTheme,
+              fontSizeSp = editorSettings.fontSizeSp,
+              showLineNumbers = editorSettings.showLineNumbers,
+              modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
+            )
           }
         }
       }
-    }
-
-    if (readyState != null && viewMode == SmaliViewMode.EDIT) {
-      SymbolQuickBar(
-        onInsertSymbol = { sym ->
-          val targetLine = editingLineIndex.coerceIn(0, (editedLines.size - 1).coerceAtLeast(0))
-          if (targetLine in editedLines.indices) {
-            val curr = editedLines[targetLine]
-            val updated = if (curr.isBlank()) sym else "$curr $sym"
-            val newLines = editedLines.toMutableList().apply { set(targetLine, updated) }
-            pushEditableLines(newLines)
-          }
-        },
-      )
     }
   }
 

@@ -84,6 +84,7 @@ import com.dex2c.studio.ui.DexLoadState
 import com.dex2c.studio.ui.MethodScopeFilter
 import com.dex2c.studio.ui.components.ActiveFilterSummaryStrip
 import com.dex2c.studio.ui.components.BatchActionBar
+import com.dex2c.studio.ui.components.ClassesFilterSheet
 import com.dex2c.studio.ui.components.ClassesFilterTray
 import com.dex2c.studio.ui.components.CompactClassRow
 import com.dex2c.studio.ui.components.DexFieldsExplorerTab
@@ -91,6 +92,7 @@ import com.dex2c.studio.ui.components.DexMethodsExplorerTab
 import com.dex2c.studio.ui.components.DexStringsExplorerTab
 import com.dex2c.studio.ui.components.InteractiveFilterRuleBuilderPanel
 import com.dex2c.studio.ui.components.PackageFolderRow
+import com.dex2c.studio.ui.components.QuickRuleBadgeButton
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 
 enum class ClassesViewMode {
@@ -347,6 +349,9 @@ fun ClassesScreen(
   onExportPatchedDex: () -> Unit = {},
   onExportPatchedApk: () -> Unit = {},
   onDeleteDexClass: (DexClassInfo) -> Unit = {},
+  onSelectAllClasses: ((List<DexClassInfo>) -> Unit)? = null,
+  onDeselectAllClasses: ((List<DexClassInfo>?) -> Unit)? = null,
+  onInvertClassSelection: ((List<DexClassInfo>) -> Unit)? = null,
 ) {
   var activeSubTab by rememberSaveable(initialSubTab) { mutableStateOf(initialSubTab) }
   var viewMode by rememberSaveable { mutableStateOf(ClassesViewMode.TREE) }
@@ -735,137 +740,150 @@ fun ClassesScreen(
 
           Spacer(Modifier.height(6.dp))
 
-          // Filter Chips Row
-          LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            item {
-              val isTree = viewMode == ClassesViewMode.TREE
-              FilterChip(
-                selected = true,
-                onClick = { viewMode = if (isTree) ClassesViewMode.FLAT else ClassesViewMode.TREE },
-                leadingIcon = {
-                  Icon(
-                    imageVector =
-                      if (isTree) Icons.Rounded.AccountTree else Icons.AutoMirrored.Rounded.ViewList,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = {
-                  Text(stringResource(if (isTree) R.string.chip_view_tree else R.string.chip_view_flat))
-                },
-                modifier = Modifier.testTag("chip_view_mode_toggle"),
-              )
-            }
-
-            item {
-              FilterChip(
-                selected = showSelectionCheckboxes,
-                onClick = { showSelectionCheckboxes = !showSelectionCheckboxes },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.Rounded.CheckBox,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = {
-                  Text(
-                    if (selectedMethodIds.isNotEmpty()) "Select (${selectedMethodIds.size})"
-                    else "Select"
-                  )
-                },
-                modifier = Modifier.testTag("chip_select_mode"),
-              )
-            }
-
-            item {
-              FilterChip(
-                selected = filterState.onlyMatchingFilterRules,
-                onClick = onToggleOnlyMatchingFilterRules,
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.Rounded.FilterAlt,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = {
-                  Text(
-                    if (structuredRules.isNotEmpty()) "Match Rules (${structuredRules.size})"
-                    else "Match Rules"
-                  )
-                },
-                modifier = Modifier.testTag("chip_match_filter_rules"),
-              )
-            }
-
-            item {
-              Box {
-                FilterChip(
-                  selected = filterState.sortOrder != ClassSortOrder.NAME_ASC,
-                  onClick = { showSortMenu = true },
-                  leadingIcon = {
-                    Icon(
-                      imageVector = Icons.AutoMirrored.Rounded.Sort,
-                      contentDescription = null,
-                      modifier = Modifier.size(16.dp),
-                    )
-                  },
-                  label = { Text("Sort: ${filterState.sortOrder.label}") },
-                  modifier = Modifier.testTag("chip_class_sort"),
+          // Redesigned Non-scrolling Control Toolbar
+          Row(
+            modifier =
+              Modifier.fillMaxWidth()
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            val isTree = viewMode == ClassesViewMode.TREE
+            FilterChip(
+              selected = true,
+              onClick = { viewMode = if (isTree) ClassesViewMode.FLAT else ClassesViewMode.TREE },
+              leadingIcon = {
+                Icon(
+                  imageVector =
+                    if (isTree) Icons.Rounded.AccountTree else Icons.AutoMirrored.Rounded.ViewList,
+                  contentDescription = null,
+                  modifier = Modifier.size(16.dp),
                 )
-                DropdownMenu(
-                  expanded = showSortMenu,
-                  onDismissRequest = { showSortMenu = false },
-                ) {
-                  ClassSortOrder.entries.forEach { order ->
-                    DropdownMenuItem(
-                      text = { Text(order.label) },
-                      trailingIcon = {
-                        if (filterState.sortOrder == order) {
-                          Icon(
-                            imageVector = Icons.Rounded.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                          )
-                        }
-                      },
-                      onClick = {
-                        onSortOrderChange(order)
-                        showSortMenu = false
-                      },
-                      modifier = Modifier.testTag("sort_option_${order.name}"),
-                    )
-                  }
+              },
+              label = {
+                Text(stringResource(if (isTree) R.string.chip_view_tree else R.string.chip_view_flat))
+              },
+              modifier = Modifier.testTag("chip_view_mode_toggle"),
+            )
+
+            Box {
+              FilterChip(
+                selected = filterState.sortOrder != ClassSortOrder.NAME_ASC,
+                onClick = { showSortMenu = true },
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.Sort,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = { Text("Sort: ${filterState.sortOrder.label}") },
+                modifier = Modifier.testTag("chip_class_sort"),
+              )
+              DropdownMenu(
+                expanded = showSortMenu,
+                onDismissRequest = { showSortMenu = false },
+              ) {
+                ClassSortOrder.entries.forEach { order ->
+                  DropdownMenuItem(
+                    text = { Text(order.label) },
+                    trailingIcon = {
+                      if (filterState.sortOrder == order) {
+                        Icon(
+                          imageVector = Icons.Rounded.Check,
+                          contentDescription = null,
+                          modifier = Modifier.size(16.dp),
+                        )
+                      }
+                    },
+                    onClick = {
+                      onSortOrderChange(order)
+                      showSortMenu = false
+                    },
+                    modifier = Modifier.testTag("sort_option_${order.name}"),
+                  )
                 }
               }
             }
+
+            val activeCount = filterState.extraFilterCount
+            FilterChip(
+              selected = showExtraFilters || activeCount > 0,
+              onClick = { showExtraFilters = !showExtraFilters },
+              leadingIcon = {
+                Icon(
+                  imageVector = Icons.Rounded.Tune,
+                  contentDescription = null,
+                  modifier = Modifier.size(16.dp),
+                )
+              },
+              label = {
+                Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
+              },
+              modifier = Modifier.testTag("chip_extra_filters"),
+            )
+
+            FilterChip(
+              selected = showSelectionCheckboxes,
+              onClick = { showSelectionCheckboxes = !showSelectionCheckboxes },
+              leadingIcon = {
+                Icon(
+                  imageVector = Icons.Rounded.CheckBox,
+                  contentDescription = null,
+                  modifier = Modifier.size(16.dp),
+                )
+              },
+              label = {
+                Text(
+                  if (selectedMethodIds.isNotEmpty()) "Select (${selectedMethodIds.size})"
+                  else "Select"
+                )
+              },
+              modifier = Modifier.testTag("chip_select_mode"),
+            )
 
             val loadedDexNames =
               (loadState as? DexLoadState.Ready)?.loadedEntryNames ?: emptyList()
             if (loadedDexNames.size > 1) {
-              item {
-                val activeDex = filterState.dexSourceFilter?.takeIf { it in loadedDexNames }
-                Box {
-                  FilterChip(
-                    selected = activeDex != null,
-                    onClick = { showDexMenu = true },
-                    label = {
-                      Text(
-                        if (activeDex == null) "DEX: All (${loadedDexNames.size})"
-                        else "DEX: $activeDex"
-                      )
+              val activeDex = filterState.dexSourceFilter?.takeIf { it in loadedDexNames }
+              Box {
+                FilterChip(
+                  selected = activeDex != null,
+                  onClick = { showDexMenu = true },
+                  label = {
+                    Text(
+                      if (activeDex == null) "DEX: All (${loadedDexNames.size})"
+                      else "DEX: $activeDex"
+                    )
+                  },
+                  modifier = Modifier.testTag("chip_dex_source"),
+                )
+                DropdownMenu(
+                  expanded = showDexMenu,
+                  onDismissRequest = { showDexMenu = false },
+                ) {
+                  DropdownMenuItem(
+                    text = { Text("All Loaded DEXes (${loadedDexNames.size})") },
+                    trailingIcon = {
+                      if (activeDex == null) {
+                        Icon(
+                          imageVector = Icons.Rounded.Check,
+                          contentDescription = null,
+                          modifier = Modifier.size(16.dp),
+                        )
+                      }
                     },
-                    modifier = Modifier.testTag("chip_dex_source"),
+                    onClick = {
+                      onDexSourceFilterChange(null)
+                      showDexMenu = false
+                    },
+                    modifier = Modifier.testTag("dex_source_all"),
                   )
-                  DropdownMenu(
-                    expanded = showDexMenu,
-                    onDismissRequest = { showDexMenu = false },
-                  ) {
+                  loadedDexNames.forEach { entryName ->
                     DropdownMenuItem(
-                      text = { Text("All Loaded DEXes (${loadedDexNames.size})") },
+                      text = { Text(entryName, fontFamily = JetBrainsMonoFontFamily) },
                       trailingIcon = {
-                        if (activeDex == null) {
+                        if (activeDex == entryName) {
                           Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = null,
@@ -874,105 +892,18 @@ fun ClassesScreen(
                         }
                       },
                       onClick = {
-                        onDexSourceFilterChange(null)
+                        onDexSourceFilterChange(entryName)
                         showDexMenu = false
                       },
-                      modifier = Modifier.testTag("dex_source_all"),
+                      modifier = Modifier.testTag("dex_source_$entryName"),
                     )
-                    loadedDexNames.forEach { entryName ->
-                      DropdownMenuItem(
-                        text = { Text(entryName, fontFamily = JetBrainsMonoFontFamily) },
-                        trailingIcon = {
-                          if (activeDex == entryName) {
-                            Icon(
-                              imageVector = Icons.Rounded.Check,
-                              contentDescription = null,
-                              modifier = Modifier.size(16.dp),
-                            )
-                          }
-                        },
-                        onClick = {
-                          onDexSourceFilterChange(entryName)
-                          showDexMenu = false
-                        },
-                        modifier = Modifier.testTag("dex_source_$entryName"),
-                      )
-                    }
                   }
                 }
               }
             }
-
-            item {
-              val activeCount = filterState.extraFilterCount
-              FilterChip(
-                selected = showExtraFilters || activeCount > 0,
-                onClick = { showExtraFilters = !showExtraFilters },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.Rounded.Tune,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = {
-                  Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
-                },
-                modifier = Modifier.testTag("chip_extra_filters"),
-              )
-            }
-
-            item {
-              FilterChip(
-                selected = filterState.hideFramework,
-                onClick = onToggleHideFramework,
-                label = { Text(stringResource(R.string.chip_hide_framework)) },
-                modifier = Modifier.testTag("chip_hide_framework"),
-              )
-            }
-
-            item {
-              FilterChip(
-                selected = filterState.onlyWithBytecode,
-                onClick = onToggleOnlyBytecode,
-                label = { Text(stringResource(R.string.chip_has_bytecode)) },
-                modifier = Modifier.testTag("chip_has_bytecode"),
-              )
-            }
-
-            item {
-              FilterChip(
-                selected = filterState.onlySelected,
-                onClick = onToggleOnlySelected,
-                label = {
-                  Text("${stringResource(R.string.chip_selected_only)} (${selectedMethodIds.size})")
-                },
-                modifier = Modifier.testTag("chip_selected_only"),
-              )
-            }
-
-            if (viewMode == ClassesViewMode.TREE) {
-              item {
-                FilterChip(
-                  selected = !compactMiddlePackages,
-                  onClick = { compactMiddlePackages = !compactMiddlePackages },
-                  leadingIcon = {
-                    Icon(
-                      imageVector = Icons.Rounded.FolderOpen,
-                      contentDescription = null,
-                      modifier = Modifier.size(16.dp),
-                    )
-                  },
-                  label = {
-                    Text(if (compactMiddlePackages) "Compact Pkgs" else "Clean Levels")
-                  },
-                  modifier = Modifier.testTag("chip_folder_levels_toggle"),
-                )
-              }
-            }
           }
 
-          // Modular Expandable Filter Tray
+          // Expandable Clean Filter Tray
           ClassesFilterTray(
             visible = showExtraFilters,
             filterState = filterState,
@@ -981,20 +912,24 @@ fun ClassesScreen(
             onToggleNonEmptyPackages = onToggleNonEmptyPackages,
             onMethodScopeFilterChange = onMethodScopeFilterChange,
             onResetExtraFilters = onResetExtraFilters,
+            onToggleHideFramework = onToggleHideFramework,
+            onToggleOnlyBytecode = onToggleOnlyBytecode,
+            onToggleOnlySelected = onToggleOnlySelected,
+            onToggleOnlyMatchingFilterRules = onToggleOnlyMatchingFilterRules,
+            compactMiddlePackages = compactMiddlePackages,
+            onToggleCompactPackages = { compactMiddlePackages = !compactMiddlePackages },
           )
 
-          // Active Filter Summary Strip (shown when tray is closed and extra filters are active)
-          if (!showExtraFilters) {
-            ActiveFilterSummaryStrip(
-              filterState = filterState,
-              onResetFilters = onResetExtraFilters,
-              onClearClassType = { onClassTypeFilterChange(ClassTypeFilter.ALL) },
-              onClearMethodScope = { onMethodScopeFilterChange(MethodScopeFilter.ALL) },
-              onClearInnerClasses = onToggleHideInnerClasses,
-              onClearNonEmpty = onToggleNonEmptyPackages,
-              onClearMatchRules = onToggleOnlyMatchingFilterRules,
-            )
-          }
+          // Active Filter Summary Strip (shown when extra filters or quick filters are active)
+          ActiveFilterSummaryStrip(
+            filterState = filterState,
+            onResetFilters = onResetExtraFilters,
+            onClearClassType = { onClassTypeFilterChange(ClassTypeFilter.ALL) },
+            onClearMethodScope = { onMethodScopeFilterChange(MethodScopeFilter.ALL) },
+            onClearInnerClasses = onToggleHideInnerClasses,
+            onClearNonEmpty = onToggleNonEmptyPackages,
+            onClearMatchRules = onToggleOnlyMatchingFilterRules,
+          )
         }
       }
 
@@ -1137,7 +1072,10 @@ fun ClassesScreen(
                         manualExpandedPackages[item.group.packageName] = !item.expanded
                       }
                     },
-                    onTogglePackageSelect = { onTogglePackageSelection(item.group.subtreeClasses) },
+                    onTogglePackageSelect = {
+                      showSelectionCheckboxes = true
+                      onTogglePackageSelection(item.group.subtreeClasses)
+                    },
                     onWhitelistPackage = { onQuickPackageRule(item.group.packageName, false) },
                     onBlacklistPackage = { onQuickPackageRule(item.group.packageName, true) },
                   )
@@ -1154,7 +1092,10 @@ fun ClassesScreen(
                     selectedMethodIds = selectedMethodIds,
                     methodScopeFilter = filterState.methodScopeFilter,
                     allowInit = allowInit,
-                    onToggleClassSelect = { onToggleClassSelection(item.dexClass) },
+                    onToggleClassSelect = {
+                      showSelectionCheckboxes = true
+                      onToggleClassSelection(item.dexClass)
+                    },
                     onWhitelistClass = { onQuickClassRule(item.dexClass, false) },
                     onBlacklistClass = { onQuickClassRule(item.dexClass, true) },
                     onDeleteClass = { pendingDeleteClass = item.dexClass },
@@ -1178,7 +1119,33 @@ fun ClassesScreen(
           selectedCount = selectedMethodIds.size,
           onWhitelistSelected = { onSyncSelectionToWildcardRules(false) },
           onBlacklistSelected = { onSyncSelectionToWildcardRules(true) },
-          onClearSelection = { onTogglePackageSelection(emptyList()) },
+          onClearSelection = {
+            if (onDeselectAllClasses != null) {
+              onDeselectAllClasses(classes)
+            } else {
+              onTogglePackageSelection(emptyList())
+            }
+          },
+          onSelectAll = {
+            if (onSelectAllClasses != null) {
+              onSelectAllClasses(classes)
+            } else {
+              onTogglePackageSelection(classes)
+            }
+          },
+          onDeselectAll = {
+            if (onDeselectAllClasses != null) {
+              onDeselectAllClasses(classes)
+            } else {
+              onTogglePackageSelection(emptyList())
+            }
+          },
+          onInvertSelection = {
+            if (onInvertClassSelection != null) {
+              onInvertClassSelection(classes)
+            }
+          },
+          onDone = { showSelectionCheckboxes = false },
         )
       }
     }

@@ -7,8 +7,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -59,6 +63,7 @@ import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
  * Package folder row representing a package level in the DEX tree.
  * Styled with clean hierarchy, distinct folder states, legible badges, and well-spaced quick-actions.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PackageFolderRow(
   group: PackageGroup,
@@ -131,7 +136,10 @@ fun PackageFolderRow(
             else Color.Transparent,
           shape = RoundedCornerShape(8.dp),
         )
-        .clickable(onClick = onToggleExpand)
+        .combinedClickable(
+          onClick = onToggleExpand,
+          onLongClick = onTogglePackageSelect,
+        )
         .padding(start = startPad, end = 10.dp, top = 2.dp, bottom = 2.dp)
         .testTag("pkg_row_${group.packageName}"),
     verticalAlignment = Alignment.CenterVertically,
@@ -275,6 +283,7 @@ fun PackageFolderRow(
  * Compact Class Leaf Row representing a single DEX class.
  * Provides clear type categorization (C / I / E), crisp class name, and smooth Smali navigation.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CompactClassRow(
   dexClass: DexClassInfo,
@@ -349,7 +358,13 @@ fun CompactClassRow(
             else Color.Transparent,
           shape = RoundedCornerShape(8.dp),
         )
-        .clickable(onClick = onOpenSmali)
+        .clickable {
+          if (showSelectionCheckboxes) {
+            onToggleClassSelect()
+          } else {
+            onOpenSmali()
+          }
+        }
         .padding(start = startPad, end = 10.dp, top = 3.dp, bottom = 3.dp)
         .testTag(classRowTag),
     verticalAlignment = Alignment.CenterVertically,
@@ -559,8 +574,8 @@ fun InlineBadge(
 }
 
 /**
- * Floating batch actions bar that appears when items are selected in Select Mode.
- * Enables 1-tap bulk actions: Whitelist Selected, Blacklist Selected, Deselect.
+ * Floating batch actions bar that appears when in Select Mode or items are selected.
+ * Enables 1-tap bulk actions: Select All, Deselect All, Invert, Whitelist, Blacklist, Done.
  */
 @Composable
 fun BatchActionBar(
@@ -569,6 +584,10 @@ fun BatchActionBar(
   onBlacklistSelected: () -> Unit,
   onClearSelection: () -> Unit,
   modifier: Modifier = Modifier,
+  onSelectAll: (() -> Unit)? = null,
+  onDeselectAll: (() -> Unit)? = null,
+  onInvertSelection: (() -> Unit)? = null,
+  onDone: (() -> Unit)? = null,
 ) {
   AnimatedVisibility(
     visible = selectedCount > 0,
@@ -581,12 +600,14 @@ fun BatchActionBar(
       color = MaterialTheme.colorScheme.surfaceContainerHigh,
       border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
       shadowElevation = 6.dp,
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+      modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
       Row(
-        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+        modifier =
+          Modifier.horizontalScroll(rememberScrollState())
+            .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
       ) {
         Surface(
           shape = CircleShape,
@@ -604,14 +625,42 @@ fun BatchActionBar(
         }
 
         Text(
-          text = "$selectedCount selected",
+          text = if (selectedCount > 0) "$selectedCount sel" else "Select Mode",
           style = MaterialTheme.typography.labelMedium,
           fontFamily = JetBrainsMonoFontFamily,
           fontWeight = FontWeight.Bold,
           color = MaterialTheme.colorScheme.onSurface,
         )
 
-        Spacer(Modifier.weight(1f))
+        if (onSelectAll != null) {
+          QuickRuleBadgeButton(
+            text = "Select All",
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            onClick = onSelectAll,
+            testTag = "batch_select_all_btn",
+          )
+        }
+
+        if (onDeselectAll != null) {
+          QuickRuleBadgeButton(
+            text = "Deselect",
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            onClick = onDeselectAll,
+            testTag = "batch_deselect_all_btn",
+          )
+        }
+
+        if (onInvertSelection != null) {
+          QuickRuleBadgeButton(
+            text = "Invert",
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            onClick = onInvertSelection,
+            testTag = "batch_invert_selection_btn",
+          )
+        }
 
         QuickRuleBadgeButton(
           text = "+ Whitelist",
@@ -630,12 +679,14 @@ fun BatchActionBar(
         )
 
         IconButton(
-          onClick = onClearSelection,
+          onClick = {
+            onDone?.invoke() ?: onClearSelection()
+          },
           modifier = Modifier.size(28.dp).testTag("batch_clear_btn"),
         ) {
           Icon(
             imageVector = Icons.Rounded.Close,
-            contentDescription = "Clear selection",
+            contentDescription = "Close selection bar",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(16.dp),
           )

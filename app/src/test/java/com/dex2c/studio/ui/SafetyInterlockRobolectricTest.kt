@@ -97,15 +97,10 @@ class SafetyInterlockRobolectricTest {
       }
     }
 
-    // Switch to edit mode
-    composeTestRule.onNodeWithTag("smali_mode_edit").performClick()
-    composeTestRule.waitForIdle()
-
-    // Banner must be displayed
-    composeTestRule.onNodeWithTag("smali_assembly_disabled_banner").assertIsDisplayed()
-
-    // Assemble button must be disabled
-    composeTestRule.onNodeWithTag("smali_compile_dex_btn").assertIsNotEnabled()
+    // Edit button and assemble button must NOT exist (clean read-only viewer)
+    composeTestRule.onNodeWithTag("smali_mode_edit").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("smali_compile_dex_btn").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("smali_assembly_disabled_banner").assertDoesNotExist()
   }
 
   @Test
@@ -151,15 +146,10 @@ class SafetyInterlockRobolectricTest {
       }
     }
 
-    // Switch to edit mode
-    composeTestRule.onNodeWithTag("smali_mode_edit").performClick()
-    composeTestRule.waitForIdle()
-
-    // Banner must NOT be displayed
-    composeTestRule.onNodeWithTag("smali_assembly_disabled_banner").assertDoesNotExist()
-
-    // Assemble button must be enabled
-    composeTestRule.onNodeWithTag("smali_compile_dex_btn").assertIsEnabled()
+    // Clean viewer: Edit button and compile button do not exist
+    composeTestRule.onNodeWithTag("smali_mode_edit").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("smali_compile_dex_btn").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("smali_syntax_code_viewer").assertExists()
   }
 
   @Test

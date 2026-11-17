@@ -63,9 +63,9 @@ fun ClassMethodsSelectorSheet(
   onDeselectAllMethods: () -> Unit,
   onInvertMethodSelection: () -> Unit,
   onJumpToSpan: (SmaliMethodSpan) -> Unit,
-  onInspectMethodC: (DexEncodedMethod) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
+  onInspectMethodC: (DexEncodedMethod) -> Unit = {},
 ) {
   var searchQuery by rememberSaveable { mutableStateOf("") }
   val allMethods = remember(dexClass) { dexClass.allMethods }
@@ -284,23 +284,6 @@ fun ClassMethodsSelectorSheet(
                   .testTag("method_jump_btn_$idx"),
               ) {
                 Text("Jump", style = MaterialTheme.typography.labelSmall)
-              }
-            }
-
-            if (item.method != null) {
-              TextButton(
-                onClick = { onInspectMethodC(item.method) },
-                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp),
-                modifier = Modifier
-                  .height(28.dp)
-                  .testTag("method_c_btn_$idx"),
-              ) {
-                Text("C / CFG", style = MaterialTheme.typography.labelSmall)
-                Icon(
-                  imageVector = Icons.Rounded.ChevronRight,
-                  contentDescription = null,
-                  modifier = Modifier.size(12.dp),
-                )
               }
             }
           }

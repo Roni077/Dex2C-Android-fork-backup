@@ -594,8 +594,8 @@ fun Dex2cApp(
                 onToggleClassSelection = { viewModel.toggleClassSelection(it) },
                 onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
                 onInspectMethod = { cls, method ->
-                  viewModel.inspectMethod(cls, method)
-                  navController.navigate(ROUTE_METHOD_DETAIL)
+                  viewModel.openClassInViewer(cls, focusMethodName = method.methodRef.name)
+                  navController.navigate(ROUTE_SMALI_CLASS)
                 },
                 onInspectClassSmali = { cls ->
                   viewModel.openClassInViewer(cls)
@@ -635,6 +635,9 @@ fun Dex2cApp(
                 onDeleteDexClass = { cls ->
                   viewModel.deleteDexClasses(setOf(cls.descriptor), cls.sourceEntryName)
                 },
+                onSelectAllClasses = { viewModel.selectAllClasses(it) },
+                onDeselectAllClasses = { viewModel.deselectAllClasses(it) },
+                onInvertClassSelection = { viewModel.invertClassSelection(it) },
               )
             }
 
@@ -696,33 +699,19 @@ fun Dex2cApp(
             }
 
             composable(ROUTE_METHOD_DETAIL) {
-              DisposableEffect(Unit) {
-                onDispose {
-                  val activeRoutes = navController.currentBackStack.value.mapNotNull { it.destination.route }
-                  if (ROUTE_METHOD_DETAIL !in activeRoutes) {
-                    viewModel.clearMethodInspection()
-                  }
-                }
-              }
               val currentInspection = inspection
-              if (currentInspection != null) {
-                MethodDetailScreen(
-                  inspection = currentInspection,
-                  isSelected = currentInspection.method.id in selectedMethodIds,
-                  onToggleSelect = { viewModel.toggleMethodSelection(currentInspection.method.id) },
-                  onCopyCCode = { copyText(it) },
-                  onBack = {
-                    viewModel.clearMethodInspection()
-                    navController.popBackStack()
-                  },
-                  onOpenClassSmali = {
-                    viewModel.inspectClassSmali(
-                      currentInspection.dexClass,
-                      focusMethodName = currentInspection.method.methodRef.name,
-                    )
-                    navController.navigate(ROUTE_SMALI_CLASS)
-                  },
-                )
+              LaunchedEffect(currentInspection) {
+                if (currentInspection != null) {
+                  viewModel.openClassInViewer(
+                    currentInspection.dexClass,
+                    focusMethodName = currentInspection.method.methodRef.name,
+                  )
+                  navController.navigate(ROUTE_SMALI_CLASS) {
+                    popUpTo(ROUTE_METHOD_DETAIL) { inclusive = true }
+                  }
+                } else {
+                  navController.popBackStack()
+                }
               }
             }
 
@@ -757,8 +746,7 @@ fun Dex2cApp(
                   selectedMethodIds = selectedMethodIds,
                   onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
                   onInspectMethodC = { method ->
-                    viewModel.inspectMethod(currentSmali.dexClass, method)
-                    navController.navigate(ROUTE_METHOD_DETAIL)
+                    viewModel.openClassInViewer(currentSmali.dexClass, focusMethodName = method.methodRef.name)
                   },
                   smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
                   onSelectSmaliSyntaxTheme = { selectedTheme ->
