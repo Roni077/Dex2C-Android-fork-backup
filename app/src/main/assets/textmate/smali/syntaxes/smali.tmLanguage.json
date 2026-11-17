@@ -1,0 +1,158 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Smali",
+  "scopeName": "source.smali",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#labels" },
+    { "include": "#directives" },
+    { "include": "#modifiers" },
+    { "include": "#registers" },
+    { "include": "#opcodes" },
+    { "include": "#types" },
+    { "include": "#numbers" },
+    { "include": "#method-calls" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.smali",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.smali",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.smali",
+              "match": "\\\\(x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|[\\\\\"'ntr0-7])"
+            }
+          ]
+        }
+      ]
+    },
+    "labels": {
+      "patterns": [
+        {
+          "name": "entity.name.label.smali",
+          "match": ":[a-zA-Z0-9_$-]+"
+        }
+      ]
+    },
+    "directives": {
+      "patterns": [
+        {
+          "name": "keyword.other.directive.smali",
+          "match": "\\.(class|super|source|implements|field|end field|subannotation|end subannotation|annotation|end annotation|enum|method|end method|registers|locals|array-data|end array-data|packed-switch|end packed-switch|sparse-switch|end sparse-switch|catch|catchall|line|parameter|param|prologue|epilogue|local|end local|restart local)\\b"
+        }
+      ]
+    },
+    "modifiers": {
+      "patterns": [
+        {
+          "name": "storage.modifier.smali",
+          "match": "\\b(public|private|protected|static|final|synchronized|bridge|varargs|native|abstract|strictfp|synthetic|constructor|declared-synchronized|interface|enum|transient|volatile)\\b"
+        }
+      ]
+    },
+    "registers": {
+      "patterns": [
+        {
+          "name": "variable.parameter.register.smali",
+          "match": "\\b[vp][0-9]+\\b"
+        }
+      ]
+    },
+    "opcodes": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.return.smali",
+          "match": "\\b(return(-void|-wide|-object)?)\\b"
+        },
+        {
+          "name": "keyword.operator.opcode.invoke.smali",
+          "match": "\\b(invoke-(virtual|super|direct|static|interface|custom|polymorphic)(/range)?)\\b"
+        },
+        {
+          "name": "keyword.operator.opcode.move.smali",
+          "match": "\\b(move(-object|-wide|-result|-result-wide|-result-object|-exception)?(/from16|/16)?)\\b"
+        },
+        {
+          "name": "keyword.operator.opcode.const.smali",
+          "match": "\\b(const(-4|-16|-wide|-wide/16|-wide/32|-wide/high16|-string|-string/jumbo|-class)?(/high16)?)\\b"
+        },
+        {
+          "name": "keyword.control.conditional.smali",
+          "match": "\\b(cmpl-(float|double)|cmpg-(float|double)|cmp-long|if-(eq|ne|lt|ge|gt|le)(z)?)\\b"
+        },
+        {
+          "name": "keyword.control.flow.branch.smali",
+          "match": "\\b(goto(/16|/32)?|packed-switch|sparse-switch|throw)\\b"
+        },
+        {
+          "name": "keyword.operator.opcode.field.smali",
+          "match": "\\b([is][get|put]+(-wide|-object|-boolean|-byte|-char|-short)?)\\b"
+        },
+        {
+          "name": "keyword.operator.opcode.array.smali",
+          "match": "\\b(array-length|new-array|filled-new-array(/range)?|fill-array-data|aget(-wide|-object|-boolean|-byte|-char|-short)?|aput(-wide|-object|-boolean|-byte|-char|-short)?)\\b"
+        },
+        {
+          "name": "keyword.operator.opcode.object.smali",
+          "match": "\\b(new-instance|check-cast|instance-of|monitor-enter|monitor-exit|nop)\\b"
+        },
+        {
+          "name": "keyword.operator.arithmetic.smali",
+          "match": "\\b((neg|not|int-to|long-to|float-to|double-to)-(int|long|float|double|byte|char|short)|(add|sub|mul|div|rem|and|or|xor|shl|shr|ushr|rsub)-(int|long|float|double)(/2addr|/lit16|/lit8)?)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.class.smali",
+          "match": "L[a-zA-Z0-9_$]+(/[a-zA-Z0-9_$]+)*;"
+        },
+        {
+          "name": "storage.type.array.smali",
+          "match": "\\[+(?:[ZBSCIJFD]|L[a-zA-Z0-9_$]+(/[a-zA-Z0-9_$]+)*;)"
+        },
+        {
+          "name": "storage.type.primitive.smali",
+          "match": "\\b[ZBSCIJFDV]\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.smali",
+          "match": "-?0x[0-9a-fA-F]+[LlL]?"
+        },
+        {
+          "name": "constant.numeric.decimal.smali",
+          "match": "-?\\b[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?[fFdLl]?\\b"
+        }
+      ]
+    },
+    "method-calls": {
+      "patterns": [
+        {
+          "match": "(->)([a-zA-Z0-9_$]+|<init>|<clinit>)(\\()",
+          "captures": {
+            "1": { "name": "punctuation.accessor.arrow.smali" },
+            "2": { "name": "entity.name.function.method.smali" },
+            "3": { "name": "punctuation.definition.parameters.begin.smali" }
+          }
+        }
+      ]
+    }
+  }
+}

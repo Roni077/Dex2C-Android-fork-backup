@@ -13,7 +13,6 @@ import com.dex2c.studio.dex.DexParser
 import com.dex2c.studio.dex.DexProto
 import com.dex2c.studio.dex.DexTryBlock
 import com.dex2c.studio.dex.OpCategory
-import com.dex2c.studio.dex.SmaliJavaDecompiler
 import com.dex2c.studio.dex.parseClassDescriptor
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
@@ -470,17 +469,6 @@ class Phase2TranspilerRemediationTest {
 
     assertTrue("Must call PushLocalFrame(64) at entry", code.contains("PushLocalFrame(64)"))
     assertTrue("return-object must return PopLocalFrame(v[0].l)", code.contains("PopLocalFrame(v[0].l)"))
-  }
-
-  @Test
-  fun testSmaliJavaDecompilerPreviewContainsBytecode() {
-    val dexBytes = buildMinimalDexBytes()
-    val parsed = DexParser.parseDex(dexBytes, "unit_test.dex", "classes.dex")
-    val cls = parsed.classes.first()
-
-    val decompiledJava = SmaliJavaDecompiler.decompileClassToJava(parsed, cls)
-    assertFalse("Java preview must NOT output dummy placeholder", decompiledJava.contains("// TODO: method body"))
-    assertTrue("Java preview must include disassembled Dalvik comment", decompiledJava.contains("// [0x0000]"))
   }
 
   // --- Synthetic Test Builders ---

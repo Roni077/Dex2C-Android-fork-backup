@@ -768,7 +768,6 @@ class ExampleRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
         )
       }
     }
@@ -886,7 +885,6 @@ class ExampleRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
         )
       }
     }
@@ -1040,16 +1038,12 @@ class ExampleRobolectricTest {
   }
 
   @Test
-  fun `buildHubScreen merges pipeline and output tabs with queued badge and filter auto-switch`() {
-    var activeTab by mutableStateOf(com.dex2c.studio.ui.screens.BuildHubTab.PIPELINE)
+  fun `pipelineConfigScreen renders options and evaluates filter rules`() {
     var appliedFilters by mutableStateOf(false)
 
     composeTestRule.setContent {
       Dex2cTheme {
-        com.dex2c.studio.ui.screens.BuildHubScreen(
-          activeTab = activeTab,
-          onSelectTab = { activeTab = it },
-          selectedMethodCount = 4,
+        com.dex2c.studio.ui.screens.PipelineConfigScreen(
           config = com.dex2c.studio.transpiler.TranspilerConfig(),
           hasLoadedDex = true,
           filterMatchSummary = null,
@@ -1057,33 +1051,13 @@ class ExampleRobolectricTest {
           onImportFilterTxt = {},
           onImportDccCfg = {},
           onApplyFilterRules = { appliedFilters = true },
-          bundle = null,
-          isTranspiling = false,
-          onCopyFile = {},
-          onExportZip = {},
-          onGoToClasses = {},
+          selectedMethodCount = 4,
         )
       }
     }
 
-    // Both segmented tabs render, with badge count on Output
-    composeTestRule.onNodeWithTag("build_tab_pipeline").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("build_tab_output")
-      .assertIsDisplayed()
-      .assertTextContains("4", substring = true)
-
-    // Pipeline content starts visible
+    // Pipeline content renders directly
     composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertIsDisplayed()
-
-    // Switch directly to Output tab via segmented control
-    composeTestRule.onNodeWithTag("build_tab_output").performClick()
-    composeTestRule.waitForIdle()
-    assertEquals(com.dex2c.studio.ui.screens.BuildHubTab.OUTPUT, activeTab)
-    composeTestRule.onNodeWithTag("export_go_classes_btn").assertIsDisplayed()
-
-    // Switch back to Pipeline and verify category pills fit without scrolling, then trigger Apply Filters -> switches in-place to Output
-    composeTestRule.onNodeWithTag("build_tab_pipeline").performClick()
-    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("pipeline_tab_LOADER").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pipeline_tab_NDK_PASSES").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pipeline_tab_FILTERS").assertIsDisplayed().performClick()
@@ -1091,8 +1065,6 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("apply_filter_rules_button").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()
     assertTrue(appliedFilters)
-    assertEquals(com.dex2c.studio.ui.screens.BuildHubTab.OUTPUT, activeTab)
-    composeTestRule.onNodeWithTag("export_go_classes_btn").assertIsDisplayed()
   }
 
   @Test
@@ -1118,13 +1090,12 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("nav_build").assertIsDisplayed()
     composeTestRule.onNodeWithTag("nav_cloud").assertIsDisplayed()
     composeTestRule.onNodeWithTag("nav_config").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("nav_export").assertDoesNotExist()
 
-    // Tapping Build tab shows merged Pipeline / Output segmented control
+    // Tapping Build tab opens PipelineConfig directly
     composeTestRule.onNodeWithTag("nav_build").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("build_tab_pipeline").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("build_tab_output").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pipeline_tab_LOADER").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertIsDisplayed()
   }
 
   @Test
@@ -1301,7 +1272,6 @@ class ExampleRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
         )
       }
     }
@@ -1323,87 +1293,6 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("chip_dex_source").assertTextContains("DEX: classes2.dex")
     composeTestRule.onNodeWithTag("class_row_classes2.dex_0").assertIsDisplayed()
     composeTestRule.onNodeWithTag("class_row_0").assertDoesNotExist()
-  }
-
-  @Test
-  fun `buildHubScreen triggers onEnsureBundleBuilt on Output tab and renders modular chunks and truncated preview banner`() {
-    var activeTab by mutableStateOf(com.dex2c.studio.ui.screens.BuildHubTab.PIPELINE)
-    var ensureBuildCalls by mutableStateOf(0)
-
-    val coordinator =
-      com.dex2c.studio.transpiler.GeneratedFile(
-        fileName = "dex2c_bridge.cpp",
-        zipPath = "jni/dex2c_bridge.cpp",
-        description = "JNI coordinator & RegisterNatives dispatch across 2 C/C++ units",
-        content = "// Coordinator preview\nJNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) { return 0; }\n",
-        totalByteSize = 1_500_000L,
-        totalLineCount = 42_000,
-        isPreviewTruncated = true,
-      )
-    val part1 =
-      com.dex2c.studio.transpiler.GeneratedFile(
-        fileName = "dex2c_bridge_part_01.cpp",
-        zipPath = "jni/dex2c_bridge_part_01.cpp",
-        description = "Modular C/C++ translation unit #1",
-        content = "// Part 1 body\n",
-        totalByteSize = 820_000L,
-        totalLineCount = 21_000,
-        isPreviewTruncated = true,
-      )
-    val dummySmall =
-      com.dex2c.studio.transpiler.GeneratedFile("dex2c_runtime.h", "jni/dex2c_runtime.h", "Header", "#pragma once\n")
-    val bundle =
-      com.dex2c.studio.transpiler.GeneratedBundle(
-        sourceFile = coordinator,
-        headerFile = dummySmall,
-        androidMkFile = dummySmall.copy(fileName = "Android.mk"),
-        applicationMkFile = dummySmall.copy(fileName = "Application.mk"),
-        cmakeFile = dummySmall.copy(fileName = "CMakeLists.txt"),
-        dccCfgFile = dummySmall.copy(fileName = "dcc.cfg"),
-        filterTxtFile = dummySmall.copy(fileName = "filter.txt"),
-        loaderStubFile = dummySmall.copy(fileName = "DccApplicationLoader.java"),
-        transpiledMethodCount = 4236,
-        instructionCount = 68400,
-        warnings = emptyList(),
-        sourceFiles = listOf(coordinator, part1),
-      )
-
-    composeTestRule.setContent {
-      Dex2cTheme {
-        com.dex2c.studio.ui.screens.BuildHubScreen(
-          activeTab = activeTab,
-          onSelectTab = { activeTab = it },
-          selectedMethodCount = 4236,
-          config = com.dex2c.studio.transpiler.TranspilerConfig(),
-          hasLoadedDex = true,
-          filterMatchSummary = null,
-          onUpdateConfig = {},
-          onImportFilterTxt = {},
-          onImportDccCfg = {},
-          onApplyFilterRules = {},
-          bundle = bundle,
-          isTranspiling = false,
-          onCopyFile = {},
-          onExportZip = {},
-          onGoToClasses = {},
-          isBundleDirty = true,
-          onEnsureBundleBuilt = { ensureBuildCalls++ },
-        )
-      }
-    }
-
-    composeTestRule.waitForIdle()
-    // While on PIPELINE tab, onEnsureBundleBuilt has not been triggered
-    assertEquals(0, ensureBuildCalls)
-
-    // Switch to OUTPUT tab -> triggers onEnsureBundleBuilt and displays modular C/C++ unit count + truncated banner
-    composeTestRule.onNodeWithTag("build_tab_output").performClick()
-    composeTestRule.waitForIdle()
-    assertEquals(1, ensureBuildCalls)
-    composeTestRule.onNodeWithText("4236 methods").assertIsDisplayed()
-    composeTestRule.onNodeWithText("2 C/C++ units").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("output_preview_truncated_banner").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("output_file_tab_dex2c_bridge_part_01.cpp").assertIsDisplayed()
   }
 
   @Test
@@ -1523,30 +1412,18 @@ class ExampleRobolectricTest {
           selectedMethodCount = 12,
           recentFiles = emptyList(),
           onOpenPicker = {},
-          onInspectSelfApk = {},
           onSelectRecent = {},
-          onSelectDexEntry = {},
           onAutoSelectAppMethods = {},
           onClearSelection = {},
           onNavigateToClasses = {},
-          onNavigateToExport = {},
         )
       }
     }
 
     composeTestRule.waitForIdle()
-    // Overview tab shows hero, action buttons, and metric tiles on one screen
-    composeTestRule.onNodeWithTag("home_tab_OVERVIEW").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("home_tab_HEADER_AND_MAP").assertIsDisplayed()
     composeTestRule.onNodeWithTag("open_dex_apk_button").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("build_c_output_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("browse_classes_button").assertIsDisplayed()
     composeTestRule.onNodeWithText("1,100").assertIsDisplayed()
-
-    // Switch to Header & Map tab and verify header + map_list render without scrolling
-    composeTestRule.onNodeWithTag("home_tab_HEADER_AND_MAP").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithText("DEX v038").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("toggle_all_map_list_btn").assertIsDisplayed()
   }
 
   @Test
@@ -1620,123 +1497,8 @@ class ExampleRobolectricTest {
     val defaults = AppSettings()
     assertEquals(com.dex2c.studio.data.AppThemeMode.SYSTEM, defaults.themeMode)
     assertTrue(defaults.dynamicColor)
-    assertTrue(defaults.showOutputScreen)
     assertTrue(com.dex2c.studio.data.defaultDynamicColorForDevice(android.os.Build.VERSION_CODES.S))
     assertFalse(com.dex2c.studio.data.defaultDynamicColorForDevice(android.os.Build.VERSION_CODES.R))
-  }
-
-  @Test
-  @Config(sdk = [36], qualifiers = "w412dp-h892dp")
-  fun `output screen toggle under DEX Parser Settings hides Build Output tab and Home Build C Output button`() {
-    var settings by mutableStateOf(AppSettings())
-    var ensureBuildCalls by mutableStateOf(0)
-
-    val parsed =
-      com.dex2c.studio.dex.DexParsedFile(
-        sourceLabel = "TargetApp.apk",
-        entryName = "classes.dex",
-        rawBytes = ByteArray(64),
-        header =
-          com.dex2c.studio.dex.DexHeaderInfo(
-            magic = "dex\n038\u0000",
-            version = "038",
-            checksum = 0x1L,
-            sha1Hex = "abcdef",
-            fileSize = 64,
-            endianTag = 0x12345678L,
-            stringIdsSize = 10,
-            typeIdsSize = 5,
-            protoIdsSize = 4,
-            fieldIdsSize = 3,
-            methodIdsSize = 8,
-            classDefsSize = 2,
-            mapOff = 0x20,
-          ),
-        strings = emptyList(),
-        types = emptyList(),
-        protos = emptyList(),
-        fields = emptyList(),
-        methods = emptyList(),
-        classes = emptyList(),
-        mapItems = emptyList(),
-      )
-    val readyState =
-      com.dex2c.studio.ui.DexLoadState.Ready(
-        sourceLabel = "TargetApp.apk",
-        activeEntryName = "classes.dex",
-        parsedDex = parsed,
-        dexEntries = listOf(com.dex2c.studio.dex.ApkDexEntry("classes.dex", 64)),
-        loadedDexes = mapOf("classes.dex" to parsed),
-      )
-
-    var screenStep by mutableStateOf(0)
-
-    composeTestRule.setContent {
-      Dex2cTheme {
-        when (screenStep) {
-          0 ->
-            com.dex2c.studio.ui.screens.SettingsDexParserSubScreen(
-              appSettings = settings,
-              transpilerConfig = com.dex2c.studio.transpiler.TranspilerConfig(),
-              onUpdateAppSettings = { transform -> settings = transform(settings) },
-              onGoToPipelineConfig = {},
-            )
-          1 ->
-            com.dex2c.studio.ui.screens.BuildHubScreen(
-              activeTab = com.dex2c.studio.ui.screens.BuildHubTab.OUTPUT,
-              onSelectTab = {},
-              selectedMethodCount = 5,
-              config = com.dex2c.studio.transpiler.TranspilerConfig(),
-              hasLoadedDex = true,
-              filterMatchSummary = null,
-              onUpdateConfig = {},
-              onImportFilterTxt = {},
-              onImportDccCfg = {},
-              onApplyFilterRules = {},
-              bundle = null,
-              isTranspiling = false,
-              onCopyFile = {},
-              onExportZip = {},
-              onGoToClasses = {},
-              isBundleDirty = true,
-              onEnsureBundleBuilt = { ensureBuildCalls++ },
-              showOutputScreen = settings.showOutputScreen,
-            )
-          else ->
-            com.dex2c.studio.ui.screens.HomeScreen(
-              loadState = readyState,
-              selectedMethodCount = 5,
-              recentFiles = emptyList(),
-              onOpenPicker = {},
-              onInspectSelfApk = {},
-              onSelectRecent = {},
-              onSelectDexEntry = {},
-              onAutoSelectAppMethods = {},
-              onClearSelection = {},
-              onNavigateToClasses = {},
-              onNavigateToExport = {},
-              showOutputScreen = settings.showOutputScreen,
-            )
-        }
-      }
-    }
-
-    composeTestRule.waitForIdle()
-    assertTrue(settings.showOutputScreen)
-    composeTestRule.onNodeWithTag("settings_show_output_screen_switch").assertIsDisplayed().performClick()
-    composeTestRule.waitForIdle()
-    assertFalse(settings.showOutputScreen)
-
-    screenStep = 1
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("build_tab_output").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("build_tab_pipeline").assertDoesNotExist()
-    assertEquals(0, ensureBuildCalls)
-
-    screenStep = 2
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("browse_classes_button").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("build_c_output_button").assertDoesNotExist()
   }
 
   @Test
@@ -1961,7 +1723,7 @@ class ExampleRobolectricTest {
 
   @Test
   @Config(sdk = [36], qualifiers = "w412dp-h892dp")
-  fun `homeScreen renders BytecodeOverviewCard in live ready state and empty saved state`() {
+  fun `homeScreen renders clean ready state and empty state with recent files strip`() {
     fun makeMethod(id: String, clsDesc: String, name: String, hasCode: Boolean): com.dex2c.studio.dex.DexEncodedMethod =
       com.dex2c.studio.dex.DexEncodedMethod(
         id = id,
@@ -2064,23 +1826,6 @@ class ExampleRobolectricTest {
         byteSize = 4_200_000L,
         lastOpenedMillis = 1_700_000_000_000L,
       )
-    val savedSummary =
-      com.dex2c.studio.dex.BytecodeOverviewSummary(
-        sourceLabel = "SavedApp.apk",
-        entryName = "classes.dex",
-        dexCount = 1,
-        dexVersion = "038",
-        totalMethods = 1920,
-        bytecodeMethods = 1400,
-        totalClassDefinitions = 215,
-        appClassDefinitions = 64,
-        totalStrings = 3100,
-        analyzedAtMillis = 1_700_000_000_000L,
-        topClasses =
-          listOf(
-            com.dex2c.studio.dex.ClassDefinitionSummary("SavedEngine", "com.saved.app", 11, 10, false),
-          ),
-      )
 
     var loadState by mutableStateOf<com.dex2c.studio.ui.DexLoadState>(
       com.dex2c.studio.ui.DexLoadState.Ready(
@@ -2091,10 +1836,8 @@ class ExampleRobolectricTest {
         loadedDexes = mapOf("classes.dex" to liveDex),
       )
     )
-    var persistedSummary by mutableStateOf<com.dex2c.studio.dex.BytecodeOverviewSummary?>(savedSummary)
     var browseClassesCount = 0
     var reopenedItem: com.dex2c.studio.apk.RecentBinaryItem? = null
-    var inspectSelfCount = 0
 
     composeTestRule.setContent {
       Dex2cTheme {
@@ -2102,44 +1845,28 @@ class ExampleRobolectricTest {
           loadState = loadState,
           selectedMethodCount = 2,
           recentFiles = listOf(recentSaved),
-          lastBytecodeSummary = persistedSummary,
           onOpenPicker = {},
-          onInspectSelfApk = { inspectSelfCount++ },
           onSelectRecent = { reopenedItem = it },
-          onSelectDexEntry = {},
           onAutoSelectAppMethods = {},
           onClearSelection = {},
           onNavigateToClasses = { browseClassesCount++ },
-          onNavigateToExport = {},
         )
       }
     }
 
-    // Live Ready mode: card renders live metrics, top class definitions, and Browse Classes action
-    composeTestRule.onNodeWithTag("bytecode_overview_card").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("bytecode_overview_status_pill").assertTextContains("Live · v039")
-    composeTestRule.onNodeWithTag("bytecode_overview_methods").assertTextContains("512 total", substring = true)
-    composeTestRule.onNodeWithTag("bytecode_overview_classes").assertTextContains("38 defs", substring = true)
-    composeTestRule.onNodeWithText("MainRouter").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithText("TokenGuard").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("bytecode_overview_action_btn").performScrollTo().assertTextContains("Browse Classes").performClick()
+    // Live Ready mode: renders action buttons, metrics grid, and browse classes action
+    composeTestRule.onNodeWithTag("open_dex_apk_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("browse_classes_button").performScrollTo().assertIsDisplayed().performClick()
     assertEquals(1, browseClassesCount)
+    composeTestRule.onNodeWithText("38").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithText("512").performScrollTo().assertIsDisplayed()
 
-    // Switch to Empty state with saved summary -> renders Last Analyzed snapshot & Reopen Last DEX
+    // Switch to Empty state: renders Hero banner and RecentQuickStrip
     loadState = com.dex2c.studio.ui.DexLoadState.Empty
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("bytecode_overview_card").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("bytecode_overview_status_pill").assertTextContains("Last Analyzed · v038")
-    composeTestRule.onNodeWithText("SavedEngine").performScrollTo().assertIsDisplayed()
-    composeTestRule.onNodeWithTag("bytecode_overview_action_btn").performScrollTo().assertTextContains("Reopen Last DEX").performClick()
+    composeTestRule.onNodeWithTag("open_dex_apk_button").assertIsDisplayed()
+    composeTestRule.onNodeWithText("SavedApp.apk").performScrollTo().assertIsDisplayed().performClick()
     assertEquals(recentSaved, reopenedItem)
-
-    // Switch to clean Empty state without saved summary -> Awaiting DEX + Inspect Live APK
-    persistedSummary = null
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("bytecode_overview_status_pill").assertTextContains("Awaiting DEX")
-    composeTestRule.onNodeWithTag("bytecode_overview_action_btn").performScrollTo().assertTextContains("Inspect Live APK").performClick()
-    assertEquals(1, inspectSelfCount)
   }
 
   @Test
@@ -2377,7 +2104,6 @@ class ExampleRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
           onInspectClassSmali = { openedSmaliClass = it },
         )
       }
@@ -2670,7 +2396,6 @@ class ExampleRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
           config = cfg,
           onUpdateConfig = { transform -> cfg = transform(cfg) },
           onQuickPackageRule = { pkg, isBlacklist ->
@@ -3166,7 +2891,6 @@ class ExampleRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
         )
       }
     }

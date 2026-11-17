@@ -258,7 +258,6 @@ class GitHubCloudWorkflowTest {
     val defaults = com.dex2c.studio.data.AppSettings()
     assertEquals(com.dex2c.studio.data.AppThemeMode.SYSTEM, defaults.themeMode)
     assertEquals(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S, defaults.dynamicColor)
-    assertTrue(defaults.showOutputScreen)
     assertEquals("#2EE59D", defaults.accentSeedHex)
     assertEquals(12, defaults.codeFontSizeSp)
     assertTrue(defaults.showLineNumbers)

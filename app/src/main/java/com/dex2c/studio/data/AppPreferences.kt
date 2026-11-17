@@ -77,7 +77,6 @@ data class AppSettings(
   val defaultHideFramework: Boolean = true,
   val defaultOnlyBytecode: Boolean = true,
   val autoSelectMethodLimit: Int = 32,
-  val showOutputScreen: Boolean = true,
   val hasCompletedOnboarding: Boolean = false,
 )
 
@@ -96,7 +95,6 @@ class AppPreferences(private val context: Context) {
     val DEFAULT_HIDE_FRAMEWORK = booleanPreferencesKey("default_hide_framework")
     val DEFAULT_ONLY_BYTECODE = booleanPreferencesKey("default_only_bytecode")
     val AUTO_SELECT_METHOD_LIMIT = intPreferencesKey("auto_select_method_limit")
-    val SHOW_OUTPUT_SCREEN = booleanPreferencesKey("show_output_screen")
     val HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
   }
 
@@ -121,7 +119,6 @@ class AppPreferences(private val context: Context) {
       defaultOnlyBytecode = prefs[Keys.DEFAULT_ONLY_BYTECODE] ?: defaults.defaultOnlyBytecode,
       autoSelectMethodLimit =
         (prefs[Keys.AUTO_SELECT_METHOD_LIMIT] ?: defaults.autoSelectMethodLimit).coerceIn(8, 256),
-      showOutputScreen = prefs[Keys.SHOW_OUTPUT_SCREEN] ?: defaults.showOutputScreen,
       hasCompletedOnboarding = prefs[Keys.HAS_COMPLETED_ONBOARDING] ?: defaults.hasCompletedOnboarding,
     )
   }
@@ -142,7 +139,6 @@ class AppPreferences(private val context: Context) {
     prefs[Keys.DEFAULT_HIDE_FRAMEWORK] = settings.defaultHideFramework
     prefs[Keys.DEFAULT_ONLY_BYTECODE] = settings.defaultOnlyBytecode
     prefs[Keys.AUTO_SELECT_METHOD_LIMIT] = settings.autoSelectMethodLimit
-    prefs[Keys.SHOW_OUTPUT_SCREEN] = settings.showOutputScreen
     prefs[Keys.HAS_COMPLETED_ONBOARDING] = settings.hasCompletedOnboarding
   }
 

@@ -95,17 +95,9 @@ stateDiagram-v2
         CppJniTab --> CfgInstructionsTab: Switch Tab
     }
 
-    Classes --> BuildHub: Tap Build / Transpile
-    Home --> BuildHub: Transpile Selected
-    
-    state BuildHub {
-        [*] --> PipelineConfig
-        PipelineConfig --> OutputExport: Switch Tab
-        OutputExport --> LocalZipExport: Download NDK Bundle
-    }
-
-    Home --> CloudBuild: Cloud Actions Button
-    BuildHub --> CloudBuild: Dispatch Remote Build
+    Classes --> PipelineConfig: Tap Build / Pipeline
+    Home --> PipelineConfig: Configure Pipeline
+    PipelineConfig --> CloudBuild: Dispatch Remote Build
     state CloudBuild {
         [*] --> DeviceAuth: If Logged Out
         DeviceAuth --> RepoConfig: Authenticated
@@ -327,18 +319,13 @@ flowchart TD
 
 The **Build Hub** configures how transpilation occurs and generates standalone build systems:
 
-1. **Pipeline Configuration (`PIPELINE` Tab)**:
+1. **Pipeline Configuration (`Build` Tab)**:
    - **JNI Binding Style**: Choose `RegisterNatives` (`JNI_OnLoad` dynamic registration) or Static Symbols.
    - **C/C++ Dialect**: Toggle between `C++17 (env->)` and `C99 ((*env)->)`.
    - **Constructor Support (`--allow-init`)**: Allow transpiling `<init>` constructors into native init routines.
    - **Target ABIs**: Select architectures: `arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`.
    - **Module Name & Loader**: Configure native library name (`libdex2c.so`) and Java loader class name.
-2. **Generated Output Preview & ZIP Export (`OUTPUT` Tab)**:
-   - Previews generated files:
-     - `dex2c_generated.cpp` & `dex2c_generated.h`
-     - `CMakeLists.txt` & `Android.mk` / `Application.mk`
-     - `dcc.cfg` & `filter.txt`
-   - **Export ZIP**: `ZipBundleExporter` bundles all files into a ready-to-compile NDK project `.zip` and prompts the user to save it via SAF.
+   - **Filter Rules (`filter.txt`)**: Import, configure, and evaluate whitelist/blacklist patterns for native translation.
 
 ---
 
@@ -480,13 +467,12 @@ sequenceDiagram
 2. Go to **Classes** screen and enable **Select Mode**.
 3. Select the classes or methods containing sensitive algorithms (e.g., encryption routines, token generators).
 4. Tap the **Rules** tab or tap **+W** to ensure these methods are included in the whitelist.
-5. Tap **Build / Transpile** to open the **Build Hub**.
+5. Tap **Build / Transpile** to open the **Build Pipeline** screen.
 6. In **Pipeline Config**:
    - Set JNI Binding to `RegisterNatives` (dynamic binding without exported symbol names).
    - Select `C++17 (env->)`.
    - Select target ABIs: `arm64-v8a` and `armeabi-v7a`.
-7. Switch to the **Output Tab** to preview the generated `dex2c_generated.cpp` and `CMakeLists.txt`.
-8. Tap **Export ZIP** to download the C++ bundle for local NDK compilation, or navigate to **Cloud Build** to build remotely via GitHub Actions.
+7. Navigate to **Cloud Build** to build remotely via GitHub Actions, or export patched APK/DEX directly from the Classes menu.
 
 ---
 

@@ -110,14 +110,13 @@ import com.dex2c.studio.ui.DexLoadState
 import com.dex2c.studio.ui.components.ApkPickerSheet
 import com.dex2c.studio.ui.components.ApkPreviewSheet
 import com.dex2c.studio.ui.components.ExpressiveMotion
-import com.dex2c.studio.ui.screens.BuildHubScreen
-import com.dex2c.studio.ui.screens.BuildHubTab
 import com.dex2c.studio.ui.screens.ClassesScreen
 import com.dex2c.studio.ui.screens.ClassesSubTab
 import com.dex2c.studio.ui.screens.CloudBuildScreen
 import com.dex2c.studio.ui.screens.HomeScreen
 import com.dex2c.studio.ui.screens.MethodDetailScreen
 import com.dex2c.studio.ui.screens.OnboardingScreen
+import com.dex2c.studio.ui.screens.PipelineConfigScreen
 import com.dex2c.studio.ui.screens.SettingsScreen
 import com.dex2c.studio.ui.screens.SmaliClassScreen
 import com.dex2c.studio.ui.theme.Dex2cTheme
@@ -219,10 +218,6 @@ fun Dex2cApp(
   val selectedMethodIds by viewModel.selectedMethodIds.collectAsStateWithLifecycle()
   val config by viewModel.config.collectAsStateWithLifecycle()
   val inspection by viewModel.inspection.collectAsStateWithLifecycle()
-  val generatedBundle by viewModel.generatedBundle.collectAsStateWithLifecycle()
-  val isTranspiling by viewModel.isTranspiling.collectAsStateWithLifecycle()
-  val transpileProgress by viewModel.transpileProgress.collectAsStateWithLifecycle()
-  val isBundleDirty by viewModel.isBundleDirty.collectAsStateWithLifecycle()
   val statusBanner by viewModel.statusBanner.collectAsStateWithLifecycle()
 
   val isPickerOpen by viewModel.isPickerOpen.collectAsStateWithLifecycle()
@@ -231,13 +226,14 @@ fun Dex2cApp(
   val isLoadingApps by viewModel.isLoadingApps.collectAsStateWithLifecycle()
   val appSearchQuery by viewModel.appSearchQuery.collectAsStateWithLifecycle()
   val recentFiles by viewModel.recentFiles.collectAsStateWithLifecycle()
-  val lastBytecodeSummary by viewModel.lastBytecodeSummary.collectAsStateWithLifecycle()
   val stagingState by viewModel.stagingState.collectAsStateWithLifecycle()
   val filterMatchSummary by viewModel.filterMatchSummary.collectAsStateWithLifecycle()
   val smaliClassState by viewModel.smaliClassState.collectAsStateWithLifecycle()
   val isCompilingDex by viewModel.isCompilingDex.collectAsStateWithLifecycle()
   val lastCompileError by viewModel.lastCompileError.collectAsStateWithLifecycle()
   val dexEditUndoPrompt by viewModel.dexEditUndoPrompt.collectAsStateWithLifecycle()
+  val classViewerTabs by viewModel.classViewerTabs.collectAsStateWithLifecycle()
+  val activeClassTabId by viewModel.activeClassTabId.collectAsStateWithLifecycle()
   var pendingSmaliExportText by remember { mutableStateOf<String?>(null) }
 
   val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
@@ -327,13 +323,6 @@ fun Dex2cApp(
       }
     }
 
-  val exportZipLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
-      if (uri != null) {
-        viewModel.exportBundleToZip(uri)
-      }
-    }
-
   val exportSmaliLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
       val text = pendingSmaliExportText
@@ -398,13 +387,7 @@ fun Dex2cApp(
     saveCloudApkLauncher.launch(pending.fileName)
   }
 
-  var buildHubTab by rememberSaveable { mutableStateOf(BuildHubTab.PIPELINE) }
   var classesSubTab by rememberSaveable { mutableStateOf(ClassesSubTab.EXPLORER) }
-  LaunchedEffect(appSettings.showOutputScreen) {
-    if (!appSettings.showOutputScreen && buildHubTab == BuildHubTab.OUTPUT) {
-      buildHubTab = BuildHubTab.PIPELINE
-    }
-  }
 
   val navItems =
     listOf(
@@ -579,33 +562,13 @@ fun Dex2cApp(
                 selectedMethodCount = selectedMethodIds.size,
                 recentFiles = recentFiles,
                 onOpenPicker = { tab -> viewModel.openPicker(tab) },
-                onInspectSelfApk = { viewModel.inspectLiveAppApk() },
                 onSelectRecent = { viewModel.stageFromRecentItem(it) },
-                onSelectDexEntry = { viewModel.switchDexEntry(it) },
                 onAutoSelectAppMethods = { viewModel.autoSelectAppMethods() },
                 onClearSelection = { viewModel.clearSelection() },
                 onNavigateToClasses = {
                   classesSubTab = ClassesSubTab.EXPLORER
                   navigateTopLevel(ROUTE_CLASSES)
                 },
-                onNavigateToExport = {
-                  if (appSettings.showOutputScreen) {
-                    buildHubTab = BuildHubTab.OUTPUT
-                    navigateTopLevel(ROUTE_BUILD)
-                  }
-                },
-                onFocusHeaderDex = { viewModel.focusHeaderDexEntry(it) },
-                lastBytecodeSummary = lastBytecodeSummary,
-                showOutputScreen = appSettings.showOutputScreen,
-                config = config,
-                filterMatchSummary = filterMatchSummary,
-                onTogglePresetRule = { viewModel.togglePresetRuleLine(it) },
-                onApplyFilterRules = { viewModel.applyFilterRules() },
-                onOpenRuleBuilder = {
-                  classesSubTab = ClassesSubTab.FILTER_RULES
-                  navigateTopLevel(ROUTE_CLASSES)
-                },
-                onCopyText = { copyText(it) },
               )
             }
 
@@ -634,9 +597,8 @@ fun Dex2cApp(
                   viewModel.inspectMethod(cls, method)
                   navController.navigate(ROUTE_METHOD_DETAIL)
                 },
-                onInspectSelfApk = { viewModel.inspectLiveAppApk() },
                 onInspectClassSmali = { cls ->
-                  viewModel.inspectClassSmali(cls)
+                  viewModel.openClassInViewer(cls)
                   navController.navigate(ROUTE_SMALI_CLASS)
                 },
                 config = config,
@@ -677,38 +639,15 @@ fun Dex2cApp(
             }
 
             composable(ROUTE_BUILD) {
-              BuildHubScreen(
-                activeTab = buildHubTab,
-                onSelectTab = { tab ->
-                  if (appSettings.showOutputScreen || tab == BuildHubTab.PIPELINE) {
-                    buildHubTab = tab
-                  }
-                },
-                selectedMethodCount = selectedMethodIds.size,
+              PipelineConfigScreen(
                 config = config,
                 hasLoadedDex = loadState is DexLoadState.Ready,
                 filterMatchSummary = filterMatchSummary,
                 onUpdateConfig = { viewModel.updateConfig(it) },
                 onImportFilterTxt = { importFilterLauncher.launch(arrayOf("text/*", "*/*")) },
                 onImportDccCfg = { importDccCfgLauncher.launch(arrayOf("application/json", "text/*", "*/*")) },
-                onApplyFilterRules = {
-                  viewModel.applyFilterRules()
-                  if (appSettings.showOutputScreen) {
-                    buildHubTab = BuildHubTab.OUTPUT
-                  }
-                },
-                bundle = generatedBundle,
-                isTranspiling = isTranspiling,
-                onCopyFile = { copyText(it) },
-                onExportZip = {
-                  val name = "${config.moduleName.ifBlank { "dex2c_native" }}_jni.zip"
-                  exportZipLauncher.launch(name)
-                },
-                onGoToClasses = { navigateTopLevel(ROUTE_CLASSES) },
-                transpileProgress = transpileProgress,
-                isBundleDirty = isBundleDirty,
-                onEnsureBundleBuilt = { viewModel.ensureBundleBuilt() },
-                showOutputScreen = appSettings.showOutputScreen,
+                onApplyFilterRules = { viewModel.applyFilterRules() },
+                selectedMethodCount = selectedMethodIds.size,
                 onSyncSelectionToWildcardRules = { isBlacklist ->
                   viewModel.syncSelectionToWildcardRules(isBlacklist)
                 },
@@ -797,7 +736,13 @@ fun Dex2cApp(
                 }
               }
               val currentSmali = smaliClassState
+              LaunchedEffect(currentSmali) {
+                if (currentSmali == null && navController.currentDestination?.route == ROUTE_SMALI_CLASS) {
+                  navController.popBackStack()
+                }
+              }
               if (currentSmali != null) {
+                val availableClasses = (loadState as? DexLoadState.Ready)?.mergedClasses.orEmpty()
                 SmaliClassScreen(
                   state = currentSmali,
                   onCopySmali = { copyText(it) },
@@ -824,6 +769,21 @@ fun Dex2cApp(
                   onClearCompileError = { viewModel.clearCompileError() },
                   onCompileSmali = { editedSmaliText ->
                     viewModel.compileEditedSmaliClass(currentSmali.dexClass, editedSmaliText)
+                  },
+                  tabs = classViewerTabs,
+                  activeTabId = activeClassTabId,
+                  onSelectTab = { viewModel.selectClassTab(it) },
+                  onCloseTab = { viewModel.closeClassTab(it) },
+                  onCloseOtherTabs = { viewModel.closeOtherTabs(it) },
+                  onCloseAllTabs = { viewModel.closeAllTabs() },
+                  onToggleClassSelection = { viewModel.toggleClassSelection(it) },
+                  onSelectAllMethodsInClass = { viewModel.selectAllMethodsInClass(it) },
+                  onDeselectAllMethodsInClass = { viewModel.deselectAllMethodsInClass(it) },
+                  onInvertClassMethodSelection = { viewModel.invertClassMethodSelection(it) },
+                  availableClasses = availableClasses,
+                  onOpenClassInViewer = { viewModel.openClassInViewer(it) },
+                  onSmaliContentChanged = { tabId, newLines ->
+                    viewModel.updateTabSmaliText(tabId, newLines)
                   },
                 )
               }
@@ -860,7 +820,6 @@ fun Dex2cApp(
                 onOpenGitHubAppSettings = { openBrowserUrl("https://github.com/settings/developers") },
                 onGoToPipelineConfig = {
                   navController.popBackStack()
-                  buildHubTab = BuildHubTab.PIPELINE
                   navigateTopLevel(ROUTE_BUILD)
                 },
                 onClearRecentHistory = { viewModel.clearRecentHistory() },

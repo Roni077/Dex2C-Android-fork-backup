@@ -141,7 +141,6 @@ fun MethodDetailScreen(
             val activeCopyText =
               when (selectedTab) {
                 4 -> resolvedMethodSmali
-                5 -> inspection.decompiledJava
                 else -> inspection.transpiledC
               }
             onCopyCCode(activeCopyText)
@@ -211,22 +210,14 @@ fun MethodDetailScreen(
             SegmentedButton(
               selected = selectedTab == 0 || selectedTab == 2,
               onClick = { selectedTab = 2 },
-              shape = SegmentedButtonDefaults.itemShape(0, 5),
+              shape = SegmentedButtonDefaults.itemShape(0, 4),
             ) {
               Text("${stringResource(R.string.tab_dalvik)} + ${stringResource(R.string.tab_transpiled_c)}")
             }
             SegmentedButton(
-              selected = selectedTab == 5,
-              onClick = { selectedTab = 5 },
-              shape = SegmentedButtonDefaults.itemShape(1, 5),
-              modifier = Modifier.testTag("tab_method_java_wide"),
-            ) {
-              Text("Java")
-            }
-            SegmentedButton(
               selected = selectedTab == 4,
               onClick = { selectedTab = 4 },
-              shape = SegmentedButtonDefaults.itemShape(2, 5),
+              shape = SegmentedButtonDefaults.itemShape(1, 4),
               modifier = Modifier.testTag("tab_method_smali_wide"),
             ) {
               Text(stringResource(R.string.tab_smali))
@@ -234,7 +225,7 @@ fun MethodDetailScreen(
             SegmentedButton(
               selected = selectedTab == 1,
               onClick = { selectedTab = 1 },
-              shape = SegmentedButtonDefaults.itemShape(3, 5),
+              shape = SegmentedButtonDefaults.itemShape(2, 4),
               modifier = Modifier.testTag("tab_blocks_wide"),
             ) {
               Text(stringResource(R.string.tab_blocks))
@@ -242,7 +233,7 @@ fun MethodDetailScreen(
             SegmentedButton(
               selected = selectedTab == 3,
               onClick = { selectedTab = 3 },
-              shape = SegmentedButtonDefaults.itemShape(4, 5),
+              shape = SegmentedButtonDefaults.itemShape(3, 4),
               modifier = Modifier.testTag("tab_dex_meta_wide"),
             ) {
               Text(stringResource(R.string.tab_dex_meta))
@@ -263,11 +254,6 @@ fun MethodDetailScreen(
             4 ->
               SmaliSyntaxCodeViewer(
                 lines = smaliLines,
-                modifier = Modifier.fillMaxSize(),
-              )
-            5 ->
-              SyntaxCodeViewer(
-                code = inspection.decompiledJava.ifBlank { "// No Java decompilation available." },
                 modifier = Modifier.fillMaxSize(),
               )
             else ->
@@ -308,10 +294,9 @@ fun MethodDetailScreen(
           when (selectedTab) {
             0 -> 0
             4 -> 1
-            5 -> 2
-            1 -> 3
-            2 -> 4
-            else -> 5
+            1 -> 2
+            2 -> 3
+            else -> 4
           }
         Column(modifier = Modifier.fillMaxSize().padding(bottom = 12.dp)) {
           PrimaryTabRow(selectedTabIndex = visualTabIndex) {
@@ -326,12 +311,6 @@ fun MethodDetailScreen(
               onClick = { selectedTab = 4 },
               text = { Text(stringResource(R.string.tab_smali), maxLines = 1, overflow = TextOverflow.Ellipsis) },
               modifier = Modifier.testTag("tab_method_smali"),
-            )
-            Tab(
-              selected = selectedTab == 5,
-              onClick = { selectedTab = 5 },
-              text = { Text("Java", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-              modifier = Modifier.testTag("tab_method_java"),
             )
             Tab(
               selected = selectedTab == 1,
@@ -369,11 +348,6 @@ fun MethodDetailScreen(
               4 ->
                 SmaliSyntaxCodeViewer(
                   lines = smaliLines,
-                  modifier = Modifier.fillMaxSize(),
-                )
-              5 ->
-                SyntaxCodeViewer(
-                  code = inspection.decompiledJava.ifBlank { "// No Java decompilation available." },
                   modifier = Modifier.fillMaxSize(),
                 )
               1 ->

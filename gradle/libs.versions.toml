@@ -43,6 +43,7 @@ credentials = "1.5.0"
 googleid = "1.1.1"
 workRuntimeKtx = "2.10.0"
 smali = "3.0.9"
+soraEditor = "0.24.7"
 
 
 [libraries]
@@ -102,6 +103,9 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 smali-dexlib2 = { group = "com.android.tools.smali", name = "smali-dexlib2", version.ref = "smali" }
 smali-baksmali = { group = "com.android.tools.smali", name = "smali-baksmali", version.ref = "smali" }
 smali-assembler = { group = "com.android.tools.smali", name = "smali", version.ref = "smali" }
+sora-editor-bom = { group = "io.github.rosemoe", name = "editor-bom", version.ref = "soraEditor" }
+sora-editor-core = { group = "io.github.rosemoe", name = "editor" }
+sora-editor-language-textmate = { group = "io.github.rosemoe", name = "language-textmate" }
 
 
 [plugins]

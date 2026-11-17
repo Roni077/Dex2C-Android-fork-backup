@@ -1,0 +1,7 @@
+[
+  {
+    "scopeName": "source.smali",
+    "path": "textmate/smali/syntaxes/smali.tmLanguage.json",
+    "languageConfiguration": "textmate/smali/language-configuration.json"
+  }
+]

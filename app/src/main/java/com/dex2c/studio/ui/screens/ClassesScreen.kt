@@ -323,7 +323,6 @@ fun ClassesScreen(
   onToggleClassSelection: (DexClassInfo) -> Unit,
   onToggleMethodSelection: (String) -> Unit,
   onInspectMethod: (DexClassInfo, DexEncodedMethod) -> Unit,
-  onInspectSelfApk: () -> Unit,
   modifier: Modifier = Modifier,
   onInspectClassSmali: (DexClassInfo) -> Unit = {},
   onSortOrderChange: (ClassSortOrder) -> Unit = {},
@@ -1041,13 +1040,6 @@ fun ClassesScreen(
               text = "Load a DEX or APK on Home first",
               style = MaterialTheme.typography.titleMedium,
             )
-            Button(
-              onClick = onInspectSelfApk,
-              shape = RoundedCornerShape(20.dp),
-              modifier = Modifier.testTag("classes_inspect_apk_btn"),
-            ) {
-              Text(stringResource(R.string.action_inspect_self_apk))
-            }
           }
         }
       } else if (activeSubTab == ClassesSubTab.METHODS) {

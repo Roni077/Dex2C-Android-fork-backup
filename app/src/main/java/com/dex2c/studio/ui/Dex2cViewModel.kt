@@ -57,8 +57,8 @@ import com.dex2c.studio.dex.DexTryBlock
 import com.dex2c.studio.dex.MethodControlFlowGraph
 import com.dex2c.studio.dex.SmaliClassDisassembler
 import com.dex2c.studio.dex.SmaliDexCompiler
-import com.dex2c.studio.dex.SmaliJavaDecompiler
 import com.dex2c.studio.dex.SmaliMethodSpan
+import com.dex2c.studio.ui.editor.ClassViewerTab
 import com.dex2c.studio.transpiler.DccConfigCodec
 import com.dex2c.studio.transpiler.Dex2cTranspiler
 import com.dex2c.studio.transpiler.FilterMatchSummary
@@ -134,7 +134,6 @@ data class MethodInspectionState(
   val structuralMeta: DexMethodStructuralMeta,
   val cfg: MethodControlFlowGraph = ControlFlowGraphBuilder.build(instructions, tryBlocks),
   val methodSmali: String = "",
-  val decompiledJava: String = "",
 )
 
 sealed interface SmaliClassUiState {
@@ -151,7 +150,6 @@ sealed interface SmaliClassUiState {
     val durationMs: Long,
     val initialFocusMethodName: String? = null,
     val methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
-    val decompiledJava: String = "",
   ) : SmaliClassUiState {
     val smaliText: String
       get() = lines.joinToString("\n")
@@ -166,7 +164,6 @@ sealed interface SmaliClassUiState {
       durationMs: Long,
       initialFocusMethodName: String? = null,
       methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
-      decompiledJava: String = "",
     ) : this(
       dexClass = dexClass,
       lines = lines,
@@ -176,7 +173,6 @@ sealed interface SmaliClassUiState {
       durationMs = durationMs,
       initialFocusMethodName = initialFocusMethodName,
       methodSpans = methodSpans,
-      decompiledJava = decompiledJava,
     )
   }
 
@@ -318,6 +314,13 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   private val _smaliClassState = MutableStateFlow<SmaliClassUiState?>(null)
   val smaliClassState: StateFlow<SmaliClassUiState?> = _smaliClassState.asStateFlow()
+
+  // Multi-Class Tabbed Viewer State
+  private val _classViewerTabs = MutableStateFlow<List<ClassViewerTab>>(emptyList())
+  val classViewerTabs: StateFlow<List<ClassViewerTab>> = _classViewerTabs.asStateFlow()
+
+  private val _activeClassTabId = MutableStateFlow<String?>(null)
+  val activeClassTabId: StateFlow<String?> = _activeClassTabId.asStateFlow()
 
   // App personalization, editor & DEX parser preferences
   private val _appSettings = MutableStateFlow(AppSettings())
@@ -1041,6 +1044,30 @@ class Dex2cViewModel @JvmOverloads constructor(
     markBundleDirty()
   }
 
+  fun selectAllMethodsInClass(dexClass: DexClassInfo) {
+    val bytecodeMethods = (dexClass.directMethods + dexClass.virtualMethods).filter { it.hasBytecode }
+    val targetIds = bytecodeMethods.map { it.id }.ifEmpty { dexClass.allMethods.map { it.id } }.toSet()
+    _selectedMethodIds.update { it + targetIds }
+    markBundleDirty()
+  }
+
+  fun deselectAllMethodsInClass(dexClass: DexClassInfo) {
+    val targetIds = dexClass.allMethods.map { it.id }.toSet()
+    _selectedMethodIds.update { it - targetIds }
+    markBundleDirty()
+  }
+
+  fun invertClassMethodSelection(dexClass: DexClassInfo) {
+    val bytecodeMethods = (dexClass.directMethods + dexClass.virtualMethods).filter { it.hasBytecode }
+    val targetIds = bytecodeMethods.map { it.id }.ifEmpty { dexClass.allMethods.map { it.id } }.toSet()
+    _selectedMethodIds.update { current ->
+      val toAdd = targetIds.filter { it !in current }
+      val toRemove = targetIds.filter { it in current }
+      (current - toRemove.toSet()) + toAdd.toSet()
+    }
+    markBundleDirty()
+  }
+
   fun togglePackageSelection(packageClasses: List<DexClassInfo>) {
     val cfg = _config.value
     val allowInit = cfg.allowInit
@@ -1191,11 +1218,9 @@ class Dex2cViewModel @JvmOverloads constructor(
     smaliJob =
       viewModelScope.launch {
         try {
-          val (result, javaCode) =
+          val result =
             withContext(Dispatchers.Default) {
-              val dis = SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
-              val java = SmaliJavaDecompiler.decompileClassToJava(targetDex, dexClass)
-              dis to java
+              SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
             }
           _smaliClassState.value =
             SmaliClassUiState.Ready(
@@ -1207,7 +1232,6 @@ class Dex2cViewModel @JvmOverloads constructor(
               durationMs = result.durationMs,
               initialFocusMethodName = focusMethodName,
               methodSpans = result.methodSpans,
-              decompiledJava = javaCode,
             )
         } catch (t: Throwable) {
           if (t is CancellationException) throw t
@@ -1226,6 +1250,75 @@ class Dex2cViewModel @JvmOverloads constructor(
     _lastCompileError.value = null
     _smaliClassState.value = null
     SmaliClassDisassembler.trimCache(maxEntries = 1)
+  }
+
+  fun openClassInViewer(dexClass: DexClassInfo, focusMethodName: String? = null) {
+    val ready = _loadState.value as? DexLoadState.Ready ?: return
+    val existingTab = _classViewerTabs.value.firstOrNull { it.dexClass.fullName == dexClass.fullName }
+    if (existingTab != null) {
+      _activeClassTabId.value = existingTab.id
+      inspectClassSmali(dexClass, focusMethodName)
+      return
+    }
+
+    val targetDex = ready.loadedDexes[dexClass.sourceEntryName] ?: ready.parsedDex
+    val result = SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
+    val newTab = ClassViewerTab(
+      dexClass = dexClass,
+      initialLines = result.lines,
+      methodSpans = result.methodSpans,
+      focusMethodName = focusMethodName,
+    )
+    _classViewerTabs.update { it + newTab }
+    _activeClassTabId.value = newTab.id
+    inspectClassSmali(dexClass, focusMethodName)
+  }
+
+  fun closeClassTab(tabId: String) {
+    val current = _classViewerTabs.value
+    val index = current.indexOfFirst { it.id == tabId }
+    if (index == -1) return
+    val updated = current.filterNot { it.id == tabId }
+    _classViewerTabs.value = updated
+    if (_activeClassTabId.value == tabId) {
+      val nextIndex = (index - 1).coerceAtLeast(0)
+      val nextTab = updated.getOrNull(nextIndex)
+      _activeClassTabId.value = nextTab?.id
+      if (nextTab != null) {
+        inspectClassSmali(nextTab.dexClass, nextTab.focusMethodName)
+      } else {
+        _smaliClassState.value = null
+      }
+    }
+  }
+
+  fun closeOtherTabs(keepTabId: String) {
+    _classViewerTabs.update { it.filter { tab -> tab.id == keepTabId } }
+    _activeClassTabId.value = keepTabId
+    val tab = _classViewerTabs.value.firstOrNull { it.id == keepTabId }
+    if (tab != null) {
+      inspectClassSmali(tab.dexClass, tab.focusMethodName)
+    }
+  }
+
+  fun closeAllTabs() {
+    _classViewerTabs.value = emptyList()
+    _activeClassTabId.value = null
+    _smaliClassState.value = null
+  }
+
+  fun selectClassTab(tabId: String) {
+    val tab = _classViewerTabs.value.firstOrNull { it.id == tabId } ?: return
+    _activeClassTabId.value = tabId
+    inspectClassSmali(tab.dexClass, tab.focusMethodName)
+  }
+
+  fun updateTabSmaliText(tabId: String, newLines: List<String>) {
+    _classViewerTabs.update { tabs ->
+      tabs.map { tab ->
+        if (tab.id == tabId) tab.copy(editedLines = newLines, isDirty = true) else tab
+      }
+    }
   }
 
   fun clearCompileError() {
@@ -1309,11 +1402,9 @@ class Dex2cViewModel @JvmOverloads constructor(
                 ?: updatedParsed.classes.firstOrNull { it.fullName == dexClass.fullName }
                 ?: dexClass
 
-            val (disassembled, javaCode) =
+            val disassembled =
               withContext(Dispatchers.Default) {
-                val dis = SmaliClassDisassembler.disassembleClass(updatedParsed, updatedClass)
-                val java = SmaliJavaDecompiler.decompileClassToJava(updatedParsed, updatedClass)
-                dis to java
+                SmaliClassDisassembler.disassembleClass(updatedParsed, updatedClass)
               }
 
             SmaliClassDisassembler.clearCache()
@@ -1331,7 +1422,6 @@ class Dex2cViewModel @JvmOverloads constructor(
                 fieldCount = disassembled.fieldCount,
                 durationMs = disassembled.durationMs,
                 methodSpans = disassembled.methodSpans,
-                decompiledJava = javaCode,
               )
             _statusBanner.value =
               "Assembled ${updatedClass.simpleName} into $entryName (${result.durationMs} ms)."
@@ -1628,7 +1718,6 @@ class Dex2cViewModel @JvmOverloads constructor(
           val cCode = Dex2cTranspiler.transpileMethodToC(targetDex, method, cfg)
           val meta = DexHelper.inspectMethodMetadata(targetDex, dexClass, method)
           val methodSmali = SmaliClassDisassembler.disassembleMethod(targetDex, dexClass, method)
-          val javaCode = SmaliJavaDecompiler.decompileMethodToJava(targetDex, dexClass, method, insns, tries)
           MethodInspectionState(
             method = method,
             dexClass = dexClass,
@@ -1638,7 +1727,6 @@ class Dex2cViewModel @JvmOverloads constructor(
             structuralMeta = meta,
             cfg = methodCfg,
             methodSmali = methodSmali,
-            decompiledJava = javaCode,
           )
         }
       _inspection.value = state

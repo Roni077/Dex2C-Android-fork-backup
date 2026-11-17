@@ -176,7 +176,7 @@ object WorkflowDocumentationRepository {
         userSteps =
           listOf(
             "Export Patched DEX / APK: Use the Classes top bar menu to save patched_classes.dex or repackage patched_app.apk via Android SAF.",
-            "Local Native C++ ZIP: Export dex2c_generated.cpp, headers, CMakeLists.txt, Android.mk, dcc.cfg, and filter.txt from the Output screen.",
+            "Pipeline Configuration: Configure dcc.cfg passes, symbol bindings, and filter rules in the Build pipeline tab before compiling or dispatching to CI.",
             "GitHub Cloud CI: Sign in via GitHub OAuth Device Flow, sync .github/workflows/dex2c.yml, dispatch cloud NDK builds, and receive WorkManager push notifications."
           ),
         technicalNotes =

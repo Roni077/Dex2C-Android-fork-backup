@@ -206,7 +206,6 @@ class SafetyInterlockRobolectricTest {
           onToggleClassSelection = {},
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
-          onInspectSelfApk = {},
           onDeleteDexClass = { deletedClass = it },
         )
       }

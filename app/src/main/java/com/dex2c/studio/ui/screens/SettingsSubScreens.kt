@@ -453,18 +453,6 @@ fun SettingsDexParserSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Home & Output", icon = Icons.Rounded.Visibility) {
-        SettingsToggleRow(
-          title = stringResource(R.string.settings_show_output_title),
-          subtitle = stringResource(R.string.settings_show_output_subtitle),
-          checked = appSettings.showOutputScreen,
-          onCheckedChange = { show -> onUpdateAppSettings { it.copy(showOutputScreen = show) } },
-          testTag = "settings_show_output_screen_switch",
-        )
-      }
-    }
-
-    item {
       SubScreenCard(title = "Default Class Explorer Filters", icon = Icons.Rounded.Tune) {
         SettingsToggleRow(
           title = "Hide Android & Support Frameworks",

@@ -545,7 +545,7 @@ private fun sectionSummary(
     SettingsSection.CODE_EDITOR ->
       "${appSettings.codeFontSizeSp}sp • ${appSettings.smaliSyntaxTheme.shortLabel} • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"
     SettingsSection.DEX_PARSER ->
-      "${if (appSettings.defaultHideFramework) "App-only default" else "All classes"} • Auto-select ${appSettings.autoSelectMethodLimit} • ${if (appSettings.showOutputScreen) "Output ON" else "Output OFF"}"
+      "${if (appSettings.defaultHideFramework) "App-only default" else "All classes"} • Auto-select ${appSettings.autoSelectMethodLimit}"
     SettingsSection.GITHUB_CLOUD ->
       if (cloudSettings.isAuthenticated) "@${cloudSettings.githubUsername} • ${cloudSettings.repoName}"
       else "Device Flow OAuth & private dex2c.yml workspace"

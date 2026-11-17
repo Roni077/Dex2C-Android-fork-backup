@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Code
@@ -90,22 +91,32 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.SmaliClassDisassembler
 import com.dex2c.studio.dex.SmaliCompletionSuggestion
+import com.dex2c.studio.dex.SmaliCursorUtils
 import com.dex2c.studio.dex.SmaliEditorEngine
 import com.dex2c.studio.dex.SmaliMethodSpan
 import com.dex2c.studio.dex.formatAccessFlags
 import com.dex2c.studio.ui.SmaliClassUiState
+import com.dex2c.studio.ui.components.ClassMethodsSelectorSheet
+import com.dex2c.studio.ui.components.ClassPickerSheet
+import com.dex2c.studio.ui.components.ClassSelectionHeader
+import com.dex2c.studio.ui.components.ClassViewerTabBar
 import com.dex2c.studio.ui.components.SmaliInteractiveToken
+import com.dex2c.studio.ui.components.SmaliLabelJumpSheet
 import com.dex2c.studio.ui.components.SmaliSearchCategory
 import com.dex2c.studio.ui.components.SmaliSearchMatch
 import com.dex2c.studio.ui.components.SmaliSearchOptions
 import com.dex2c.studio.ui.components.SmaliSearchResult
+import com.dex2c.studio.ui.components.SmaliSoraEditor
 import com.dex2c.studio.ui.components.SmaliSyntaxCodeViewer
 import com.dex2c.studio.ui.components.SmaliTokenKind
+import com.dex2c.studio.ui.components.SymbolQuickBar
 import com.dex2c.studio.ui.components.SyntaxCodeViewer
 import com.dex2c.studio.ui.components.TagPill
+import com.dex2c.studio.ui.editor.ClassViewerTab
 import com.dex2c.studio.ui.components.extractLineInteractiveTokens
 import com.dex2c.studio.ui.components.extractQuickMethodTokens
 import com.dex2c.studio.ui.components.findSmaliSearchMatches
@@ -124,7 +135,6 @@ import kotlinx.coroutines.launch
 enum class SmaliViewMode(val label: String) {
   VIEW("Smali"),
   EDIT("Edit"),
-  JAVA("Java"),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,6 +155,19 @@ fun SmaliClassScreen(
   onClearCompileError: () -> Unit = {},
   onCompileSmali: (String) -> Unit = {},
   dexEditingEnabled: Boolean = BuildConfig.ENABLE_DEX_EDITING,
+  tabs: List<ClassViewerTab> = emptyList(),
+  activeTabId: String? = null,
+  onSelectTab: (String) -> Unit = {},
+  onCloseTab: (String) -> Unit = {},
+  onCloseOtherTabs: (String) -> Unit = {},
+  onCloseAllTabs: () -> Unit = {},
+  onToggleClassSelection: ((DexClassInfo) -> Unit)? = null,
+  onSelectAllMethodsInClass: ((DexClassInfo) -> Unit)? = null,
+  onDeselectAllMethodsInClass: ((DexClassInfo) -> Unit)? = null,
+  onInvertClassMethodSelection: ((DexClassInfo) -> Unit)? = null,
+  availableClasses: List<DexClassInfo> = emptyList(),
+  onOpenClassInViewer: ((DexClassInfo) -> Unit)? = null,
+  onSmaliContentChanged: ((tabId: String, newLines: List<String>) -> Unit)? = null,
 ) {
   BackHandler(onBack = onBack)
 
@@ -179,6 +202,8 @@ fun SmaliClassScreen(
   var showSearchBar by rememberSaveable { mutableStateOf(false) }
   var showReplaceBar by rememberSaveable(state.dexClass.uniqueKey) { mutableStateOf(false) }
   var showMethodsSheet by rememberSaveable { mutableStateOf(false) }
+  var showClassPickerSheet by rememberSaveable { mutableStateOf(false) }
+  var showLabelsSheet by rememberSaveable { mutableStateOf(false) }
   var showMatchesDrawer by rememberSaveable { mutableStateOf(false) }
   var searchQuery by rememberSaveable(state.dexClass.uniqueKey) { mutableStateOf("") }
   var replaceQuery by rememberSaveable(state.dexClass.uniqueKey) { mutableStateOf("") }
@@ -193,6 +218,55 @@ fun SmaliClassScreen(
   var pinnedMethodStartLine by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(-1) }
   var inspectedLineIndex by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(-1) }
   var editingLineIndex by rememberSaveable(state.dexClass.uniqueKey) { mutableIntStateOf(0) }
+
+  val allClassBytecodeMethods = remember(state.dexClass) {
+    (state.dexClass.directMethods + state.dexClass.virtualMethods).filter { it.hasBytecode }
+      .ifEmpty { state.dexClass.allMethods }
+  }
+
+  fun handleToggleClassSelection() {
+    if (onToggleClassSelection != null) {
+      onToggleClassSelection(state.dexClass)
+    } else {
+      val allIds = allClassBytecodeMethods.map { it.id }.toSet()
+      val isAllSelected = allIds.isNotEmpty() && allIds.all { it in selectedMethodIds }
+      if (isAllSelected) {
+        allIds.forEach { onToggleMethodSelection(it) }
+      } else {
+        allIds.filterNot { it in selectedMethodIds }.forEach { onToggleMethodSelection(it) }
+      }
+    }
+  }
+
+  fun handleSelectAllMethods() {
+    if (onSelectAllMethodsInClass != null) {
+      onSelectAllMethodsInClass(state.dexClass)
+    } else {
+      allClassBytecodeMethods.map { it.id }.filterNot { it in selectedMethodIds }.forEach {
+        onToggleMethodSelection(it)
+      }
+    }
+  }
+
+  fun handleDeselectAllMethods() {
+    if (onDeselectAllMethodsInClass != null) {
+      onDeselectAllMethodsInClass(state.dexClass)
+    } else {
+      allClassBytecodeMethods.map { it.id }.filter { it in selectedMethodIds }.forEach {
+        onToggleMethodSelection(it)
+      }
+    }
+  }
+
+  fun handleInvertMethodSelection() {
+    if (onInvertClassMethodSelection != null) {
+      onInvertClassMethodSelection(state.dexClass)
+    } else {
+      allClassBytecodeMethods.map { it.id }.forEach {
+        onToggleMethodSelection(it)
+      }
+    }
+  }
 
   val selectedCategory =
     remember(selectedCategoryName) {
@@ -216,6 +290,9 @@ fun SmaliClassScreen(
     undoStack = (undoStack + listOf(editedLines)).takeLast(25)
     redoStack = emptyList()
     editedLines = newLines
+    if (activeTabId != null) {
+      onSmaliContentChanged?.invoke(activeTabId, newLines)
+    }
   }
 
   fun performUndo() {
@@ -405,6 +482,19 @@ fun SmaliClassScreen(
   }
 
   Column(modifier = modifier.fillMaxSize()) {
+    if (tabs.isNotEmpty()) {
+      ClassViewerTabBar(
+        tabs = tabs,
+        activeTabId = activeTabId,
+        selectedMethodIds = selectedMethodIds,
+        onSelectTab = onSelectTab,
+        onCloseTab = onCloseTab,
+        onCloseOtherTabs = onCloseOtherTabs,
+        onCloseAllTabs = onCloseAllTabs,
+        onOpenNewTabClick = { showClassPickerSheet = true },
+      )
+    }
+
     TopAppBar(
       windowInsets = WindowInsets(0, 0, 0, 0),
       title = {
@@ -412,7 +502,6 @@ fun SmaliClassScreen(
           Text(
             text =
               when (viewMode) {
-                SmaliViewMode.JAVA -> "${state.dexClass.simpleName}.java"
                 SmaliViewMode.EDIT -> "${state.dexClass.simpleName}.smali (Edit)"
                 SmaliViewMode.VIEW -> "${state.dexClass.simpleName}.smali"
               },
@@ -482,9 +571,7 @@ fun SmaliClassScreen(
         IconButton(
           onClick = {
             if (readyState != null) {
-              val copyContent =
-                if (viewMode == SmaliViewMode.JAVA) readyState.decompiledJava
-                else lines.joinToString("\n")
+              val copyContent = lines.joinToString("\n")
               onCopySmali(copyContent)
             }
           },
@@ -511,7 +598,29 @@ fun SmaliClassScreen(
             contentDescription = stringResource(R.string.action_export_smali),
           )
         }
+        if (availableClasses.isNotEmpty()) {
+          IconButton(
+            onClick = { showClassPickerSheet = true },
+            modifier = Modifier.minimumInteractiveComponentSize().testTag("smali_class_picker_btn"),
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.Add,
+              contentDescription = "Open another class",
+            )
+          }
+        }
       },
+    )
+
+    // Primary Class & Method Selection Banner
+    ClassSelectionHeader(
+      dexClass = state.dexClass,
+      selectedMethodIds = selectedMethodIds,
+      onToggleSelectClass = ::handleToggleClassSelection,
+      onSelectAllMethods = ::handleSelectAllMethods,
+      onDeselectAllMethods = ::handleDeselectAllMethods,
+      onInvertMethodSelection = ::handleInvertMethodSelection,
+      onOpenMethodsSheet = { showMethodsSheet = true },
     )
 
     // Dex Editor Plus style Sub-Header Bar: *ClassName on left, line & [start - end] : methodName() on right
@@ -579,7 +688,7 @@ fun SmaliClassScreen(
       }
     }
 
-    // Mode Switcher (Smali | Edit | Java) + Undo/Redo + Assemble DEX Actions
+    // Mode Switcher (Smali | Edit) + Undo/Redo + Assemble DEX Actions
     if (readyState != null) {
       Row(
         modifier =
@@ -1229,66 +1338,114 @@ fun SmaliClassScreen(
 
         is SmaliClassUiState.Ready -> {
           when (viewMode) {
-            SmaliViewMode.JAVA -> {
-              SyntaxCodeViewer(
-                code = state.decompiledJava.ifBlank { "// No Java decompilation available for ${state.dexClass.fullName}" },
-                modifier = Modifier.fillMaxSize(),
-              )
-            }
             SmaliViewMode.EDIT -> {
-              SmaliInteractiveEditorPane(
-                lines = lines,
+              SmaliSoraEditor(
+                text = lines.joinToString("\n"),
+                isReadOnly = false,
                 activeLineIndex = editingLineIndex.coerceIn(0, (lines.size - 1).coerceAtLeast(0)),
-                onSelectLineIndex = { idx ->
+                onTextChanged = { updatedText ->
+                  pushEditableLines(updatedText.lines())
+                },
+                onLineClick = { idx ->
                   editingLineIndex = idx
                   inspectedLineIndex = idx
                 },
-                onUpdateLines = { updated -> pushEditableLines(updated) },
-                syntaxPalette = activeSyntaxPalette,
-                modifier = Modifier.fillMaxSize(),
+                onLabelJump = { targetLine ->
+                  editingLineIndex = targetLine
+                  inspectedLineIndex = targetLine
+                },
+                syntaxTheme = activeSyntaxTheme,
+                fontSizeSp = editorSettings.fontSizeSp,
+                showLineNumbers = editorSettings.showLineNumbers,
+                modifier = Modifier.fillMaxSize().testTag("smali_interactive_editor_pane"),
               )
             }
             SmaliViewMode.VIEW -> {
-              SmaliSyntaxCodeViewer(
-                lines = lines,
-                searchQuery = searchOptions.trimmedQuery,
-                activeMatchLineIndex = activeMatchLineIndex,
-                activeMethodRange = activeMethodRange,
-                listState = listState,
-                searchOptions = searchOptions,
-                lineMatchRanges = searchResult.matchesByLine,
-                inspectedLineIndex = inspectedLineIndex.takeIf { it >= 0 },
+              SmaliSoraEditor(
+                text = lines.joinToString("\n"),
+                isReadOnly = true,
+                activeLineIndex = activeMatchLineIndex ?: inspectedLineIndex.takeIf { it >= 0 },
                 onLineClick = { clickedIdx ->
                   inspectedLineIndex = if (inspectedLineIndex == clickedIdx) -1 else clickedIdx
                   editingLineIndex = clickedIdx
                 },
-                syntaxThemeOverride = activeSyntaxTheme,
-                modifier = Modifier.fillMaxSize(),
+                onLabelJump = { targetLine ->
+                  inspectedLineIndex = targetLine
+                  editingLineIndex = targetLine
+                },
+                syntaxTheme = activeSyntaxTheme,
+                fontSizeSp = editorSettings.fontSizeSp,
+                showLineNumbers = editorSettings.showLineNumbers,
+                modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
               )
             }
           }
         }
       }
     }
+
+    if (readyState != null && viewMode == SmaliViewMode.EDIT) {
+      SymbolQuickBar(
+        onInsertSymbol = { sym ->
+          val targetLine = editingLineIndex.coerceIn(0, (editedLines.size - 1).coerceAtLeast(0))
+          if (targetLine in editedLines.indices) {
+            val curr = editedLines[targetLine]
+            val updated = if (curr.isBlank()) sym else "$curr $sym"
+            val newLines = editedLines.toMutableList().apply { set(targetLine, updated) }
+            pushEditableLines(newLines)
+          }
+        },
+      )
+    }
   }
 
   if (showMethodsSheet && readyState != null) {
-    SmaliMethodsNavigatorSheet(
+    ClassMethodsSelectorSheet(
       dexClass = state.dexClass,
       methodSpans = methodSpans,
       selectedMethodIds = selectedMethodIds,
+      onToggleMethodSelection = onToggleMethodSelection,
+      onSelectAllMethods = ::handleSelectAllMethods,
+      onDeselectAllMethods = ::handleDeselectAllMethods,
+      onInvertMethodSelection = ::handleInvertMethodSelection,
       onJumpToSpan = { span ->
         pinnedMethodStartLine = span.startLineIndex
         editingLineIndex = span.startLineIndex
+        inspectedLineIndex = span.startLineIndex
         showMethodsSheet = false
         scope.launch { listState.animateScrollToItem(span.startLineIndex) }
       },
-      onToggleMethodSelection = onToggleMethodSelection,
       onInspectMethodC = { method ->
         showMethodsSheet = false
         onInspectMethodC(method)
       },
       onDismiss = { showMethodsSheet = false },
+    )
+  }
+
+  if (showClassPickerSheet && availableClasses.isNotEmpty()) {
+    ClassPickerSheet(
+      classes = availableClasses,
+      selectedMethodIds = selectedMethodIds,
+      onSelectClass = { cls ->
+        showClassPickerSheet = false
+        onOpenClassInViewer?.invoke(cls)
+      },
+      onDismiss = { showClassPickerSheet = false },
+    )
+  }
+
+  if (showLabelsSheet && readyState != null) {
+    val labels = remember(lines) { SmaliCursorUtils.collectAllLabels(lines) }
+    SmaliLabelJumpSheet(
+      labels = labels,
+      onJumpToLabel = { targetLine ->
+        inspectedLineIndex = targetLine
+        editingLineIndex = targetLine
+        showLabelsSheet = false
+        scope.launch { listState.animateScrollToItem(targetLine) }
+      },
+      onDismiss = { showLabelsSheet = false },
     )
   }
 }

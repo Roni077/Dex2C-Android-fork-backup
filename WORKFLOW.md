@@ -25,7 +25,7 @@
 │   3. SMALI EDITOR & DECOMPILERS   │         │   4. DEX2C TRANSPILER ENGINE   │
 │ • View / Edit Smali (AutoComplete)│         │ • FilterRuleEngine (W/B Regex) │
 │ • Label Jump (:cond, :goto, :try) │         │ • Method CFG & Basic Blocks    │
-│ • SmaliJavaDecompiler (Java View) │         │ • Dalvik-to-C++17 Transpiler   │
+│ • SmaliClassDisassembler (Smali)  │         │ • Dalvik-to-C++17 Transpiler   │
 │ • SmaliDexCompiler (DexPool)      │         │ • JNI RegisterNatives Gen      │
 └────────────────┬──────────────────┘         └────────────────┬───────────────┘
                  ▼                                             ▼
@@ -91,7 +91,7 @@ Tap any class in the Explorer to open the **Smali Class Screen**, which supports
    - Modify Smali instructions line-by-line with **Auto-Complete Suggestion Chips** for Dalvik opcodes (`const-string`, `invoke-virtual`, `if-eqz`, `return-void`), registers (`v0`–`v15`, `p0`–`p4`), and class descriptors.
    - Includes multi-step **Undo / Redo**, **Search & Replace**, and one-tap **Compile to DEX** (`Assemble with smali-dexlib2`).
 3. **Java Mode (Decompiler Preview)**:
-   - View reconstructed Java source code for the entire class (`SmaliJavaDecompiler`), including package declarations, fields, method signatures, control flow constructs, and reconstructed expressions.
+   - View and edit the Dalvik Smali bytecode for the entire class with high-performance TextMate syntax highlighting, live cursor tracking, and method selection.
 
 ### Technical Architecture
 - **`SmaliClassDisassembler`**: Uses Google's `baksmali` (`ClassDefinition` & `BaksmaliOptions`) to disassemble `DexBackedClassDef` instances into structured Smali lines and method spans.
@@ -135,15 +135,13 @@ Configure how Dex2C Studio selects and transpiles methods via the **Rules** tab 
 
 ---
 
-## 7. Phase 6: Output Export, Patched DEX/APK & GitHub Cloud CI
+## 7. Phase 6: Patched DEX/APK Export & GitHub Cloud CI
 
 ### User Workflow
-Dex2C Studio supports three distinct export and build pathways:
+Dex2C Studio supports two primary export and build pathways:
 1. **Export Patched DEX or Patched APK (SAF)**:
    - From the **Classes** screen top bar menu, export the in-memory modified DEX (`patched_classes.dex`) or repackage the modified DEX directly into a complete `.apk` archive (`patched_app.apk`) via Android's Storage Access Framework.
-2. **Local Native C++/JNI Bundle Export (`OutputExportScreen`)**:
-   - Preview all generated artifacts (`dex2c_generated.cpp`, `dex2c_generated.h`, `CMakeLists.txt`, `Android.mk`, `Application.mk`, `dcc.cfg`, `filter.txt`) and export them as a ready-to-compile NDK `.zip` archive.
-3. **GitHub Cloud CI Build (`CloudBuildScreen`)**:
+2. **GitHub Cloud CI Build (`CloudBuildScreen`)**:
    - Authenticate via **GitHub OAuth Device Flow** (`github.com/login/device`), link a private workspace repository, and dispatch an automated `.github/workflows/dex2c.yml` workflow that compiles the C++ sources with the Android NDK, patches the APK, signs it, and delivers background completion alerts via `WorkManager`.
 
 ---

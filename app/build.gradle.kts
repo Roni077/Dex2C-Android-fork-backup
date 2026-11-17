@@ -21,7 +21,7 @@ val syncRobolectricSdkJars by tasks.registering(Copy::class) {
 
 android {
   namespace = "com.dex2c.studio"
-  compileSdk { version = release(36) { minorApiLevel = 1 } }
+  compileSdk = 37
 
   defaultConfig {
     applicationId = "com.dex2c.studio"
@@ -31,6 +31,10 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    ndk {
+      abiFilters += listOf("arm64-v8a")
+    }
 
     val enableDexEditing =
       providers.gradleProperty("dex2c.enableDexEditing")
@@ -74,8 +78,8 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
   buildFeatures {
     compose = true
@@ -88,6 +92,7 @@ android {
         test.dependsOn(syncRobolectricSdkJars)
         test.systemProperty("robolectric.offline", "true")
         test.systemProperty("robolectric.dependency.dir", robolectricJarsDir.get().asFile.absolutePath)
+        test.systemProperty("robolectric.default.sdk", "36")
         test.jvmArgs(
           "--add-opens=java.base/java.lang=ALL-UNNAMED",
           "--add-opens=java.base/java.util=ALL-UNNAMED",
@@ -104,6 +109,12 @@ android {
   dependenciesInfo {
     includeInApk = false
     includeInBundle = true
+  }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+  compilerOptions {
+    freeCompilerArgs.add("-Xskip-metadata-version-check")
   }
 }
 
@@ -162,6 +173,9 @@ dependencies {
   implementation(libs.smali.dexlib2)
   implementation(libs.smali.baksmali)
   implementation(libs.smali.assembler)
+  implementation(platform(libs.sora.editor.bom))
+  implementation(libs.sora.editor.core)
+  implementation(libs.sora.editor.language.textmate)
   // implementation(libs.logging.interceptor)
   // implementation(libs.moshi.kotlin)
   implementation(libs.okhttp)
