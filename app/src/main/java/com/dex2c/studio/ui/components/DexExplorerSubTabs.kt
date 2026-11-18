@@ -87,7 +87,10 @@ fun DexMethodsExplorerTab(
         modifier = Modifier.fillMaxSize().testTag("methods_explorer_list"),
         contentPadding = PaddingValues(vertical = 4.dp),
       ) {
-        itemsIndexed(filteredMethods) { idx, (cls, method) ->
+        itemsIndexed(
+          items = filteredMethods,
+          key = { _, (_, method) -> method.id },
+        ) { idx, (cls, method) ->
           val isQueued = method.id in selectedMethodIds
           Row(
             modifier = Modifier
@@ -189,7 +192,10 @@ fun DexFieldsExplorerTab(
         modifier = Modifier.fillMaxSize().testTag("fields_explorer_list"),
         contentPadding = PaddingValues(vertical = 4.dp),
       ) {
-        itemsIndexed(filteredFields) { idx, (cls, field) ->
+        itemsIndexed(
+          items = filteredFields,
+          key = { _, (cls, field) -> "${cls.uniqueKey}::${field.fieldIndex}::${field.fieldRef.name}" },
+        ) { idx, (cls, field) ->
           Row(
             modifier = Modifier
               .fillMaxWidth()
@@ -353,7 +359,10 @@ fun DexStringsExplorerTab(
         modifier = Modifier.fillMaxSize().testTag("strings_explorer_list"),
         contentPadding = PaddingValues(vertical = 4.dp),
       ) {
-        itemsIndexed(filteredStrings) { idx, str ->
+        itemsIndexed(
+          items = filteredStrings,
+          key = { idx, str -> "$idx::${str.hashCode()}" },
+        ) { idx, str ->
           Row(
             modifier = Modifier
               .fillMaxWidth()

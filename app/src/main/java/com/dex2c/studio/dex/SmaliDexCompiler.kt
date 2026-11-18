@@ -158,7 +158,7 @@ object SmaliDexCompiler {
         dexPool.internClass(compiledClassDef)
       }
 
-      val dataStore = MemoryDataStore()
+      val dataStore = MemoryDataStore(dex.rawBytes.size + 65536)
       dexPool.writeTo(dataStore)
       val newBytes = dataStore.toByteArray()
 
@@ -201,7 +201,7 @@ object SmaliDexCompiler {
         }
       }
 
-      val dataStore = MemoryDataStore()
+      val dataStore = MemoryDataStore(dex.rawBytes.size + 65536)
       dexPool.writeTo(dataStore)
       val newBytes = dataStore.toByteArray()
 
@@ -338,7 +338,7 @@ object SmaliDexCompiler {
         dexPool.internClass(rewrittenClass)
       }
 
-      val dataStore = MemoryDataStore()
+      val dataStore = MemoryDataStore(dex.rawBytes.size + 65536)
       dexPool.writeTo(dataStore)
       val newBytes = dataStore.toByteArray()
 
@@ -374,8 +374,8 @@ object SmaliDexCompiler {
     patchedDexByEntryName: Map<String, ByteArray>,
     outputStream: java.io.OutputStream,
   ) {
-    val countingOut = CountingOutputStream(outputStream)
-    ZipInputStream(originalApkStream).use { zis ->
+    val countingOut = CountingOutputStream(outputStream.buffered(65536))
+    ZipInputStream(originalApkStream.buffered(65536)).use { zis ->
       ZipOutputStream(countingOut).use { zos ->
         var entry = zis.nextEntry
         val processedEntries = mutableSetOf<String>()

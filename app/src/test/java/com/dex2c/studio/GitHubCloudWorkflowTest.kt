@@ -366,6 +366,10 @@ class GitHubCloudWorkflowTest {
     assertFalse(upload.indeterminate)
     assertTrue(upload.body.contains("1.00 MB / 2.00 MB"))
     assertTrue(upload.body.contains("50%"))
+    assertEquals(
+      com.dex2c.studio.R.drawable.ic_cloud_upload,
+      com.dex2c.studio.cloud.CloudBuildNotifier.resolveNotificationSmallIcon(upload.phase),
+    )
 
     val building =
       com.dex2c.studio.cloud.CloudBuildNotifier.buildWorkflowProgressNotification(
@@ -381,6 +385,10 @@ class GitHubCloudWorkflowTest {
     assertEquals(10, building.progressMax)
     assertTrue(building.body.contains("Step 4/10"))
     assertTrue(building.body.contains("Run Kirlif/d2c Compilation"))
+    assertEquals(
+      com.dex2c.studio.R.drawable.ic_cloud_build_status,
+      com.dex2c.studio.cloud.CloudBuildNotifier.resolveNotificationSmallIcon(building.phase),
+    )
 
     val download =
       com.dex2c.studio.cloud.CloudBuildNotifier.buildDownloadProgressNotification(
@@ -394,6 +402,10 @@ class GitHubCloudWorkflowTest {
     assertEquals(50, download.progressCurrent)
     assertTrue(download.body.contains("1.50 MB / 3.00 MB"))
     assertTrue(download.body.contains("50%"))
+    assertEquals(
+      com.dex2c.studio.R.drawable.ic_cloud_build_status,
+      com.dex2c.studio.cloud.CloudBuildNotifier.resolveNotificationSmallIcon(download.phase),
+    )
   }
 
   @Test

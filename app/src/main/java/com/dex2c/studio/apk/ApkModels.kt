@@ -14,6 +14,7 @@ enum class PickerTab {
   RECENT,
 }
 
+@Deprecated("System apps are excluded from installed app selection; all installed apps are user apps.")
 enum class AppScopeFilter(val label: String) {
   ALL("All Apps"),
   USER_ONLY("User Only"),

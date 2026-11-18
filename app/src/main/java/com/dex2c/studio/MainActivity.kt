@@ -197,7 +197,11 @@ class MainActivity : ComponentActivity() {
       ) {
         Dex2cApp(
           deepLinkTarget = pendingDeepLink,
-          onDeepLinkConsumed = { pendingDeepLink = null },
+          onDeepLinkConsumed = {
+            pendingDeepLink = null
+            intent?.removeExtra(CloudBuildNotifier.EXTRA_NAVIGATE_ROUTE)
+            intent?.removeExtra(CloudBuildNotifier.EXTRA_CLOUD_RUN_ID)
+          },
           viewModel = appViewModel,
         )
       }
@@ -224,9 +228,7 @@ fun Dex2cApp(
   val scope = rememberCoroutineScope()
 
   val loadState by viewModel.loadState.collectAsStateWithLifecycle()
-  val filteredClasses by viewModel.filteredClasses.collectAsStateWithLifecycle()
-  val filterState by viewModel.filterState.collectAsStateWithLifecycle()
-  val selectedMethodIds by viewModel.selectedMethodIds.collectAsStateWithLifecycle()
+  val selectedMethodCount by viewModel.selectedMethodCount.collectAsStateWithLifecycle()
   val config by viewModel.config.collectAsStateWithLifecycle()
   val inspection by viewModel.inspection.collectAsStateWithLifecycle()
   val statusBanner by viewModel.statusBanner.collectAsStateWithLifecycle()
@@ -261,7 +263,7 @@ fun Dex2cApp(
         override fun onConfigurationChanged(newConfig: android.content.res.Configuration) = Unit
 
         override fun onLowMemory() {
-          viewModel.onTrimMemory(android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+          viewModel.onTrimMemory(android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
         }
 
         override fun onTrimMemory(level: Int) {
@@ -491,7 +493,7 @@ fun Dex2cApp(
           Dex2cFloatingBottomBar(
             navItems = navItems,
             currentRoute = currentRoute,
-            queuedMethodCount = selectedMethodIds.size,
+            queuedMethodCount = selectedMethodCount,
             onNavigate = onNavigateTopLevel,
           )
         }
@@ -512,8 +514,8 @@ fun Dex2cApp(
                 modifier = Modifier.testTag(item.testTag),
                 alwaysShowLabel = !isCompactLandscape,
                 icon = {
-                  if (item.route == ROUTE_BUILD && selectedMethodIds.isNotEmpty()) {
-                    BadgedBox(badge = { Badge { Text("${selectedMethodIds.size}") } }) {
+                  if (item.route == ROUTE_BUILD && selectedMethodCount > 0) {
+                    BadgedBox(badge = { Badge { Text("$selectedMethodCount") } }) {
                       Icon(
                         imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
                         contentDescription = stringResource(item.labelRes),
@@ -598,7 +600,7 @@ fun Dex2cApp(
             composable(ROUTE_HOME) {
               HomeScreen(
                 loadState = loadState,
-                selectedMethodCount = selectedMethodIds.size,
+                selectedMethodCount = selectedMethodCount,
                 recentFiles = recentFiles,
                 onOpenPicker = { tab -> viewModel.openPicker(tab) },
                 onSelectRecent = { viewModel.stageFromRecentItem(it) },
@@ -611,6 +613,9 @@ fun Dex2cApp(
             }
 
             composable(ROUTE_CLASSES) {
+              val filteredClasses by viewModel.filteredClasses.collectAsStateWithLifecycle()
+              val filterState by viewModel.filterState.collectAsStateWithLifecycle()
+              val selectedMethodIds by viewModel.selectedMethodIds.collectAsStateWithLifecycle()
               ClassesScreen(
                 loadState = loadState,
                 classes = filteredClasses,
@@ -682,7 +687,7 @@ fun Dex2cApp(
                 onImportFilterTxt = { importFilterLauncher.launch(arrayOf("text/*", "*/*")) },
                 onImportDccCfg = { importDccCfgLauncher.launch(arrayOf("application/json", "text/*", "*/*")) },
                 onApplyFilterRules = { viewModel.applyFilterRules() },
-                selectedMethodCount = selectedMethodIds.size,
+                selectedMethodCount = selectedMethodCount,
                 onSyncSelectionToWildcardRules = { isBlacklist ->
                   viewModel.syncSelectionToWildcardRules(isBlacklist)
                 },
@@ -770,6 +775,12 @@ fun Dex2cApp(
                     navController.popBackStack()
                   },
                   smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
+                  onCopySmali = { copyText(it) },
+                  onExportSmali = { fileName, smaliText ->
+                    pendingSmaliExportText = smaliText
+                    exportSmaliLauncher.launch(fileName)
+                  },
+                  dexEditingEnabled = BuildConfig.ENABLE_DEX_EDITING,
                 )
               }
             }

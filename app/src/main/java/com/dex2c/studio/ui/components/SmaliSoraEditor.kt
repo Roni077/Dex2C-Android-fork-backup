@@ -187,14 +187,20 @@ fun SmaliSoraEditor(
             controller.updateState()
           }
 
-          // Content Change Listener (debounced update back to state)
+          // Content Change Listener (debounced update back to state to eliminate keystroke lag)
+          var pendingDebounceJob: Runnable? = null
           subscribeAlways(ContentChangeEvent::class.java) { _ ->
-            val updated = this.text.toString()
-            if (updated != lastKnownText) {
-              lastKnownText = updated
-              currentOnTextChanged?.invoke(updated)
-              undoController?.updateState()
+            undoController?.updateState()
+            pendingDebounceJob?.let { removeCallbacks(it) }
+            val debounceRunnable = Runnable {
+              val updated = this.text.toString()
+              if (updated != lastKnownText) {
+                lastKnownText = updated
+                currentOnTextChanged?.invoke(updated)
+              }
             }
+            pendingDebounceJob = debounceRunnable
+            postDelayed(debounceRunnable, 200L)
           }
 
           // Selection Change Listener

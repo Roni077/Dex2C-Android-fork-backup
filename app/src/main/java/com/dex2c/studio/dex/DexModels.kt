@@ -275,9 +275,10 @@ data class DexClassInfo(
   val allMethods: List<DexEncodedMethod> =
     if (directMethods.isEmpty()) virtualMethods
     else if (virtualMethods.isEmpty()) directMethods
-    else directMethods + virtualMethods
+    else CompositeMethodList(directMethods, virtualMethods)
 
-  val bytecodeMethodCount: Int = allMethods.count { it.hasBytecode }
+  val bytecodeMethodCount: Int =
+    directMethods.count { it.hasBytecode } + virtualMethods.count { it.hasBytecode }
 
   val isFrameworkClass: Boolean =
     packageName.startsWith("androidx.") ||
@@ -300,6 +301,19 @@ data class DexClassInfo(
     }
     return isFrameworkClass
   }
+}
+
+/**
+ * Lightweight, zero-allocation composite view over direct and virtual method lists.
+ * Avoids creating intermediate ArrayList allocations on class traversal and filtering.
+ */
+internal class CompositeMethodList(
+  private val first: List<DexEncodedMethod>,
+  private val second: List<DexEncodedMethod>,
+) : AbstractList<DexEncodedMethod>(), java.util.RandomAccess, java.io.Serializable {
+  override val size: Int get() = first.size + second.size
+  override fun get(index: Int): DexEncodedMethod =
+    if (index < first.size) first[index] else second[index - first.size]
 }
 
 data class ParsedClassDescriptor(

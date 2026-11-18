@@ -82,7 +82,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -255,6 +257,10 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   private val _selectedMethodIds = MutableStateFlow<Set<String>>(emptySet())
   val selectedMethodIds: StateFlow<Set<String>> = _selectedMethodIds.asStateFlow()
+  val selectedMethodCount: StateFlow<Int> = _selectedMethodIds
+    .map { it.size }
+    .distinctUntilChanged()
+    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 
   private val _filterState = MutableStateFlow(ClassFilterState())
   val filterState: StateFlow<ClassFilterState> = _filterState.asStateFlow()
@@ -376,6 +382,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   private var devicePollJob: Job? = null
   private var repoSetupJob: Job? = null
   private var cloudRunPollJob: Job? = null
+  private var inspectionJob: Job? = null
 
   val filterMatchSummary: StateFlow<FilterMatchSummary?> =
     combine(_loadState, _config) { load, cfg ->
@@ -621,6 +628,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   fun stageFromInstalledApp(app: InstalledAppItem) {
     val context = getApplication<Application>()
     _isPickerOpen.value = false
+    _installedApps.value = emptyList()
     _stagingState.value = ApkStagingState.Loading(app.appLabel)
 
     viewModelScope.launch {
@@ -1658,8 +1666,9 @@ class Dex2cViewModel @JvmOverloads constructor(
   /**
    * Reclaims transient caches and non-visible buffers on navigation or system memory pressure.
    */
-  fun onTrimMemory(level: Int = android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+  fun onTrimMemory(level: Int = android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
     SmaliClassDisassembler.clearCache()
+    InstalledAppRepository.trimMemory(level)
     InstalledAppRepository.clearIconCache()
     if (!_isPickerOpen.value && _installedApps.value.isNotEmpty()) {
       _installedApps.value = emptyList()
@@ -1677,7 +1686,10 @@ class Dex2cViewModel @JvmOverloads constructor(
             loadedDexes = trimmedMap,
           )
       }
-      if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && dexByteCache.size > current.loadedDexes.size) {
+      val isMemoryPressure =
+        level >= android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW ||
+          level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
+      if (isMemoryPressure && dexByteCache.size > current.loadedDexes.size) {
         dexByteCache = dexByteCache.filterKeys { it in current.loadedDexes }
       }
     }
@@ -1686,7 +1698,12 @@ class Dex2cViewModel @JvmOverloads constructor(
   override fun onCleared() {
     super.onCleared()
     SmaliClassDisassembler.clearCache()
+    InstalledAppRepository.clearIconCache()
     dexByteCache = emptyMap()
+    runCatching {
+      val bundleCache = java.io.File(getApplication<Application>().cacheDir, "dex2c_bundle")
+      if (bundleCache.exists()) bundleCache.deleteRecursively()
+    }
   }
 
   fun exportSmaliToUri(uri: Uri, smaliText: String) {
@@ -2518,6 +2535,7 @@ class Dex2cViewModel @JvmOverloads constructor(
               )
             postLiveUploadNotification("Uploading ${apkChoice.label}", 0.22f, 0L, apkTotalBytes)
 
+            var lastUiUpdateMs = 0L
             var lastNotifyAtMs = 0L
             NetworkResilience.retryTransient(maxAttempts = 3) {
               withContext(Dispatchers.IO) {
@@ -2535,15 +2553,19 @@ class Dex2cViewModel @JvmOverloads constructor(
                       else 0f
                     val displayUploaded = (wireRatio * apkTotalBytes).toLong().coerceIn(0L, apkTotalBytes)
                     val overallFraction = (0.22f + wireRatio * 0.74f).coerceIn(0.22f, 0.96f)
-                    _cloudRunState.value =
-                      CloudBuildRunState.UploadingInputs(
-                        message = "Uploading ${apkChoice.label}…",
-                        progressFraction = overallFraction,
-                        bytesUploaded = displayUploaded,
-                        totalBytes = apkTotalBytes,
-                      )
                     val now = System.currentTimeMillis()
-                    if (written >= wireTotal || now - lastNotifyAtMs >= 250L) {
+                    val isComplete = written >= wireTotal
+                    if (isComplete || now - lastUiUpdateMs >= 200L) {
+                      lastUiUpdateMs = now
+                      _cloudRunState.value =
+                        CloudBuildRunState.UploadingInputs(
+                          message = "Uploading ${apkChoice.label}…",
+                          progressFraction = overallFraction,
+                          bytesUploaded = displayUploaded,
+                          totalBytes = apkTotalBytes,
+                        )
+                    }
+                    if (isComplete || now - lastNotifyAtMs >= 500L) {
                       lastNotifyAtMs = now
                       postLiveUploadNotification(
                         stageLabel = "Uploading ${apkChoice.label}",
@@ -2942,6 +2964,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           runId = completedSnapshot?.runId,
         )
 
+        var lastUiUpdateMs = 0L
         var lastNotifyAtMs = 0L
         val extracted =
           withContext(Dispatchers.IO) {
@@ -2955,16 +2978,20 @@ class Dex2cViewModel @JvmOverloads constructor(
                   val fraction =
                     if (effectiveTotal > 0L) (read.toFloat() / effectiveTotal.toFloat()).coerceIn(0f, 1f)
                     else null
-                  _cloudRunState.value =
-                    CloudBuildRunState.SavingArtifact(
-                      label = "Downloading ${artifact.name}…",
-                      bytesDownloaded = read,
-                      totalBytes = effectiveTotal,
-                      progressFraction = fraction,
-                      completedSnapshot = completedSnapshot,
-                    )
                   val now = System.currentTimeMillis()
-                  if ((effectiveTotal > 0L && read >= effectiveTotal) || now - lastNotifyAtMs >= 250L) {
+                  val isComplete = effectiveTotal > 0L && read >= effectiveTotal
+                  if (isComplete || now - lastUiUpdateMs >= 200L) {
+                    lastUiUpdateMs = now
+                    _cloudRunState.value =
+                      CloudBuildRunState.SavingArtifact(
+                        label = "Downloading ${artifact.name}…",
+                        bytesDownloaded = read,
+                        totalBytes = effectiveTotal,
+                        progressFraction = fraction,
+                        completedSnapshot = completedSnapshot,
+                      )
+                  }
+                  if (isComplete || now - lastNotifyAtMs >= 500L) {
                     lastNotifyAtMs = now
                     postLiveProgressNotification(
                       content =

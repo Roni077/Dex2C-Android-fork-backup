@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
+import okhttp3.ConnectionPool
 import okhttp3.FormBody
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -534,9 +535,11 @@ class GitHubApiClient(
 
   companion object {
     private val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
+    private val sharedConnectionPool = ConnectionPool(5, 5, TimeUnit.MINUTES)
 
     fun defaultClient(isDohEnabled: () -> Boolean = { false }): OkHttpClient =
       OkHttpClient.Builder()
+        .connectionPool(sharedConnectionPool)
         .dns(ResilientGitHubDns(isDohEnabled = isDohEnabled))
         .retryOnConnectionFailure(true)
         .connectTimeout(20, TimeUnit.SECONDS)

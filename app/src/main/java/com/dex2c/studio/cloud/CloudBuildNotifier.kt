@@ -70,9 +70,19 @@ object CloudBuildNotifier {
   private val NOTIFY_LOCK = Any()
   @Volatile private var lastDispatchedRunId: Long = 0L
   @Volatile private var cachedAppSettings: AppSettings = AppSettings()
+  private val themeColorCache = java.util.concurrent.ConcurrentHashMap<String, NotificationThemeColors>()
 
   fun updateCachedAppSettings(settings: AppSettings) {
     cachedAppSettings = settings
+    themeColorCache.clear()
+  }
+
+  fun resolveNotificationSmallIcon(phase: CloudLivePhase): Int {
+    return when (phase) {
+      CloudLivePhase.UPLOADING -> R.drawable.ic_cloud_upload
+      CloudLivePhase.DOWNLOADING -> R.drawable.ic_cloud_build_status
+      CloudLivePhase.BUILDING -> R.drawable.ic_cloud_build_status
+    }
   }
 
   fun resolveNotificationThemeColors(
@@ -95,6 +105,9 @@ object CloudBuildNotifier {
         AppThemeMode.DARK, AppThemeMode.AMOLED -> true
       }
 
+    val cacheKey = "${effective.themeMode}_${effective.dynamicColor}_${effective.accentSeedHex}_${isDark}_${isAmoled}_$isError"
+    themeColorCache[cacheKey]?.let { return it }
+
     val scheme =
       if (effective.dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val dynamic =
@@ -113,13 +126,15 @@ object CloudBuildNotifier {
     val container = if (isError) scheme.errorContainer else scheme.primaryContainer
     val onContainer = if (isError) scheme.onErrorContainer else scheme.onPrimaryContainer
 
-    return NotificationThemeColors(
+    val resolved = NotificationThemeColors(
       accentArgb = accent.toArgb(),
       containerArgb = container.toArgb(),
       onContainerArgb = onContainer.toArgb(),
       surfaceArgb = scheme.surfaceContainerHigh.toArgb(),
       isDark = isDark,
     )
+    themeColorCache[cacheKey] = resolved
+    return resolved
   }
 
   fun hasNotificationPermission(context: Context): Boolean {
@@ -316,7 +331,7 @@ object CloudBuildNotifier {
 
     val notification =
       NotificationCompat.Builder(context, PROGRESS_CHANNEL_ID)
-        .setSmallIcon(R.drawable.ic_cloud_build_status)
+        .setSmallIcon(resolveNotificationSmallIcon(content.phase))
         .setContentTitle(content.title)
         .setContentText(content.body)
         .setSubText(content.phase.badge)

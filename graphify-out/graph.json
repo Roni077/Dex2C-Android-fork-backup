@@ -648,7 +648,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_mainactivity_kt",
-      "community": 17,
+      "community": 87,
       "norm_label": "mainactivity.kt"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L146",
       "id": "studio_mainactivity_navdestinationitem",
-      "community": 17,
+      "community": 87,
       "norm_label": "navdestinationitem"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L154",
       "id": "studio_mainactivity_mainactivity",
-      "community": 17,
+      "community": 87,
       "norm_label": "mainactivity"
     },
     {
@@ -675,61 +675,61 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L157",
       "id": "studio_mainactivity_mainactivity_oncreate",
-      "community": 17,
+      "community": 87,
       "norm_label": ".oncreate()"
     },
     {
       "label": ".onNewIntent()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L207",
+      "source_location": "L211",
       "id": "studio_mainactivity_mainactivity_onnewintent",
-      "community": 17,
+      "community": 87,
       "norm_label": ".onnewintent()"
     },
     {
       "label": "Dex2cApp()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L214",
+      "source_location": "L218",
       "id": "studio_mainactivity_dex2capp",
-      "community": 17,
+      "community": 87,
       "norm_label": "dex2capp()"
     },
     {
       "label": "Dex2cFloatingBottomBar()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L908",
+      "source_location": "L919",
       "id": "studio_mainactivity_dex2cfloatingbottombar",
-      "community": 17,
+      "community": 87,
       "norm_label": "dex2cfloatingbottombar()"
     },
     {
       "label": "Dex2cFloatingBottomBarItem()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L961",
+      "source_location": "L972",
       "id": "studio_mainactivity_dex2cfloatingbottombaritem",
-      "community": 17,
+      "community": 87,
       "norm_label": "dex2cfloatingbottombaritem()"
     },
     {
       "label": "isErrorStatusMessage()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1101",
+      "source_location": "L1112",
       "id": "studio_mainactivity_iserrorstatusmessage",
-      "community": 17,
+      "community": 87,
       "norm_label": "iserrorstatusmessage()"
     },
     {
       "label": "Dex2cThemedSnackbarHost()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1111",
+      "source_location": "L1122",
       "id": "studio_mainactivity_dex2cthemedsnackbarhost",
-      "community": 17,
+      "community": 87,
       "norm_label": "dex2cthemedsnackbarhost()"
     },
     {
@@ -943,7 +943,7 @@
       "label": "PickerSortOrder",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
-      "source_location": "L23",
+      "source_location": "L24",
       "id": "apk_apkmodels_pickersortorder",
       "community": 8,
       "norm_label": "pickersortorder"
@@ -952,7 +952,7 @@
       "label": "RecentSourceFilter",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
-      "source_location": "L30",
+      "source_location": "L31",
       "id": "apk_apkmodels_recentsourcefilter",
       "community": 8,
       "norm_label": "recentsourcefilter"
@@ -961,7 +961,7 @@
       "label": "InstalledAppItem",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
-      "source_location": "L36",
+      "source_location": "L37",
       "id": "apk_apkmodels_installedappitem",
       "community": 8,
       "norm_label": "installedappitem"
@@ -970,7 +970,7 @@
       "label": "RecentBinaryItem",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
-      "source_location": "L50",
+      "source_location": "L51",
       "id": "apk_apkmodels_recentbinaryitem",
       "community": 23,
       "norm_label": "recentbinaryitem"
@@ -979,7 +979,7 @@
       "label": "ApkStagingPreview",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
-      "source_location": "L60",
+      "source_location": "L61",
       "id": "apk_apkmodels_apkstagingpreview",
       "community": 8,
       "norm_label": "apkstagingpreview"
@@ -1006,7 +1006,7 @@
       "label": "sizeOf()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L18",
+      "source_location": "L21",
       "id": "apk_installedapprepository_sizeof",
       "community": 8,
       "norm_label": "sizeof()"
@@ -1015,16 +1015,25 @@
       "label": ".clearIconCache()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L21",
+      "source_location": "L24",
       "id": "apk_installedapprepository_installedapprepository_cleariconcache",
       "community": 8,
       "norm_label": ".cleariconcache()"
     },
     {
+      "label": ".trimMemory()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
+      "source_location": "L28",
+      "id": "apk_installedapprepository_installedapprepository_trimmemory",
+      "community": 8,
+      "norm_label": ".trimmemory()"
+    },
+    {
       "label": ".queryLaunchableApps()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L25",
+      "source_location": "L36",
       "id": "apk_installedapprepository_installedapprepository_querylaunchableapps",
       "community": 8,
       "norm_label": ".querylaunchableapps()"
@@ -1033,7 +1042,7 @@
       "label": ".getPackageInfoSafe()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L93",
+      "source_location": "L105",
       "id": "apk_installedapprepository_installedapprepository_getpackageinfosafe",
       "community": 8,
       "norm_label": ".getpackageinfosafe()"
@@ -1042,7 +1051,7 @@
       "label": ".drawableToBitmap()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L104",
+      "source_location": "L116",
       "id": "apk_installedapprepository_installedapprepository_drawabletobitmap",
       "community": 8,
       "norm_label": ".drawabletobitmap()"
@@ -1159,10 +1168,19 @@
       "label": "updateCachedAppSettings()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/CloudBuildNotifier.kt",
-      "source_location": "L74",
+      "source_location": "L75",
       "id": "cloud_cloudbuildnotifier_updatecachedappsettings",
       "community": 43,
       "norm_label": "updatecachedappsettings()"
+    },
+    {
+      "label": "resolveNotificationSmallIcon()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/cloud/CloudBuildNotifier.kt",
+      "source_location": "L80",
+      "id": "cloud_cloudbuildnotifier_resolvenotificationsmallicon",
+      "community": 43,
+      "norm_label": "resolvenotificationsmallicon()"
     },
     {
       "label": "CloudModels.kt",
@@ -1323,7 +1341,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/CloudModels.kt",
       "source_location": "L96",
       "id": "cloud_cloudmodels_githubjobtelemetry",
-      "community": 26,
+      "community": 59,
       "norm_label": "githubjobtelemetry"
     },
     {
@@ -1519,7 +1537,7 @@
       "label": "TokenPollResult",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L19",
+      "source_location": "L20",
       "id": "cloud_githubapiclient_tokenpollresult",
       "community": 34,
       "norm_label": "tokenpollresult"
@@ -1528,7 +1546,7 @@
       "label": "Success",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L20",
+      "source_location": "L21",
       "id": "cloud_githubapiclient_success",
       "community": 34,
       "norm_label": "success"
@@ -1537,7 +1555,7 @@
       "label": "Pending",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L21",
+      "source_location": "L22",
       "id": "cloud_githubapiclient_pending",
       "community": 34,
       "norm_label": "pending"
@@ -1546,7 +1564,7 @@
       "label": "SlowDown",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L22",
+      "source_location": "L23",
       "id": "cloud_githubapiclient_slowdown",
       "community": 34,
       "norm_label": "slowdown"
@@ -1555,7 +1573,7 @@
       "label": "Expired",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L23",
+      "source_location": "L24",
       "id": "cloud_githubapiclient_expired",
       "community": 34,
       "norm_label": "expired"
@@ -1564,7 +1582,7 @@
       "label": "Denied",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L24",
+      "source_location": "L25",
       "id": "cloud_githubapiclient_denied",
       "community": 34,
       "norm_label": "denied"
@@ -1573,7 +1591,7 @@
       "label": "Failure",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L25",
+      "source_location": "L26",
       "id": "cloud_githubapiclient_failure",
       "community": 34,
       "norm_label": "failure"
@@ -1582,7 +1600,7 @@
       "label": "GitHubRepoInfo",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L28",
+      "source_location": "L29",
       "id": "cloud_githubapiclient_githubrepoinfo",
       "community": 34,
       "norm_label": "githubrepoinfo"
@@ -1591,7 +1609,7 @@
       "label": "GitHubApiClient",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L37",
+      "source_location": "L38",
       "id": "cloud_githubapiclient_githubapiclient",
       "community": 26,
       "norm_label": "githubapiclient"
@@ -1600,7 +1618,7 @@
       "label": ".requestDeviceCode()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L48",
+      "source_location": "L49",
       "id": "cloud_githubapiclient_githubapiclient_requestdevicecode",
       "community": 26,
       "norm_label": ".requestdevicecode()"
@@ -1609,7 +1627,7 @@
       "label": ".pollAccessTokenOnce()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L89",
+      "source_location": "L90",
       "id": "cloud_githubapiclient_githubapiclient_pollaccesstokenonce",
       "community": 34,
       "norm_label": ".pollaccesstokenonce()"
@@ -1618,7 +1636,7 @@
       "label": ".getAuthenticatedUsername()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L134",
+      "source_location": "L135",
       "id": "cloud_githubapiclient_githubapiclient_getauthenticatedusername",
       "community": 26,
       "norm_label": ".getauthenticatedusername()"
@@ -1627,7 +1645,7 @@
       "label": ".getRepository()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L147",
+      "source_location": "L148",
       "id": "cloud_githubapiclient_githubapiclient_getrepository",
       "community": 26,
       "norm_label": ".getrepository()"
@@ -1636,7 +1654,7 @@
       "label": ".createRepository()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L159",
+      "source_location": "L160",
       "id": "cloud_githubapiclient_githubapiclient_createrepository",
       "community": 26,
       "norm_label": ".createrepository()"
@@ -1645,7 +1663,7 @@
       "label": ".getContentSha()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L188",
+      "source_location": "L189",
       "id": "cloud_githubapiclient_githubapiclient_getcontentsha",
       "community": 26,
       "norm_label": ".getcontentsha()"
@@ -1654,7 +1672,7 @@
       "label": ".upsertRepoFile()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L209",
+      "source_location": "L210",
       "id": "cloud_githubapiclient_githubapiclient_upsertrepofile",
       "community": 26,
       "norm_label": ".upsertrepofile()"
@@ -1663,7 +1681,7 @@
       "label": ".dispatchWorkflow()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L253",
+      "source_location": "L254",
       "id": "cloud_githubapiclient_githubapiclient_dispatchworkflow",
       "community": 26,
       "norm_label": ".dispatchworkflow()"
@@ -1672,7 +1690,7 @@
       "label": ".listWorkflowRuns()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L281",
+      "source_location": "L282",
       "id": "cloud_githubapiclient_githubapiclient_listworkflowruns",
       "community": 26,
       "norm_label": ".listworkflowruns()"
@@ -1681,25 +1699,25 @@
       "label": ".getRunJobTelemetry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L314",
+      "source_location": "L315",
       "id": "cloud_githubapiclient_githubapiclient_getrunjobtelemetry",
-      "community": 26,
+      "community": 59,
       "norm_label": ".getrunjobtelemetry()"
     },
     {
       "label": ".getRunSteps()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L350",
+      "source_location": "L351",
       "id": "cloud_githubapiclient_githubapiclient_getrunsteps",
-      "community": 26,
+      "community": 59,
       "norm_label": ".getrunsteps()"
     },
     {
       "label": ".listRunArtifacts()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L357",
+      "source_location": "L358",
       "id": "cloud_githubapiclient_githubapiclient_listrunartifacts",
       "community": 26,
       "norm_label": ".listrunartifacts()"
@@ -1708,7 +1726,7 @@
       "label": ".downloadArtifactZip()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L388",
+      "source_location": "L389",
       "id": "cloud_githubapiclient_githubapiclient_downloadartifactzip",
       "community": 26,
       "norm_label": ".downloadartifactzip()"
@@ -1717,7 +1735,7 @@
       "label": ".readBodyWithProgress()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L417",
+      "source_location": "L418",
       "id": "cloud_githubapiclient_githubapiclient_readbodywithprogress",
       "community": 26,
       "norm_label": ".readbodywithprogress()"
@@ -1726,7 +1744,7 @@
       "label": "ProgressByteRequestBody",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L457",
+      "source_location": "L458",
       "id": "cloud_githubapiclient_progressbyterequestbody",
       "community": 34,
       "norm_label": "progressbyterequestbody"
@@ -1735,7 +1753,7 @@
       "label": ".contentType()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L462",
+      "source_location": "L463",
       "id": "cloud_githubapiclient_progressbyterequestbody_contenttype",
       "community": 34,
       "norm_label": ".contenttype()"
@@ -1744,7 +1762,7 @@
       "label": ".contentLength()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L463",
+      "source_location": "L464",
       "id": "cloud_githubapiclient_progressbyterequestbody_contentlength",
       "community": 34,
       "norm_label": ".contentlength()"
@@ -1753,7 +1771,7 @@
       "label": ".writeTo()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L465",
+      "source_location": "L466",
       "id": "cloud_githubapiclient_progressbyterequestbody_writeto",
       "community": 34,
       "norm_label": ".writeto()"
@@ -1762,7 +1780,7 @@
       "label": ".extractApkFromArtifactZip()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L486",
+      "source_location": "L487",
       "id": "cloud_githubapiclient_githubapiclient_extractapkfromartifactzip",
       "community": 51,
       "norm_label": ".extractapkfromartifactzip()"
@@ -1771,7 +1789,7 @@
       "label": ".parseRepoInfo()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L508",
+      "source_location": "L509",
       "id": "cloud_githubapiclient_githubapiclient_parserepoinfo",
       "community": 26,
       "norm_label": ".parserepoinfo()"
@@ -1780,7 +1798,7 @@
       "label": ".apiRequest()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L522",
+      "source_location": "L523",
       "id": "cloud_githubapiclient_githubapiclient_apirequest",
       "community": 26,
       "norm_label": ".apirequest()"
@@ -1789,7 +1807,7 @@
       "label": ".extractErrorMessage()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L529",
+      "source_location": "L530",
       "id": "cloud_githubapiclient_githubapiclient_extracterrormessage",
       "community": 26,
       "norm_label": ".extracterrormessage()"
@@ -1798,7 +1816,7 @@
       "label": "defaultClient()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
-      "source_location": "L538",
+      "source_location": "L540",
       "id": "cloud_githubapiclient_defaultclient",
       "community": 21,
       "norm_label": "defaultclient()"
@@ -2853,7 +2871,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexHelper.kt",
       "source_location": "L20",
       "id": "dex_dexhelper_dexhelper_getfields",
-      "community": 81,
+      "community": 15,
       "norm_label": ".getfields()"
     },
     {
@@ -2997,7 +3015,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L23",
       "id": "dex_dexmodels_dexheaderinfo",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexheaderinfo"
     },
     {
@@ -3006,7 +3024,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L43",
       "id": "dex_dexmodels_dexmapitem",
-      "community": 29,
+      "community": 15,
       "norm_label": "dexmapitem"
     },
     {
@@ -3015,7 +3033,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L53",
       "id": "dex_dexmodels_dexmethodhandleinfo",
-      "community": 59,
+      "community": 15,
       "norm_label": "dexmethodhandleinfo"
     },
     {
@@ -3024,7 +3042,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L61",
       "id": "dex_dexmodels_dexcallsiteinfo",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexcallsiteinfo"
     },
     {
@@ -3033,7 +3051,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L70",
       "id": "dex_dexmodels_dexhiddenapisummary",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexhiddenapisummary"
     },
     {
@@ -3042,7 +3060,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L76",
       "id": "dex_dexmodels_dexannotationentry",
-      "community": 15,
+      "community": 14,
       "norm_label": "dexannotationentry"
     },
     {
@@ -3051,7 +3069,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L82",
       "id": "dex_dexmodels_dexdebuglineentry",
-      "community": 15,
+      "community": 14,
       "norm_label": "dexdebuglineentry"
     },
     {
@@ -3060,7 +3078,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L87",
       "id": "dex_dexmodels_dexmethodstructuralmeta",
-      "community": 15,
+      "community": 14,
       "norm_label": "dexmethodstructuralmeta"
     },
     {
@@ -3078,7 +3096,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L107",
       "id": "dex_dexmodels_dexfieldref",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexfieldref"
     },
     {
@@ -3096,7 +3114,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L118",
       "id": "dex_dexmodels_dexmethodref_prettysignature",
-      "community": 59,
+      "community": 15,
       "norm_label": ".prettysignature()"
     },
     {
@@ -3204,7 +3222,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L222",
       "id": "dex_dexmodels_dexencodedfield",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexencodedfield"
     },
     {
@@ -3229,16 +3247,34 @@
       "label": ".isFrameworkOrLibraryClass()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L296",
+      "source_location": "L297",
       "id": "dex_dexmodels_dexclassinfo_isframeworkorlibraryclass",
       "community": 15,
       "norm_label": ".isframeworkorlibraryclass()"
     },
     {
+      "label": "CompositeMethodList",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
+      "source_location": "L310",
+      "id": "dex_dexmodels_compositemethodlist",
+      "community": 15,
+      "norm_label": "compositemethodlist"
+    },
+    {
+      "label": ".get()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
+      "source_location": "L315",
+      "id": "dex_dexmodels_compositemethodlist_get",
+      "community": 15,
+      "norm_label": ".get()"
+    },
+    {
       "label": "ParsedClassDescriptor",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L305",
+      "source_location": "L319",
       "id": "dex_dexmodels_parsedclassdescriptor",
       "community": 15,
       "norm_label": "parsedclassdescriptor"
@@ -3247,7 +3283,7 @@
       "label": "normalizePackageName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L311",
+      "source_location": "L325",
       "id": "dex_dexmodels_normalizepackagename",
       "community": 13,
       "norm_label": "normalizepackagename()"
@@ -3256,7 +3292,7 @@
       "label": "parseClassDescriptor()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L326",
+      "source_location": "L340",
       "id": "dex_dexmodels_parseclassdescriptor",
       "community": 15,
       "norm_label": "parseclassdescriptor()"
@@ -3265,7 +3301,7 @@
       "label": "inferDominantDexPackageName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L362",
+      "source_location": "L376",
       "id": "dex_dexmodels_inferdominantdexpackagename",
       "community": 15,
       "norm_label": "inferdominantdexpackagename()"
@@ -3274,97 +3310,97 @@
       "label": "ApkDexEntry",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L423",
+      "source_location": "L437",
       "id": "dex_dexmodels_apkdexentry",
-      "community": 29,
+      "community": 15,
       "norm_label": "apkdexentry"
     },
     {
       "label": "DexParsedFile",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L428",
+      "source_location": "L442",
       "id": "dex_dexmodels_dexparsedfile",
-      "community": 41,
+      "community": 15,
       "norm_label": "dexparsedfile"
     },
     {
       "label": ".stringAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L449",
+      "source_location": "L463",
       "id": "dex_dexmodels_dexparsedfile_stringat",
-      "community": 41,
+      "community": 15,
       "norm_label": ".stringat()"
     },
     {
       "label": ".typeAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L455",
+      "source_location": "L469",
       "id": "dex_dexmodels_dexparsedfile_typeat",
-      "community": 41,
+      "community": 15,
       "norm_label": ".typeat()"
     },
     {
       "label": ".protoAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L461",
+      "source_location": "L475",
       "id": "dex_dexmodels_dexparsedfile_protoat",
-      "community": 41,
+      "community": 15,
       "norm_label": ".protoat()"
     },
     {
       "label": ".fieldAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L467",
+      "source_location": "L481",
       "id": "dex_dexmodels_dexparsedfile_fieldat",
-      "community": 41,
+      "community": 15,
       "norm_label": ".fieldat()"
     },
     {
       "label": ".methodAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L473",
+      "source_location": "L487",
       "id": "dex_dexmodels_dexparsedfile_methodat",
-      "community": 41,
+      "community": 15,
       "norm_label": ".methodat()"
     },
     {
       "label": ".releaseTransientPools()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L484",
+      "source_location": "L498",
       "id": "dex_dexmodels_dexparsedfile_releasetransientpools",
-      "community": 41,
+      "community": 15,
       "norm_label": ".releasetransientpools()"
     },
     {
       "label": ".equals()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L495",
+      "source_location": "L509",
       "id": "dex_dexmodels_dexparsedfile_equals",
-      "community": 41,
+      "community": 15,
       "norm_label": ".equals()"
     },
     {
       "label": ".hashCode()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L503",
+      "source_location": "L517",
       "id": "dex_dexmodels_dexparsedfile_hashcode",
-      "community": 41,
+      "community": 15,
       "norm_label": ".hashcode()"
     },
     {
       "label": "descriptorToJavaName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L511",
+      "source_location": "L525",
       "id": "dex_dexmodels_descriptortojavaname",
       "community": 0,
       "norm_label": "descriptortojavaname()"
@@ -3373,16 +3409,16 @@
       "label": "descriptorToSimpleName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L536",
+      "source_location": "L550",
       "id": "dex_dexmodels_descriptortosimplename",
-      "community": 59,
+      "community": 15,
       "norm_label": "descriptortosimplename()"
     },
     {
       "label": "formatAccessFlags()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L542",
+      "source_location": "L556",
       "id": "dex_dexmodels_formataccessflags",
       "community": 4,
       "norm_label": "formataccessflags()"
@@ -3391,7 +3427,7 @@
       "label": "ClassDefinitionSummary",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L557",
+      "source_location": "L571",
       "id": "dex_dexmodels_classdefinitionsummary",
       "community": 15,
       "norm_label": "classdefinitionsummary"
@@ -3400,7 +3436,7 @@
       "label": "BytecodeOverviewSummary",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L565",
+      "source_location": "L579",
       "id": "dex_dexmodels_bytecodeoverviewsummary",
       "community": 15,
       "norm_label": "bytecodeoverviewsummary"
@@ -3409,7 +3445,7 @@
       "label": "buildBytecodeOverviewSummary()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
-      "source_location": "L580",
+      "source_location": "L594",
       "id": "dex_dexmodels_buildbytecodeoverviewsummary",
       "community": 15,
       "norm_label": "buildbytecodeoverviewsummary()"
@@ -3420,7 +3456,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_dex_dexparser_kt",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexparser.kt"
     },
     {
@@ -3429,7 +3465,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L15",
       "id": "dex_dexparser_dexparser",
-      "community": 29,
+      "community": 15,
       "norm_label": "dexparser"
     },
     {
@@ -3438,7 +3474,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L17",
       "id": "dex_dexparser_dexparser_inspectapkordexfromuri",
-      "community": 29,
+      "community": 15,
       "norm_label": ".inspectapkordexfromuri()"
     },
     {
@@ -3447,7 +3483,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L24",
       "id": "dex_dexparser_dexparser_inspectselfapk",
-      "community": 29,
+      "community": 15,
       "norm_label": ".inspectselfapk()"
     },
     {
@@ -3456,7 +3492,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L46",
       "id": "dex_dexparser_dexparser_extractdexcontainersfromstream",
-      "community": 29,
+      "community": 15,
       "norm_label": ".extractdexcontainersfromstream()"
     },
     {
@@ -3465,7 +3501,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L78",
       "id": "dex_dexparser_dexparser_extractdexcontainers",
-      "community": 29,
+      "community": 15,
       "norm_label": ".extractdexcontainers()"
     },
     {
@@ -3474,7 +3510,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L86",
       "id": "dex_dexparser_dexparser_parsedex",
-      "community": 81,
+      "community": 15,
       "norm_label": ".parsedex()"
     },
     {
@@ -3483,7 +3519,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L387",
       "id": "dex_dexparser_dexparser_parsemaplist",
-      "community": 29,
+      "community": 15,
       "norm_label": ".parsemaplist()"
     },
     {
@@ -3492,7 +3528,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L408",
       "id": "dex_dexparser_dexparser_mapitemtypename",
-      "community": 29,
+      "community": 15,
       "norm_label": ".mapitemtypename()"
     },
     {
@@ -3501,7 +3537,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L434",
       "id": "dex_dexparser_dexparser_parsemethodhandles",
-      "community": 59,
+      "community": 15,
       "norm_label": ".parsemethodhandles()"
     },
     {
@@ -3510,7 +3546,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L476",
       "id": "dex_dexparser_dexparser_parsecallsites",
-      "community": 81,
+      "community": 15,
       "norm_label": ".parsecallsites()"
     },
     {
@@ -3519,7 +3555,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L534",
       "id": "dex_dexparser_dexparser_parsehiddenapisummary",
-      "community": 81,
+      "community": 15,
       "norm_label": ".parsehiddenapisummary()"
     },
     {
@@ -3528,7 +3564,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L556",
       "id": "dex_dexparser_dexparser_readcodemeta",
-      "community": 19,
+      "community": 15,
       "norm_label": ".readcodemeta()"
     },
     {
@@ -3537,7 +3573,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L576",
       "id": "dex_dexparser_dexparser_readmutf8string",
-      "community": 81,
+      "community": 15,
       "norm_label": ".readmutf8string()"
     },
     {
@@ -3546,7 +3582,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L606",
       "id": "dex_dexparser_dexparser_wraporderedbuffer",
-      "community": 29,
+      "community": 15,
       "norm_label": ".wraporderedbuffer()"
     },
     {
@@ -3555,7 +3591,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L615",
       "id": "dex_dexparser_dexparser_readstringat",
-      "community": 29,
+      "community": 15,
       "norm_label": ".readstringat()"
     },
     {
@@ -3564,7 +3600,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L627",
       "id": "dex_dexparser_dexparser_readtypeat",
-      "community": 29,
+      "community": 15,
       "norm_label": ".readtypeat()"
     },
     {
@@ -3573,7 +3609,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L638",
       "id": "dex_dexparser_dexparser_readprotoat",
-      "community": 29,
+      "community": 15,
       "norm_label": ".readprotoat()"
     },
     {
@@ -3582,7 +3618,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L670",
       "id": "dex_dexparser_dexparser_readfieldat",
-      "community": 29,
+      "community": 15,
       "norm_label": ".readfieldat()"
     },
     {
@@ -3591,7 +3627,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L687",
       "id": "dex_dexparser_dexparser_readmethodat",
-      "community": 29,
+      "community": 15,
       "norm_label": ".readmethodat()"
     },
     {
@@ -3600,7 +3636,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L704",
       "id": "dex_dexparser_ulebreader",
-      "community": 81,
+      "community": 15,
       "norm_label": "ulebreader"
     },
     {
@@ -3609,7 +3645,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L705",
       "id": "dex_dexparser_ulebreader_readuleb128",
-      "community": 81,
+      "community": 15,
       "norm_label": ".readuleb128()"
     },
     {
@@ -4842,7 +4878,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/transpiler/TranspilerModels.kt",
       "source_location": "L59",
       "id": "transpiler_transpilermodels_transpileprogress",
-      "community": 45,
+      "community": 0,
       "norm_label": "transpileprogress"
     },
     {
@@ -4966,7 +5002,7 @@
       "label": "DexLoadState",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L92",
+      "source_location": "L94",
       "id": "ui_dex2cviewmodel_dexloadstate",
       "community": 24,
       "norm_label": "dexloadstate"
@@ -4975,7 +5011,7 @@
       "label": "Empty",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L93",
+      "source_location": "L95",
       "id": "ui_dex2cviewmodel_empty",
       "community": 24,
       "norm_label": "empty"
@@ -4984,7 +5020,7 @@
       "label": "Loading",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L94",
+      "source_location": "L96",
       "id": "ui_dex2cviewmodel_loading",
       "community": 23,
       "norm_label": "loading"
@@ -4993,7 +5029,7 @@
       "label": "Ready",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L95",
+      "source_location": "L97",
       "id": "ui_dex2cviewmodel_ready",
       "community": 23,
       "norm_label": "ready"
@@ -5002,7 +5038,7 @@
       "label": "Error",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L112",
+      "source_location": "L114",
       "id": "ui_dex2cviewmodel_error",
       "community": 23,
       "norm_label": "error"
@@ -5011,7 +5047,7 @@
       "label": "ApkStagingState",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L115",
+      "source_location": "L117",
       "id": "ui_dex2cviewmodel_apkstagingstate",
       "community": 24,
       "norm_label": "apkstagingstate"
@@ -5020,7 +5056,7 @@
       "label": "MethodInspectionState",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L127",
+      "source_location": "L129",
       "id": "ui_dex2cviewmodel_methodinspectionstate",
       "community": 24,
       "norm_label": "methodinspectionstate"
@@ -5029,7 +5065,7 @@
       "label": "SmaliClassUiState",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L138",
+      "source_location": "L140",
       "id": "ui_dex2cviewmodel_smaliclassuistate",
       "community": 24,
       "norm_label": "smaliclassuistate"
@@ -5038,7 +5074,7 @@
       "label": "ClassSortOrder",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L185",
+      "source_location": "L187",
       "id": "ui_dex2cviewmodel_classsortorder",
       "community": 24,
       "norm_label": "classsortorder"
@@ -5047,7 +5083,7 @@
       "label": "ClassTypeFilter",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L193",
+      "source_location": "L195",
       "id": "ui_dex2cviewmodel_classtypefilter",
       "community": 24,
       "norm_label": "classtypefilter"
@@ -5056,7 +5092,7 @@
       "label": "MethodScopeFilter",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L199",
+      "source_location": "L201",
       "id": "ui_dex2cviewmodel_methodscopefilter",
       "community": 24,
       "norm_label": "methodscopefilter"
@@ -5065,7 +5101,7 @@
       "label": "matchesMethodScope()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L206",
+      "source_location": "L208",
       "id": "ui_dex2cviewmodel_matchesmethodscope",
       "community": 27,
       "norm_label": "matchesmethodscope()"
@@ -5074,7 +5110,7 @@
       "label": "ClassFilterState",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L214",
+      "source_location": "L216",
       "id": "ui_dex2cviewmodel_classfilterstate",
       "community": 64,
       "norm_label": "classfilterstate"
@@ -5083,7 +5119,7 @@
       "label": "CloudApkChoice",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L236",
+      "source_location": "L238",
       "id": "ui_dex2cviewmodel_cloudapkchoice",
       "community": 23,
       "norm_label": "cloudapkchoice"
@@ -5092,7 +5128,7 @@
       "label": "Dex2cViewModel",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L243",
+      "source_location": "L245",
       "id": "ui_dex2cviewmodel_dex2cviewmodel",
       "community": 1,
       "norm_label": "dex2cviewmodel"
@@ -5101,7 +5137,7 @@
       "label": ".openPicker()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L547",
+      "source_location": "L554",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_openpicker",
       "community": 1,
       "norm_label": ".openpicker()"
@@ -5110,7 +5146,7 @@
       "label": ".closePicker()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L555",
+      "source_location": "L562",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_closepicker",
       "community": 1,
       "norm_label": ".closepicker()"
@@ -5119,7 +5155,7 @@
       "label": ".setPickerTab()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L561",
+      "source_location": "L568",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setpickertab",
       "community": 1,
       "norm_label": ".setpickertab()"
@@ -5128,7 +5164,7 @@
       "label": ".updateAppSearchQuery()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L568",
+      "source_location": "L575",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updateappsearchquery",
       "community": 1,
       "norm_label": ".updateappsearchquery()"
@@ -5137,7 +5173,7 @@
       "label": ".loadInstalledApps()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L572",
+      "source_location": "L579",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_loadinstalledapps",
       "community": 1,
       "norm_label": ".loadinstalledapps()"
@@ -5146,7 +5182,7 @@
       "label": ".stageFromSafUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L582",
+      "source_location": "L589",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_stagefromsafuri",
       "community": 23,
       "norm_label": ".stagefromsafuri()"
@@ -5155,7 +5191,7 @@
       "label": ".stageFromSafUris()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L586",
+      "source_location": "L593",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_stagefromsafuris",
       "community": 23,
       "norm_label": ".stagefromsafuris()"
@@ -5164,7 +5200,7 @@
       "label": ".stageFromInstalledApp()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L621",
+      "source_location": "L628",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_stagefrominstalledapp",
       "community": 23,
       "norm_label": ".stagefrominstalledapp()"
@@ -5173,7 +5209,7 @@
       "label": ".stageFromRecentItem()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L640",
+      "source_location": "L648",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_stagefromrecentitem",
       "community": 23,
       "norm_label": ".stagefromrecentitem()"
@@ -5182,7 +5218,7 @@
       "label": ".inspectLiveAppApk()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L667",
+      "source_location": "L675",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_inspectliveappapk",
       "community": 23,
       "norm_label": ".inspectliveappapk()"
@@ -5191,7 +5227,7 @@
       "label": ".toggleStagedDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L686",
+      "source_location": "L694",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglestageddexentry",
       "community": 1,
       "norm_label": ".togglestageddexentry()"
@@ -5200,7 +5236,7 @@
       "label": ".selectStagedDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L694",
+      "source_location": "L702",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectstageddexentry",
       "community": 1,
       "norm_label": ".selectstageddexentry()"
@@ -5209,7 +5245,7 @@
       "label": ".selectAllStagedDexEntries()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L698",
+      "source_location": "L706",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectallstageddexentries",
       "community": 1,
       "norm_label": ".selectallstageddexentries()"
@@ -5218,7 +5254,7 @@
       "label": ".selectPrimaryStagedDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L703",
+      "source_location": "L711",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectprimarystageddexentry",
       "community": 1,
       "norm_label": ".selectprimarystageddexentry()"
@@ -5227,7 +5263,7 @@
       "label": ".commitStagedDex()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L709",
+      "source_location": "L717",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_commitstageddex",
       "community": 23,
       "norm_label": ".commitstageddex()"
@@ -5236,7 +5272,7 @@
       "label": ".dismissStagingPreview()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L769",
+      "source_location": "L777",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_dismissstagingpreview",
       "community": 1,
       "norm_label": ".dismissstagingpreview()"
@@ -5245,7 +5281,7 @@
       "label": ".removeRecentItem()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L773",
+      "source_location": "L781",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_removerecentitem",
       "community": 1,
       "norm_label": ".removerecentitem()"
@@ -5254,7 +5290,7 @@
       "label": ".clearRecentHistory()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L777",
+      "source_location": "L785",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearrecenthistory",
       "community": 1,
       "norm_label": ".clearrecenthistory()"
@@ -5263,7 +5299,7 @@
       "label": ".recordRecent()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L781",
+      "source_location": "L789",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_recordrecent",
       "community": 23,
       "norm_label": ".recordrecent()"
@@ -5272,7 +5308,7 @@
       "label": ".switchDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L795",
+      "source_location": "L803",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_switchdexentry",
       "community": 1,
       "norm_label": ".switchdexentry()"
@@ -5281,7 +5317,7 @@
       "label": ".toggleLoadedDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L799",
+      "source_location": "L807",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleloadeddexentry",
       "community": 1,
       "norm_label": ".toggleloadeddexentry()"
@@ -5290,7 +5326,7 @@
       "label": ".focusHeaderDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L872",
+      "source_location": "L880",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_focusheaderdexentry",
       "community": 1,
       "norm_label": ".focusheaderdexentry()"
@@ -5299,7 +5335,7 @@
       "label": ".applyParsedDexes()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L878",
+      "source_location": "L886",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_applyparseddexes",
       "community": 15,
       "norm_label": ".applyparseddexes()"
@@ -5308,7 +5344,7 @@
       "label": ".updateSearchQuery()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L915",
+      "source_location": "L923",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updatesearchquery",
       "community": 1,
       "norm_label": ".updatesearchquery()"
@@ -5317,7 +5353,7 @@
       "label": ".toggleHideFramework()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L919",
+      "source_location": "L927",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglehideframework",
       "community": 1,
       "norm_label": ".togglehideframework()"
@@ -5326,7 +5362,7 @@
       "label": ".toggleOnlyWithBytecode()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L923",
+      "source_location": "L931",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleonlywithbytecode",
       "community": 1,
       "norm_label": ".toggleonlywithbytecode()"
@@ -5335,7 +5371,7 @@
       "label": ".toggleOnlySelected()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L927",
+      "source_location": "L935",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleonlyselected",
       "community": 1,
       "norm_label": ".toggleonlyselected()"
@@ -5344,7 +5380,7 @@
       "label": ".toggleOnlyMatchingFilterRules()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L931",
+      "source_location": "L939",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleonlymatchingfilterrules",
       "community": 1,
       "norm_label": ".toggleonlymatchingfilterrules()"
@@ -5353,7 +5389,7 @@
       "label": ".setClassSortOrder()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L935",
+      "source_location": "L943",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setclasssortorder",
       "community": 1,
       "norm_label": ".setclasssortorder()"
@@ -5362,7 +5398,7 @@
       "label": ".setClassTypeFilter()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L939",
+      "source_location": "L947",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setclasstypefilter",
       "community": 1,
       "norm_label": ".setclasstypefilter()"
@@ -5371,7 +5407,7 @@
       "label": ".toggleHideInnerClasses()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L943",
+      "source_location": "L951",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglehideinnerclasses",
       "community": 1,
       "norm_label": ".togglehideinnerclasses()"
@@ -5380,7 +5416,7 @@
       "label": ".setMethodScopeFilter()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L947",
+      "source_location": "L955",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setmethodscopefilter",
       "community": 1,
       "norm_label": ".setmethodscopefilter()"
@@ -5389,7 +5425,7 @@
       "label": ".toggleNonEmptyPackagesOnly()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L951",
+      "source_location": "L959",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglenonemptypackagesonly",
       "community": 1,
       "norm_label": ".togglenonemptypackagesonly()"
@@ -5398,7 +5434,7 @@
       "label": ".setDexSourceFilter()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L955",
+      "source_location": "L963",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setdexsourcefilter",
       "community": 1,
       "norm_label": ".setdexsourcefilter()"
@@ -5407,7 +5443,7 @@
       "label": ".resetExtraClassFilters()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L959",
+      "source_location": "L967",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_resetextraclassfilters",
       "community": 1,
       "norm_label": ".resetextraclassfilters()"
@@ -5416,7 +5452,7 @@
       "label": ".togglePresetRuleLine()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L971",
+      "source_location": "L979",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglepresetruleline",
       "community": 73,
       "norm_label": ".togglepresetruleline()"
@@ -5425,7 +5461,7 @@
       "label": ".addQuickPackageRule()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L977",
+      "source_location": "L985",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_addquickpackagerule",
       "community": 5,
       "norm_label": ".addquickpackagerule()"
@@ -5434,7 +5470,7 @@
       "label": ".addQuickClassRule()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L997",
+      "source_location": "L1005",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_addquickclassrule",
       "community": 5,
       "norm_label": ".addquickclassrule()"
@@ -5443,7 +5479,7 @@
       "label": ".markBundleDirty()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1017",
+      "source_location": "L1025",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_markbundledirty",
       "community": 27,
       "norm_label": ".markbundledirty()"
@@ -5452,7 +5488,7 @@
       "label": ".toggleMethodSelection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1029",
+      "source_location": "L1037",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglemethodselection",
       "community": 27,
       "norm_label": ".togglemethodselection()"
@@ -5461,7 +5497,7 @@
       "label": ".toggleClassSelection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1036",
+      "source_location": "L1044",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleclassselection",
       "community": 27,
       "norm_label": ".toggleclassselection()"
@@ -5470,7 +5506,7 @@
       "label": ".selectAllMethodsInClass()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1058",
+      "source_location": "L1066",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectallmethodsinclass",
       "community": 27,
       "norm_label": ".selectallmethodsinclass()"
@@ -5479,7 +5515,7 @@
       "label": ".deselectAllMethodsInClass()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1065",
+      "source_location": "L1073",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_deselectallmethodsinclass",
       "community": 27,
       "norm_label": ".deselectallmethodsinclass()"
@@ -5488,7 +5524,7 @@
       "label": ".invertClassMethodSelection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1071",
+      "source_location": "L1079",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_invertclassmethodselection",
       "community": 27,
       "norm_label": ".invertclassmethodselection()"
@@ -5497,7 +5533,7 @@
       "label": ".togglePackageSelection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1082",
+      "source_location": "L1090",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_togglepackageselection",
       "community": 27,
       "norm_label": ".togglepackageselection()"
@@ -5506,7 +5542,7 @@
       "label": ".selectAllClasses()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1124",
+      "source_location": "L1132",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectallclasses",
       "community": 27,
       "norm_label": ".selectallclasses()"
@@ -5515,7 +5551,7 @@
       "label": ".deselectAllClasses()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1145",
+      "source_location": "L1153",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_deselectallclasses",
       "community": 27,
       "norm_label": ".deselectallclasses()"
@@ -5524,7 +5560,7 @@
       "label": ".invertClassSelection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1155",
+      "source_location": "L1163",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_invertclassselection",
       "community": 27,
       "norm_label": ".invertclassselection()"
@@ -5533,7 +5569,7 @@
       "label": ".autoSelectAppMethods()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1180",
+      "source_location": "L1188",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_autoselectappmethods",
       "community": 27,
       "norm_label": ".autoselectappmethods()"
@@ -5542,7 +5578,7 @@
       "label": ".applyFilterRules()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1221",
+      "source_location": "L1229",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_applyfilterrules",
       "community": 45,
       "norm_label": ".applyfilterrules()"
@@ -5551,7 +5587,7 @@
       "label": ".importFilterTxtFromUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1234",
+      "source_location": "L1242",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_importfiltertxtfromuri",
       "community": 73,
       "norm_label": ".importfiltertxtfromuri()"
@@ -5560,7 +5596,7 @@
       "label": ".importDccCfgFromUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1251",
+      "source_location": "L1259",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_importdcccfgfromuri",
       "community": 73,
       "norm_label": ".importdcccfgfromuri()"
@@ -5569,7 +5605,7 @@
       "label": ".clearSelection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1268",
+      "source_location": "L1276",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearselection",
       "community": 27,
       "norm_label": ".clearselection()"
@@ -5578,7 +5614,7 @@
       "label": ".inspectClassSmali()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1277",
+      "source_location": "L1285",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_inspectclasssmali",
       "community": 65,
       "norm_label": ".inspectclasssmali()"
@@ -5587,7 +5623,7 @@
       "label": ".clearSmaliInspection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1314",
+      "source_location": "L1322",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearsmaliinspection",
       "community": 1,
       "norm_label": ".clearsmaliinspection()"
@@ -5596,7 +5632,7 @@
       "label": ".openClassInViewer()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1322",
+      "source_location": "L1330",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_openclassinviewer",
       "community": 65,
       "norm_label": ".openclassinviewer()"
@@ -5605,7 +5641,7 @@
       "label": ".clearCompileError()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1326",
+      "source_location": "L1334",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearcompileerror",
       "community": 1,
       "norm_label": ".clearcompileerror()"
@@ -5614,7 +5650,7 @@
       "label": ".clearDexEditUndoPrompt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1330",
+      "source_location": "L1338",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_cleardexeditundoprompt",
       "community": 1,
       "norm_label": ".cleardexeditundoprompt()"
@@ -5623,7 +5659,7 @@
       "label": ".undoLastDexModification()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1334",
+      "source_location": "L1342",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_undolastdexmodification",
       "community": 27,
       "norm_label": ".undolastdexmodification()"
@@ -5632,7 +5668,7 @@
       "label": ".compileEditedSmaliClass()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1363",
+      "source_location": "L1371",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_compileeditedsmaliclass",
       "community": 27,
       "norm_label": ".compileeditedsmaliclass()"
@@ -5641,7 +5677,7 @@
       "label": ".deleteDexClasses()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1449",
+      "source_location": "L1457",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_deletedexclasses",
       "community": 27,
       "norm_label": ".deletedexclasses()"
@@ -5650,7 +5686,7 @@
       "label": ".replaceStringInActiveDex()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1495",
+      "source_location": "L1503",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_replacestringinactivedex",
       "community": 27,
       "norm_label": ".replacestringinactivedex()"
@@ -5659,7 +5695,7 @@
       "label": ".applyReplacedDexEntry()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1554",
+      "source_location": "L1562",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_applyreplaceddexentry",
       "community": 27,
       "norm_label": ".applyreplaceddexentry()"
@@ -5668,7 +5704,7 @@
       "label": ".exportPatchedDexToUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1585",
+      "source_location": "L1593",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_exportpatcheddextouri",
       "community": 1,
       "norm_label": ".exportpatcheddextouri()"
@@ -5677,7 +5713,7 @@
       "label": ".exportPatchedApkToUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1607",
+      "source_location": "L1615",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_exportpatchedapktouri",
       "community": 1,
       "norm_label": ".exportpatchedapktouri()"
@@ -5686,7 +5722,7 @@
       "label": ".clearMethodInspection()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1654",
+      "source_location": "L1662",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearmethodinspection",
       "community": 1,
       "norm_label": ".clearmethodinspection()"
@@ -5695,7 +5731,7 @@
       "label": ".onTrimMemory()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1661",
+      "source_location": "L1669",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_ontrimmemory",
       "community": 1,
       "norm_label": ".ontrimmemory()"
@@ -5704,7 +5740,7 @@
       "label": ".onCleared()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1686",
+      "source_location": "L1698",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_oncleared",
       "community": 1,
       "norm_label": ".oncleared()"
@@ -5713,7 +5749,7 @@
       "label": ".exportSmaliToUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1692",
+      "source_location": "L1709",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_exportsmalitouri",
       "community": 1,
       "norm_label": ".exportsmalitouri()"
@@ -5722,7 +5758,7 @@
       "label": ".inspectMethod()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1708",
+      "source_location": "L1725",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_inspectmethod",
       "community": 24,
       "norm_label": ".inspectmethod()"
@@ -5731,7 +5767,7 @@
       "label": ".syncSelectedClassesToFilter()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1739",
+      "source_location": "L1756",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_syncselectedclassestofilter",
       "community": 73,
       "norm_label": ".syncselectedclassestofilter()"
@@ -5740,7 +5776,7 @@
       "label": ".syncSelectionToWildcardRules()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1768",
+      "source_location": "L1785",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_syncselectiontowildcardrules",
       "community": 73,
       "norm_label": ".syncselectiontowildcardrules()"
@@ -5749,7 +5785,7 @@
       "label": ".updateConfig()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1772",
+      "source_location": "L1789",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updateconfig",
       "community": 73,
       "norm_label": ".updateconfig()"
@@ -5758,7 +5794,7 @@
       "label": ".refreshInspectionIfActive()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1780",
+      "source_location": "L1797",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshinspectionifactive",
       "community": 73,
       "norm_label": ".refreshinspectionifactive()"
@@ -5767,7 +5803,7 @@
       "label": ".ensureBundleBuilt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1802",
+      "source_location": "L1819",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_ensurebundlebuilt",
       "community": 45,
       "norm_label": ".ensurebundlebuilt()"
@@ -5776,7 +5812,7 @@
       "label": ".collectSelectedEntries()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1819",
+      "source_location": "L1836",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_collectselectedentries",
       "community": 45,
       "norm_label": ".collectselectedentries()"
@@ -5785,7 +5821,7 @@
       "label": ".rebuildBundle()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1837",
+      "source_location": "L1854",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_rebuildbundle",
       "community": 45,
       "norm_label": ".rebuildbundle()"
@@ -5794,7 +5830,7 @@
       "label": ".exportBundleToZip()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1883",
+      "source_location": "L1900",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_exportbundletozip",
       "community": 45,
       "norm_label": ".exportbundletozip()"
@@ -5803,7 +5839,7 @@
       "label": ".clearStatusBanner()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1904",
+      "source_location": "L1921",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearstatusbanner",
       "community": 1,
       "norm_label": ".clearstatusbanner()"
@@ -5812,7 +5848,7 @@
       "label": ".updateAppSettings()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1910",
+      "source_location": "L1927",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updateappsettings",
       "community": 1,
       "norm_label": ".updateappsettings()"
@@ -5821,7 +5857,7 @@
       "label": ".completeOnboarding()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1937",
+      "source_location": "L1954",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_completeonboarding",
       "community": 1,
       "norm_label": ".completeonboarding()"
@@ -5830,7 +5866,7 @@
       "label": ".sendTestBuildNotification()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1942",
+      "source_location": "L1959",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_sendtestbuildnotification",
       "community": 1,
       "norm_label": ".sendtestbuildnotification()"
@@ -5839,7 +5875,7 @@
       "label": ".resetAllSettingsToDefaults()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1949",
+      "source_location": "L1966",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_resetallsettingstodefaults",
       "community": 2,
       "norm_label": ".resetallsettingstodefaults()"
@@ -5848,25 +5884,25 @@
       "label": ".updateCloudSettings()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1983",
+      "source_location": "L2000",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updatecloudsettings",
-      "community": 23,
+      "community": 1,
       "norm_label": ".updatecloudsettings()"
     },
     {
       "label": ".setNotificationsEnabled()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2005",
+      "source_location": "L2022",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setnotificationsenabled",
-      "community": 23,
+      "community": 1,
       "norm_label": ".setnotificationsenabled()"
     },
     {
       "label": ".updateCloudApkUrl()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2018",
+      "source_location": "L2035",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updatecloudapkurl",
       "community": 1,
       "norm_label": ".updatecloudapkurl()"
@@ -5875,7 +5911,7 @@
       "label": ".selectCloudApkFromSaf()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2022",
+      "source_location": "L2039",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectcloudapkfromsaf",
       "community": 23,
       "norm_label": ".selectcloudapkfromsaf()"
@@ -5884,7 +5920,7 @@
       "label": ".useLiveApkForCloud()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2037",
+      "source_location": "L2054",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_useliveapkforcloud",
       "community": 23,
       "norm_label": ".useliveapkforcloud()"
@@ -5893,7 +5929,7 @@
       "label": ".startDeviceFlowLogin()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2049",
+      "source_location": "L2066",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_startdeviceflowlogin",
       "community": 23,
       "norm_label": ".startdeviceflowlogin()"
@@ -5902,7 +5938,7 @@
       "label": ".cancelDeviceFlowLogin()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2159",
+      "source_location": "L2176",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_canceldeviceflowlogin",
       "community": 1,
       "norm_label": ".canceldeviceflowlogin()"
@@ -5911,7 +5947,7 @@
       "label": ".signOutGitHub()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2167",
+      "source_location": "L2184",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_signoutgithub",
       "community": 1,
       "norm_label": ".signoutgithub()"
@@ -5920,7 +5956,7 @@
       "label": ".verifyOrLoadRepoState()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2183",
+      "source_location": "L2200",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_verifyorloadrepostate",
       "community": 23,
       "norm_label": ".verifyorloadrepostate()"
@@ -5929,7 +5965,7 @@
       "label": ".buildEffectiveCloudFilterText()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2241",
+      "source_location": "L2258",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_buildeffectivecloudfiltertext",
       "community": 45,
       "norm_label": ".buildeffectivecloudfiltertext()"
@@ -5938,7 +5974,7 @@
       "label": ".initializePrivateRepoAndWorkflow()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2253",
+      "source_location": "L2270",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_initializeprivaterepoandworkflow",
       "community": 23,
       "norm_label": ".initializeprivaterepoandworkflow()"
@@ -5947,7 +5983,7 @@
       "label": ".dispatchCloudDex2cBuild()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2385",
+      "source_location": "L2402",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_dispatchclouddex2cbuild",
       "community": 39,
       "norm_label": ".dispatchclouddex2cbuild()"
@@ -5956,7 +5992,7 @@
       "label": ".attachToCloudRun()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2654",
+      "source_location": "L2676",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_attachtocloudrun",
       "community": 39,
       "norm_label": ".attachtocloudrun()"
@@ -5965,7 +6001,7 @@
       "label": ".toggleAutoPoll()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2670",
+      "source_location": "L2692",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleautopoll",
       "community": 39,
       "norm_label": ".toggleautopoll()"
@@ -5974,7 +6010,7 @@
       "label": ".retryCloudMonitorError()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2688",
+      "source_location": "L2710",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_retrycloudmonitorerror",
       "community": 39,
       "norm_label": ".retrycloudmonitorerror()"
@@ -5983,7 +6019,7 @@
       "label": ".refreshActiveCloudRun()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2697",
+      "source_location": "L2719",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshactivecloudrun",
       "community": 39,
       "norm_label": ".refreshactivecloudrun()"
@@ -5992,7 +6028,7 @@
       "label": ".pollWorkflowRunUntilDone()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2736",
+      "source_location": "L2758",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_pollworkflowrununtildone",
       "community": 39,
       "norm_label": ".pollworkflowrununtildone()"
@@ -6001,7 +6037,7 @@
       "label": ".fetchAndApplyRunSnapshot()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2809",
+      "source_location": "L2831",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_fetchandapplyrunsnapshot",
       "community": 39,
       "norm_label": ".fetchandapplyrunsnapshot()"
@@ -6010,16 +6046,16 @@
       "label": ".refreshCloudRuns()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2899",
+      "source_location": "L2921",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshcloudruns",
-      "community": 39,
+      "community": 23,
       "norm_label": ".refreshcloudruns()"
     },
     {
       "label": ".downloadArtifactAndPromptSave()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2917",
+      "source_location": "L2939",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_downloadartifactandpromptsave",
       "community": 39,
       "norm_label": ".downloadartifactandpromptsave()"
@@ -6028,7 +6064,7 @@
       "label": ".savePendingCloudApkToUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3009",
+      "source_location": "L3036",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_savependingcloudapktouri",
       "community": 1,
       "norm_label": ".savependingcloudapktouri()"
@@ -6037,7 +6073,7 @@
       "label": ".clearPendingCloudApkSave()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3035",
+      "source_location": "L3062",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearpendingcloudapksave",
       "community": 1,
       "norm_label": ".clearpendingcloudapksave()"
@@ -6046,7 +6082,7 @@
       "label": ".postLiveProgressNotification()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3039",
+      "source_location": "L3066",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_postliveprogressnotification",
       "community": 39,
       "norm_label": ".postliveprogressnotification()"
@@ -6055,7 +6091,7 @@
       "label": ".queryDisplayName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3053",
+      "source_location": "L3080",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_querydisplayname",
       "community": 23,
       "norm_label": ".querydisplayname()"
@@ -6073,7 +6109,7 @@
       "label": "ApkPickerSheet()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ApkPickerSheet.kt",
-      "source_location": "L78",
+      "source_location": "L77",
       "id": "components_apkpickersheet_apkpickersheet",
       "community": 70,
       "norm_label": "apkpickersheet()"
@@ -6082,7 +6118,7 @@
       "label": "StoragePickerTab()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ApkPickerSheet.kt",
-      "source_location": "L188",
+      "source_location": "L187",
       "id": "components_apkpickersheet_storagepickertab",
       "community": 70,
       "norm_label": "storagepickertab()"
@@ -6091,7 +6127,7 @@
       "label": "InstalledAppsTab()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ApkPickerSheet.kt",
-      "source_location": "L270",
+      "source_location": "L269",
       "id": "components_apkpickersheet_installedappstab",
       "community": 70,
       "norm_label": "installedappstab()"
@@ -6100,7 +6136,7 @@
       "label": "InstalledAppRow()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ApkPickerSheet.kt",
-      "source_location": "L405",
+      "source_location": "L388",
       "id": "components_apkpickersheet_installedapprow",
       "community": 70,
       "norm_label": "installedapprow()"
@@ -6109,7 +6145,7 @@
       "label": "RecentBinariesTab()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ApkPickerSheet.kt",
-      "source_location": "L487",
+      "source_location": "L469",
       "id": "components_apkpickersheet_recentbinariestab",
       "community": 70,
       "norm_label": "recentbinariestab()"
@@ -6118,7 +6154,7 @@
       "label": "formatApkSize()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ApkPickerSheet.kt",
-      "source_location": "L702",
+      "source_location": "L684",
       "id": "components_apkpickersheet_formatapksize",
       "community": 70,
       "norm_label": "formatapksize()"
@@ -6487,7 +6523,7 @@
       "label": "DexFieldsExplorerTab()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/DexExplorerSubTabs.kt",
-      "source_location": "L140",
+      "source_location": "L143",
       "id": "components_dexexplorersubtabs_dexfieldsexplorertab",
       "community": 84,
       "norm_label": "dexfieldsexplorertab()"
@@ -6496,7 +6532,7 @@
       "label": "DexStringsExplorerTab()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/DexExplorerSubTabs.kt",
-      "source_location": "L227",
+      "source_location": "L233",
       "id": "components_dexexplorersubtabs_dexstringsexplorertab",
       "community": 84,
       "norm_label": "dexstringsexplorertab()"
@@ -6937,7 +6973,7 @@
       "label": "SelectedClassesFilterDialog()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/SelectedClassesFilterDialog.kt",
-      "source_location": "L57",
+      "source_location": "L58",
       "id": "components_selectedclassesfilterdialog_selectedclassesfilterdialog",
       "community": 84,
       "norm_label": "selectedclassesfilterdialog()"
@@ -8008,7 +8044,7 @@
       "label": "SmaliClassScreen()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/SmaliClassScreen.kt",
-      "source_location": "L51",
+      "source_location": "L53",
       "id": "screens_smaliclassscreen_smaliclassscreen",
       "community": 4,
       "norm_label": "smaliclassscreen()"
@@ -8109,7 +8145,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/theme/Theme.kt",
       "source_location": "L33",
       "id": "theme_theme_editordisplaysettings",
-      "community": 4,
+      "community": 87,
       "norm_label": "editordisplaysettings"
     },
     {
@@ -8548,7 +8584,7 @@
       "label": ".gitHubApiClient_streamsUploadAndDownloadByteProgress()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L399",
+      "source_location": "L411",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_githubapiclient_streamsuploadanddownloadbyteprogress",
       "community": 46,
       "norm_label": ".githubapiclient_streamsuploadanddownloadbyteprogress()"
@@ -8622,7 +8658,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_dex_dexeditverifiertest_kt",
-      "community": 40,
+      "community": 15,
       "norm_label": "dexeditverifiertest.kt"
     },
     {
@@ -8631,7 +8667,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L8",
       "id": "dex_dexeditverifiertest_dexeditverifiertest",
-      "community": 40,
+      "community": 15,
       "norm_label": "dexeditverifiertest"
     },
     {
@@ -8640,7 +8676,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L10",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_createdummyclass",
-      "community": 40,
+      "community": 15,
       "norm_label": ".createdummyclass()"
     },
     {
@@ -8649,7 +8685,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L28",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_createdummydex",
-      "community": 40,
+      "community": 15,
       "norm_label": ".createdummydex()"
     },
     {
@@ -8658,7 +8694,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L52",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_testverifyclasspresentsuccess",
-      "community": 40,
+      "community": 15,
       "norm_label": ".testverifyclasspresentsuccess()"
     },
     {
@@ -8667,7 +8703,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L61",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_testverifyclasspresentfailswhenabsent",
-      "community": 40,
+      "community": 15,
       "norm_label": ".testverifyclasspresentfailswhenabsent()"
     },
     {
@@ -8676,7 +8712,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L71",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_testverifyclassesdeletedsuccess",
-      "community": 40,
+      "community": 15,
       "norm_label": ".testverifyclassesdeletedsuccess()"
     },
     {
@@ -8685,7 +8721,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L83",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_testverifyclassesdeletedfailswhenclassremains",
-      "community": 40,
+      "community": 15,
       "norm_label": ".testverifyclassesdeletedfailswhenclassremains()"
     },
     {
@@ -8694,7 +8730,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/dex/DexEditVerifierTest.kt",
       "source_location": "L97",
       "id": "dex_dexeditverifiertest_dexeditverifiertest_testverifyreplacementcount",
-      "community": 40,
+      "community": 15,
       "norm_label": ".testverifyreplacementcount()"
     },
     {
@@ -10570,6 +10606,1041 @@
       "norm_label": "golden rule"
     },
     {
+      "label": "DATABASE_NETWORK_REPORT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_database_network_report_md",
+      "community": 88,
+      "norm_label": "database_network_report.md"
+    },
+    {
+      "label": "Data Layer, Networking & Background Processing Audit: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L1",
+      "id": "performance_audit_database_network_report_data_layer_networking_background_processing_audit_dex2c_studio",
+      "community": 88,
+      "norm_label": "data layer, networking & background processing audit: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L3",
+      "id": "performance_audit_database_network_report_1_executive_summary",
+      "community": 88,
+      "norm_label": "1. executive summary"
+    },
+    {
+      "label": "Key Findings",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L7",
+      "id": "performance_audit_database_network_report_key_findings",
+      "community": 88,
+      "norm_label": "key findings"
+    },
+    {
+      "label": "2. In-Depth Technical Analysis",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L16",
+      "id": "performance_audit_database_network_report_2_in_depth_technical_analysis",
+      "community": 88,
+      "norm_label": "2. in-depth technical analysis"
+    },
+    {
+      "label": "DATA-001: OkHttpClient Reuse & Connection Pooling",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L18",
+      "id": "performance_audit_database_network_report_data_001_okhttpclient_reuse_connection_pooling",
+      "community": 88,
+      "norm_label": "data-001: okhttpclient reuse & connection pooling"
+    },
+    {
+      "label": "code:kotlin (val client = GitHubApiClient(isDohEnabled = { settings.dohFa)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L24",
+      "id": "performance_audit_database_network_report_codeblock_1",
+      "community": 88,
+      "norm_label": "code:kotlin (val client = githubapiclient(isdohenabled = { settings.dohfa)"
+    },
+    {
+      "label": "DATA-002: Token Security & Encryption",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L33",
+      "id": "performance_audit_database_network_report_data_002_token_security_encryption",
+      "community": 88,
+      "norm_label": "data-002: token security & encryption"
+    },
+    {
+      "label": "DATA-003: In-Memory Storage & ZIP Export",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L41",
+      "id": "performance_audit_database_network_report_data_003_in_memory_storage_zip_export",
+      "community": 88,
+      "norm_label": "data-003: in-memory storage & zip export"
+    },
+    {
+      "label": "3. Recommended Data-Layer Improvements",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L51",
+      "id": "performance_audit_database_network_report_3_recommended_data_layer_improvements",
+      "community": 88,
+      "norm_label": "3. recommended data-layer improvements"
+    },
+    {
+      "label": "FINAL_ENGINEERING_SUMMARY.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_final_engineering_summary_md",
+      "community": 41,
+      "norm_label": "final_engineering_summary.md"
+    },
+    {
+      "label": "Final Engineering Summary: Dex2C Studio Performance & Optimization Program",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L1",
+      "id": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "community": 41,
+      "norm_label": "final engineering summary: dex2c studio performance & optimization program"
+    },
+    {
+      "label": "1. Executive Program Overview",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L10",
+      "id": "performance_audit_final_engineering_summary_1_executive_program_overview",
+      "community": 41,
+      "norm_label": "1. executive program overview"
+    },
+    {
+      "label": "2. Before vs. After Quantitative Scorecard",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L27",
+      "id": "performance_audit_final_engineering_summary_2_before_vs_after_quantitative_scorecard",
+      "community": 41,
+      "norm_label": "2. before vs. after quantitative scorecard"
+    },
+    {
+      "label": "3. Key Architectural & System Improvements",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L42",
+      "id": "performance_audit_final_engineering_summary_3_key_architectural_system_improvements",
+      "community": 41,
+      "norm_label": "3. key architectural & system improvements"
+    },
+    {
+      "label": "3.1. Zero-Allocation Collections (`CompositeMethodList`)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L44",
+      "id": "performance_audit_final_engineering_summary_3_1_zero_allocation_collections_compositemethodlist",
+      "community": 41,
+      "norm_label": "3.1. zero-allocation collections (`compositemethodlist`)"
+    },
+    {
+      "label": "3.2. Byte-Bounded Memory Management & System Trimming",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L47",
+      "id": "performance_audit_final_engineering_summary_3_2_byte_bounded_memory_management_system_trimming",
+      "community": 41,
+      "norm_label": "3.2. byte-bounded memory management & system trimming"
+    },
+    {
+      "label": "3.3. Compose Stateflow Decoupling",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L50",
+      "id": "performance_audit_final_engineering_summary_3_3_compose_stateflow_decoupling",
+      "community": 41,
+      "norm_label": "3.3. compose stateflow decoupling"
+    },
+    {
+      "label": "3.4. Debounced Code Editor & Enhanced UX",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L56",
+      "id": "performance_audit_final_engineering_summary_3_4_debounced_code_editor_enhanced_ux",
+      "community": 41,
+      "norm_label": "3.4. debounced code editor & enhanced ux"
+    },
+    {
+      "label": "4. Documentation Suite Index",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L61",
+      "id": "performance_audit_final_engineering_summary_4_documentation_suite_index",
+      "community": 41,
+      "norm_label": "4. documentation suite index"
+    },
+    {
+      "label": "5. Strategic Recommendations & Future Roadmap",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L79",
+      "id": "performance_audit_final_engineering_summary_5_strategic_recommendations_future_roadmap",
+      "community": 41,
+      "norm_label": "5. strategic recommendations & future roadmap"
+    },
+    {
+      "label": "FULL_CODEBASE_AUDIT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_full_codebase_audit_md",
+      "community": 90,
+      "norm_label": "full_codebase_audit.md"
+    },
+    {
+      "label": "Complete Codebase Audit: Dex2C Studio (`com.dex2c.studio`)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L1",
+      "id": "performance_audit_full_codebase_audit_complete_codebase_audit_dex2c_studio_com_dex2c_studio",
+      "community": 90,
+      "norm_label": "complete codebase audit: dex2c studio (`com.dex2c.studio`)"
+    },
+    {
+      "label": "1. Executive Summary & Project Inventory",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L3",
+      "id": "performance_audit_full_codebase_audit_1_executive_summary_project_inventory",
+      "community": 90,
+      "norm_label": "1. executive summary & project inventory"
+    },
+    {
+      "label": "1.1 Repository Inventory & Metrics",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L8",
+      "id": "performance_audit_full_codebase_audit_1_1_repository_inventory_metrics",
+      "community": 90,
+      "norm_label": "1.1 repository inventory & metrics"
+    },
+    {
+      "label": "2. Package & Module Architecture Map",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L22",
+      "id": "performance_audit_full_codebase_audit_2_package_module_architecture_map",
+      "community": 90,
+      "norm_label": "2. package & module architecture map"
+    },
+    {
+      "label": "code:mermaid (graph TD)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L24",
+      "id": "performance_audit_full_codebase_audit_codeblock_1",
+      "community": 90,
+      "norm_label": "code:mermaid (graph td)"
+    },
+    {
+      "label": "2.1 Package Breakdown",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L44",
+      "id": "performance_audit_full_codebase_audit_2_1_package_breakdown",
+      "community": 90,
+      "norm_label": "2.1 package breakdown"
+    },
+    {
+      "label": "3. Dependency Injection & Service Initialization",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L92",
+      "id": "performance_audit_full_codebase_audit_3_dependency_injection_service_initialization",
+      "community": 90,
+      "norm_label": "3. dependency injection & service initialization"
+    },
+    {
+      "label": "4. Key Architectural Deficiencies & Technical Debt Identified",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L102",
+      "id": "performance_audit_full_codebase_audit_4_key_architectural_deficiencies_technical_debt_identified",
+      "community": 90,
+      "norm_label": "4. key architectural deficiencies & technical debt identified"
+    },
+    {
+      "label": "IMPLEMENTATION_CHANGELOG.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_implementation_changelog_md",
+      "community": 29,
+      "norm_label": "implementation_changelog.md"
+    },
+    {
+      "label": "Implementation Changelog: Dex2C Studio Performance & Optimization Program",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L1",
+      "id": "performance_audit_implementation_changelog_implementation_changelog_dex2c_studio_performance_optimization_program",
+      "community": 29,
+      "norm_label": "implementation changelog: dex2c studio performance & optimization program"
+    },
+    {
+      "label": "1. Summary of Modified Files",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L9",
+      "id": "performance_audit_implementation_changelog_1_summary_of_modified_files",
+      "community": 29,
+      "norm_label": "1. summary of modified files"
+    },
+    {
+      "label": "2. Detailed File Diffs & Technical Rationale",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L31",
+      "id": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "community": 29,
+      "norm_label": "2. detailed file diffs & technical rationale"
+    },
+    {
+      "label": "2.1. `app/src/main/java/com/dex2c/studio/dex/DexModels.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L33",
+      "id": "performance_audit_implementation_changelog_2_1_app_src_main_java_com_dex2c_studio_dex_dexmodels_kt",
+      "community": 29,
+      "norm_label": "2.1. `app/src/main/java/com/dex2c/studio/dex/dexmodels.kt`"
+    },
+    {
+      "label": "2.2. `app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L41",
+      "id": "performance_audit_implementation_changelog_2_2_app_src_main_java_com_dex2c_studio_apk_installedapprepository_kt",
+      "community": 29,
+      "norm_label": "2.2. `app/src/main/java/com/dex2c/studio/apk/installedapprepository.kt`"
+    },
+    {
+      "label": "2.3. `app/src/main/java/com/dex2c/studio/ui/components/SmaliSoraEditor.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L49",
+      "id": "performance_audit_implementation_changelog_2_3_app_src_main_java_com_dex2c_studio_ui_components_smalisoraeditor_kt",
+      "community": 29,
+      "norm_label": "2.3. `app/src/main/java/com/dex2c/studio/ui/components/smalisoraeditor.kt`"
+    },
+    {
+      "label": "2.4. `app/src/main/java/com/dex2c/studio/ui/screens/SmaliClassScreen.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L57",
+      "id": "performance_audit_implementation_changelog_2_4_app_src_main_java_com_dex2c_studio_ui_screens_smaliclassscreen_kt",
+      "community": 29,
+      "norm_label": "2.4. `app/src/main/java/com/dex2c/studio/ui/screens/smaliclassscreen.kt`"
+    },
+    {
+      "label": "2.5. `app/src/main/java/com/dex2c/studio/ui/components/DexExplorerSubTabs.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L65",
+      "id": "performance_audit_implementation_changelog_2_5_app_src_main_java_com_dex2c_studio_ui_components_dexexplorersubtabs_kt",
+      "community": 29,
+      "norm_label": "2.5. `app/src/main/java/com/dex2c/studio/ui/components/dexexplorersubtabs.kt`"
+    },
+    {
+      "label": "2.6. `app/src/main/java/com/dex2c/studio/ui/screens/PipelineConfigScreen.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L73",
+      "id": "performance_audit_implementation_changelog_2_6_app_src_main_java_com_dex2c_studio_ui_screens_pipelineconfigscreen_kt",
+      "community": 29,
+      "norm_label": "2.6. `app/src/main/java/com/dex2c/studio/ui/screens/pipelineconfigscreen.kt`"
+    },
+    {
+      "label": "2.7. `app/src/main/java/com/dex2c/studio/ui/components/SelectedClassesFilterDialog.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L81",
+      "id": "performance_audit_implementation_changelog_2_7_app_src_main_java_com_dex2c_studio_ui_components_selectedclassesfilterdialog_kt",
+      "community": 29,
+      "norm_label": "2.7. `app/src/main/java/com/dex2c/studio/ui/components/selectedclassesfilterdialog.kt`"
+    },
+    {
+      "label": "2.8. `app/src/main/java/com/dex2c/studio/ui/screens/SettingsSubScreens.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L89",
+      "id": "performance_audit_implementation_changelog_2_8_app_src_main_java_com_dex2c_studio_ui_screens_settingssubscreens_kt",
+      "community": 29,
+      "norm_label": "2.8. `app/src/main/java/com/dex2c/studio/ui/screens/settingssubscreens.kt`"
+    },
+    {
+      "label": "2.9. `app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L97",
+      "id": "performance_audit_implementation_changelog_2_9_app_src_main_java_com_dex2c_studio_cloud_githubapiclient_kt",
+      "community": 29,
+      "norm_label": "2.9. `app/src/main/java/com/dex2c/studio/cloud/githubapiclient.kt`"
+    },
+    {
+      "label": "2.10. `app/src/main/java/com/dex2c/studio/MainActivity.kt` & `app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L105",
+      "id": "performance_audit_implementation_changelog_2_10_app_src_main_java_com_dex2c_studio_mainactivity_kt_app_src_main_java_com_dex2c_studio_ui_dex2cviewmodel_kt",
+      "community": 29,
+      "norm_label": "2.10. `app/src/main/java/com/dex2c/studio/mainactivity.kt` & `app/src/main/java/com/dex2c/studio/ui/dex2cviewmodel.kt`"
+    },
+    {
+      "label": "2.11. `app/src/main/java/com/dex2c/studio/dex/SmaliDexCompiler.kt`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L121",
+      "id": "performance_audit_implementation_changelog_2_11_app_src_main_java_com_dex2c_studio_dex_smalidexcompiler_kt",
+      "community": 29,
+      "norm_label": "2.11. `app/src/main/java/com/dex2c/studio/dex/smalidexcompiler.kt`"
+    },
+    {
+      "label": "MASTER_ISSUE_TRACKER.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_master_issue_tracker_md",
+      "community": 96,
+      "norm_label": "master_issue_tracker.md"
+    },
+    {
+      "label": "Master Issue Tracker: Dex2C Studio Performance & Quality Audit",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L1",
+      "id": "performance_audit_master_issue_tracker_master_issue_tracker_dex2c_studio_performance_quality_audit",
+      "community": 96,
+      "norm_label": "master issue tracker: dex2c studio performance & quality audit"
+    },
+    {
+      "label": "Priority Classification",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L5",
+      "id": "performance_audit_master_issue_tracker_priority_classification",
+      "community": 96,
+      "norm_label": "priority classification"
+    },
+    {
+      "label": "Master Issue Registry & Resolution Status",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L13",
+      "id": "performance_audit_master_issue_tracker_master_issue_registry_resolution_status",
+      "community": 96,
+      "norm_label": "master issue registry & resolution status"
+    },
+    {
+      "label": "MEMORY_AUDIT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_memory_audit_md",
+      "community": 85,
+      "norm_label": "memory_audit.md"
+    },
+    {
+      "label": "Memory Management & Leak Audit: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L1",
+      "id": "performance_audit_memory_audit_memory_management_leak_audit_dex2c_studio",
+      "community": 85,
+      "norm_label": "memory management & leak audit: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L3",
+      "id": "performance_audit_memory_audit_1_executive_summary",
+      "community": 85,
+      "norm_label": "1. executive summary"
+    },
+    {
+      "label": "Key Memory Findings",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L13",
+      "id": "performance_audit_memory_audit_key_memory_findings",
+      "community": 85,
+      "norm_label": "key memory findings"
+    },
+    {
+      "label": "2. Detailed Memory Vulnerability Analysis",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L22",
+      "id": "performance_audit_memory_audit_2_detailed_memory_vulnerability_analysis",
+      "community": 85,
+      "norm_label": "2. detailed memory vulnerability analysis"
+    },
+    {
+      "label": "MEM-001: Count-Based Bitmap LruCache",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L24",
+      "id": "performance_audit_memory_audit_mem_001_count_based_bitmap_lrucache",
+      "community": 85,
+      "norm_label": "mem-001: count-based bitmap lrucache"
+    },
+    {
+      "label": "code:kotlin (private val iconCache = object : android.util.LruCache<Strin)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L27",
+      "id": "performance_audit_memory_audit_codeblock_1",
+      "community": 85,
+      "norm_label": "code:kotlin (private val iconcache = object : android.util.lrucache<strin)"
+    },
+    {
+      "label": "code:kotlin (private val maxBytes = (Runtime.getRuntime().maxMemory() / 1)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L35",
+      "id": "performance_audit_memory_audit_codeblock_2",
+      "community": 85,
+      "norm_label": "code:kotlin (private val maxbytes = (runtime.getruntime().maxmemory() / 1)"
+    },
+    {
+      "label": "MEM-002: Eager Icon Decoding on Installed App Ingestion",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L42",
+      "id": "performance_audit_memory_audit_mem_002_eager_icon_decoding_on_installed_app_ingestion",
+      "community": 85,
+      "norm_label": "mem-002: eager icon decoding on installed app ingestion"
+    },
+    {
+      "label": "code:kotlin (val iconBitmap = iconCache.get(pkgName) ?: runCatching {)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L45",
+      "id": "performance_audit_memory_audit_codeblock_3",
+      "community": 85,
+      "norm_label": "code:kotlin (val iconbitmap = iconcache.get(pkgname) ?: runcatching {)"
+    },
+    {
+      "label": "MEM-003: Lifecycle Memory Trimming",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L54",
+      "id": "performance_audit_memory_audit_mem_003_lifecycle_memory_trimming",
+      "community": 85,
+      "norm_label": "mem-003: lifecycle memory trimming"
+    },
+    {
+      "label": "code:kotlin (override fun onLowMemory() {)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L57",
+      "id": "performance_audit_memory_audit_codeblock_4",
+      "community": 85,
+      "norm_label": "code:kotlin (override fun onlowmemory() {)"
+    },
+    {
+      "label": "3. Memory Optimization Verification",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L68",
+      "id": "performance_audit_memory_audit_3_memory_optimization_verification",
+      "community": 85,
+      "norm_label": "3. memory optimization verification"
+    },
+    {
+      "label": "PERFORMANCE_REPORT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_performance_report_md",
+      "community": 86,
+      "norm_label": "performance_report.md"
+    },
+    {
+      "label": "Performance Bottleneck & Optimization Report: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L1",
+      "id": "performance_audit_performance_report_performance_bottleneck_optimization_report_dex2c_studio",
+      "community": 86,
+      "norm_label": "performance bottleneck & optimization report: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary & Profiling Baseline",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L3",
+      "id": "performance_audit_performance_report_1_executive_summary_profiling_baseline",
+      "community": 86,
+      "norm_label": "1. executive summary & profiling baseline"
+    },
+    {
+      "label": "Baseline Benchmark",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L12",
+      "id": "performance_audit_performance_report_baseline_benchmark",
+      "community": 86,
+      "norm_label": "baseline benchmark"
+    },
+    {
+      "label": "2. In-Depth Root Cause Analysis",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L23",
+      "id": "performance_audit_performance_report_2_in_depth_root_cause_analysis",
+      "community": 86,
+      "norm_label": "2. in-depth root cause analysis"
+    },
+    {
+      "label": "PERF-001: Root-Level Recomposition Cascade",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L25",
+      "id": "performance_audit_performance_report_perf_001_root_level_recomposition_cascade",
+      "community": 86,
+      "norm_label": "perf-001: root-level recomposition cascade"
+    },
+    {
+      "label": "PERF-002: Repeated Allocation in `DexClassInfo.allMethods`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L31",
+      "id": "performance_audit_performance_report_perf_002_repeated_allocation_in_dexclassinfo_allmethods",
+      "community": 86,
+      "norm_label": "perf-002: repeated allocation in `dexclassinfo.allmethods`"
+    },
+    {
+      "label": "code:kotlin (val allMethods: List<DexEncodedMethod> =)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L34",
+      "id": "performance_audit_performance_report_codeblock_1",
+      "community": 86,
+      "norm_label": "code:kotlin (val allmethods: list<dexencodedmethod> =)"
+    },
+    {
+      "label": "PERF-003: Un-debounced Smali Text Extraction on Keystrokes",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L43",
+      "id": "performance_audit_performance_report_perf_003_un_debounced_smali_text_extraction_on_keystrokes",
+      "community": 86,
+      "norm_label": "perf-003: un-debounced smali text extraction on keystrokes"
+    },
+    {
+      "label": "code:kotlin (subscribeAlways(ContentChangeEvent::class.java) { _ ->)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L46",
+      "id": "performance_audit_performance_report_codeblock_2",
+      "community": 86,
+      "norm_label": "code:kotlin (subscribealways(contentchangeevent::class.java) { _ ->)"
+    },
+    {
+      "label": "PERF-004: Unkeyed LazyColumn in DEX Methods Explorer",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L59",
+      "id": "performance_audit_performance_report_perf_004_unkeyed_lazycolumn_in_dex_methods_explorer",
+      "community": 86,
+      "norm_label": "perf-004: unkeyed lazycolumn in dex methods explorer"
+    },
+    {
+      "label": "PERF-005: Unmemoized FlatMap of All Methods",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L64",
+      "id": "performance_audit_performance_report_perf_005_unmemoized_flatmap_of_all_methods",
+      "community": 86,
+      "norm_label": "perf-005: unmemoized flatmap of all methods"
+    },
+    {
+      "label": "3. Prioritized Performance Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L71",
+      "id": "performance_audit_performance_report_3_prioritized_performance_implementation_plan",
+      "community": 86,
+      "norm_label": "3. prioritized performance implementation plan"
+    },
+    {
+      "label": "SECURITY_AND_RELIABILITY_REPORT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_security_and_reliability_report_md",
+      "community": 91,
+      "norm_label": "security_and_reliability_report.md"
+    },
+    {
+      "label": "Security, Crash Prevention & Reliability Audit: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L1",
+      "id": "performance_audit_security_and_reliability_report_security_crash_prevention_reliability_audit_dex2c_studio",
+      "community": 91,
+      "norm_label": "security, crash prevention & reliability audit: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L3",
+      "id": "performance_audit_security_and_reliability_report_1_executive_summary",
+      "community": 91,
+      "norm_label": "1. executive summary"
+    },
+    {
+      "label": "Key Reliability Metrics",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L7",
+      "id": "performance_audit_security_and_reliability_report_key_reliability_metrics",
+      "community": 91,
+      "norm_label": "key reliability metrics"
+    },
+    {
+      "label": "2. Crash Risks & Exception Boundaries",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L15",
+      "id": "performance_audit_security_and_reliability_report_2_crash_risks_exception_boundaries",
+      "community": 91,
+      "norm_label": "2. crash risks & exception boundaries"
+    },
+    {
+      "label": "2.1 Malformed DEX Input Handling",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L17",
+      "id": "performance_audit_security_and_reliability_report_2_1_malformed_dex_input_handling",
+      "community": 91,
+      "norm_label": "2.1 malformed dex input handling"
+    },
+    {
+      "label": "2.2 Network & DNS Failure Resilience",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L25",
+      "id": "performance_audit_security_and_reliability_report_2_2_network_dns_failure_resilience",
+      "community": 91,
+      "norm_label": "2.2 network & dns failure resilience"
+    },
+    {
+      "label": "2.3 Token Security",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L32",
+      "id": "performance_audit_security_and_reliability_report_2_3_token_security",
+      "community": 91,
+      "norm_label": "2.3 token security"
+    },
+    {
+      "label": "3. Reliability Improvement Targets",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L41",
+      "id": "performance_audit_security_and_reliability_report_3_reliability_improvement_targets",
+      "community": 91,
+      "norm_label": "3. reliability improvement targets"
+    },
+    {
+      "label": "STATE_MANAGEMENT_REPORT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_state_management_report_md",
+      "community": 92,
+      "norm_label": "state_management_report.md"
+    },
+    {
+      "label": "State Management & Lifecycle Architecture Report: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L1",
+      "id": "performance_audit_state_management_report_state_management_lifecycle_architecture_report_dex2c_studio",
+      "community": 92,
+      "norm_label": "state management & lifecycle architecture report: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L3",
+      "id": "performance_audit_state_management_report_1_executive_summary",
+      "community": 92,
+      "norm_label": "1. executive summary"
+    },
+    {
+      "label": "Key Findings",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L7",
+      "id": "performance_audit_state_management_report_key_findings",
+      "community": 92,
+      "norm_label": "key findings"
+    },
+    {
+      "label": "2. State Ingestion & Recomposition Scoping",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L15",
+      "id": "performance_audit_state_management_report_2_state_ingestion_recomposition_scoping",
+      "community": 92,
+      "norm_label": "2. state ingestion & recomposition scoping"
+    },
+    {
+      "label": "code:mermaid (flowchart TD)",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L17",
+      "id": "performance_audit_state_management_report_codeblock_1",
+      "community": 92,
+      "norm_label": "code:mermaid (flowchart td)"
+    },
+    {
+      "label": "2.1 Recomposition Isolation Strategy",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L36",
+      "id": "performance_audit_state_management_report_2_1_recomposition_isolation_strategy",
+      "community": 92,
+      "norm_label": "2.1 recomposition isolation strategy"
+    },
+    {
+      "label": "3. Concurrency & Asynchronous Flow Safety",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L53",
+      "id": "performance_audit_state_management_report_3_concurrency_asynchronous_flow_safety",
+      "community": 92,
+      "norm_label": "3. concurrency & asynchronous flow safety"
+    },
+    {
+      "label": "4. State Management Action Plan",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L67",
+      "id": "performance_audit_state_management_report_4_state_management_action_plan",
+      "community": 92,
+      "norm_label": "4. state management action plan"
+    },
+    {
+      "label": "TESTING_REPORT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_testing_report_md",
+      "community": 40,
+      "norm_label": "testing_report.md"
+    },
+    {
+      "label": "Testing & Quality Assurance Report: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L1",
+      "id": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "community": 40,
+      "norm_label": "testing & quality assurance report: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L10",
+      "id": "performance_audit_testing_report_1_executive_summary",
+      "community": 40,
+      "norm_label": "1. executive summary"
+    },
+    {
+      "label": "2. Test Suite Architecture & Environment",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L18",
+      "id": "performance_audit_testing_report_2_test_suite_architecture_environment",
+      "community": 40,
+      "norm_label": "2. test suite architecture & environment"
+    },
+    {
+      "label": "3. Test Suite Inventory & Results",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L32",
+      "id": "performance_audit_testing_report_3_test_suite_inventory_results",
+      "community": 40,
+      "norm_label": "3. test suite inventory & results"
+    },
+    {
+      "label": "4. Regression Verification for Implemented Optimizations",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L59",
+      "id": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "community": 40,
+      "norm_label": "4. regression verification for implemented optimizations"
+    },
+    {
+      "label": "4.1. Zero-Allocation `CompositeMethodList`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L61",
+      "id": "performance_audit_testing_report_4_1_zero_allocation_compositemethodlist",
+      "community": 40,
+      "norm_label": "4.1. zero-allocation `compositemethodlist`"
+    },
+    {
+      "label": "4.2. Byte-Bounded `LruCache` & `trimMemory`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L70",
+      "id": "performance_audit_testing_report_4_2_byte_bounded_lrucache_trimmemory",
+      "community": 40,
+      "norm_label": "4.2. byte-bounded `lrucache` & `trimmemory`"
+    },
+    {
+      "label": "4.3. Sora Smali Editor Keystroke Debouncing",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L78",
+      "id": "performance_audit_testing_report_4_3_sora_smali_editor_keystroke_debouncing",
+      "community": 40,
+      "norm_label": "4.3. sora smali editor keystroke debouncing"
+    },
+    {
+      "label": "4.4. StateFlow Decoupling & Scoped Subscriptions",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L86",
+      "id": "performance_audit_testing_report_4_4_stateflow_decoupling_scoped_subscriptions",
+      "community": 40,
+      "norm_label": "4.4. stateflow decoupling & scoped subscriptions"
+    },
+    {
+      "label": "4.5. Stream Buffering & Memory Optimization in APK Packaging",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L94",
+      "id": "performance_audit_testing_report_4_5_stream_buffering_memory_optimization_in_apk_packaging",
+      "community": 40,
+      "norm_label": "4.5. stream buffering & memory optimization in apk packaging"
+    },
+    {
+      "label": "5. Continuous Testing Guidelines & Next Steps",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L104",
+      "id": "performance_audit_testing_report_5_continuous_testing_guidelines_next_steps",
+      "community": 40,
+      "norm_label": "5. continuous testing guidelines & next steps"
+    },
+    {
+      "label": "UI_UX_SCREEN_AUDIT.md",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L1",
+      "id": "docs_performance_audit_ui_ux_screen_audit_md",
+      "community": 93,
+      "norm_label": "ui_ux_screen_audit.md"
+    },
+    {
+      "label": "Screen-by-Screen UI/UX Quality & Accessibility Audit: Dex2C Studio",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L1",
+      "id": "performance_audit_ui_ux_screen_audit_screen_by_screen_ui_ux_quality_accessibility_audit_dex2c_studio",
+      "community": 93,
+      "norm_label": "screen-by-screen ui/ux quality & accessibility audit: dex2c studio"
+    },
+    {
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L3",
+      "id": "performance_audit_ui_ux_screen_audit_1_executive_summary",
+      "community": 93,
+      "norm_label": "1. executive summary"
+    },
+    {
+      "label": "2. Screen-by-Screen Quality Matrix",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L9",
+      "id": "performance_audit_ui_ux_screen_audit_2_screen_by_screen_quality_matrix",
+      "community": 93,
+      "norm_label": "2. screen-by-screen quality matrix"
+    },
+    {
+      "label": "3. Detailed UI/UX Findings & Corrections",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L26",
+      "id": "performance_audit_ui_ux_screen_audit_3_detailed_ui_ux_findings_corrections",
+      "community": 93,
+      "norm_label": "3. detailed ui/ux findings & corrections"
+    },
+    {
+      "label": "UI-001: Stranded Copy and Export Actions in `SmaliClassScreen`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L28",
+      "id": "performance_audit_ui_ux_screen_audit_ui_001_stranded_copy_and_export_actions_in_smaliclassscreen",
+      "community": 93,
+      "norm_label": "ui-001: stranded copy and export actions in `smaliclassscreen`"
+    },
+    {
+      "label": "code:kotlin (TopAppBar()",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L31",
+      "id": "performance_audit_ui_ux_screen_audit_codeblock_1",
+      "community": 93,
+      "norm_label": "code:kotlin (topappbar()"
+    },
+    {
+      "label": "UI-002: Hardcoded Read-Only in `SmaliClassScreen`",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L45",
+      "id": "performance_audit_ui_ux_screen_audit_ui_002_hardcoded_read_only_in_smaliclassscreen",
+      "community": 93,
+      "norm_label": "ui-002: hardcoded read-only in `smaliclassscreen`"
+    },
+    {
+      "label": "UI-003: Deprecated Icon Reference",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L52",
+      "id": "performance_audit_ui_ux_screen_audit_ui_003_deprecated_icon_reference",
+      "community": 93,
+      "norm_label": "ui-003: deprecated icon reference"
+    },
+    {
+      "label": "Master Issue Registry",
+      "file_type": "document",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L13",
+      "community": 96,
+      "norm_label": "master issue registry",
+      "id": "performance_audit_master_issue_tracker_master_issue_registry"
+    },
+    {
       "label": "ClassesSubTab",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt",
@@ -10817,7 +11888,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L1",
-      "community": 72,
+      "community": 33,
       "norm_label": "bytecodeoverviewcard.kt",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_bytecodeoverviewcard_kt"
     },
@@ -10826,7 +11897,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L42",
-      "community": 72,
+      "community": 33,
       "norm_label": "bytecodeoverviewcard()",
       "id": "components_bytecodeoverviewcard_bytecodeoverviewcard"
     },
@@ -10835,7 +11906,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L259",
-      "community": 72,
+      "community": 33,
       "norm_label": "overviewstatbox()",
       "id": "components_bytecodeoverviewcard_overviewstatbox"
     },
@@ -10844,7 +11915,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L307",
-      "community": 72,
+      "community": 33,
       "norm_label": "topclassdefinitionrow()",
       "id": "components_bytecodeoverviewcard_topclassdefinitionrow"
     },
@@ -10907,7 +11978,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/BuildHubScreen.kt",
       "source_location": "L1",
-      "community": 17,
+      "community": 66,
       "norm_label": "buildhubscreen.kt",
       "id": "app_src_main_java_com_dex2c_studio_ui_screens_buildhubscreen_kt"
     },
@@ -10916,7 +11987,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/BuildHubScreen.kt",
       "source_location": "L40",
-      "community": 17,
+      "community": 66,
       "norm_label": "buildhubtab",
       "id": "screens_buildhubscreen_buildhubtab"
     },
@@ -10925,7 +11996,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/BuildHubScreen.kt",
       "source_location": "L45",
-      "community": 17,
+      "community": 66,
       "norm_label": "buildhubscreen()",
       "id": "screens_buildhubscreen_buildhubscreen"
     },
@@ -12650,9 +13721,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_apk_installedapprepository_kt",
-      "target": "apk_installedapprepository_sizeof",
-      "confidence_score": 1.0
+      "target": "apk_installedapprepository_sizeof"
     },
     {
       "relation": "method",
@@ -12660,9 +13731,19 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "apk_installedapprepository_installedapprepository",
-      "target": "apk_installedapprepository_installedapprepository_cleariconcache",
-      "confidence_score": 1.0
+      "target": "apk_installedapprepository_installedapprepository_cleariconcache"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "apk_installedapprepository_installedapprepository",
+      "target": "apk_installedapprepository_installedapprepository_trimmemory"
     },
     {
       "relation": "method",
@@ -12858,6 +13939,16 @@
       "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_cloud_cloudbuildnotifier_kt",
       "target": "cloud_cloudbuildnotifier_updatecachedappsettings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/cloud/CloudBuildNotifier.kt",
+      "source_location": "L80",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_src_main_java_com_dex2c_studio_cloud_cloudbuildnotifier_kt",
+      "target": "cloud_cloudbuildnotifier_resolvenotificationsmallicon"
     },
     {
       "relation": "contains",
@@ -16680,6 +17771,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
+      "source_location": "L310",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_src_main_java_com_dex2c_studio_dex_dexmodels_kt",
+      "target": "dex_dexmodels_compositemethodlist"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L305",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -17846,6 +18947,16 @@
       "confidence_score": 1.0,
       "source": "dex_dexmodels_buildbytecodeoverviewsummary",
       "target": "dex_dexmodels_dexclassinfo_isframeworkorlibraryclass"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
+      "source_location": "L315",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dex_dexmodels_compositemethodlist",
+      "target": "dex_dexmodels_compositemethodlist_get"
     },
     {
       "relation": "calls",
@@ -28069,9 +29180,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt",
       "source_location": "L252",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_ui_screens_classesscreen_kt",
-      "target": "screens_classesscreen_updateselectioncounts",
-      "confidence_score": 1.0
+      "target": "screens_classesscreen_updateselectioncounts"
     },
     {
       "relation": "contains",
@@ -28203,9 +29314,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt",
       "source_location": "L443",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "screens_classesscreen_classesscreen",
-      "target": "screens_classesscreen_updateselectioncounts",
-      "confidence_score": 1.0
+      "target": "screens_classesscreen_updateselectioncounts"
     },
     {
       "relation": "calls",
@@ -33804,6 +34915,1046 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_database_network_report_md",
+      "target": "performance_audit_database_network_report_data_layer_networking_background_processing_audit_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_data_layer_networking_background_processing_audit_dex2c_studio",
+      "target": "performance_audit_database_network_report_1_executive_summary"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_data_layer_networking_background_processing_audit_dex2c_studio",
+      "target": "performance_audit_database_network_report_2_in_depth_technical_analysis"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L51",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_data_layer_networking_background_processing_audit_dex2c_studio",
+      "target": "performance_audit_database_network_report_3_recommended_data_layer_improvements"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_1_executive_summary",
+      "target": "performance_audit_database_network_report_key_findings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_2_in_depth_technical_analysis",
+      "target": "performance_audit_database_network_report_data_001_okhttpclient_reuse_connection_pooling"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_2_in_depth_technical_analysis",
+      "target": "performance_audit_database_network_report_data_002_token_security_encryption"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_2_in_depth_technical_analysis",
+      "target": "performance_audit_database_network_report_data_003_in_memory_storage_zip_export"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/DATABASE_NETWORK_REPORT.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_database_network_report_data_001_okhttpclient_reuse_connection_pooling",
+      "target": "performance_audit_database_network_report_codeblock_1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_performance_audit_final_engineering_summary_md",
+      "target": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_final_engineering_summary_1_executive_program_overview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_final_engineering_summary_2_before_vs_after_quantitative_scorecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_final_engineering_summary_3_key_architectural_system_improvements",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_final_engineering_summary_4_documentation_suite_index",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_final_engineering_summary_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_final_engineering_summary_5_strategic_recommendations_future_roadmap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_3_key_architectural_system_improvements",
+      "target": "performance_audit_final_engineering_summary_3_1_zero_allocation_collections_compositemethodlist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_3_key_architectural_system_improvements",
+      "target": "performance_audit_final_engineering_summary_3_2_byte_bounded_memory_management_system_trimming",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_3_key_architectural_system_improvements",
+      "target": "performance_audit_final_engineering_summary_3_3_compose_stateflow_decoupling",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "performance_audit_final_engineering_summary_3_key_architectural_system_improvements",
+      "target": "performance_audit_final_engineering_summary_3_4_debounced_code_editor_enhanced_ux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_full_codebase_audit_md",
+      "target": "performance_audit_full_codebase_audit_complete_codebase_audit_dex2c_studio_com_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_complete_codebase_audit_dex2c_studio_com_dex2c_studio",
+      "target": "performance_audit_full_codebase_audit_1_executive_summary_project_inventory"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L22",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_complete_codebase_audit_dex2c_studio_com_dex2c_studio",
+      "target": "performance_audit_full_codebase_audit_2_package_module_architecture_map"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L92",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_complete_codebase_audit_dex2c_studio_com_dex2c_studio",
+      "target": "performance_audit_full_codebase_audit_3_dependency_injection_service_initialization"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_complete_codebase_audit_dex2c_studio_com_dex2c_studio",
+      "target": "performance_audit_full_codebase_audit_4_key_architectural_deficiencies_technical_debt_identified"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_1_executive_summary_project_inventory",
+      "target": "performance_audit_full_codebase_audit_1_1_repository_inventory_metrics"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_2_package_module_architecture_map",
+      "target": "performance_audit_full_codebase_audit_codeblock_1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/FULL_CODEBASE_AUDIT.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_full_codebase_audit_2_package_module_architecture_map",
+      "target": "performance_audit_full_codebase_audit_2_1_package_breakdown"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_performance_audit_implementation_changelog_md",
+      "target": "performance_audit_implementation_changelog_implementation_changelog_dex2c_studio_performance_optimization_program",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_implementation_changelog_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_implementation_changelog_1_summary_of_modified_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_implementation_changelog_dex2c_studio_performance_optimization_program",
+      "target": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_1_app_src_main_java_com_dex2c_studio_dex_dexmodels_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_2_app_src_main_java_com_dex2c_studio_apk_installedapprepository_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_3_app_src_main_java_com_dex2c_studio_ui_components_smalisoraeditor_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_4_app_src_main_java_com_dex2c_studio_ui_screens_smaliclassscreen_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_5_app_src_main_java_com_dex2c_studio_ui_components_dexexplorersubtabs_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_6_app_src_main_java_com_dex2c_studio_ui_screens_pipelineconfigscreen_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_7_app_src_main_java_com_dex2c_studio_ui_components_selectedclassesfilterdialog_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_8_app_src_main_java_com_dex2c_studio_ui_screens_settingssubscreens_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_9_app_src_main_java_com_dex2c_studio_cloud_githubapiclient_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_10_app_src_main_java_com_dex2c_studio_mainactivity_kt_app_src_main_java_com_dex2c_studio_ui_dex2cviewmodel_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/IMPLEMENTATION_CHANGELOG.md",
+      "source_location": "L121",
+      "weight": 1.0,
+      "source": "performance_audit_implementation_changelog_2_detailed_file_diffs_technical_rationale",
+      "target": "performance_audit_implementation_changelog_2_11_app_src_main_java_com_dex2c_studio_dex_smalidexcompiler_kt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_master_issue_tracker_md",
+      "target": "performance_audit_master_issue_tracker_master_issue_tracker_dex2c_studio_performance_quality_audit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_master_issue_tracker_master_issue_tracker_dex2c_studio_performance_quality_audit",
+      "target": "performance_audit_master_issue_tracker_priority_classification"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "performance_audit_master_issue_tracker_master_issue_tracker_dex2c_studio_performance_quality_audit",
+      "target": "performance_audit_master_issue_tracker_master_issue_registry_resolution_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MASTER_ISSUE_TRACKER.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_master_issue_tracker_master_issue_tracker_dex2c_studio_performance_quality_audit",
+      "target": "performance_audit_master_issue_tracker_master_issue_registry"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_memory_audit_md",
+      "target": "performance_audit_memory_audit_memory_management_leak_audit_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_memory_management_leak_audit_dex2c_studio",
+      "target": "performance_audit_memory_audit_1_executive_summary"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L22",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_memory_management_leak_audit_dex2c_studio",
+      "target": "performance_audit_memory_audit_2_detailed_memory_vulnerability_analysis"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_memory_management_leak_audit_dex2c_studio",
+      "target": "performance_audit_memory_audit_3_memory_optimization_verification"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_1_executive_summary",
+      "target": "performance_audit_memory_audit_key_memory_findings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_2_detailed_memory_vulnerability_analysis",
+      "target": "performance_audit_memory_audit_mem_001_count_based_bitmap_lrucache"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_2_detailed_memory_vulnerability_analysis",
+      "target": "performance_audit_memory_audit_mem_002_eager_icon_decoding_on_installed_app_ingestion"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_2_detailed_memory_vulnerability_analysis",
+      "target": "performance_audit_memory_audit_mem_003_lifecycle_memory_trimming"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_mem_001_count_based_bitmap_lrucache",
+      "target": "performance_audit_memory_audit_codeblock_1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_mem_001_count_based_bitmap_lrucache",
+      "target": "performance_audit_memory_audit_codeblock_2"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_mem_002_eager_icon_decoding_on_installed_app_ingestion",
+      "target": "performance_audit_memory_audit_codeblock_3"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/MEMORY_AUDIT.md",
+      "source_location": "L57",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_memory_audit_mem_003_lifecycle_memory_trimming",
+      "target": "performance_audit_memory_audit_codeblock_4"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_performance_report_md",
+      "target": "performance_audit_performance_report_performance_bottleneck_optimization_report_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_performance_bottleneck_optimization_report_dex2c_studio",
+      "target": "performance_audit_performance_report_1_executive_summary_profiling_baseline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_performance_bottleneck_optimization_report_dex2c_studio",
+      "target": "performance_audit_performance_report_2_in_depth_root_cause_analysis"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L71",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_performance_bottleneck_optimization_report_dex2c_studio",
+      "target": "performance_audit_performance_report_3_prioritized_performance_implementation_plan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_1_executive_summary_profiling_baseline",
+      "target": "performance_audit_performance_report_baseline_benchmark"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_2_in_depth_root_cause_analysis",
+      "target": "performance_audit_performance_report_perf_001_root_level_recomposition_cascade"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_2_in_depth_root_cause_analysis",
+      "target": "performance_audit_performance_report_perf_002_repeated_allocation_in_dexclassinfo_allmethods"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L43",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_2_in_depth_root_cause_analysis",
+      "target": "performance_audit_performance_report_perf_003_un_debounced_smali_text_extraction_on_keystrokes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L59",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_2_in_depth_root_cause_analysis",
+      "target": "performance_audit_performance_report_perf_004_unkeyed_lazycolumn_in_dex_methods_explorer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L64",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_2_in_depth_root_cause_analysis",
+      "target": "performance_audit_performance_report_perf_005_unmemoized_flatmap_of_all_methods"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_perf_002_repeated_allocation_in_dexclassinfo_allmethods",
+      "target": "performance_audit_performance_report_codeblock_1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/PERFORMANCE_REPORT.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_performance_report_perf_003_un_debounced_smali_text_extraction_on_keystrokes",
+      "target": "performance_audit_performance_report_codeblock_2"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_security_and_reliability_report_md",
+      "target": "performance_audit_security_and_reliability_report_security_crash_prevention_reliability_audit_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_security_crash_prevention_reliability_audit_dex2c_studio",
+      "target": "performance_audit_security_and_reliability_report_1_executive_summary"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_security_crash_prevention_reliability_audit_dex2c_studio",
+      "target": "performance_audit_security_and_reliability_report_2_crash_risks_exception_boundaries"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_security_crash_prevention_reliability_audit_dex2c_studio",
+      "target": "performance_audit_security_and_reliability_report_3_reliability_improvement_targets"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_1_executive_summary",
+      "target": "performance_audit_security_and_reliability_report_key_reliability_metrics"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_2_crash_risks_exception_boundaries",
+      "target": "performance_audit_security_and_reliability_report_2_1_malformed_dex_input_handling"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_2_crash_risks_exception_boundaries",
+      "target": "performance_audit_security_and_reliability_report_2_2_network_dns_failure_resilience"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_security_and_reliability_report_2_crash_risks_exception_boundaries",
+      "target": "performance_audit_security_and_reliability_report_2_3_token_security"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_state_management_report_md",
+      "target": "performance_audit_state_management_report_state_management_lifecycle_architecture_report_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_state_management_lifecycle_architecture_report_dex2c_studio",
+      "target": "performance_audit_state_management_report_1_executive_summary"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_state_management_lifecycle_architecture_report_dex2c_studio",
+      "target": "performance_audit_state_management_report_2_state_ingestion_recomposition_scoping"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_state_management_lifecycle_architecture_report_dex2c_studio",
+      "target": "performance_audit_state_management_report_3_concurrency_asynchronous_flow_safety"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L67",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_state_management_lifecycle_architecture_report_dex2c_studio",
+      "target": "performance_audit_state_management_report_4_state_management_action_plan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_1_executive_summary",
+      "target": "performance_audit_state_management_report_key_findings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_2_state_ingestion_recomposition_scoping",
+      "target": "performance_audit_state_management_report_codeblock_1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/STATE_MANAGEMENT_REPORT.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_state_management_report_2_state_ingestion_recomposition_scoping",
+      "target": "performance_audit_state_management_report_2_1_recomposition_isolation_strategy"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_performance_audit_testing_report_md",
+      "target": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "target": "performance_audit_testing_report_1_executive_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "target": "performance_audit_testing_report_2_test_suite_architecture_environment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "target": "performance_audit_testing_report_3_test_suite_inventory_results",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "target": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_testing_quality_assurance_report_dex2c_studio",
+      "target": "performance_audit_testing_report_5_continuous_testing_guidelines_next_steps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "target": "performance_audit_testing_report_4_1_zero_allocation_compositemethodlist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "target": "performance_audit_testing_report_4_2_byte_bounded_lrucache_trimmemory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L78",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "target": "performance_audit_testing_report_4_3_sora_smali_editor_keystroke_debouncing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "target": "performance_audit_testing_report_4_4_stateflow_decoupling_scoped_subscriptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/TESTING_REPORT.md",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "performance_audit_testing_report_4_regression_verification_for_implemented_optimizations",
+      "target": "performance_audit_testing_report_4_5_stream_buffering_memory_optimization_in_apk_packaging",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_performance_audit_ui_ux_screen_audit_md",
+      "target": "performance_audit_ui_ux_screen_audit_screen_by_screen_ui_ux_quality_accessibility_audit_dex2c_studio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_screen_by_screen_ui_ux_quality_accessibility_audit_dex2c_studio",
+      "target": "performance_audit_ui_ux_screen_audit_1_executive_summary"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_screen_by_screen_ui_ux_quality_accessibility_audit_dex2c_studio",
+      "target": "performance_audit_ui_ux_screen_audit_2_screen_by_screen_quality_matrix"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_screen_by_screen_ui_ux_quality_accessibility_audit_dex2c_studio",
+      "target": "performance_audit_ui_ux_screen_audit_3_detailed_ui_ux_findings_corrections"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_3_detailed_ui_ux_findings_corrections",
+      "target": "performance_audit_ui_ux_screen_audit_ui_001_stranded_copy_and_export_actions_in_smaliclassscreen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_3_detailed_ui_ux_findings_corrections",
+      "target": "performance_audit_ui_ux_screen_audit_ui_002_hardcoded_read_only_in_smaliclassscreen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_3_detailed_ui_ux_findings_corrections",
+      "target": "performance_audit_ui_ux_screen_audit_ui_003_deprecated_icon_reference"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/performance-audit/UI_UX_SCREEN_AUDIT.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "performance_audit_ui_ux_screen_audit_ui_001_stranded_copy_and_export_actions_in_smaliclassscreen",
+      "target": "performance_audit_ui_ux_screen_audit_codeblock_1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassViewerTabBar.kt",
       "source_location": "L54",
       "weight": 1.0,
@@ -34180,5 +36331,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b0a61e066cb7325c3e6cb6a8f20fae94038e430f"
+  "built_at_commit": "8a9667cc0a118a84f97ba8a0f3ddfdfbf42ccf5f"
 }

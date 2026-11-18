@@ -1343,7 +1343,10 @@ private fun SettingsToggleRow(
   testTag: String,
 ) {
   Row(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .clickable(enabled = enabled) { onCheckedChange(!checked) }
+      .padding(vertical = 4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {

@@ -989,30 +989,10 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("picker_apps_list")
       .performScrollToNode(androidx.compose.ui.test.hasTestTag("installed_app_com.user.alpha"))
     composeTestRule.onNodeWithTag("installed_app_com.user.alpha").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("picker_apps_list")
-      .performScrollToNode(androidx.compose.ui.test.hasTestTag("installed_app_com.android.sys"))
-    composeTestRule.onNodeWithTag("installed_app_com.android.sys").assertIsDisplayed()
-
-    // Filter to User Only -> hides system app
-    composeTestRule.onNodeWithTag("picker_apps_filter_row")
-      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_app_scope_USER_ONLY"))
-    composeTestRule.onNodeWithTag("picker_app_scope_USER_ONLY").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("installed_app_com.user.alpha").assertIsDisplayed()
+    // System apps are excluded from installed apps selection
     composeTestRule.onNodeWithTag("installed_app_com.android.sys").assertDoesNotExist()
 
-    // Filter to System Only -> shows system app only
-    composeTestRule.onNodeWithTag("picker_apps_filter_row")
-      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_app_scope_SYSTEM_ONLY"))
-    composeTestRule.onNodeWithTag("picker_app_scope_SYSTEM_ONLY").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("installed_app_com.android.sys").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("installed_app_com.user.alpha").assertDoesNotExist()
-
-    // Switch back to All Apps and sort by Largest
-    composeTestRule.onNodeWithTag("picker_apps_filter_row")
-      .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_app_scope_ALL"))
-    composeTestRule.onNodeWithTag("picker_app_scope_ALL").performClick()
+    // Sort by Largest
     composeTestRule.onNodeWithTag("picker_apps_filter_row")
       .performScrollToNode(androidx.compose.ui.test.hasTestTag("picker_apps_sort_chip"))
     composeTestRule.onNodeWithTag("picker_apps_sort_chip").performClick()

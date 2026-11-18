@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -99,7 +101,32 @@ fun SmaliClassScreen(
           )
         }
       },
-      actions = {},
+      actions = {
+        if (readyState != null) {
+          if (onCopySmali != null) {
+            IconButton(
+              onClick = { onCopySmali(readyState.smaliText) },
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("smali_copy_btn"),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.ContentCopy,
+                contentDescription = "Copy Smali",
+              )
+            }
+          }
+          if (onExportSmali != null) {
+            IconButton(
+              onClick = { onExportSmali("${state.dexClass.simpleName}.smali", readyState.smaliText) },
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("smali_export_btn"),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.SaveAlt,
+                contentDescription = "Export Smali",
+              )
+            }
+          }
+        }
+      },
     )
 
     if (readyState != null) {
@@ -181,7 +208,7 @@ fun SmaliClassScreen(
           Box(modifier = Modifier.fillMaxSize()) {
             SmaliSoraEditor(
               text = state.smaliText,
-              isReadOnly = true,
+              isReadOnly = !dexEditingEnabled,
               activeLineIndex = null,
               onLineClick = {},
               onLabelJump = {},

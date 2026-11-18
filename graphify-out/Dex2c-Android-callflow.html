@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1233 nodes, 2200 edges, 85 communities. Commit: b0a61e0</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1352 nodes, 2308 edges, 92 communities. Commit: 8a9667c</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -69,11 +69,16 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#analysis-clustering">Analysis &amp; Clustering</a>
     <a href="#outputs-docs">Outputs &amp; Docs</a>
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
+    <a href="#security-global">Security &amp; Global Graph</a>
     <a href="#community-3">Community 3</a>
+    <a href="#community-85">Community 85</a>
+    <a href="#community-41">Community 41</a>
+    <a href="#community-90">Community 90</a>
+    <a href="#community-93">Community 93</a>
+    <a href="#community-96">Community 96</a>
     <a href="#community-36">Community 36</a>
     <a href="#community-42">Community 42</a>
-    <a href="#community-61">Community 61</a>
-    <a href="#community-63">Community 63</a>
+    <a href="#other">Other</a>
 </div>
 
 <!-- ====== Architecture Overview ====== -->
@@ -83,35 +88,50 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1049 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1068 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>57 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>12 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>65 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>109 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>23 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
+    SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>9 nodes</small>")
+    class SECURITY_GLOBAL_5B9C6A04 module;
     COMMUNITY_3_D8DFCEA7("Community 3<br/><small>21 nodes</small>")
     class COMMUNITY_3_D8DFCEA7 module;
+    COMMUNITY_85_2B6A0A47("Community 85<br/><small>13 nodes</small>")
+    class COMMUNITY_85_2B6A0A47 module;
+    COMMUNITY_41_93B2CDFF("Community 41<br/><small>11 nodes</small>")
+    class COMMUNITY_41_93B2CDFF module;
+    COMMUNITY_90_9F2E858A("Community 90<br/><small>9 nodes</small>")
+    class COMMUNITY_90_9F2E858A module;
+    COMMUNITY_93_7566A40F("Community 93<br/><small>9 nodes</small>")
+    class COMMUNITY_93_7566A40F module;
+    COMMUNITY_96_3ACF34B2("Community 96<br/><small>5 nodes</small>")
+    class COMMUNITY_96_3ACF34B2 module;
     COMMUNITY_36_F6473446("Community 36<br/><small>2 nodes</small>")
     class COMMUNITY_36_F6473446 module;
     COMMUNITY_42_BA46CB2A("Community 42<br/><small>2 nodes</small>")
     class COMMUNITY_42_BA46CB2A module;
-    COMMUNITY_61_E14267C3("Community 61<br/><small>1 nodes</small>")
-    class COMMUNITY_61_E14267C3 module;
-    COMMUNITY_63_C6650F45("Community 63<br/><small>1 nodes</small>")
-    class COMMUNITY_63_C6650F45 module;
+    OTHER_D0941E68("Other<br/><small>2 nodes</small>")
+    class OTHER_D0941E68 module;
     EXTRACT_PIPELINE_5F350230 -.-> BUILD_GRAPH_321CBB04
     BUILD_GRAPH_321CBB04 -.-> ANALYSIS_CLUSTERING_C79796DA
     ANALYSIS_CLUSTERING_C79796DA -.-> OUTPUTS_DOCS_ED82387C
     OUTPUTS_DOCS_ED82387C -.-> CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -.-> COMMUNITY_3_D8DFCEA7
-    COMMUNITY_3_D8DFCEA7 -.-> COMMUNITY_36_F6473446
+    CLI_SKILLS_9964CBB8 -.-> SECURITY_GLOBAL_5B9C6A04
+    SECURITY_GLOBAL_5B9C6A04 -.-> COMMUNITY_3_D8DFCEA7
+    COMMUNITY_3_D8DFCEA7 -.-> COMMUNITY_85_2B6A0A47
+    COMMUNITY_85_2B6A0A47 -.-> COMMUNITY_41_93B2CDFF
+    COMMUNITY_41_93B2CDFF -.-> COMMUNITY_90_9F2E858A
+    COMMUNITY_90_9F2E858A -.-> COMMUNITY_93_7566A40F
+    COMMUNITY_93_7566A40F -.-> COMMUNITY_96_3ACF34B2
+    COMMUNITY_96_3ACF34B2 -.-> COMMUNITY_36_F6473446
     COMMUNITY_36_F6473446 -.-> COMMUNITY_42_BA46CB2A
-    COMMUNITY_42_BA46CB2A -.-> COMMUNITY_61_E14267C3
-    COMMUNITY_61_E14267C3 -.-> COMMUNITY_63_C6650F45
+    COMMUNITY_42_BA46CB2A -.-> OTHER_D0941E68
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -128,20 +148,20 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>1049</td><td><code>19, 4, 0, 1, 18, 20, 5, 8, 21, 6, 7, 17, 25, 11, 15, 23, 27, 26, 14, 48, 2, 29, 33, 13, 30, 34, 84, 46, 77, 81, 28, 37, 32, 16, 24, 39, 53, 70, 71, 38, 40, 41, 79, 47, 66, 43, 44, 45, 64, 65, 73, 74, 76, 82, 75, 80, 83, 35, 67, 50, 51, 52, 59, 72, 54, 55, 56, 57, 58</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>65</td><td><code>22, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>1068</td><td><code>15, 19, 4, 0, 1, 18, 20, 5, 8, 21, 6, 7, 25, 11, 14, 23, 27, 33, 48, 2, 26, 29, 13, 30, 34, 84, 46, 77, 28, 37, 17, 32, 66, 87, 16, 24, 53, 70, 71, 38, 39, 79, 43, 47, 44, 64, 65, 73, 74, 76, 82, 45, 75, 80, 83, 35, 67, 50, 51, 52, 54, 55, 56, 57, 58, 59</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>109</td><td><code>22, 10, 86, 40, 88, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Community 90</td><td>9</td><td><code>90</code></td></tr><tr><td>Community 93</td><td>9</td><td><code>93</code></td></tr><tr><td>Community 96</td><td>5</td><td><code>96</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Other</td><td>2</td><td><code>61, 63</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Community 3 -&gt; Community 36</div>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Security &amp; Global Graph -&gt; Community 3</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1233 nodes · 2200 edges · 85 communities (57 shown, 28 thin omitted)</li>
-      <li>Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 418 edges (avg confidence: 0.8)</li>
+      <li>1352 nodes · 2308 edges · 92 communities (68 shown, 24 thin omitted)</li>
+      <li>Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 418 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Dex2cViewModel` - 115 edges</li>
       <li>2. `TagPill()` - 41 edges</li>
@@ -152,12 +172,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 1049 nodes and 2030 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around app, dex2c, studio, com, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 1068 nodes and 2048 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (1049 nodes, 2030 edges)
+    %% Section: Extraction Pipeline (1068 nodes, 2048 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -192,7 +212,7 @@ flowchart LR
     studio_mainactivity_dex2cfloatingbottombar_4db61c9e -->|calls| studio_mainactivity_dex2cfloatingbottombaritem_56224b18
     studio_mainactivity_iserrorstatusmessage_cab2b8a3 -->|calls| studio_mainactivity_dex2cthemedsnackbarhost_5c79ace7
     apk_apkmetadatainspector_apkmetadatainspector_57261a53 -->|method| apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad
-    %% Omitted for readability: 1031 nodes, 0 edges
+    %% Omitted for readability: 1050 nodes, 0 edges
     class studio_mainactivity_navdestinationitem_e24ab693 klass;
     class studio_mainactivity_dex2capp_fbfa3080 function;
     class studio_mainactivity_mainactivity_8e09f945 klass;
@@ -234,243 +254,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>.getMethods()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
+  <td><code>.parseSummaryJson()</code><br><small style="color:var(--muted)">studio/data/RecentFilesStore.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexHelper</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexProto</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>.getMethods() node in studio/dex/DexHelper.kt.</td>
+  <td><code>RecentFilesStore</code><br><small style="color:var(--muted)">studio/data/RecentFilesStore.kt</small></td>
+  <td><code>BytecodeOverviewSummary</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>ClassDefinitionSummary</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>.parseSummaryJson() node in studio/data/RecentFilesStore.kt.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>DexProto</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>getMethods()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
-  <td><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br>+10 more</td>
-  <td>DexProto node in studio/dex/DexModels.kt.</td>
+  <td><code>.getFields()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexHelper</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
+  <td><code>DexFieldRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>.getFields() node in studio/dex/DexHelper.kt.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>DexModels.kt</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>getMethods()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
-  <td><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br>+12 more</td>
-  <td>DexMethodRef node in studio/dex/DexModels.kt.</td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DexModels.kt node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>.jniSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><code>dalvikSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>.jniSignature() node in studio/dex/DexModels.kt.</td>
+  <td><code>OpCategory</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OpCategory node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>.dalvikSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>jniSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.dalvikSignature() node in studio/dex/DexModels.kt.</td>
+  <td><code>DexHeaderInfo</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+5 more</td>
+  <td>DexHeaderInfo node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>DexCatchHandler</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>testCppSwitchAndJniGuardClangCompilationZeroErrorsZeroWarnings()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>testExceptionCatchDispatchJniCompliance()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+1 more</td>
-  <td>DexCatchHandler node in studio/dex/DexModels.kt.</td>
+  <td><code>DexMapItem</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>parseMapList()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small></td>
+  <td>DexMapItem node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>DexTryBlock</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>DexMethodHandleInfo</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>testCppSwitchAndJniGuardClangCompilationZeroErrorsZeroWarnings()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>testExceptionCatchDispatchJniCompliance()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+1 more</td>
-  <td>DexTryBlock node in studio/dex/DexModels.kt.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>parseMethodHandles()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small></td>
+  <td>DexMethodHandleInfo node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>DalvikInstruction</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>DexCallSiteInfo</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>disassemble()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>formatHexWords()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>testCppSwitchAndJniGuardClangCompilationZeroErrorsZeroWarnings()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>testExceptionCatchDispatchJniCompliance()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+12 more</td>
-  <td>DalvikInstruction node in studio/dex/DexModels.kt.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>parseCallSites()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small></td>
+  <td>DexCallSiteInfo node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>.formatHexWords()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikInstruction</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.formatHexWords() node in studio/dex/DexModels.kt.</td>
+  <td><code>DexHiddenApiSummary</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>parseHiddenApiSummary()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small></td>
+  <td>DexHiddenApiSummary node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>DexCodeMeta</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>DexFieldRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br>+4 more</td>
-  <td>DexCodeMeta node in studio/dex/DexModels.kt.</td>
+  <td><code>getFields()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
+  <td><code>parseDex()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small><br><code>readFieldAt()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small><br><code>toDexEncodedField()</code><br><small style="color:var(--muted)">studio/dex/SmaliClassDisassembler.kt</small></td>
+  <td>DexFieldRef node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>DexEncodedMethod</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br>+5 more</td>
-  <td>DexEncodedMethod node in studio/dex/DexModels.kt.</td>
+  <td><code>.prettySignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>descriptorToSimpleName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>.prettySignature() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>.readCodeMeta()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexCodeMeta</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexParser</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small><br><code>parseDex()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small></td>
-  <td><code>indexClassesWithDexlib2()</code><br><small style="color:var(--muted)">studio/dex/SmaliClassDisassembler.kt</small></td>
-  <td>.readCodeMeta() node in studio/dex/DexParser.kt.</td>
+  <td><code>DalvikPayload</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DalvikPayload node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>TranspilerConfig</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small></td>
+  <td><code>PackedSwitch</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>filterRuleEngine_excludesCoroutinesSyntheticsAndThirdPartyAndScopesSelectedMethods()</code><br><small style="color:var(--muted)">dex2c/studio/GitHubCloudWorkflowTest.kt</small><br><code>filterRuleEngineAndDccCfgRoundTrip()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>generateDex2cYaml_includesKirlifD2cAndSigningAndFallback()</code><br><small style="color:var(--muted)">dex2c/studio/GitHubCloudWorkflowTest.kt</small><br>+21 more</td>
-  <td>Reads, resolves, or persists project configuration.</td>
+  <td>No direct outbound edge</td>
+  <td>PackedSwitch node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>Dex2cTranspilerTest.kt</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>SparseSwitch</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>SparseSwitch node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
+  <td><code>FillArrayData</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>filterRuleEngineAndDccCfgRoundTrip()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>multiChunkStreamingSplitsLargeMethodSelectionsAndStreamsToDisk()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br>+3 more</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>No direct outbound edge</td>
+  <td>FillArrayData node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.parseDisassembleAndTranspileSyntheticDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>TranspilerConfig</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small></td>
-  <td><code>buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td>.parseDisassembleAndTranspileSyntheticDex() node in dex2c/studio/Dex2cTranspilerTest.kt.</td>
+  <td><code>DexEncodedField</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>parseDex()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small><br><code>toDexEncodedField()</code><br><small style="color:var(--muted)">studio/dex/SmaliClassDisassembler.kt</small></td>
+  <td>DexEncodedField node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>.filterRuleEngineAndDccCfgRoundTrip()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>TranspilerConfig</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small></td>
-  <td><code>buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td>.filterRuleEngineAndDccCfgRoundTrip() node in dex2c/studio/Dex2cTranspilerTest.kt.</td>
+  <td><code>DexClassInfo</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+7 more</td>
+  <td>DexClassInfo node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.transpileMethodWithPercentFormatSpecifiersAndCommentCloseDoesNotCrash()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>TranspilerConfig</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small></td>
-  <td><code>buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td>.transpileMethodWithPercentFormatSpecifiersAndCommentCloseDoesNotCrash() node in dex2c/studio/Dex2cTranspilerTest.kt.</td>
+  <td><code>.isFrameworkOrLibraryClass()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexClassInfo</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>buildBytecodeOverviewSummary()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>.isFrameworkOrLibraryClass() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>.multiDexTranspileAndFilterEvaluateAllCombineBothDexes()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>TranspilerConfig</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small></td>
-  <td><code>buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td>.multiDexTranspileAndFilterEvaluateAllCombineBothDexes() node in dex2c/studio/Dex2cTranspilerTest.kt.</td>
+  <td><code>CompositeMethodList</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>get()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>CompositeMethodList node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.multiChunkStreamingSplitsLargeMethodSelectionsAndStreamsToDisk()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>TranspilerConfig</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small></td>
-  <td><code>buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td>.multiChunkStreamingSplitsLargeMethodSelectionsAndStreamsToDisk() node in dex2c/studio/Dex2cTranspilerTest.kt.</td>
+  <td><code>.get()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CompositeMethodList</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.get() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.buildMinimalTestDex()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>Dex2cTranspilerTest</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>filterRuleEngineAndDccCfgRoundTrip()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br><code>multiChunkStreamingSplitsLargeMethodSelectionsAndStreamsToDisk()</code><br><small style="color:var(--muted)">dex2c/studio/Dex2cTranspilerTest.kt</small><br>+3 more</td>
-  <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>ParsedClassDescriptor</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>parseClassDescriptor()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>ParsedClassDescriptor node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>DexDisassemblerAndSmaliTest.kt</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>parseClassDescriptor()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ParsedClassDescriptor</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+4 more</td>
+  <td>parseClassDescriptor() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>DexDisassemblerAndSmaliTest</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>buildSyntheticDex039()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>dalvikDisassemblerDecodesSparseSwitchAndFillArrayDataPayloads()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br>+2 more</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>inferDominantDexPackageName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>inferPackageNameFromDexBytes()</code><br><small style="color:var(--muted)">studio/apk/ApkMetadataInspector.kt</small></td>
+  <td><code>applyParsedDexes()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>buildBytecodeOverviewSummary()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>inferDominantDexPackageName() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>.parseDex039MapListDebugInfoAnnotationsAndHandles()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DexDisassemblerAndSmaliTest</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><code>buildSyntheticDex039()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td>.parseDex039MapListDebugInfoAnnotationsAndHandles() node in dex2c/studio/DexDisassemblerAndSmaliTest.kt.</td>
+  <td><code>ApkDexEntry</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>inspectLocalFile()</code><br><small style="color:var(--muted)">studio/apk/ApkMetadataInspector.kt</small><br><code>inspectStream()</code><br><small style="color:var(--muted)">studio/apk/ApkMetadataInspector.kt</small></td>
+  <td><code>createDummyReadyLoadState()</code><br><small style="color:var(--muted)">studio/ui/AdaptiveLayoutRobolectricTest.kt</small><br><code>extractDexContainers()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small><br><code>extractDexContainersFromStream()</code><br><small style="color:var(--muted)">studio/dex/DexParser.kt</small><br>+1 more</td>
+  <td>ApkDexEntry node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>.smaliClassDisassemblerGeneratesValidSmaliUsingDexlib2AndBaksmali()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DexDisassemblerAndSmaliTest</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><code>buildSyntheticDex039()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td>.smaliClassDisassemblerGeneratesValidSmaliUsingDexlib2AndBaksmali() node in dex2c/studio/DexDisassemblerAndSmaliTest.kt.</td>
+  <td><code>DexParsedFile</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+13 more</td>
+  <td>DexParsedFile node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DexCatchHandler</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexCodeMeta</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexDisassemblerAndSmaliTest</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br>+4 more</td>
-  <td><code>buildSyntheticDex039()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td>Builds dependency relationships and graph data.</td>
+  <td><code>.stringAt()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexParsedFile</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.stringAt() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>.dalvikDisassemblerDecodesSparseSwitchAndFillArrayDataPayloads()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>DexCodeMeta</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexDisassemblerAndSmaliTest</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>DexEncodedMethod</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br>+2 more</td>
-  <td><code>buildSyntheticDex039()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td>.dalvikDisassemblerDecodesSparseSwitchAndFillArrayDataPayloads() node in dex2c/studio/DexDisassemblerAndSmaliTest.kt.</td>
+  <td><code>.typeAt()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexParsedFile</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.typeAt() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>.buildSyntheticDex039()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>dalvikDisassemblerDecodesSparseSwitchAndFillArrayDataPayloads()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>DexDisassemblerAndSmaliTest</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br>+2 more</td>
+  <td><code>.protoAt()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexParsedFile</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.buildSyntheticDex039() node in dex2c/studio/DexDisassemblerAndSmaliTest.kt.</td>
+  <td>.protoAt() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>ClangSyntaxValidationTest.kt</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.fieldAt()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexParsedFile</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td>.fieldAt() node in studio/dex/DexModels.kt.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>ClangSyntaxValidationTest</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>buildSyntheticDex()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>performFallbackStructuralSyntaxCheck()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br>+6 more</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
+  <td><code>.methodAt()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DexParsedFile</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.methodAt() node in studio/dex/DexModels.kt.</td>
 </tr>
 </table>
 
@@ -480,7 +500,7 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>studio/ui/Dex2cViewModel.kt</code></td><td>128 nodes</td></tr>
-<tr><td><code>studio/dex/DexModels.kt</code></td><td>49 nodes</td></tr>
+<tr><td><code>studio/dex/DexModels.kt</code></td><td>51 nodes</td></tr>
 <tr><td><code>studio/transpiler/Dex2cTranspiler.kt</code></td><td>42 nodes</td></tr>
 <tr><td><code>studio/cloud/CloudModels.kt</code></td><td>35 nodes</td></tr>
 <tr><td><code>studio/cloud/GitHubApiClient.kt</code></td><td>33 nodes</td></tr>
@@ -491,7 +511,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x658, method x525, contains x429. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x658, method x527, contains x445. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1027,23 +1047,12 @@ flowchart LR
 
 <!-- ====== 5. Outputs & Docs ====== -->
 <h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
-<p>Outputs &amp; Docs groups implementation around detailed, workflow, app, usagesmd, mostly in docs/detailed_app_workflow_and_usages.md, WORKFLOW.md. This section covers 65 nodes and 64 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Outputs &amp; Docs groups implementation around docs, performance, detailed, workflow, mostly in docs/detailed_app_workflow_and_usages.md, WORKFLOW.md, docs/performance-audit/PERFORMANCE_REPORT.md. This section covers 109 nodes and 104 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Outputs &amp; Docs (65 nodes, 64 edges)
-    subgraph outputs_docs_WORKFLOW_md_e7b58299["WORKFLOW.md"]
-        dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b("Dex2C Studio — End-to-End Application W...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925("2. Phase 1: Binary Ingestion &amp; Multi-DE...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941("3. Phase 2: DEX Explorer (Classes, Meth...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_4_phase_3_interactive_sma_1d1a8ebd("4. Phase 3: Interactive Smali Editor, J...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_5_phase_4_method_inspecti_ff703ed2("5. Phase 4: Method Inspection, Control...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_1_high_level_system_archi_e9aff407("1. High-Level System Architecture &amp; Dat...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_6_phase_5_filter_rules_fi_cc74b3a4("6. Phase 5: Filter Rules (filter.txt)...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_7_phase_6_output_export_p_32411bdb("7. Phase 6: Output Export, Patched DEX/...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_7_phase_6_patched_dex_apk_681561b1("7. Phase 6: Patched DEX/APK Export &amp; Gi...<br/><small>WORKFLOW.md</small>")
-    end
+    %% Section: Outputs &amp; Docs (109 nodes, 104 edges)
     subgraph outputs_docs_docs_detailed_app_workflow_and_usag_362fe77a["docs/detailed_app_workflow_and_usages.md"]
         docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b("3. Deep-Dive Operational Workflows (Ste...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
         docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a("4. Real-World Practical Usage Recipes<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
@@ -1053,34 +1062,38 @@ flowchart LR
         docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2("Phase 5: Dalvik Control Flow Graph (CFG...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
         docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604("Phase 7: Patched DEX &amp; 16KB-Aligned APK...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
         docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1("Phase 8: Zero-NDK Remote Cloud CI via G...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
-        docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc("Phase 1: Binary Selection &amp; Multi-DEX S...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
     end
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_1_high_level_system_archi_e9aff407
+    subgraph outputs_docs_WORKFLOW_md_e7b58299["WORKFLOW.md"]
+        dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b("Dex2C Studio — End-to-End Application W...<br/><small>WORKFLOW.md</small>")
+        dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925("2. Phase 1: Binary Ingestion &amp; Multi-DE...<br/><small>WORKFLOW.md</small>")
+        dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941("3. Phase 2: DEX Explorer (Classes, Meth...<br/><small>WORKFLOW.md</small>")
+    end
+    subgraph outputs_docs_docs_performance_audit_DATABASE_NET_338686fe["docs/performance-audit/DATABASE_NETWORK_REPORT.md"]
+        performance_audit_database_network_report_2_in_d_e464da1f("2. In-Depth Technical Analysis<br/><small>docs/performance-audit/DATABASE_NETWORK_REPORT.md</small>")
+        performance_audit_database_network_report_data_l_db5d5c19("Data Layer, Networking &amp; Background Pro...<br/><small>docs/performance-audit/DATABASE_NETWORK_REPORT.md</small>")
+    end
+    subgraph outputs_docs_docs_performance_audit_PERFORMANCE_155e01bb["docs/performance-audit/PERFORMANCE_REPORT.md"]
+        performance_audit_performance_report_2_in_depth_a2ac0920("2. In-Depth Root Cause Analysis<br/><small>docs/performance-audit/PERFORMANCE_REPORT.md</small>")
+        performance_audit_performance_report_performance_046b0552("Performance Bottleneck &amp; Optimization R...<br/><small>docs/performance-audit/PERFORMANCE_REPORT.md</small>")
+    end
+    subgraph outputs_docs_docs_performance_audit_TESTING_REPO_419d0a4b["docs/performance-audit/TESTING_REPORT.md"]
+        performance_audit_testing_report_4_regression_ve_3bf2c102("4. Regression Verification for Implemen...<br/><small>docs/performance-audit/TESTING_REPORT.md</small>")
+        performance_audit_testing_report_testing_quality_f78f069c("Testing &amp; Quality Assurance Report: Dex...<br/><small>docs/performance-audit/TESTING_REPORT.md</small>")
+    end
+    performance_audit_state_management_report_state_420864ac("State Management &amp; Lifecycle Architectu...<br/><small>docs/performance-audit/STATE_MANAGEMENT_REPORT.md</small>")
     dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925
     dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_4_phase_3_interactive_sma_1d1a8ebd
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_5_phase_4_method_inspecti_ff703ed2
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_6_phase_5_filter_rules_fi_cc74b3a4
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_7_phase_6_patched_dex_apk_681561b1
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_7_phase_6_output_export_p_32411bdb
     docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b
     docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a
-    docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_2_in_7ce897f0
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_4_in_8ce56d31
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1
-    %% Omitted for readability: 47 nodes, 0 edges
-    class dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b concept;
-    class dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925 concept;
-    class dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941 concept;
-    class dex2c_android_workflow_4_phase_3_interactive_sma_1d1a8ebd concept;
-    class dex2c_android_workflow_5_phase_4_method_inspecti_ff703ed2 concept;
-    class dex2c_android_workflow_1_high_level_system_archi_e9aff407 concept;
-    class dex2c_android_workflow_6_phase_5_filter_rules_fi_cc74b3a4 concept;
-    class dex2c_android_workflow_7_phase_6_output_export_p_32411bdb concept;
-    class dex2c_android_workflow_7_phase_6_patched_dex_apk_681561b1 concept;
+    performance_audit_database_network_report_data_l_db5d5c19 -->|contains| performance_audit_database_network_report_2_in_d_e464da1f
+    performance_audit_performance_report_performance_046b0552 -->|contains| performance_audit_performance_report_2_in_depth_a2ac0920
+    performance_audit_testing_report_testing_quality_f78f069c -->|contains| performance_audit_testing_report_4_regression_ve_3bf2c102
+    %% Omitted for readability: 91 nodes, 0 edges
     class docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b concept;
     class docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a concept;
     class docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 concept;
@@ -1089,7 +1102,16 @@ flowchart LR
     class docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2 concept;
     class docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604 concept;
     class docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1 concept;
-    class docs_detailed_app_workflow_and_usages_phase_1_bi_f40f95fc concept;
+    class dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b concept;
+    class dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925 concept;
+    class dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941 concept;
+    class performance_audit_database_network_report_2_in_d_e464da1f concept;
+    class performance_audit_database_network_report_data_l_db5d5c19 concept;
+    class performance_audit_performance_report_2_in_depth_a2ac0920 concept;
+    class performance_audit_performance_report_performance_046b0552 concept;
+    class performance_audit_testing_report_4_regression_ve_3bf2c102 concept;
+    class performance_audit_testing_report_testing_quality_f78f069c concept;
+    class performance_audit_state_management_report_state_420864ac concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1360,11 +1382,15 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/detailed_app_workflow_and_usages.md</code></td><td>42 nodes</td></tr>
 <tr><td><code>WORKFLOW.md</code></td><td>23 nodes</td></tr>
+<tr><td><code>docs/performance-audit/PERFORMANCE_REPORT.md</code></td><td>13 nodes</td></tr>
+<tr><td><code>docs/performance-audit/TESTING_REPORT.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>docs/performance-audit/DATABASE_NETWORK_REPORT.md</code></td><td>10 nodes</td></tr>
+<tr><td><code>docs/performance-audit/STATE_MANAGEMENT_REPORT.md</code></td><td>9 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x64. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x104. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1654,8 +1680,152 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Community 3 ====== -->
-<h2 id="community-3">7. Community 3</h2>
+<!-- ====== 7. Security & Global Graph ====== -->
+<h2 id="security-global">7. Security &amp; Global Graph</h2>
+<p>Security &amp; Global Graph groups implementation around reliability, security, reportmd, audit, mostly in docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md. This section covers 9 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Security &amp; Global Graph (9 nodes, 8 edges)
+    performance_audit_security_and_reliability_repor_dec2b5cb("2. Crash Risks &amp; Exception Boundaries<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_1429c1ec("Security, Crash Prevention &amp; Reliabilit...<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    docs_performance_audit_security_and_reliability_b709d507("AND RELIABILITY REPORT.md<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_170b978b("1. Executive Summary<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_fbe00ef4("3. Reliability Improvement Targets<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_dba434c9("Key Reliability Metrics<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_0a088b9d("2.1 Malformed DEX Input Handling<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_666208a9("2.2 Network &amp; DNS Failure Resilience<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    performance_audit_security_and_reliability_repor_49bf1e36("2.3 Token Security<br/><small>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small>")
+    docs_performance_audit_security_and_reliability_b709d507 -->|contains| performance_audit_security_and_reliability_repor_1429c1ec
+    performance_audit_security_and_reliability_repor_1429c1ec -->|contains| performance_audit_security_and_reliability_repor_170b978b
+    performance_audit_security_and_reliability_repor_1429c1ec -->|contains| performance_audit_security_and_reliability_repor_dec2b5cb
+    performance_audit_security_and_reliability_repor_1429c1ec -->|contains| performance_audit_security_and_reliability_repor_fbe00ef4
+    performance_audit_security_and_reliability_repor_170b978b -->|contains| performance_audit_security_and_reliability_repor_dba434c9
+    performance_audit_security_and_reliability_repor_dec2b5cb -->|contains| performance_audit_security_and_reliability_repor_0a088b9d
+    performance_audit_security_and_reliability_repor_dec2b5cb -->|contains| performance_audit_security_and_reliability_repor_666208a9
+    performance_audit_security_and_reliability_repor_dec2b5cb -->|contains| performance_audit_security_and_reliability_repor_49bf1e36
+    class performance_audit_security_and_reliability_repor_dec2b5cb concept;
+    class performance_audit_security_and_reliability_repor_1429c1ec concept;
+    class docs_performance_audit_security_and_reliability_b709d507 concept;
+    class performance_audit_security_and_reliability_repor_170b978b concept;
+    class performance_audit_security_and_reliability_repor_fbe00ef4 concept;
+    class performance_audit_security_and_reliability_repor_dba434c9 concept;
+    class performance_audit_security_and_reliability_repor_0a088b9d concept;
+    class performance_audit_security_and_reliability_repor_666208a9 concept;
+    class performance_audit_security_and_reliability_repor_49bf1e36 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>SECURITY_AND_RELIABILITY_REPORT.md</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing SECURITY_AND_RELIABILITY_REPORT.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Security, Crash Prevention &amp; Reliability Audit: Dex2C Studio</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Security, Crash Prevention &amp; Reliability Audit: Dex2C Studio.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Executive Summary</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Executive Summary.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Key Reliability Metrics</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Key Reliability Metrics.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>2. Crash Risks &amp; Exception Boundaries</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Crash Risks &amp; Exception Boundaries.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>2.1 Malformed DEX Input Handling</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.1 Malformed DEX Input Handling.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>2.2 Network &amp; DNS Failure Resilience</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.2 Network &amp; DNS Failure Resilience.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>2.3 Token Security</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.3 Token Security.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>3. Reliability Improvement Targets</code><br><small style="color:var(--muted)">docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Reliability Improvement Targets.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/performance-audit/SECURITY_AND_RELIABILITY_REPORT.md</code></td><td>9 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Community 3 ====== -->
+<h2 id="community-3">8. Community 3</h2>
 <p>Community 3 groups implementation around precision, enginemd, docs, mode, mostly in docs/precision-engine.md. This section covers 21 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1922,8 +2092,750 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 8. Community 36 ====== -->
-<h2 id="community-36">8. Community 36</h2>
+<!-- ====== 9. Community 85 ====== -->
+<h2 id="community-85">9. Community 85</h2>
+<p>Community 85 groups implementation around memory, auditmd, audit, docs, mostly in docs/performance-audit/MEMORY_AUDIT.md. This section covers 13 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 85 (13 nodes, 12 edges)
+    performance_audit_memory_audit_2_detailed_memory_af9d27ef("2. Detailed Memory Vulnerability Analysis<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_memory_management_4f485c5c("Memory Management &amp; Leak Audit: Dex2C S...<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_mem_001_count_bas_4436bfb1("MEM-001: Count-Based Bitmap LruCache<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    docs_performance_audit_memory_audit_md_42cc6c08("MEMORY_AUDIT.md")
+    performance_audit_memory_audit_1_executive_summa_0f098eea("1. Executive Summary<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_mem_002_eager_ico_9c97c00b("MEM-002: Eager Icon Decoding on Install...<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_mem_003_lifecycle_65897cd5("MEM-003: Lifecycle Memory Trimming<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_3_memory_optimiza_0daaa9cb("3. Memory Optimization Verification<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_key_memory_findin_084b67ff("Key Memory Findings<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_codeblock_4_dcc4ceb6("code:kotlin (override fun onLowMemory() )<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_codeblock_1_f9e14009("code:kotlin (private val iconCache = ob...<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_codeblock_2_cf4d6041("code:kotlin (private val maxBytes = (Ru...<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    performance_audit_memory_audit_codeblock_3_9ea01399("code:kotlin (val iconBitmap = iconCache...<br/><small>docs/performance-audit/MEMORY_AUDIT.md</small>")
+    docs_performance_audit_memory_audit_md_42cc6c08 -->|contains| performance_audit_memory_audit_memory_management_4f485c5c
+    performance_audit_memory_audit_memory_management_4f485c5c -->|contains| performance_audit_memory_audit_1_executive_summa_0f098eea
+    performance_audit_memory_audit_memory_management_4f485c5c -->|contains| performance_audit_memory_audit_2_detailed_memory_af9d27ef
+    performance_audit_memory_audit_memory_management_4f485c5c -->|contains| performance_audit_memory_audit_3_memory_optimiza_0daaa9cb
+    performance_audit_memory_audit_1_executive_summa_0f098eea -->|contains| performance_audit_memory_audit_key_memory_findin_084b67ff
+    performance_audit_memory_audit_2_detailed_memory_af9d27ef -->|contains| performance_audit_memory_audit_mem_001_count_bas_4436bfb1
+    performance_audit_memory_audit_2_detailed_memory_af9d27ef -->|contains| performance_audit_memory_audit_mem_002_eager_ico_9c97c00b
+    performance_audit_memory_audit_2_detailed_memory_af9d27ef -->|contains| performance_audit_memory_audit_mem_003_lifecycle_65897cd5
+    performance_audit_memory_audit_mem_001_count_bas_4436bfb1 -->|contains| performance_audit_memory_audit_codeblock_1_f9e14009
+    performance_audit_memory_audit_mem_001_count_bas_4436bfb1 -->|contains| performance_audit_memory_audit_codeblock_2_cf4d6041
+    performance_audit_memory_audit_mem_002_eager_ico_9c97c00b -->|contains| performance_audit_memory_audit_codeblock_3_9ea01399
+    performance_audit_memory_audit_mem_003_lifecycle_65897cd5 -->|contains| performance_audit_memory_audit_codeblock_4_dcc4ceb6
+    class performance_audit_memory_audit_2_detailed_memory_af9d27ef concept;
+    class performance_audit_memory_audit_memory_management_4f485c5c concept;
+    class performance_audit_memory_audit_mem_001_count_bas_4436bfb1 concept;
+    class docs_performance_audit_memory_audit_md_42cc6c08 concept;
+    class performance_audit_memory_audit_1_executive_summa_0f098eea concept;
+    class performance_audit_memory_audit_mem_002_eager_ico_9c97c00b concept;
+    class performance_audit_memory_audit_mem_003_lifecycle_65897cd5 concept;
+    class performance_audit_memory_audit_3_memory_optimiza_0daaa9cb concept;
+    class performance_audit_memory_audit_key_memory_findin_084b67ff concept;
+    class performance_audit_memory_audit_codeblock_4_dcc4ceb6 concept;
+    class performance_audit_memory_audit_codeblock_1_f9e14009 concept;
+    class performance_audit_memory_audit_codeblock_2_cf4d6041 concept;
+    class performance_audit_memory_audit_codeblock_3_9ea01399 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>MEMORY_AUDIT.md</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MEMORY_AUDIT.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Memory Management &amp; Leak Audit: Dex2C Studio</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Memory Management &amp; Leak Audit: Dex2C Studio.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Executive Summary</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Executive Summary.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Key Memory Findings</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Key Memory Findings.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>2. Detailed Memory Vulnerability Analysis</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Detailed Memory Vulnerability Analysis.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>MEM-001: Count-Based Bitmap LruCache</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MEM-001: Count-Based Bitmap LruCache.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>code:kotlin (private val iconCache = object : android.util.LruCache&lt;Strin)</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:kotlin (private val iconCache = object : android.util.LruCache&lt;Strin).</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>code:kotlin (private val maxBytes = (Runtime.getRuntime().maxMemory() / 1)</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:kotlin (private val maxBytes = (Runtime.getRuntime().maxMemory() / 1).</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>MEM-002: Eager Icon Decoding on Installed App Ingestion</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MEM-002: Eager Icon Decoding on Installed App Ingestion.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>code:kotlin (val iconBitmap = iconCache.get(pkgName) ?: runCatching {)</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:kotlin (val iconBitmap = iconCache.get(pkgName) ?: runCatching {).</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>MEM-003: Lifecycle Memory Trimming</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MEM-003: Lifecycle Memory Trimming.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>code:kotlin (override fun onLowMemory() {)</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:kotlin (override fun onLowMemory() {).</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>3. Memory Optimization Verification</code><br><small style="color:var(--muted)">docs/performance-audit/MEMORY_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Memory Optimization Verification.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/performance-audit/MEMORY_AUDIT.md</code></td><td>13 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Community 41 ====== -->
+<h2 id="community-41">10. Community 41</h2>
+<p>Community 41 groups implementation around final, engineering, summarymd, performance, mostly in docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md. This section covers 11 nodes and 10 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 41 (11 nodes, 10 edges)
+    performance_audit_final_engineering_summary_fina_38628544("Final Engineering Summary: Dex2C Studio...<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_3_ke_53f9d653("3. Key Architectural &amp; System Improvements<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    docs_performance_audit_final_engineering_summary_7ed21a4e("FINAL_ENGINEERING_SUMMARY.md")
+    performance_audit_final_engineering_summary_1_ex_4120a4d7("1. Executive Program Overview<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_2_be_29e50e08("2. Before vs. After Quantitative Scorecard<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_4_do_e68557d1("4. Documentation Suite Index<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_3_1_eee75043("3.1. Zero-Allocation Collections (Comp...<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_3_2_826d736e("3.2. Byte-Bounded Memory Management &amp; S...<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_3_3_524654ca("3.3. Compose Stateflow Decoupling<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_3_4_d65da19d("3.4. Debounced Code Editor &amp; Enhanced UX<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    performance_audit_final_engineering_summary_5_st_dbeb632d("5. Strategic Recommendations &amp; Future R...<br/><small>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small>")
+    docs_performance_audit_final_engineering_summary_7ed21a4e -->|contains| performance_audit_final_engineering_summary_fina_38628544
+    performance_audit_final_engineering_summary_fina_38628544 -->|contains| performance_audit_final_engineering_summary_1_ex_4120a4d7
+    performance_audit_final_engineering_summary_fina_38628544 -->|contains| performance_audit_final_engineering_summary_2_be_29e50e08
+    performance_audit_final_engineering_summary_fina_38628544 -->|contains| performance_audit_final_engineering_summary_3_ke_53f9d653
+    performance_audit_final_engineering_summary_fina_38628544 -->|contains| performance_audit_final_engineering_summary_4_do_e68557d1
+    performance_audit_final_engineering_summary_fina_38628544 -->|contains| performance_audit_final_engineering_summary_5_st_dbeb632d
+    performance_audit_final_engineering_summary_3_ke_53f9d653 -->|contains| performance_audit_final_engineering_summary_3_1_eee75043
+    performance_audit_final_engineering_summary_3_ke_53f9d653 -->|contains| performance_audit_final_engineering_summary_3_2_826d736e
+    performance_audit_final_engineering_summary_3_ke_53f9d653 -->|contains| performance_audit_final_engineering_summary_3_3_524654ca
+    performance_audit_final_engineering_summary_3_ke_53f9d653 -->|contains| performance_audit_final_engineering_summary_3_4_d65da19d
+    class performance_audit_final_engineering_summary_fina_38628544 concept;
+    class performance_audit_final_engineering_summary_3_ke_53f9d653 concept;
+    class docs_performance_audit_final_engineering_summary_7ed21a4e concept;
+    class performance_audit_final_engineering_summary_1_ex_4120a4d7 concept;
+    class performance_audit_final_engineering_summary_2_be_29e50e08 concept;
+    class performance_audit_final_engineering_summary_4_do_e68557d1 concept;
+    class performance_audit_final_engineering_summary_3_1_eee75043 concept;
+    class performance_audit_final_engineering_summary_3_2_826d736e concept;
+    class performance_audit_final_engineering_summary_3_3_524654ca concept;
+    class performance_audit_final_engineering_summary_3_4_d65da19d concept;
+    class performance_audit_final_engineering_summary_5_st_dbeb632d concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>FINAL_ENGINEERING_SUMMARY.md</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing FINAL_ENGINEERING_SUMMARY.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Final Engineering Summary: Dex2C Studio Performance &amp; Optimization Program</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Final Engineering Summary: Dex2C Studio Performance &amp; Optimization Program.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Executive Program Overview</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Executive Program Overview.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>2. Before vs. After Quantitative Scorecard</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Before vs. After Quantitative Scorecard.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>3. Key Architectural &amp; System Improvements</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Key Architectural &amp; System Improvements.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>3.1. Zero-Allocation Collections (`CompositeMethodList`)</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.1. Zero-Allocation Collections (`CompositeMethodList`).</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>3.2. Byte-Bounded Memory Management &amp; System Trimming</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.2. Byte-Bounded Memory Management &amp; System Trimming.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>3.3. Compose Stateflow Decoupling</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.3. Compose Stateflow Decoupling.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>3.4. Debounced Code Editor &amp; Enhanced UX</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.4. Debounced Code Editor &amp; Enhanced UX.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>4. Documentation Suite Index</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Documentation Suite Index.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>5. Strategic Recommendations &amp; Future Roadmap</code><br><small style="color:var(--muted)">docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. Strategic Recommendations &amp; Future Roadmap.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/performance-audit/FINAL_ENGINEERING_SUMMARY.md</code></td><td>11 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. Community 90 ====== -->
+<h2 id="community-90">11. Community 90</h2>
+<p>Community 90 groups implementation around codebase, full, auditmd, audit, mostly in docs/performance-audit/FULL_CODEBASE_AUDIT.md. This section covers 9 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 90 (9 nodes, 8 edges)
+    performance_audit_full_codebase_audit_complete_c_473f58cd("Complete Codebase Audit: Dex2C Studio (...<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    performance_audit_full_codebase_audit_2_package_d3996c2c("2. Package &amp; Module Architecture Map<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    docs_performance_audit_full_codebase_audit_md_526615d4("FULL_CODEBASE_AUDIT.md")
+    performance_audit_full_codebase_audit_1_executiv_4f1d1a93("1. Executive Summary &amp; Project Inventory<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    performance_audit_full_codebase_audit_3_dependen_99abdab2("3. Dependency Injection &amp; Service Initi...<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    performance_audit_full_codebase_audit_4_key_arch_71e9c626("4. Key Architectural Deficiencies &amp; Tec...<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    performance_audit_full_codebase_audit_1_1_reposi_25a86042("1.1 Repository Inventory &amp; Metrics<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    performance_audit_full_codebase_audit_2_1_packag_427a1e60("2.1 Package Breakdown<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    performance_audit_full_codebase_audit_codeblock_62385947("code:mermaid (graph TD)<br/><small>docs/performance-audit/FULL_CODEBASE_AUDIT.md</small>")
+    docs_performance_audit_full_codebase_audit_md_526615d4 -->|contains| performance_audit_full_codebase_audit_complete_c_473f58cd
+    performance_audit_full_codebase_audit_complete_c_473f58cd -->|contains| performance_audit_full_codebase_audit_1_executiv_4f1d1a93
+    performance_audit_full_codebase_audit_complete_c_473f58cd -->|contains| performance_audit_full_codebase_audit_2_package_d3996c2c
+    performance_audit_full_codebase_audit_complete_c_473f58cd -->|contains| performance_audit_full_codebase_audit_3_dependen_99abdab2
+    performance_audit_full_codebase_audit_complete_c_473f58cd -->|contains| performance_audit_full_codebase_audit_4_key_arch_71e9c626
+    performance_audit_full_codebase_audit_1_executiv_4f1d1a93 -->|contains| performance_audit_full_codebase_audit_1_1_reposi_25a86042
+    performance_audit_full_codebase_audit_2_package_d3996c2c -->|contains| performance_audit_full_codebase_audit_codeblock_62385947
+    performance_audit_full_codebase_audit_2_package_d3996c2c -->|contains| performance_audit_full_codebase_audit_2_1_packag_427a1e60
+    class performance_audit_full_codebase_audit_complete_c_473f58cd concept;
+    class performance_audit_full_codebase_audit_2_package_d3996c2c concept;
+    class docs_performance_audit_full_codebase_audit_md_526615d4 concept;
+    class performance_audit_full_codebase_audit_1_executiv_4f1d1a93 concept;
+    class performance_audit_full_codebase_audit_3_dependen_99abdab2 concept;
+    class performance_audit_full_codebase_audit_4_key_arch_71e9c626 concept;
+    class performance_audit_full_codebase_audit_1_1_reposi_25a86042 concept;
+    class performance_audit_full_codebase_audit_2_1_packag_427a1e60 concept;
+    class performance_audit_full_codebase_audit_codeblock_62385947 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>FULL_CODEBASE_AUDIT.md</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing FULL_CODEBASE_AUDIT.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Complete Codebase Audit: Dex2C Studio (`com.dex2c.studio`)</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Complete Codebase Audit: Dex2C Studio (`com.dex2c.studio`).</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Executive Summary &amp; Project Inventory</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Executive Summary &amp; Project Inventory.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>1.1 Repository Inventory &amp; Metrics</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1.1 Repository Inventory &amp; Metrics.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>2. Package &amp; Module Architecture Map</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Package &amp; Module Architecture Map.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>code:mermaid (graph TD)</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (graph TD).</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>2.1 Package Breakdown</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.1 Package Breakdown.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>3. Dependency Injection &amp; Service Initialization</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Dependency Injection &amp; Service Initialization.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>4. Key Architectural Deficiencies &amp; Technical Debt Identified</code><br><small style="color:var(--muted)">docs/performance-audit/FULL_CODEBASE_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Key Architectural Deficiencies &amp; Technical Debt Identified.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/performance-audit/FULL_CODEBASE_AUDIT.md</code></td><td>9 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 12. Community 93 ====== -->
+<h2 id="community-93">12. Community 93</h2>
+<p>Community 93 groups implementation around screen, auditmd, audit, docs, mostly in docs/performance-audit/UI_UX_SCREEN_AUDIT.md. This section covers 9 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 93 (9 nodes, 8 edges)
+    performance_audit_ui_ux_screen_audit_3_detailed_46adc6ef("3. Detailed UI/UX Findings &amp; Corrections<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    performance_audit_ui_ux_screen_audit_screen_by_s_623ec739("Screen-by-Screen UI/UX Quality &amp; Access...<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    docs_performance_audit_ui_ux_screen_audit_md_66130dab("UI_UX_SCREEN_AUDIT.md")
+    performance_audit_ui_ux_screen_audit_ui_001_stra_bcb23cc6("UI-001: Stranded Copy and Export Action...<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    performance_audit_ui_ux_screen_audit_1_executive_fbcfeeeb("1. Executive Summary<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    performance_audit_ui_ux_screen_audit_2_screen_by_2700cfa0("2. Screen-by-Screen Quality Matrix<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    performance_audit_ui_ux_screen_audit_ui_002_hard_3bd4f2d3("UI-002: Hardcoded Read-Only in SmaliCl...<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    performance_audit_ui_ux_screen_audit_ui_003_depr_8b96522f("UI-003: Deprecated Icon Reference<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    performance_audit_ui_ux_screen_audit_codeblock_1_abc4e26b("code:kotlin (TopAppBar()<br/><small>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small>")
+    docs_performance_audit_ui_ux_screen_audit_md_66130dab -->|contains| performance_audit_ui_ux_screen_audit_screen_by_s_623ec739
+    performance_audit_ui_ux_screen_audit_screen_by_s_623ec739 -->|contains| performance_audit_ui_ux_screen_audit_1_executive_fbcfeeeb
+    performance_audit_ui_ux_screen_audit_screen_by_s_623ec739 -->|contains| performance_audit_ui_ux_screen_audit_2_screen_by_2700cfa0
+    performance_audit_ui_ux_screen_audit_screen_by_s_623ec739 -->|contains| performance_audit_ui_ux_screen_audit_3_detailed_46adc6ef
+    performance_audit_ui_ux_screen_audit_3_detailed_46adc6ef -->|contains| performance_audit_ui_ux_screen_audit_ui_001_stra_bcb23cc6
+    performance_audit_ui_ux_screen_audit_3_detailed_46adc6ef -->|contains| performance_audit_ui_ux_screen_audit_ui_002_hard_3bd4f2d3
+    performance_audit_ui_ux_screen_audit_3_detailed_46adc6ef -->|contains| performance_audit_ui_ux_screen_audit_ui_003_depr_8b96522f
+    performance_audit_ui_ux_screen_audit_ui_001_stra_bcb23cc6 -->|contains| performance_audit_ui_ux_screen_audit_codeblock_1_abc4e26b
+    class performance_audit_ui_ux_screen_audit_3_detailed_46adc6ef concept;
+    class performance_audit_ui_ux_screen_audit_screen_by_s_623ec739 concept;
+    class docs_performance_audit_ui_ux_screen_audit_md_66130dab concept;
+    class performance_audit_ui_ux_screen_audit_ui_001_stra_bcb23cc6 concept;
+    class performance_audit_ui_ux_screen_audit_1_executive_fbcfeeeb concept;
+    class performance_audit_ui_ux_screen_audit_2_screen_by_2700cfa0 concept;
+    class performance_audit_ui_ux_screen_audit_ui_002_hard_3bd4f2d3 concept;
+    class performance_audit_ui_ux_screen_audit_ui_003_depr_8b96522f concept;
+    class performance_audit_ui_ux_screen_audit_codeblock_1_abc4e26b concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>UI_UX_SCREEN_AUDIT.md</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing UI_UX_SCREEN_AUDIT.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Screen-by-Screen UI/UX Quality &amp; Accessibility Audit: Dex2C Studio</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Screen-by-Screen UI/UX Quality &amp; Accessibility Audit: Dex2C Studio.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Executive Summary</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Executive Summary.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>2. Screen-by-Screen Quality Matrix</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Screen-by-Screen Quality Matrix.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>3. Detailed UI/UX Findings &amp; Corrections</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Detailed UI/UX Findings &amp; Corrections.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>UI-001: Stranded Copy and Export Actions in `SmaliClassScreen`</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing UI-001: Stranded Copy and Export Actions in `SmaliClassScreen`.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>code:kotlin (TopAppBar()</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:kotlin (TopAppBar().</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>UI-002: Hardcoded Read-Only in `SmaliClassScreen`</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing UI-002: Hardcoded Read-Only in `SmaliClassScreen`.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>UI-003: Deprecated Icon Reference</code><br><small style="color:var(--muted)">docs/performance-audit/UI_UX_SCREEN_AUDIT.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing UI-003: Deprecated Icon Reference.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/performance-audit/UI_UX_SCREEN_AUDIT.md</code></td><td>9 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 13. Community 96 ====== -->
+<h2 id="community-96">13. Community 96</h2>
+<p>Community 96 groups implementation around master, issue, trackermd, performance, mostly in docs/performance-audit/MASTER_ISSUE_TRACKER.md. This section covers 5 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 96 (5 nodes, 4 edges)
+    performance_audit_master_issue_tracker_master_is_e5330fe9("Master Issue Tracker: Dex2C Studio Perf...<br/><small>docs/performance-audit/MASTER_ISSUE_TRACKER.md</small>")
+    docs_performance_audit_master_issue_tracker_md_2ebc3e35("MASTER_ISSUE_TRACKER.md")
+    performance_audit_master_issue_tracker_priority_613802cb("Priority Classification<br/><small>docs/performance-audit/MASTER_ISSUE_TRACKER.md</small>")
+    performance_audit_master_issue_tracker_master_is_f1084960("Master Issue Registry &amp; Resolution Status<br/><small>docs/performance-audit/MASTER_ISSUE_TRACKER.md</small>")
+    performance_audit_master_issue_tracker_master_is_461ee74f("Master Issue Registry<br/><small>docs/performance-audit/MASTER_ISSUE_TRACKER.md</small>")
+    docs_performance_audit_master_issue_tracker_md_2ebc3e35 -->|contains| performance_audit_master_issue_tracker_master_is_e5330fe9
+    performance_audit_master_issue_tracker_master_is_e5330fe9 -->|contains| performance_audit_master_issue_tracker_priority_613802cb
+    performance_audit_master_issue_tracker_master_is_e5330fe9 -->|contains| performance_audit_master_issue_tracker_master_is_f1084960
+    performance_audit_master_issue_tracker_master_is_e5330fe9 -->|contains| performance_audit_master_issue_tracker_master_is_461ee74f
+    class performance_audit_master_issue_tracker_master_is_e5330fe9 concept;
+    class docs_performance_audit_master_issue_tracker_md_2ebc3e35 concept;
+    class performance_audit_master_issue_tracker_priority_613802cb concept;
+    class performance_audit_master_issue_tracker_master_is_f1084960 concept;
+    class performance_audit_master_issue_tracker_master_is_461ee74f concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>MASTER_ISSUE_TRACKER.md</code><br><small style="color:var(--muted)">docs/performance-audit/MASTER_ISSUE_TRACKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing MASTER_ISSUE_TRACKER.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Master Issue Tracker: Dex2C Studio Performance &amp; Quality Audit</code><br><small style="color:var(--muted)">docs/performance-audit/MASTER_ISSUE_TRACKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Master Issue Tracker: Dex2C Studio Performance &amp; Quality Audit.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Priority Classification</code><br><small style="color:var(--muted)">docs/performance-audit/MASTER_ISSUE_TRACKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Priority Classification.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Master Issue Registry &amp; Resolution Status</code><br><small style="color:var(--muted)">docs/performance-audit/MASTER_ISSUE_TRACKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Master Issue Registry &amp; Resolution Status.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Master Issue Registry</code><br><small style="color:var(--muted)">docs/performance-audit/MASTER_ISSUE_TRACKER.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Master Issue Registry.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/performance-audit/MASTER_ISSUE_TRACKER.md</code></td><td>5 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 14. Community 36 ====== -->
+<h2 id="community-36">14. Community 36</h2>
 <p>Community 36 groups implementation around graphifymd, agents, rules, graphify, mostly in .agents/rules/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1989,8 +2901,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. Community 42 ====== -->
-<h2 id="community-42">9. Community 42</h2>
+<!-- ====== 15. Community 42 ====== -->
+<h2 id="community-42">15. Community 42</h2>
 <p>Community 42 groups implementation around graphifymd, agents, workflows, workflow, mostly in .agents/workflows/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2056,16 +2968,18 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. Community 61 ====== -->
-<h2 id="community-61">10. Community 61</h2>
-<p>Community 61 groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around settingsgradlekts, typekt, app, com, mostly in settings.gradle.kts, ui/theme/Type.kt. This section covers 2 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 61 (1 nodes, 0 edges)
+    %% Section: Other (2 nodes, 0 edges)
     settings_gradle_kts_e0ad1c77("settings.gradle.kts")
+    app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05("Type.kt")
     class settings_gradle_kts_e0ad1c77 function;
+    class app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2095,56 +3009,8 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>settings.gradle.kts node in settings.gradle.kts.</td>
 </tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>settings.gradle.kts</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 11. Community 63 ====== -->
-<h2 id="community-63">11. Community 63</h2>
-<p>Community 63 groups implementation around typekt, app, com, dex2c, mostly in ui/theme/Type.kt. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Community 63 (1 nodes, 0 edges)
-    app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05("Type.kt")
-    class app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05 klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
 <tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
+  <td>2</td>
   <td><code>Type.kt</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -2159,6 +3025,7 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>ui/theme/Type.kt</code></td><td>1 nodes</td></tr>
+<tr><td><code>settings.gradle.kts</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -2174,17 +3041,17 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1233</td></tr>
-      <tr><td>Edges</td><td>2200</td></tr>
+      <tr><td>Nodes</td><td>1352</td></tr>
+      <tr><td>Edges</td><td>2308</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>85</td></tr>
-      <tr><td>Documented Sections</td><td>10</td></tr>
+      <tr><td>Communities</td><td>92</td></tr>
+      <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1782</td></tr>
+      <tr><td>EXTRACTED</td><td>1890</td></tr>
       <tr><td>INFERRED</td><td>418</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
@@ -2193,7 +3060,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-18 15:41 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-18 16:19 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

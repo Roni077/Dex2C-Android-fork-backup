@@ -104,7 +104,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material.icons.rounded.DataObject
-import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 
 enum class ClassesViewMode {
   TREE,
@@ -1151,7 +1151,7 @@ private fun ClassesDetailPane(
               modifier = Modifier.testTag("smali_open_fullscreen_btn"),
             ) {
               Icon(
-                imageVector = Icons.Rounded.OpenInNew,
+                imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
                 contentDescription = "Open Full Screen",
                 modifier = Modifier.size(20.dp),
               )

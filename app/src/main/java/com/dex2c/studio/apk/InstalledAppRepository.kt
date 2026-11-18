@@ -14,12 +14,23 @@ import java.io.File
 
 object InstalledAppRepository {
 
-  private val iconCache = object : android.util.LruCache<String, Bitmap>(64) {
-    override fun sizeOf(key: String, value: Bitmap): Int = 1
+  private val maxCacheBytes =
+    (Runtime.getRuntime().maxMemory() / 16).toInt().coerceIn(4 * 1024 * 1024, 16 * 1024 * 1024)
+
+  private val iconCache = object : android.util.LruCache<String, Bitmap>(maxCacheBytes) {
+    override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
   }
 
   fun clearIconCache() {
     iconCache.evictAll()
+  }
+
+  fun trimMemory(level: Int) {
+    if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
+      iconCache.evictAll()
+    } else if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+      iconCache.trimToSize(iconCache.maxSize() / 2)
+    }
   }
 
   fun queryLaunchableApps(context: Context): List<InstalledAppItem> {
@@ -63,6 +74,7 @@ object InstalledAppRepository {
       val targetSdk = appInfo.targetSdkVersion
       val isSystemApp =
         (appInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
+      if (isSystemApp && pkgName != context.packageName) continue
       val lastUpdateTimeMillis = pkgInfo?.lastUpdateTime ?: apkFile.lastModified()
       val iconBitmap = iconCache.get(pkgName) ?: runCatching {
         drawableToBitmap(ri.loadIcon(pm)).also { iconCache.put(pkgName, it) }
@@ -101,7 +113,7 @@ object InstalledAppRepository {
     }.getOrNull()
   }
 
-  fun drawableToBitmap(drawable: Drawable, sizePx: Int = 64): Bitmap {
+  fun drawableToBitmap(drawable: Drawable, sizePx: Int = 48): Bitmap {
     if (drawable is BitmapDrawable && drawable.bitmap != null) {
       val src = drawable.bitmap
       if (src.width <= sizePx && src.height <= sizePx) return src

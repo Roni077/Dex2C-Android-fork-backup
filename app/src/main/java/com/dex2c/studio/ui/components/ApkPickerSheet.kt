@@ -66,7 +66,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dex2c.studio.R
-import com.dex2c.studio.apk.AppScopeFilter
 import com.dex2c.studio.apk.BinarySourceType
 import com.dex2c.studio.apk.InstalledAppItem
 import com.dex2c.studio.apk.PickerSortOrder
@@ -275,25 +274,19 @@ private fun InstalledAppsTab(
   onSearchChange: (String) -> Unit,
   onSelectApp: (InstalledAppItem) -> Unit,
 ) {
-  var scopeFilter by remember { mutableStateOf(AppScopeFilter.ALL) }
   var sortOrder by remember { mutableStateOf(PickerSortOrder.NAME_ASC) }
   var showSortMenu by remember { mutableStateOf(false) }
 
+  val userApps = remember(apps) { apps.filter { !it.isSystemApp } }
   val displayedApps =
-    remember(apps, scopeFilter, sortOrder) {
-      val scoped =
-        when (scopeFilter) {
-          AppScopeFilter.ALL -> apps
-          AppScopeFilter.USER_ONLY -> apps.filter { !it.isSystemApp }
-          AppScopeFilter.SYSTEM_ONLY -> apps.filter { it.isSystemApp }
-        }
+    remember(userApps, sortOrder) {
       when (sortOrder) {
-        PickerSortOrder.NAME_ASC -> scoped.sortedBy { it.appLabel.lowercase() }
-        PickerSortOrder.NAME_DESC -> scoped.sortedByDescending { it.appLabel.lowercase() }
+        PickerSortOrder.NAME_ASC -> userApps.sortedBy { it.appLabel.lowercase() }
+        PickerSortOrder.NAME_DESC -> userApps.sortedByDescending { it.appLabel.lowercase() }
         PickerSortOrder.SIZE_DESC ->
-          scoped.sortedWith(compareByDescending<InstalledAppItem> { it.apkSizeBytes }.thenBy { it.appLabel.lowercase() })
+          userApps.sortedWith(compareByDescending<InstalledAppItem> { it.apkSizeBytes }.thenBy { it.appLabel.lowercase() })
         PickerSortOrder.RECENT ->
-          scoped.sortedWith(compareByDescending<InstalledAppItem> { it.lastUpdateTimeMillis }.thenBy { it.appLabel.lowercase() })
+          userApps.sortedWith(compareByDescending<InstalledAppItem> { it.lastUpdateTimeMillis }.thenBy { it.appLabel.lowercase() })
       }
     }
 
@@ -357,16 +350,6 @@ private fun InstalledAppsTab(
               )
             }
           }
-        }
-      }
-      AppScopeFilter.entries.forEach { scope ->
-        item {
-          FilterChip(
-            selected = scopeFilter == scope,
-            onClick = { scopeFilter = scope },
-            label = { Text(scope.label) },
-            modifier = Modifier.testTag("picker_app_scope_${scope.name}"),
-          )
         }
       }
     }
@@ -471,7 +454,6 @@ private fun InstalledAppRow(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary,
           )
-          TagPill(text = if (app.isSystemApp) "Sys" else "User")
         }
       }
 
