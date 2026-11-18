@@ -1716,28 +1716,37 @@ class Dex2cViewModel @JvmOverloads constructor(
     }
   }
 
-  fun syncSelectionToWildcardRules(isBlacklist: Boolean = false) {
+  fun syncSelectedClassesToFilter(
+    classesToSync: List<DexClassInfo>? = null,
+    isExclude: Boolean = false,
+  ) {
     val ready = _loadState.value as? DexLoadState.Ready ?: return
     val selectedIds = _selectedMethodIds.value
     if (selectedIds.isEmpty()) {
       _statusBanner.value = "Select at least one package, class, or method in Classes first."
       return
     }
+    val targetClasses = classesToSync?.takeIf { it.isNotEmpty() } ?: ready.mergedClasses
     val generatedRules =
       FilterRuleEngine.generateWildcardRulesFromSelection(
-        classes = ready.mergedClasses,
+        classes = targetClasses,
         selectedMethodIds = selectedIds,
         allowInit = _config.value.allowInit,
-        isBlacklist = isBlacklist,
+        isBlacklist = isExclude,
       )
     if (generatedRules.isEmpty()) return
+
+    val newLines = generatedRules.map { it.toFilterLine() }
     updateConfig { current ->
-      val existingRules = FilterRuleEngine.parseStructuredRules(current.filterRulesText)
-      val existingLines = existingRules.map { it.toFilterLine() }.toSet()
-      val merged = existingRules + generatedRules.filter { it.toFilterLine() !in existingLines }
-      current.copy(filterRulesText = FilterRuleEngine.serializeStructuredRules(merged))
+      current.copy(filterRulesText = FilterRuleEngine.mergeFilterLines(current.filterRulesText, newLines))
     }
-    _statusBanner.value = "Synced ${generatedRules.size} wildcard filter rule(s) from selection."
+    _selectedMethodIds.value = emptySet()
+    markBundleDirty()
+    _statusBanner.value = "Synced ${generatedRules.size} filter rule(s) to filter.txt."
+  }
+
+  fun syncSelectionToWildcardRules(isBlacklist: Boolean = false) {
+    syncSelectedClassesToFilter(null, isBlacklist)
   }
 
   fun updateConfig(transform: (TranspilerConfig) -> TranspilerConfig) {

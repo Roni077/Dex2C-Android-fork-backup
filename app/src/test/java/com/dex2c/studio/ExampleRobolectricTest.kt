@@ -2312,7 +2312,29 @@ class ExampleRobolectricTest {
 
   @Test
   @Config(sdk = [36], qualifiers = "w412dp-h892dp")
-  fun `classesScreen Filter Rules sub-tab toggles Whitelist and Blacklist presets and quick row rules`() {
+  fun `classesScreen batch add to filter opens dialog and syncs rules to raw filter editor`() {
+    val method =
+      com.dex2c.studio.dex.DexEncodedMethod(
+        id = "classes.dex::Lcom/crackme/MainActivity;#0",
+        methodIndex = 0,
+        methodRef =
+          com.dex2c.studio.dex.DexMethodRef(
+            definingClass = "Lcom/crackme/MainActivity;",
+            proto = com.dex2c.studio.dex.DexProto("Z", "()Z", emptyList()),
+            name = "checkLicense",
+          ),
+        accessFlags = 0x0001,
+        isDirect = false,
+        codeMeta =
+          com.dex2c.studio.dex.DexCodeMeta(
+            registersSize = 2,
+            insSize = 1,
+            outsSize = 0,
+            triesSize = 0,
+            insnsCount = 2,
+            insnsOffsetBytes = 0,
+          ),
+      )
     val dexClass =
       com.dex2c.studio.dex.DexClassInfo(
         classIndex = 0,
@@ -2326,7 +2348,7 @@ class ExampleRobolectricTest {
         accessFlags = 0x0001,
         staticFields = emptyList(),
         instanceFields = emptyList(),
-        directMethods = emptyList(),
+        directMethods = listOf(method),
         virtualMethods = emptyList(),
       )
     val parsed =
@@ -2365,6 +2387,7 @@ class ExampleRobolectricTest {
         loadedDexes = mapOf("classes.dex" to parsed),
       )
     var cfg by mutableStateOf(com.dex2c.studio.transpiler.TranspilerConfig(filterRulesText = ""))
+    var selectedMethodIds by mutableStateOf(setOf(method.id))
 
     composeTestRule.setContent {
       Dex2cTheme {
@@ -2372,52 +2395,66 @@ class ExampleRobolectricTest {
           loadState = ready,
           classes = listOf(dexClass),
           filterState = com.dex2c.studio.ui.ClassFilterState(onlyWithBytecode = false),
-          selectedMethodIds = emptySet(),
+          selectedMethodIds = selectedMethodIds,
           allowInit = false,
           onSearchChange = {},
           onToggleHideFramework = {},
           onToggleOnlyBytecode = {},
           onToggleOnlySelected = {},
-          onToggleClassSelection = {},
+          onToggleClassSelection = {
+            selectedMethodIds = if (method.id in selectedMethodIds) emptySet() else setOf(method.id)
+          },
           onToggleMethodSelection = {},
           onInspectMethod = { _, _ -> },
           config = cfg,
           onUpdateConfig = { transform -> cfg = transform(cfg) },
-          onQuickPackageRule = { pkg, isBlacklist ->
-            val rule =
-              com.dex2c.studio.transpiler.StructuredFilterRule(
-                packageName = pkg.replace('.', '/'),
-                className = "",
-                methodName = "",
+          onSyncSelectionToWildcardRules = { isBlacklist ->
+            val rules =
+              com.dex2c.studio.transpiler.FilterRuleEngine.generateWildcardRulesFromSelection(
+                classes = listOf(dexClass),
+                selectedMethodIds = selectedMethodIds,
+                allowInit = false,
                 isBlacklist = isBlacklist,
-                ruleType = com.dex2c.studio.transpiler.FilterRuleType.PACKAGE_ALL,
               )
             cfg =
               cfg.copy(
                 filterRulesText =
-                  com.dex2c.studio.transpiler.FilterRuleEngine.upsertStructuredRule(cfg.filterRulesText, rule)
+                  com.dex2c.studio.transpiler.FilterRuleEngine.mergeFilterLines(
+                    cfg.filterRulesText,
+                    rules.map { it.toFilterLine() },
+                  )
               )
           },
         )
       }
     }
 
-    // Enable Select Mode in Explorer via long-press and click +W on com.crackme package
-    composeTestRule.onNodeWithTag("chip_select_mode").assertDoesNotExist()
+    // Enable Select Mode in Explorer via long-press on package
     composeTestRule.onNodeWithTag("pkg_row_com.crackme").performTouchInput { longClick() }
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("pkg_whitelist_btn_com.crackme").assertIsDisplayed().performClick()
-    composeTestRule.waitForIdle()
-    assertTrue(cfg.filterRulesText.contains("com/crackme/.*;.*"))
 
-    // Switch to FILTER RULES sub-tab and verify Whitelist/Blacklist cards and presets
-    composeTestRule.onNodeWithTag("classes_subtab_rules").performScrollTo().performClick()
+    // Verify batch Add to Filter button is displayed and click it
+    composeTestRule.onNodeWithTag("batch_add_to_filter_btn").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("summary_card_whitelist").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("summary_card_blacklist").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("preset_lifecycle_onCreate").performScrollTo().performClick()
+
+    // Verify popup dialog appears with selected class and rule preview
+    composeTestRule.onNodeWithTag("selected_classes_filter_dialog").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("dialog_sync_filter_btn").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()
-    assertTrue(cfg.filterRulesText.contains(".*;onCreate\\(.*"))
+
+    // Verify rules were synced to filterRulesText
+    assertTrue(cfg.filterRulesText.contains("com/crackme/MainActivity;.*"))
+
+    // Verify dialog and batch selection bar are dismissed immediately
+    composeTestRule.onNodeWithTag("selected_classes_filter_dialog").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("batch_add_to_filter_btn").assertDoesNotExist()
+
+    // Verify RULES sub-tab is removed from ClassesScreen, leaving 4 explorer tabs
+    composeTestRule.onNodeWithTag("classes_subtab_rules").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("classes_subtab_explorer").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("classes_subtab_methods").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("classes_subtab_fields").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("classes_subtab_strings").assertIsDisplayed()
   }
 
   @Test

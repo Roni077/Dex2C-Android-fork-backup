@@ -240,26 +240,6 @@ fun PackageFolderRow(
       )
     }
 
-    // Quick rules buttons in Selection Mode
-    if (showSelectionCheckboxes) {
-      Spacer(Modifier.width(4.dp))
-      QuickRuleBadgeButton(
-        text = "+W",
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        onClick = onWhitelistPackage,
-        testTag = "pkg_whitelist_btn_${group.packageName}",
-      )
-      Spacer(Modifier.width(4.dp))
-      QuickRuleBadgeButton(
-        text = "!B",
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        onClick = onBlacklistPackage,
-        testTag = "pkg_blacklist_btn_${group.packageName}",
-      )
-    }
-
     Spacer(Modifier.width(6.dp))
 
     // Class count badge
@@ -428,22 +408,6 @@ fun CompactClassRow(
     }
 
     if (showSelectionCheckboxes) {
-      Spacer(Modifier.width(4.dp))
-      QuickRuleBadgeButton(
-        text = "+W",
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        onClick = onWhitelistClass,
-        testTag = classWhitelistTag,
-      )
-      Spacer(Modifier.width(4.dp))
-      QuickRuleBadgeButton(
-        text = "!B",
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        onClick = onBlacklistClass,
-        testTag = classBlacklistTag,
-      )
       Spacer(Modifier.width(2.dp))
       IconButton(
         onClick = onDeleteClass,
@@ -583,14 +547,15 @@ fun InlineBadge(
 @Composable
 fun BatchActionBar(
   selectedCount: Int,
-  onWhitelistSelected: () -> Unit,
-  onBlacklistSelected: () -> Unit,
+  onFilterSelected: () -> Unit,
   onClearSelection: () -> Unit,
   modifier: Modifier = Modifier,
   onSelectAll: (() -> Unit)? = null,
   onDeselectAll: (() -> Unit)? = null,
   onInvertSelection: (() -> Unit)? = null,
   onDone: (() -> Unit)? = null,
+  onWhitelistSelected: (() -> Unit)? = null,
+  onBlacklistSelected: (() -> Unit)? = null,
 ) {
   AnimatedVisibility(
     visible = selectedCount > 0,
@@ -666,19 +631,11 @@ fun BatchActionBar(
         }
 
         QuickRuleBadgeButton(
-          text = "+ Whitelist",
+          text = "Add to Filter",
           containerColor = MaterialTheme.colorScheme.primary,
           contentColor = MaterialTheme.colorScheme.onPrimary,
-          onClick = onWhitelistSelected,
-          testTag = "batch_whitelist_btn",
-        )
-
-        QuickRuleBadgeButton(
-          text = "! Blacklist",
-          containerColor = MaterialTheme.colorScheme.error,
-          contentColor = MaterialTheme.colorScheme.onError,
-          onClick = onBlacklistSelected,
-          testTag = "batch_blacklist_btn",
+          onClick = onFilterSelected,
+          testTag = "batch_add_to_filter_btn",
         )
 
         IconButton(

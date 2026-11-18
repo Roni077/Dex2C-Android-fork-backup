@@ -90,9 +90,9 @@ import com.dex2c.studio.ui.components.CompactClassRow
 import com.dex2c.studio.ui.components.DexFieldsExplorerTab
 import com.dex2c.studio.ui.components.DexMethodsExplorerTab
 import com.dex2c.studio.ui.components.DexStringsExplorerTab
-import com.dex2c.studio.ui.components.InteractiveFilterRuleBuilderPanel
 import com.dex2c.studio.ui.components.PackageFolderRow
 import com.dex2c.studio.ui.components.QuickRuleBadgeButton
+import com.dex2c.studio.ui.components.SelectedClassesFilterDialog
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 
 enum class ClassesViewMode {
@@ -105,7 +105,6 @@ enum class ClassesSubTab(val label: String, val tagSuffix: String) {
   METHODS("METHODS", "methods"),
   FIELDS("FIELDS", "fields"),
   STRINGS("STRINGS", "strings"),
-  FILTER_RULES("RULES", "rules"),
 }
 
 data class PackageGroup(
@@ -360,8 +359,14 @@ fun ClassesScreen(
   var showSortMenu by remember { mutableStateOf(false) }
   var showDexMenu by remember { mutableStateOf(false) }
   var showExtraFilters by remember { mutableStateOf(false) }
+  var showSelectedClassesDialog by remember { mutableStateOf(false) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
+
+  val selectedClassesList =
+    remember(classes, selectedMethodIds) {
+      classes.filter { cls -> cls.allMethods.any { it.id in selectedMethodIds } }
+    }
 
   BackHandler(enabled = showSelectionCheckboxes) {
     showSelectionCheckboxes = false
@@ -540,11 +545,7 @@ fun ClassesScreen(
           ) {
             ClassesSubTab.entries.forEach { tab ->
               val isSelected = activeSubTab == tab
-              val tabText =
-                when (tab) {
-                  ClassesSubTab.FILTER_RULES -> "${tab.label} (${structuredRules.size})"
-                  else -> tab.label
-                }
+              val tabText = tab.label
               Column(
                 modifier =
                   Modifier
@@ -814,29 +815,7 @@ fun ClassesScreen(
       }
 
       // SUB-TAB SCREENS
-      if (activeSubTab == ClassesSubTab.FILTER_RULES) {
-        Surface(
-          modifier = Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
-          shape = RoundedCornerShape(16.dp),
-          color = MaterialTheme.colorScheme.surfaceContainer,
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
-        ) {
-          InteractiveFilterRuleBuilderPanel(
-            config = config,
-            hasLoadedDex = loadState is DexLoadState.Ready,
-            filterMatchSummary = filterMatchSummary,
-            selectedMethodCount = selectedMethodIds.size,
-            onUpdateConfig = onUpdateConfig,
-            onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
-            onApplyFilterRules = onApplyFilterRules,
-            fillAvailableHeight = true,
-            showModuleNameField = false,
-            onlyMatchingExplorerFilter = filterState.onlyMatchingFilterRules,
-            onToggleMatchingExplorerFilter = onToggleOnlyMatchingFilterRules,
-            modifier = Modifier.fillMaxSize().padding(14.dp),
-          )
-        }
-      } else if (loadState !is DexLoadState.Ready) {
+      if (loadState !is DexLoadState.Ready) {
         Box(
           modifier = Modifier.fillMaxSize().padding(24.dp),
           contentAlignment = Alignment.Center,
@@ -997,8 +976,7 @@ fun ClassesScreen(
       ) {
         BatchActionBar(
           selectedCount = selectedMethodIds.size,
-          onWhitelistSelected = { onSyncSelectionToWildcardRules(false) },
-          onBlacklistSelected = { onSyncSelectionToWildcardRules(true) },
+          onFilterSelected = { showSelectedClassesDialog = true },
           onClearSelection = {
             if (onDeselectAllClasses != null) {
               onDeselectAllClasses(classes)
@@ -1030,6 +1008,26 @@ fun ClassesScreen(
           onDone = { showSelectionCheckboxes = false },
         )
       }
+    }
+
+    if (showSelectedClassesDialog) {
+      SelectedClassesFilterDialog(
+        visible = true,
+        selectedClasses = selectedClassesList,
+        selectedMethodIds = selectedMethodIds,
+        allowInit = allowInit,
+        onDismiss = { showSelectedClassesDialog = false },
+        onConfirmSync = { isExclude ->
+          onSyncSelectionToWildcardRules(isExclude)
+          showSelectedClassesDialog = false
+          showSelectionCheckboxes = false
+          if (onDeselectAllClasses != null) {
+            onDeselectAllClasses(classes)
+          } else {
+            onTogglePackageSelection(emptyList())
+          }
+        },
+      )
     }
   }
 }

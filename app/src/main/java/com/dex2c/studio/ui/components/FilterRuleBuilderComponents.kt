@@ -93,7 +93,7 @@ fun InteractiveFilterRuleBuilderPanel(
   filterMatchSummary: FilterMatchSummary?,
   selectedMethodCount: Int,
   onUpdateConfig: ((TranspilerConfig) -> TranspilerConfig) -> Unit,
-  onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit,
+  onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit = {},
   onApplyFilterRules: () -> Unit,
   modifier: Modifier = Modifier,
   fillAvailableHeight: Boolean = false,
@@ -102,23 +102,8 @@ fun InteractiveFilterRuleBuilderPanel(
   onlyMatchingExplorerFilter: Boolean? = null,
   onToggleMatchingExplorerFilter: (() -> Unit)? = null,
 ) {
-  var subMode by rememberSaveable { mutableStateOf(FilterEditorSubMode.BUILDER) }
-  var showRuleDialog by remember { mutableStateOf(false) }
-  var editingRule by remember { mutableStateOf<StructuredFilterRule?>(null) }
-
-  val structuredRules =
-    remember(config.filterRulesText) { FilterRuleEngine.parseStructuredRules(config.filterRulesText) }
-  val activeRuleLines =
-    remember(config.filterRulesText) {
-      config.filterRulesText.lineSequence().map { it.trim() }.filter { it.isNotEmpty() }.toSet()
-    }
-  val whitelistCount = structuredRules.count { !it.isBlacklist }
-  val blacklistCount = structuredRules.count { it.isBlacklist }
-
-  fun updateRulesList(newRules: List<StructuredFilterRule>) {
-    onUpdateConfig { current ->
-      current.copy(filterRulesText = FilterRuleEngine.serializeStructuredRules(newRules))
-    }
+  val lineCount = remember(config.filterRulesText) {
+    config.filterRulesText.lineSequence().count { it.trim().isNotEmpty() && !it.trim().startsWith("#") }
   }
 
   Column(
@@ -130,47 +115,19 @@ fun InteractiveFilterRuleBuilderPanel(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      if (showModuleNameField) {
+      Column(modifier = Modifier.weight(1f)) {
         Text(
-          text = stringResource(R.string.config_filter_rules),
+          text = if (showModuleNameField) stringResource(R.string.config_filter_rules) else "Filter Rules (filter.txt)",
           style = MaterialTheme.typography.titleMedium,
           fontWeight = FontWeight.SemiBold,
           color = MaterialTheme.colorScheme.primary,
-          modifier = Modifier.weight(1f),
         )
-      } else {
-        Column(modifier = Modifier.weight(1f)) {
-          Text(
-            text = "Filter Rule Builder",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary,
-          )
-          Text(
-            text = "$whitelistCount Whitelist • $blacklistCount Blacklist",
-            style = MaterialTheme.typography.labelSmall,
-            fontFamily = JetBrainsMonoFontFamily,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-      SingleChoiceSegmentedButtonRow {
-        SegmentedButton(
-          selected = subMode == FilterEditorSubMode.BUILDER,
-          onClick = { subMode = FilterEditorSubMode.BUILDER },
-          shape = SegmentedButtonDefaults.itemShape(0, 2),
-          modifier = Modifier.testTag("filter_mode_builder_btn"),
-        ) {
-          Text(stringResource(R.string.filter_mode_builder), style = MaterialTheme.typography.labelSmall)
-        }
-        SegmentedButton(
-          selected = subMode == FilterEditorSubMode.RAW,
-          onClick = { subMode = FilterEditorSubMode.RAW },
-          shape = SegmentedButtonDefaults.itemShape(1, 2),
-          modifier = Modifier.testTag("filter_mode_raw_btn"),
-        ) {
-          Text(stringResource(R.string.filter_mode_raw), style = MaterialTheme.typography.labelSmall)
-        }
+        Text(
+          text = "$lineCount rule line(s) • # comment • ! exclude",
+          style = MaterialTheme.typography.labelSmall,
+          fontFamily = JetBrainsMonoFontFamily,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
       }
     }
 
@@ -184,88 +141,6 @@ fun InteractiveFilterRuleBuilderPanel(
         textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
         modifier = Modifier.fillMaxWidth().testTag("input_module_name"),
       )
-    } else {
-      // Whitelist vs Blacklist Summary Cards
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        Surface(
-          shape = RoundedCornerShape(14.dp),
-          color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
-          modifier = Modifier.weight(1f).testTag("summary_card_whitelist"),
-        ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Icon(
-              imageVector = Icons.Rounded.CheckCircle,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.primary,
-              modifier = Modifier.size(16.dp),
-            )
-            Column {
-              Text(
-                text = "WHITELIST ($whitelistCount)",
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-              )
-              Text(
-                text = "Include in focus",
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-              )
-            }
-          }
-        }
-
-        val hasBlacklist = blacklistCount > 0
-        Surface(
-          shape = RoundedCornerShape(14.dp),
-          color =
-            if (hasBlacklist) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f)
-            else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f),
-          border =
-            BorderStroke(
-              1.dp,
-              if (hasBlacklist) MaterialTheme.colorScheme.error.copy(alpha = 0.35f)
-              else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
-            ),
-          modifier = Modifier.weight(1f).testTag("summary_card_blacklist"),
-        ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Icon(
-              imageVector = Icons.Rounded.Block,
-              contentDescription = null,
-              tint = if (hasBlacklist) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(16.dp),
-            )
-            Column {
-              Text(
-                text = "BLACKLIST ($blacklistCount)",
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = if (hasBlacklist) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
-              )
-              Text(
-                text = if (hasBlacklist) "Skip / exclude" else "None active",
-                style = MaterialTheme.typography.labelSmall,
-                fontSize = 10.sp,
-                color = if (hasBlacklist) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            }
-          }
-        }
-      }
     }
 
     if (filterMatchSummary != null || onToggleMatchingExplorerFilter != null) {
@@ -317,184 +192,18 @@ fun InteractiveFilterRuleBuilderPanel(
       }
     }
 
-    // One-Tap Presets: Lifecycle/Security Whitelists + Framework Blacklists
-    if (!showModuleNameField) {
-      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-          text = "Presets (Tap to toggle Whitelist / Blacklist rules):",
-          style = MaterialTheme.typography.labelSmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        LazyRow(
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          modifier = Modifier.fillMaxWidth().testTag("filter_presets_row"),
-        ) {
-          items(LIFECYCLE_SECURITY_PRESETS, key = { it.id }) { preset ->
-            val isActive = preset.ruleLine in activeRuleLines
-            FilterChip(
-              selected = isActive,
-              onClick = {
-                onUpdateConfig { current ->
-                  current.copy(
-                    filterRulesText = FilterRuleEngine.toggleRuleLine(current.filterRulesText, preset.ruleLine)
-                  )
-                }
-              },
-              leadingIcon = {
-                Icon(
-                  imageVector = if (isActive) Icons.Rounded.Check else Icons.Rounded.Add,
-                  contentDescription = null,
-                  modifier = Modifier.size(14.dp),
-                )
-              },
-              label = {
-                Text(
-                  text = preset.label,
-                  style = MaterialTheme.typography.labelSmall,
-                  fontFamily = JetBrainsMonoFontFamily,
-                )
-              },
-              modifier = Modifier.testTag("preset_lifecycle_${preset.id}"),
-            )
-          }
-          items(FRAMEWORK_BLACKLIST_PRESETS, key = { it.id }) { preset ->
-            val isActive = preset.ruleLine in activeRuleLines
-            FilterChip(
-              selected = isActive,
-              onClick = {
-                onUpdateConfig { current ->
-                  current.copy(
-                    filterRulesText = FilterRuleEngine.toggleRuleLine(current.filterRulesText, preset.ruleLine)
-                  )
-                }
-              },
-              leadingIcon = {
-                Icon(
-                  imageVector = if (isActive) Icons.Rounded.Check else Icons.Rounded.Block,
-                  contentDescription = null,
-                  modifier = Modifier.size(14.dp),
-                )
-              },
-              label = {
-                Text(
-                  text = preset.label,
-                  style = MaterialTheme.typography.labelSmall,
-                  fontFamily = JetBrainsMonoFontFamily,
-                )
-              },
-              modifier = Modifier.testTag("preset_framework_${preset.id}"),
-            )
-          }
-        }
-      }
-    }
-
-    if (subMode == FilterEditorSubMode.BUILDER) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        FilledTonalButton(
-          onClick = {
-            editingRule = null
-            showRuleDialog = true
-          },
-          shape = RoundedCornerShape(14.dp),
-          contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-          modifier = Modifier.minimumInteractiveComponentSize().testTag("filter_add_rule_btn"),
-        ) {
-          Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(4.dp))
-          Text(stringResource(R.string.filter_add_rule), style = MaterialTheme.typography.labelMedium)
-        }
-        OutlinedButton(
-          onClick = { onSyncSelectionToWildcardRules(false) },
-          enabled = selectedMethodCount > 0,
-          shape = RoundedCornerShape(14.dp),
-          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
-          modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("filter_sync_selection_btn"),
-        ) {
-          Icon(Icons.Rounded.AutoFixHigh, contentDescription = null, modifier = Modifier.size(15.dp))
-          Spacer(Modifier.width(4.dp))
-          Text(
-            text =
-              if (selectedMethodCount > 0) {
-                "${stringResource(R.string.filter_sync_selection)} ($selectedMethodCount)"
-              } else {
-                stringResource(R.string.filter_sync_selection)
-              },
-            style = MaterialTheme.typography.labelSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-      }
-
-      Surface(
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 120.dp, max = 230.dp))
-            .testTag("filter_rules_builder_list"),
-      ) {
-        if (structuredRules.isEmpty()) {
-          Box(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            contentAlignment = Alignment.Center,
-          ) {
-            Text(
-              text =
-                "No rules configured. Tap \"Add Rule\", tap a preset chip above, or use +W / !B in the Explorer tree.",
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-        } else {
-          LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-          ) {
-            itemsIndexed(structuredRules, key = { idx, r -> "${r.id}_$idx" }) { idx, rule ->
-              StructuredRuleItemCard(
-                rule = rule,
-                onToggleBlacklist = {
-                  val updated =
-                    structuredRules.toMutableList().also {
-                      it[idx] = rule.copy(isBlacklist = !rule.isBlacklist)
-                    }
-                  updateRulesList(updated)
-                },
-                onEdit = {
-                  editingRule = rule
-                  showRuleDialog = true
-                },
-                onDelete = {
-                  val updated = structuredRules.toMutableList().also { it.removeAt(idx) }
-                  updateRulesList(updated)
-                },
-              )
-            }
-          }
-        }
-      }
-    } else {
-      OutlinedTextField(
-        value = config.filterRulesText,
-        onValueChange = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
-        label = { Text(stringResource(R.string.config_filter_txt_label)) },
-        shape = RoundedCornerShape(14.dp),
-        textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 230.dp))
-            .testTag("input_filter_txt"),
-      )
-    }
+    OutlinedTextField(
+      value = config.filterRulesText,
+      onValueChange = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
+      label = { Text(stringResource(R.string.config_filter_txt_label)) },
+      shape = RoundedCornerShape(14.dp),
+      textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 260.dp))
+          .testTag("input_filter_txt"),
+    )
 
     Row(
       modifier = Modifier.fillMaxWidth(),
@@ -532,27 +241,6 @@ fun InteractiveFilterRuleBuilderPanel(
         )
       }
     }
-  }
-
-  if (showRuleDialog) {
-    FilterRuleDialogSheet(
-      initialRule = editingRule,
-      onDismiss = {
-        showRuleDialog = false
-        editingRule = null
-      },
-      onSave = { savedRule ->
-        val updated =
-          if (editingRule == null) {
-            structuredRules + savedRule
-          } else {
-            structuredRules.map { if (it.id == editingRule?.id) savedRule else it }
-          }
-        updateRulesList(updated)
-        showRuleDialog = false
-        editingRule = null
-      },
-    )
   }
 }
 

@@ -333,6 +333,26 @@ object FilterRuleEngine {
     existingLines.add(targetLine)
     return existingLines.joinToString("\n")
   }
+
+  fun mergeFilterLines(currentText: String, newLines: List<String>): String {
+    val existing =
+      currentText
+        .lineSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .toCollection(LinkedHashSet())
+    val hasOnlyWildcard = existing.size == 1 && existing.contains(".*")
+    if (hasOnlyWildcard && newLines.any { it.trim().isNotEmpty() }) {
+      existing.remove(".*")
+    }
+    for (line in newLines) {
+      val trimmed = line.trim()
+      if (trimmed.isNotEmpty()) {
+        existing.add(trimmed)
+      }
+    }
+    return existing.joinToString("\n")
+  }
 }
 
 /**
