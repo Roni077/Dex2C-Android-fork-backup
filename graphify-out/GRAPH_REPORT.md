@@ -1,16 +1,16 @@
 # Graph Report - Dex2c-Android  (2026-11-18)
 
 ## Corpus Check
-- 106 files · ~523,960 words
+- 106 files · ~524,267 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1230 nodes · 2196 edges · 83 communities (58 shown, 25 thin omitted)
+- 1230 nodes · 2196 edges · 84 communities (59 shown, 25 thin omitted)
 - Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 418 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `97ee6794`
+- Built from commit: `c9050091`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -82,6 +82,7 @@
 - [[_COMMUNITY_Community 69|Community 69]]
 - [[_COMMUNITY_Community 70|Community 70]]
 - [[_COMMUNITY_Community 71|Community 71]]
+- [[_COMMUNITY_Community 72|Community 72]]
 - [[_COMMUNITY_Community 74|Community 74]]
 - [[_COMMUNITY_Community 75|Community 75]]
 - [[_COMMUNITY_Community 76|Community 76]]
@@ -117,7 +118,7 @@
 - `Dex2cApp()` --calls--> `ClassesScreen()`  [INFERRED]
   app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt
 
-## Communities (83 total, 25 thin omitted)
+## Communities (84 total, 25 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.10
@@ -236,8 +237,8 @@ Cohesion: 0.27
 Nodes (6): BasicBlockInfo, BlockTerminatorKind, CfgEdge, CfgEdgeKind, ControlFlowGraphBuilder, MethodControlFlowGraph
 
 ### Community 33 - "Community 33"
-Cohesion: 0.19
-Nodes (14): BytecodeOverviewCard(), OverviewStatBox(), TopClassDefinitionRow(), BasicBlockCard(), CfgEdgePill(), DalvikCfgViewer(), PayloadDetailCard(), AnnotationBadgeRow() (+6 more)
+Cohesion: 0.24
+Nodes (11): BasicBlockCard(), CfgEdgePill(), DalvikCfgViewer(), PayloadDetailCard(), AnnotationBadgeRow(), DexMapListCard(), DexMethodMetaViewer(), HeaderKeyValueRow() (+3 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.16
@@ -294,6 +295,10 @@ Nodes (8): ApkPickerSheet(), formatApkSize(), InstalledAppRow(), InstalledAppsTa
 ### Community 71 - "Community 71"
 Cohesion: 0.20
 Nodes (9): autoClosingPairs, brackets, comments, lineComment, folding, markers, end, start (+1 more)
+
+### Community 72 - "Community 72"
+Cohesion: 0.83
+Nodes (3): BytecodeOverviewCard(), OverviewStatBox(), TopClassDefinitionRow()
 
 ### Community 74 - "Community 74"
 Cohesion: 0.33

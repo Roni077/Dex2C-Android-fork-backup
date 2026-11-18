@@ -123,6 +123,27 @@ object Dex2cWorkflowGenerator {
       |                  with open(android_mk, "w", encoding="utf-8") as f:
       |                      f.write(mk_src)
       |
+      |          # Patch dex2c/writer.py to inject safe intptr_t casts into jvalue args[] union initializers
+      |          writer_py = "/tmp/d2c/dex2c/writer.py"
+      |          if os.path.exists(writer_py):
+      |              with open(writer_py, "r", encoding="utf-8") as f:
+      |                  w_src = f.read()
+      |              w_patches = [
+      |                  ("vars.append('{.l = %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.l = (jobject)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.z = (jboolean) %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.z = (jboolean)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.b = (jbyte) %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.b = (jbyte)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.c = (jchar) %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.c = (jchar)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.s = (jshort) %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.s = (jshort)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.i = %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.i = (jint)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.j = (jlong) %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.j = (jlong)(intptr_t)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.f = %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.f = (jfloat)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |                  ("vars.append('{.d = %s}' % (self.get_variable_or_const(arg)))", "vars.append('{.d = (jdouble)(%s)}' % (self.get_variable_or_const(arg)))"),
+      |              ]
+      |              for orig, repl in w_patches:
+      |                  w_src = w_src.replace(orig, repl)
+      |              with open(writer_py, "w", encoding="utf-8") as f:
+      |                  f.write(w_src)
+      |
       |          # Inject pre-ndk-build C++ register-type sanitizer into /tmp/d2c/dcc.py
       |          import textwrap
       |          dcc_py = "/tmp/d2c/dcc.py"
@@ -137,23 +158,45 @@ object Dex2cWorkflowGenerator {
       |                          return
       |                      decl_re = re.compile(r"\\b(jobject|jstring|jclass|jthrowable|jarray|\\w+Array)\\s+(v\\d+)\\b")
       |                      assign_re = re.compile(r"^(\\s*)(v\\d+)\\s*=\\s*(-?(?:0x[0-9a-fA-F]+|\\d+))[uUlL]*\\s*;(\\s*)$", re.M)
+      |                      arg_re = re.compile(r"(\\{\\s*\\.([a-z])\\s*=\\s*)([^}]+)(\\s*\\})")
+      |                      cast_map = {
+      |                          "l": "(jobject)(intptr_t)",
+      |                          "i": "(jint)(intptr_t)",
+      |                          "z": "(jboolean)(intptr_t)",
+      |                          "b": "(jbyte)(intptr_t)",
+      |                          "c": "(jchar)(intptr_t)",
+      |                          "s": "(jshort)(intptr_t)",
+      |                          "j": "(jlong)(intptr_t)",
+      |                          "f": "(jfloat)",
+      |                          "d": "(jdouble)",
+      |                      }
+      |                      def _fix_args_line(m):
+      |                          def _fix_elem(em):
+      |                              pfx, fld, val, sfx = em.group(1), em.group(2), em.group(3).strip(), em.group(4)
+      |                              if "(intptr_t)" in val or fld not in cast_map:
+      |                                  return em.group(0)
+      |                              clean_val = re.sub(r"^\\((?:jboolean|jbyte|jchar|jshort|jint|jlong|jfloat|jdouble|jobject)\\)\\s*", "", val)
+      |                              return f"{pfx}{cast_map[fld]}({clean_val}){sfx}"
+      |                          return arg_re.sub(_fix_elem, m.group(0))
+      |
       |                      for cpp_path in glob.glob(os.path.join(nc_dir, "*.cpp")):
       |                          try:
       |                              with open(cpp_path, "r", encoding="utf-8", errors="ignore") as cf:
       |                                  code = cf.read()
+      |                              orig = code
       |                              obj_regs = {m.group(2): m.group(1) for m in decl_re.finditer(code)}
-      |                              if not obj_regs:
-      |                                  continue
-      |                              def _fix_assign(m):
-      |                                  indent, reg, lit, tail = m.group(1), m.group(2), m.group(3), m.group(4)
-      |                                  if reg in obj_regs and lit not in ("0", "0x0"):
-      |                                      jtype = obj_regs[reg]
-      |                                      return f"{indent}{reg} = reinterpret_cast<{jtype}>(static_cast<intptr_t>({lit}));{tail}"
-      |                                  return m.group(0)
-      |                              patched = assign_re.sub(_fix_assign, code)
-      |                              if patched != code:
+      |                              if obj_regs:
+      |                                  def _fix_assign(m):
+      |                                      indent, reg, lit, tail = m.group(1), m.group(2), m.group(3), m.group(4)
+      |                                      if reg in obj_regs and lit not in ("0", "0x0"):
+      |                                          jtype = obj_regs[reg]
+      |                                          return f"{indent}{reg} = reinterpret_cast<{jtype}>(static_cast<intptr_t>({lit}));{tail}"
+      |                                      return m.group(0)
+      |                                  code = assign_re.sub(_fix_assign, code)
+      |                              code = re.sub(r"jvalue\\s+args\\[\\]\\s*=\\s*\\{[^\\;]*\\}\\s*;", _fix_args_line, code)
+      |                              if code != orig:
       |                                  with open(cpp_path, "w", encoding="utf-8") as cf:
-      |                                      cf.write(patched)
+      |                                      cf.write(code)
       |                          except Exception as exc:
       |                              print("Warning: sanitizer skipped", cpp_path, exc)
       |              ''').strip()
@@ -164,8 +207,10 @@ object Dex2cWorkflowGenerator {
       |                      dcc_src,
       |                      flags=re.M,
       |                  )
-      |                  with open(dcc_py, "w", encoding="utf-8") as f:
-      |                      f.write(dcc_src)
+      |              if 'print(f"{str(e)}")' in dcc_src and "sys.exit(1)" not in dcc_src:
+      |                  dcc_src = dcc_src.replace('print(f"{str(e)}")', 'print(f"{str(e)}"); import sys; sys.exit(1)')
+      |              with open(dcc_py, "w", encoding="utf-8") as f:
+      |                  f.write(dcc_src)
       |          PY
       |          cp filter.txt /tmp/d2c/filter.txt
       |
@@ -211,9 +256,12 @@ object Dex2cWorkflowGenerator {
       |          for ATTEMPT in ${'$'}(seq 1 ${'$'}MAX_ATTEMPTS); do
       |            echo "=== Kirlif/d2c compilation attempt ${'$'}ATTEMPT/${'$'}MAX_ATTEMPTS ==="
       |            rm -f /tmp/work/unsigned_dex2c.apk
-      |            if python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log; then
+      |            python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log
+      |            if [ -f /tmp/work/unsigned_dex2c.apk ]; then
+      |              echo "Kirlif/d2c successfully compiled unsigned_dex2c.apk on attempt ${'$'}ATTEMPT"
       |              break
       |            fi
+      |            echo "Attempt ${'$'}ATTEMPT failed or unsigned_dex2c.apk not found"
       |            if [ "${'$'}ATTEMPT" -lt "${'$'}MAX_ATTEMPTS" ]; then
       |              python3 - <<'PY' || break
       |          import re, sys

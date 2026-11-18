@@ -8431,7 +8431,7 @@
       "label": ".filterRuleEngine_excludesCoroutinesSyntheticsAndThirdPartyAndScopesSelectedMethods()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L94",
+      "source_location": "L99",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_filterruleengine_excludescoroutinessyntheticsandthirdpartyandscopesselectedmethods",
       "community": 46,
       "norm_label": ".filterruleengine_excludescoroutinessyntheticsandthirdpartyandscopesselectedmethods()"
@@ -8440,7 +8440,7 @@
       "label": ".extractApkFromArtifactZip_extractsSignedApkOrFallsBackToZip()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L148",
+      "source_location": "L153",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_extractapkfromartifactzip_extractssignedapkorfallsbacktozip",
       "community": 46,
       "norm_label": ".extractapkfromartifactzip_extractssignedapkorfallsbacktozip()"
@@ -8449,7 +8449,7 @@
       "label": ".jsonMini_roundTripsNestedObjectsAndArrays()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L182",
+      "source_location": "L187",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_jsonmini_roundtripsnestedobjectsandarrays",
       "community": 46,
       "norm_label": ".jsonmini_roundtripsnestedobjectsandarrays()"
@@ -8458,7 +8458,7 @@
       "label": ".cloudTimeUtil_parsesIsoUtcAndFormatsDurationAndStepProgress()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L207",
+      "source_location": "L212",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_cloudtimeutil_parsesisoutcandformatsdurationandstepprogress",
       "community": 46,
       "norm_label": ".cloudtimeutil_parsesisoutcandformatsdurationandstepprogress()"
@@ -8467,7 +8467,7 @@
       "label": ".cloudBuildNotifier_formatsSuccessAndFailureMessages()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L226",
+      "source_location": "L231",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_cloudbuildnotifier_formatssuccessandfailuremessages",
       "community": 46,
       "norm_label": ".cloudbuildnotifier_formatssuccessandfailuremessages()"
@@ -8476,7 +8476,7 @@
       "label": ".appSettings_defaultsAndThemeModesAreConsistent()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L253",
+      "source_location": "L258",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_appsettings_defaultsandthememodesareconsistent",
       "community": 46,
       "norm_label": ".appsettings_defaultsandthememodesareconsistent()"
@@ -8485,7 +8485,7 @@
       "label": ".m3TonalColorEngine_generatesAccessibleLightDarkAndTrueBlackAmoledPalettes()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L270",
+      "source_location": "L275",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_m3tonalcolorengine_generatesaccessiblelightdarkandtrueblackamoledpalettes",
       "community": 46,
       "norm_label": ".m3tonalcolorengine_generatesaccessiblelightdarkandtrueblackamoledpalettes()"
@@ -8494,7 +8494,7 @@
       "label": ".cloudSettings_usesBuiltInGhCliClientIdByDefaultAndSupportsCustomOverride()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L289",
+      "source_location": "L294",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_cloudsettings_usesbuiltinghcliclientidbydefaultandsupportscustomoverride",
       "community": 46,
       "norm_label": ".cloudsettings_usesbuiltinghcliclientidbydefaultandsupportscustomoverride()"
@@ -8503,7 +8503,7 @@
       "label": ".deviceAuthState_formats15MinuteExpiryCountdownAccurately()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L301",
+      "source_location": "L306",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_deviceauthstate_formats15minuteexpirycountdownaccurately",
       "community": 46,
       "norm_label": ".deviceauthstate_formats15minuteexpirycountdownaccurately()"
@@ -8512,7 +8512,7 @@
       "label": ".networkResilience_parsesDohARecordsAndClassifiesTransientErrors()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L320",
+      "source_location": "L325",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_networkresilience_parsesdoharecordsandclassifiestransienterrors",
       "community": 46,
       "norm_label": ".networkresilience_parsesdoharecordsandclassifiestransienterrors()"
@@ -8521,7 +8521,7 @@
       "label": ".cloudBuildNotifier_buildsLiveStageNotificationsForUploadBuildAndDownload()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L349",
+      "source_location": "L354",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_cloudbuildnotifier_buildslivestagenotificationsforuploadbuildanddownload",
       "community": 46,
       "norm_label": ".cloudbuildnotifier_buildslivestagenotificationsforuploadbuildanddownload()"
@@ -8530,7 +8530,7 @@
       "label": ".gitHubApiClient_streamsUploadAndDownloadByteProgress()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/GitHubCloudWorkflowTest.kt",
-      "source_location": "L394",
+      "source_location": "L399",
       "id": "studio_githubcloudworkflowtest_githubcloudworkflowtest_githubapiclient_streamsuploadanddownloadbyteprogress",
       "community": 46,
       "norm_label": ".githubapiclient_streamsuploadanddownloadbyteprogress()"
@@ -10790,7 +10790,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L1",
-      "community": 33,
+      "community": 72,
       "norm_label": "bytecodeoverviewcard.kt",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_bytecodeoverviewcard_kt"
     },
@@ -10799,7 +10799,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L42",
-      "community": 33,
+      "community": 72,
       "norm_label": "bytecodeoverviewcard()",
       "id": "components_bytecodeoverviewcard_bytecodeoverviewcard"
     },
@@ -10808,7 +10808,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L259",
-      "community": 33,
+      "community": 72,
       "norm_label": "overviewstatbox()",
       "id": "components_bytecodeoverviewcard_overviewstatbox"
     },
@@ -10817,7 +10817,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L307",
-      "community": 33,
+      "community": 72,
       "norm_label": "topclassdefinitionrow()",
       "id": "components_bytecodeoverviewcard_topclassdefinitionrow"
     },
@@ -11731,9 +11731,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L966",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_mainactivity_kt",
-      "target": "studio_mainactivity_dex2cfloatingbottombaritem",
-      "confidence_score": 1.0
+      "target": "studio_mainactivity_dex2cfloatingbottombaritem"
     },
     {
       "relation": "contains",
@@ -11980,9 +11980,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L954",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "studio_mainactivity_dex2cfloatingbottombar",
-      "target": "studio_mainactivity_dex2cfloatingbottombaritem",
-      "confidence_score": 1.0
+      "target": "studio_mainactivity_dex2cfloatingbottombaritem"
     },
     {
       "relation": "calls",
@@ -26136,9 +26136,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ExpressiveComponents.kt",
       "source_location": "L119",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_expressivecomponents_expressivemotion",
-      "target": "components_expressivecomponents_expressivemotion_toplevelfadethroughenter",
-      "confidence_score": 1.0
+      "target": "components_expressivecomponents_expressivemotion_toplevelfadethroughenter"
     },
     {
       "relation": "method",
@@ -26146,9 +26146,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ExpressiveComponents.kt",
       "source_location": "L127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_expressivecomponents_expressivemotion",
-      "target": "components_expressivecomponents_expressivemotion_toplevelfadethroughexit",
-      "confidence_score": 1.0
+      "target": "components_expressivecomponents_expressivemotion_toplevelfadethroughexit"
     },
     {
       "relation": "calls",
@@ -34112,5 +34112,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "97ee67943812c87ccab36347eb3ead90c5ba842a"
+  "built_at_commit": "c90500912f194e3e130a091e36f35c3b962acb92"
 }
