@@ -358,13 +358,16 @@ fun CompactClassRow(
             else Color.Transparent,
           shape = RoundedCornerShape(8.dp),
         )
-        .clickable {
-          if (showSelectionCheckboxes) {
-            onToggleClassSelect()
-          } else {
-            onOpenSmali()
-          }
-        }
+        .combinedClickable(
+          onClick = {
+            if (showSelectionCheckboxes) {
+              onToggleClassSelect()
+            } else {
+              onOpenSmali()
+            }
+          },
+          onLongClick = onToggleClassSelect,
+        )
         .padding(start = startPad, end = 10.dp, top = 3.dp, bottom = 3.dp)
         .testTag(classRowTag),
     verticalAlignment = Alignment.CenterVertically,

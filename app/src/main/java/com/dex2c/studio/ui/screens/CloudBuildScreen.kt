@@ -771,14 +771,16 @@ private fun SetupRepoCard(
       }
 
       is RepoSetupState.Error -> {
-        Text(
-          text = repoSetupState.message,
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.error,
-          maxLines = 2,
-          overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.height(6.dp))
+        if (!cloudSettings.isAuthenticated || !repoSetupState.message.contains("Sign in", ignoreCase = true)) {
+          Text(
+            text = repoSetupState.message,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+          )
+          Spacer(Modifier.height(6.dp))
+        }
         Button(
           onClick = onInitializeRepoAndWorkflow,
           enabled = cloudSettings.isAuthenticated,

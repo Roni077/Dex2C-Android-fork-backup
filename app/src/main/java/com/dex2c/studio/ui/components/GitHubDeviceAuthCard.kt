@@ -478,7 +478,7 @@ private fun DeviceAuthStateBody(
               ) {
                 Column(modifier = Modifier.weight(1f)) {
                   Text(
-                    text = "Signed in via Device Flow as @${state.username}",
+                    text = "Signed in as @${state.username}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                   )
@@ -612,6 +612,9 @@ private fun InlineRepoSetupStatusRow(
     }
 
     is RepoSetupState.Error -> {
+      if (repoSetupState.message.contains("Sign in", ignoreCase = true)) {
+        return
+      }
       Surface(
         modifier = Modifier.fillMaxWidth().testTag("${tagPrefix}_repo_init_error"),
         shape = RoundedCornerShape(14.dp),

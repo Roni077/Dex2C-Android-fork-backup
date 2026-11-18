@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1188 nodes, 2125 edges, 79 communities. Commit: 0290d13</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1209 nodes, 2146 edges, 87 communities. Commit: 5ec052d</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -69,6 +69,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#analysis-clustering">Analysis &amp; Clustering</a>
     <a href="#outputs-docs">Outputs &amp; Docs</a>
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
+    <a href="#community-3">Community 3</a>
     <a href="#community-36">Community 36</a>
     <a href="#community-42">Community 42</a>
     <a href="#community-61">Community 61</a>
@@ -92,6 +93,8 @@ flowchart LR
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>23 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
+    COMMUNITY_3_D8DFCEA7("Community 3<br/><small>21 nodes</small>")
+    class COMMUNITY_3_D8DFCEA7 module;
     COMMUNITY_36_F6473446("Community 36<br/><small>2 nodes</small>")
     class COMMUNITY_36_F6473446 module;
     COMMUNITY_42_BA46CB2A("Community 42<br/><small>2 nodes</small>")
@@ -104,7 +107,8 @@ flowchart LR
     BUILD_GRAPH_321CBB04 -.-> ANALYSIS_CLUSTERING_C79796DA
     ANALYSIS_CLUSTERING_C79796DA -.-> OUTPUTS_DOCS_ED82387C
     OUTPUTS_DOCS_ED82387C -.-> CLI_SKILLS_9964CBB8
-    CLI_SKILLS_9964CBB8 -.-> COMMUNITY_36_F6473446
+    CLI_SKILLS_9964CBB8 -.-> COMMUNITY_3_D8DFCEA7
+    COMMUNITY_3_D8DFCEA7 -.-> COMMUNITY_36_F6473446
     COMMUNITY_36_F6473446 -.-> COMMUNITY_42_BA46CB2A
     COMMUNITY_42_BA46CB2A -.-> COMMUNITY_61_E14267C3
     COMMUNITY_61_E14267C3 -.-> COMMUNITY_63_C6650F45
@@ -124,20 +128,20 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>1025</td><td><code>4, 19, 1, 0, 20, 5, 21, 13, 8, 7, 6, 25, 11, 23, 18, 15, 33, 46, 14, 27, 26, 29, 3, 30, 34, 16, 2, 28, 37, 66, 17, 24, 32, 50, 70, 71, 38, 39, 40, 41, 77, 79, 47, 64, 43, 44, 45, 65, 82, 75, 83, 84, 86, 35, 67, 48, 51, 52, 54, 55, 56, 57, 58, 53</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>65</td><td><code>22, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>1025</td><td><code>4, 19, 1, 0, 18, 20, 5, 21, 13, 7, 50, 11, 8, 15, 27, 14, 23, 2, 24, 25, 29, 30, 33, 59, 6, 16, 26, 46, 72, 28, 37, 17, 32, 73, 34, 70, 71, 38, 39, 40, 41, 74, 77, 79, 47, 64, 43, 44, 45, 65, 82, 66, 75, 76, 83, 84, 35, 67, 48, 51, 52, 81, 85, 54, 55, 56, 57, 58, 80, 86, 53</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>65</td><td><code>22, 10</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Community 42</td><td>2</td><td><code>42</code></td></tr><tr><td>Community 61</td><td>1</td><td><code>61</code></td></tr><tr><td>Community 63</td><td>1</td><td><code>63</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Community 36 -&gt; Community 42</div>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Graph Build -&gt; Analysis &amp; Clustering -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Community 3 -&gt; Community 36</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1188 nodes · 2125 edges · 79 communities (50 shown, 29 thin omitted)</li>
-      <li>Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 396 edges (avg confidence: 0.8)</li>
+      <li>1209 nodes · 2146 edges · 87 communities (57 shown, 30 thin omitted)</li>
+      <li>Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 397 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Dex2cViewModel` - 114 edges</li>
       <li>2. `TagPill()` - 40 edges</li>
@@ -148,12 +152,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 1025 nodes and 1975 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around app, com, dex2c, studio, mostly in studio/ui/Dex2cViewModel.kt, studio/dex/DexModels.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 1025 nodes and 1976 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (1025 nodes, 1975 edges)
+    %% Section: Extraction Pipeline (1025 nodes, 1976 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -295,22 +299,14 @@ flowchart LR
 </tr>
 <tr>
   <td>9</td>
-  <td><code>ClassViewerTabBar.kt</code><br><small style="color:var(--muted)">ui/components/ClassViewerTabBar.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
+  <td><code>DexStringsExplorerTab()</code><br><small style="color:var(--muted)">ui/components/DexExplorerSubTabs.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ClassViewerTabBar.kt node in ui/components/ClassViewerTabBar.kt.</td>
+  <td><code>ClassesScreen()</code><br><small style="color:var(--muted)">ui/screens/ClassesScreen.kt</small><br><code>testStringsExplorerTabDisabledWhenFlagOff()</code><br><small style="color:var(--muted)">studio/ui/SafetyInterlockRobolectricTest.kt</small><br><code>testStringsExplorerTabEnabledWhenFlagOn()</code><br><small style="color:var(--muted)">studio/ui/SafetyInterlockRobolectricTest.kt</small></td>
+  <td>DexStringsExplorerTab() node in ui/components/DexExplorerSubTabs.kt.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>ClassViewerTabBar()</code><br><small style="color:var(--muted)">ui/components/ClassViewerTabBar.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>SmaliClassScreen()</code><br><small style="color:var(--muted)">ui/screens/SmaliClassScreen.kt</small><br><code>testClassViewerTabBarRendersAndSelectsTabs()</code><br><small style="color:var(--muted)">studio/ui/ClassSelectionTabsRobolectricTest.kt</small></td>
-  <td>ClassViewerTabBar() node in ui/components/ClassViewerTabBar.kt.</td>
-</tr>
-<tr>
-  <td>11</td>
   <td><code>SmaliCodeViewer.kt</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -318,7 +314,7 @@ flowchart LR
   <td>SmaliCodeViewer.kt node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>11</td>
   <td><code>SmaliSearchCategory</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -326,7 +322,7 @@ flowchart LR
   <td>SmaliSearchCategory node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>12</td>
   <td><code>SmaliSearchOptions</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -334,7 +330,7 @@ flowchart LR
   <td>SmaliSearchOptions node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>13</td>
   <td><code>SmaliSearchMatch</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -342,7 +338,7 @@ flowchart LR
   <td>SmaliSearchMatch node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>14</td>
   <td><code>SmaliSearchResult</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -350,7 +346,7 @@ flowchart LR
   <td>SmaliSearchResult node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>15</td>
   <td><code>SmaliTokenKind</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -358,7 +354,7 @@ flowchart LR
   <td>SmaliTokenKind node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>16</td>
   <td><code>SmaliInteractiveToken</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -366,7 +362,7 @@ flowchart LR
   <td>SmaliInteractiveToken node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>17</td>
   <td><code>SmaliSyntaxCodeViewer()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -374,7 +370,7 @@ flowchart LR
   <td>SmaliSyntaxCodeViewer() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>18</td>
   <td><code>findSmaliSearchMatches()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>replaceMatches()</code><br><small style="color:var(--muted)">studio/dex/SmaliEditorEngine.kt</small><br><code>SmaliSearchMatch</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small><br><code>SmaliSearchResult</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -382,7 +378,7 @@ flowchart LR
   <td>findSmaliSearchMatches() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>19</td>
   <td><code>findEnclosingMethodName()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>findSmaliSearchMatches()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -390,7 +386,7 @@ flowchart LR
   <td>findEnclosingMethodName() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>20</td>
   <td><code>findLineMatchRanges()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>findSmaliSearchMatches()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -398,7 +394,7 @@ flowchart LR
   <td>findLineMatchRanges() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>21</td>
   <td><code>findCategoryTokenRanges()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>findLineMatchRanges()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -406,7 +402,7 @@ flowchart LR
   <td>findCategoryTokenRanges() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>22</td>
   <td><code>extractLineInteractiveTokens()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>SmaliInteractiveToken</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -414,7 +410,7 @@ flowchart LR
   <td>extractLineInteractiveTokens() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>23</td>
   <td><code>extractQuickMethodTokens()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>SmaliInteractiveToken</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -422,7 +418,7 @@ flowchart LR
   <td>extractQuickMethodTokens() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>24</td>
   <td><code>highlightSmaliLine()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -430,7 +426,7 @@ flowchart LR
   <td>highlightSmaliLine() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>25</td>
   <td><code>highlightSmaliSyntaxBase()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>highlightSmaliLine()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small><br><code>SmaliSyntaxCodeViewer()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -438,7 +434,7 @@ flowchart LR
   <td>highlightSmaliSyntaxBase() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>26</td>
   <td><code>overlaySmaliSearchHighlights()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>highlightSmaliLine()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small><br><code>SmaliSyntaxCodeViewer()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -446,7 +442,7 @@ flowchart LR
   <td>overlaySmaliSearchHighlights() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>27</td>
   <td><code>resolveOpcodeStyle()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>highlightSmaliSyntaxBase()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -454,7 +450,7 @@ flowchart LR
   <td>resolveOpcodeStyle() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>28</td>
   <td><code>applySearchHighlights()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>overlaySmaliSearchHighlights()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
@@ -462,12 +458,20 @@ flowchart LR
   <td>applySearchHighlights() node in ui/components/SmaliCodeViewer.kt.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>findSmaliCommentStart()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>extractLineInteractiveTokens()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small><br><code>extractQuickMethodTokens()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small><br><code>findCategoryTokenRanges()</code><br><small style="color:var(--muted)">ui/components/SmaliCodeViewer.kt</small><br>+1 more</td>
   <td>No direct outbound edge</td>
   <td>findSmaliCommentStart() node in ui/components/SmaliCodeViewer.kt.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>SmaliLabelJumpSheet.kt</code><br><small style="color:var(--muted)">ui/components/SmaliLabelJumpSheet.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SmaliLabelJumpSheet.kt node in ui/components/SmaliLabelJumpSheet.kt.</td>
 </tr>
 </table>
 
@@ -1651,8 +1655,276 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Community 36 ====== -->
-<h2 id="community-36">7. Community 36</h2>
+<!-- ====== 7. Community 3 ====== -->
+<h2 id="community-3">7. Community 3</h2>
+<p>Community 3 groups implementation around precision, enginemd, docs, mode, mostly in docs/precision-engine.md. This section covers 21 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 3 (21 nodes, 20 edges)
+    docs_precision_engine_precision_engine_mandatory_bb231031("Precision Engine — Mandatory Mode<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_4_verification_layer_42a82bd8("4. Verification Layer<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_md_7cccec8a("precision-engine.md")
+    docs_precision_engine_golden_rule_3906d9c8("Golden Rule<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_core_rule_f6a346d5("Core Rule<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_0_anti_pattern_performativ_d3b6afd5("0. Anti-Pattern: Performative Reasoning<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_1_problem_extraction_138ef29e("1. Problem Extraction<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_10_final_answer_protocol_9e0d0b2f("10. Final Answer Protocol<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_2_assumption_firewall_1a27f2fe("2. Assumption Firewall<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_3_solution_generation_38e62591("3. Solution Generation<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_5_adversarial_attack_dc8b1425("5. Adversarial Attack<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_6_confidence_calibration_5ddc9ca7("6. Confidence Calibration<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_7_tool_and_web_discipline_c9db6660("7. Tool and Web Discipline<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_8_decision_mode_85b45d39("8. Decision Mode<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_9_error_budget_e04329d5("9. Error Budget<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_factual_questions_edd637ab("Factual questions<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_mathematics_f269d4a1("Mathematics<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_programming_f5f21972("Programming<br/><small>docs/precision-engine.md</small>")
+    docs_precision_engine_md_7cccec8a -->|contains| docs_precision_engine_precision_engine_mandatory_bb231031
+    docs_precision_engine_md_7cccec8a -->|contains| docs_precision_engine_golden_rule_3906d9c8
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_core_rule_f6a346d5
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_0_anti_pattern_performativ_d3b6afd5
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_1_problem_extraction_138ef29e
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_2_assumption_firewall_1a27f2fe
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_3_solution_generation_38e62591
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_4_verification_layer_42a82bd8
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_5_adversarial_attack_dc8b1425
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_6_confidence_calibration_5ddc9ca7
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_7_tool_and_web_discipline_c9db6660
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_8_decision_mode_85b45d39
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_9_error_budget_e04329d5
+    docs_precision_engine_precision_engine_mandatory_bb231031 -->|contains| docs_precision_engine_10_final_answer_protocol_9e0d0b2f
+    docs_precision_engine_4_verification_layer_42a82bd8 -->|contains| docs_precision_engine_mathematics_f269d4a1
+    docs_precision_engine_4_verification_layer_42a82bd8 -->|contains| docs_precision_engine_programming_f5f21972
+    docs_precision_engine_4_verification_layer_42a82bd8 -->|contains| docs_precision_engine_factual_questions_edd637ab
+    %% Omitted for readability: 3 nodes, 0 edges
+    class docs_precision_engine_precision_engine_mandatory_bb231031 concept;
+    class docs_precision_engine_4_verification_layer_42a82bd8 concept;
+    class docs_precision_engine_md_7cccec8a concept;
+    class docs_precision_engine_golden_rule_3906d9c8 concept;
+    class docs_precision_engine_core_rule_f6a346d5 concept;
+    class docs_precision_engine_0_anti_pattern_performativ_d3b6afd5 concept;
+    class docs_precision_engine_1_problem_extraction_138ef29e concept;
+    class docs_precision_engine_10_final_answer_protocol_9e0d0b2f concept;
+    class docs_precision_engine_2_assumption_firewall_1a27f2fe concept;
+    class docs_precision_engine_3_solution_generation_38e62591 concept;
+    class docs_precision_engine_5_adversarial_attack_dc8b1425 concept;
+    class docs_precision_engine_6_confidence_calibration_5ddc9ca7 concept;
+    class docs_precision_engine_7_tool_and_web_discipline_c9db6660 concept;
+    class docs_precision_engine_8_decision_mode_85b45d39 concept;
+    class docs_precision_engine_9_error_budget_e04329d5 concept;
+    class docs_precision_engine_factual_questions_edd637ab concept;
+    class docs_precision_engine_mathematics_f269d4a1 concept;
+    class docs_precision_engine_programming_f5f21972 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>precision-engine.md</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing precision-engine.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Precision Engine — Mandatory Mode</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Precision Engine — Mandatory Mode.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Core Rule</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Core Rule.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>0. Anti-Pattern: Performative Reasoning</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 0. Anti-Pattern: Performative Reasoning.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>1. Problem Extraction</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Problem Extraction.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>2. Assumption Firewall</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Assumption Firewall.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>3. Solution Generation</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Solution Generation.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>4. Verification Layer</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Verification Layer.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Mathematics</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Mathematics.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Programming</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Programming.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Factual questions</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Factual questions.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Recommendations</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Recommendations.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Writing</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Writing.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>5. Adversarial Attack</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. Adversarial Attack.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>6. Confidence Calibration</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 6. Confidence Calibration.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>7. Tool and Web Discipline</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7. Tool and Web Discipline.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>8. Decision Mode</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8. Decision Mode.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>9. Error Budget</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 9. Error Budget.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>10. Final Answer Protocol</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 10. Final Answer Protocol.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Worked Example</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Worked Example.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Golden Rule</code><br><small style="color:var(--muted)">docs/precision-engine.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Golden Rule.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/precision-engine.md</code></td><td>21 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x20. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Community 36 ====== -->
+<h2 id="community-36">8. Community 36</h2>
 <p>Community 36 groups implementation around graphifymd, agents, rules, graphify, mostly in .agents/rules/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1718,8 +1990,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 8. Community 42 ====== -->
-<h2 id="community-42">8. Community 42</h2>
+<!-- ====== 9. Community 42 ====== -->
+<h2 id="community-42">9. Community 42</h2>
 <p>Community 42 groups implementation around graphifymd, agents, workflows, workflow, mostly in .agents/workflows/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1785,8 +2057,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. Community 61 ====== -->
-<h2 id="community-61">9. Community 61</h2>
+<!-- ====== 10. Community 61 ====== -->
+<h2 id="community-61">10. Community 61</h2>
 <p>Community 61 groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1841,8 +2113,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. Community 63 ====== -->
-<h2 id="community-63">10. Community 63</h2>
+<!-- ====== 11. Community 63 ====== -->
+<h2 id="community-63">11. Community 63</h2>
 <p>Community 63 groups implementation around typekt, app, com, dex2c, mostly in ui/theme/Type.kt. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1903,18 +2175,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1188</td></tr>
-      <tr><td>Edges</td><td>2125</td></tr>
+      <tr><td>Nodes</td><td>1209</td></tr>
+      <tr><td>Edges</td><td>2146</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>79</td></tr>
-      <tr><td>Documented Sections</td><td>9</td></tr>
+      <tr><td>Communities</td><td>87</td></tr>
+      <tr><td>Documented Sections</td><td>10</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1729</td></tr>
-      <tr><td>INFERRED</td><td>396</td></tr>
+      <tr><td>EXTRACTED</td><td>1749</td></tr>
+      <tr><td>INFERRED</td><td>397</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -1922,7 +2194,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-17 09:09 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-18 06:02 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

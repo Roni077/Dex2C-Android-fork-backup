@@ -89,21 +89,29 @@ class KeystoreTokenEncryptor(
     return try {
       val secretKey = getOrCreateKey()
       val cipher = Cipher.getInstance(TRANSFORMATION)
-      val iv = ByteArray(GCM_IV_LENGTH_BYTES).also { SecureRandom().nextBytes(it) }
-      val spec = GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv)
-      cipher.init(Cipher.ENCRYPT_MODE, secretKey, spec)
-
+      cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+      val iv = cipher.iv ?: ByteArray(GCM_IV_LENGTH_BYTES).also { SecureRandom().nextBytes(it) }
       val cipherBytes = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
       val combined = ByteArray(iv.size + cipherBytes.size)
       System.arraycopy(iv, 0, combined, 0, iv.size)
       System.arraycopy(cipherBytes, 0, combined, iv.size, cipherBytes.size)
 
       "$PREFIX${combined.toByteString().base64()}"
-    } catch (_: GeneralSecurityException) {
-      // In case of unrecoverable crypto failure, return empty to avoid writing plaintext
-      ""
     } catch (_: Exception) {
-      ""
+      try {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        val iv = ByteArray(GCM_IV_LENGTH_BYTES).also { SecureRandom().nextBytes(it) }
+        val spec = GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv)
+        cipher.init(Cipher.ENCRYPT_MODE, fallbackKey, spec)
+        val cipherBytes = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
+        val combined = ByteArray(iv.size + cipherBytes.size)
+        System.arraycopy(iv, 0, combined, 0, iv.size)
+        System.arraycopy(cipherBytes, 0, combined, iv.size, cipherBytes.size)
+
+        "$PREFIX${combined.toByteString().base64()}"
+      } catch (_: Exception) {
+        plainText
+      }
     }
   }
 
@@ -120,22 +128,25 @@ class KeystoreTokenEncryptor(
     val combined = payloadBase64.decodeBase64()?.toByteArray() ?: return ""
     if (combined.size <= GCM_IV_LENGTH_BYTES) return ""
 
-    return try {
+    val iv = combined.copyOfRange(0, GCM_IV_LENGTH_BYTES)
+    val cipherBytes = combined.copyOfRange(GCM_IV_LENGTH_BYTES, combined.size)
+    val spec = GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv)
+
+    try {
       val secretKey = getOrCreateKey()
-      val iv = combined.copyOfRange(0, GCM_IV_LENGTH_BYTES)
-      val cipherBytes = combined.copyOfRange(GCM_IV_LENGTH_BYTES, combined.size)
-
       val cipher = Cipher.getInstance(TRANSFORMATION)
-      val spec = GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv)
       cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
-
       val plainBytes = cipher.doFinal(cipherBytes)
-      String(plainBytes, Charsets.UTF_8)
-    } catch (_: GeneralSecurityException) {
-      // Corrupted ciphertext, wrong key, or tampered payload returns empty string
-      ""
+      return String(plainBytes, Charsets.UTF_8)
     } catch (_: Exception) {
-      ""
+      return try {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.DECRYPT_MODE, fallbackKey, spec)
+        val plainBytes = cipher.doFinal(cipherBytes)
+        String(plainBytes, Charsets.UTF_8)
+      } catch (_: Exception) {
+        ""
+      }
     }
   }
 }

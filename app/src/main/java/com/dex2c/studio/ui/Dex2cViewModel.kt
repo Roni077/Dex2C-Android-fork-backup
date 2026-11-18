@@ -58,7 +58,6 @@ import com.dex2c.studio.dex.MethodControlFlowGraph
 import com.dex2c.studio.dex.SmaliClassDisassembler
 import com.dex2c.studio.dex.SmaliDexCompiler
 import com.dex2c.studio.dex.SmaliMethodSpan
-import com.dex2c.studio.ui.editor.ClassViewerTab
 import com.dex2c.studio.transpiler.DccConfigCodec
 import com.dex2c.studio.transpiler.Dex2cTranspiler
 import com.dex2c.studio.transpiler.FilterMatchSummary
@@ -314,13 +313,6 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   private val _smaliClassState = MutableStateFlow<SmaliClassUiState?>(null)
   val smaliClassState: StateFlow<SmaliClassUiState?> = _smaliClassState.asStateFlow()
-
-  // Multi-Class Tabbed Viewer State
-  private val _classViewerTabs = MutableStateFlow<List<ClassViewerTab>>(emptyList())
-  val classViewerTabs: StateFlow<List<ClassViewerTab>> = _classViewerTabs.asStateFlow()
-
-  private val _activeClassTabId = MutableStateFlow<String?>(null)
-  val activeClassTabId: StateFlow<String?> = _activeClassTabId.asStateFlow()
 
   // App personalization, editor & DEX parser preferences
   private val _appSettings = MutableStateFlow(AppSettings())
@@ -1309,72 +1301,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   }
 
   fun openClassInViewer(dexClass: DexClassInfo, focusMethodName: String? = null) {
-    val ready = _loadState.value as? DexLoadState.Ready ?: return
-    val existingTab = _classViewerTabs.value.firstOrNull { it.dexClass.fullName == dexClass.fullName }
-    if (existingTab != null) {
-      _activeClassTabId.value = existingTab.id
-      inspectClassSmali(dexClass, focusMethodName)
-      return
-    }
-
-    val targetDex = ready.loadedDexes[dexClass.sourceEntryName] ?: ready.parsedDex
-    val result = SmaliClassDisassembler.disassembleClass(targetDex, dexClass)
-    val newTab = ClassViewerTab(
-      dexClass = dexClass,
-      initialLines = result.lines,
-      methodSpans = result.methodSpans,
-      focusMethodName = focusMethodName,
-    )
-    _classViewerTabs.update { it + newTab }
-    _activeClassTabId.value = newTab.id
     inspectClassSmali(dexClass, focusMethodName)
-  }
-
-  fun closeClassTab(tabId: String) {
-    val current = _classViewerTabs.value
-    val index = current.indexOfFirst { it.id == tabId }
-    if (index == -1) return
-    val updated = current.filterNot { it.id == tabId }
-    _classViewerTabs.value = updated
-    if (_activeClassTabId.value == tabId) {
-      val nextIndex = (index - 1).coerceAtLeast(0)
-      val nextTab = updated.getOrNull(nextIndex)
-      _activeClassTabId.value = nextTab?.id
-      if (nextTab != null) {
-        inspectClassSmali(nextTab.dexClass, nextTab.focusMethodName)
-      } else {
-        _smaliClassState.value = null
-      }
-    }
-  }
-
-  fun closeOtherTabs(keepTabId: String) {
-    _classViewerTabs.update { it.filter { tab -> tab.id == keepTabId } }
-    _activeClassTabId.value = keepTabId
-    val tab = _classViewerTabs.value.firstOrNull { it.id == keepTabId }
-    if (tab != null) {
-      inspectClassSmali(tab.dexClass, tab.focusMethodName)
-    }
-  }
-
-  fun closeAllTabs() {
-    _classViewerTabs.value = emptyList()
-    _activeClassTabId.value = null
-    _smaliClassState.value = null
-  }
-
-  fun selectClassTab(tabId: String) {
-    val tab = _classViewerTabs.value.firstOrNull { it.id == tabId } ?: return
-    _activeClassTabId.value = tabId
-    inspectClassSmali(tab.dexClass, tab.focusMethodName)
-  }
-
-  fun updateTabSmaliText(tabId: String, newLines: List<String>) {
-    _classViewerTabs.update { tabs ->
-      tabs.map { tab ->
-        if (tab.id == tabId) tab.copy(editedLines = newLines, isDirty = true) else tab
-      }
-    }
   }
 
   fun clearCompileError() {
@@ -2025,8 +1952,24 @@ class Dex2cViewModel @JvmOverloads constructor(
   }
 
   fun updateCloudSettings(transform: (CloudSettings) -> CloudSettings) {
-    val updated = transform(_cloudSettings.value)
+    val current = _cloudSettings.value
+    var updated = transform(current)
+    if (updated.accessToken.isBlank() && current.accessToken.isNotBlank()) {
+      updated = updated.copy(
+        accessToken = current.accessToken,
+        githubUsername = updated.githubUsername.ifBlank { current.githubUsername },
+      )
+    }
     _cloudSettings.value = updated
+    if (updated.isAuthenticated) {
+      if (_deviceAuthState.value !is DeviceAuthState.Authenticated) {
+        _deviceAuthState.value = DeviceAuthState.Authenticated(updated.githubUsername)
+      }
+      val curRepo = _repoSetupState.value
+      if (curRepo is RepoSetupState.Error && curRepo.message.contains("Sign in", ignoreCase = true)) {
+        _repoSetupState.value = RepoSetupState.NotConfigured
+      }
+    }
     viewModelScope.launch { cloudPrefs.saveSettings(updated) }
   }
 
@@ -2281,7 +2224,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   fun initializePrivateRepoAndWorkflow(autoTriggered: Boolean = false) {
     val settings = _cloudSettings.value
     if (!settings.isAuthenticated) {
-      _repoSetupState.value = RepoSetupState.Error("Sign in via GitHub Device Flow first.")
+      _repoSetupState.value = RepoSetupState.Error("Sign in to GitHub first.")
       return
     }
     val repoName = settings.repoName.trim().ifBlank { "dex2c-cloud-workspace" }
@@ -2413,7 +2356,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   fun dispatchCloudDex2cBuild() {
     val settings = _cloudSettings.value
     if (!settings.isAuthenticated) {
-      _cloudRunState.value = CloudBuildRunState.Error("Sign in via GitHub Device Flow first.")
+      _cloudRunState.value = CloudBuildRunState.Error("Sign in to GitHub first.")
       return
     }
     if (!settings.workflowInitialized) {

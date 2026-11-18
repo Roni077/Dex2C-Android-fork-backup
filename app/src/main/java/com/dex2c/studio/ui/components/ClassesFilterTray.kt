@@ -5,6 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -333,7 +335,7 @@ private fun ActiveFilterPill(
 /**
  * Modern modal bottom sheet organizing DEX Classes Explorer filters into clean sections.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ClassesFilterSheet(
   visible: Boolean,
@@ -410,9 +412,10 @@ fun ClassesFilterSheet(
           fontWeight = FontWeight.SemiBold,
           color = MaterialTheme.colorScheme.primary,
         )
-        Row(
-          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           FilterChip(
             selected = filterState.hideFramework,
@@ -447,9 +450,10 @@ fun ClassesFilterSheet(
           fontWeight = FontWeight.SemiBold,
           color = MaterialTheme.colorScheme.primary,
         )
-        Row(
-          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           if (onToggleCompactPackages != null) {
             FilterChip(
@@ -480,9 +484,10 @@ fun ClassesFilterSheet(
           fontWeight = FontWeight.SemiBold,
           color = MaterialTheme.colorScheme.primary,
         )
-        Row(
-          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           ClassTypeFilter.entries.forEach { typeFilter ->
             FilterChip(
@@ -501,9 +506,10 @@ fun ClassesFilterSheet(
           fontWeight = FontWeight.SemiBold,
           color = MaterialTheme.colorScheme.primary,
         )
-        Row(
-          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           MethodScopeFilter.entries.forEach { scope ->
             FilterChip(

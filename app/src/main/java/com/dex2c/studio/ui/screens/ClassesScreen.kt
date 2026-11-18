@@ -1,5 +1,6 @@
 package com.dex2c.studio.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -85,7 +86,6 @@ import com.dex2c.studio.ui.MethodScopeFilter
 import com.dex2c.studio.ui.components.ActiveFilterSummaryStrip
 import com.dex2c.studio.ui.components.BatchActionBar
 import com.dex2c.studio.ui.components.ClassesFilterSheet
-import com.dex2c.studio.ui.components.ClassesFilterTray
 import com.dex2c.studio.ui.components.CompactClassRow
 import com.dex2c.studio.ui.components.DexFieldsExplorerTab
 import com.dex2c.studio.ui.components.DexMethodsExplorerTab
@@ -359,10 +359,13 @@ fun ClassesScreen(
   var showSelectionCheckboxes by rememberSaveable { mutableStateOf(false) }
   var showSortMenu by remember { mutableStateOf(false) }
   var showDexMenu by remember { mutableStateOf(false) }
-  var showExportMenu by remember { mutableStateOf(false) }
   var showExtraFilters by remember { mutableStateOf(false) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
+
+  BackHandler(enabled = showSelectionCheckboxes) {
+    showSelectionCheckboxes = false
+  }
 
   val detectedApkPackage = (loadState as? DexLoadState.Ready)?.resolvedPackageName
 
@@ -574,20 +577,6 @@ fun ClassesScreen(
 
           if (loadState is DexLoadState.Ready) {
             if (activeSubTab == ClassesSubTab.EXPLORER && classes.isNotEmpty()) {
-              val summaryText =
-                if (viewMode == ClassesViewMode.TREE) {
-                  "$totalDistinctPackages pkgs • ${classes.size} cls"
-                } else {
-                  "${classes.size} cls"
-                }
-              Text(
-                text = summaryText,
-                style = MaterialTheme.typography.labelSmall,
-                fontFamily = JetBrainsMonoFontFamily,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-              )
               if (hasAnyExpandedPackage) {
                 TextButton(
                   onClick = {
@@ -610,103 +599,11 @@ fun ClassesScreen(
                 }
               }
             }
-
-            Box {
-              IconButton(
-                onClick = { showExportMenu = true },
-                modifier = Modifier.size(32.dp).testTag("classes_export_patched_menu_btn"),
-              ) {
-                Icon(
-                  imageVector = Icons.Rounded.SaveAlt,
-                  contentDescription = "Export Patched DEX or APK",
-                  tint = MaterialTheme.colorScheme.primary,
-                  modifier = Modifier.size(18.dp),
-                )
-              }
-              DropdownMenu(
-                expanded = showExportMenu,
-                onDismissRequest = { showExportMenu = false },
-              ) {
-                DropdownMenuItem(
-                  text = { Text("Export Patched DEX (.dex)") },
-                  onClick = {
-                    showExportMenu = false
-                    onExportPatchedDex()
-                  },
-                  modifier = Modifier.testTag("classes_export_patched_dex_item"),
-                )
-                DropdownMenuItem(
-                  text = { Text("Export Patched APK (.apk)") },
-                  onClick = {
-                    showExportMenu = false
-                    onExportPatchedApk()
-                  },
-                  modifier = Modifier.testTag("classes_export_patched_apk_item"),
-                )
-              }
-            }
           }
         }
 
         // EXPLORER CONTROLS (Only visible on EXPLORER tab)
         if (activeSubTab == ClassesSubTab.EXPLORER) {
-          // Compact APK Package Banner
-          if (loadState is DexLoadState.Ready && !detectedApkPackage.isNullOrBlank()) {
-            Surface(
-              modifier =
-                Modifier.fillMaxWidth()
-                  .padding(bottom = 6.dp)
-                  .testTag("classes_apk_package_banner"),
-              shape = RoundedCornerShape(12.dp),
-              color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
-              border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
-            ) {
-              Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-              ) {
-                Icon(
-                  imageVector = Icons.Rounded.Android,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.primary,
-                  modifier = Modifier.size(16.dp),
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                  Text(
-                    text = "APK Package: $detectedApkPackage",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontFamily = JetBrainsMonoFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.testTag("classes_apk_package_text"),
-                  )
-                }
-                TextButton(
-                  onClick = {
-                    viewMode = ClassesViewMode.TREE
-                    val segments = detectedApkPackage.split('.').filter { it.isNotBlank() }
-                    var acc = ""
-                    for (seg in segments) {
-                      acc = if (acc.isEmpty()) seg else "$acc.$seg"
-                      manualExpandedPackages[acc] = true
-                    }
-                  },
-                  contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                  modifier =
-                    Modifier.defaultMinSize(minHeight = 28.dp).testTag("classes_focus_apk_pkg_btn"),
-                ) {
-                  Text(
-                    text = "Expand APK Pkg",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.SemiBold,
-                  )
-                }
-              }
-            }
-          }
 
           // Search Field
           OutlinedTextField(
@@ -740,13 +637,14 @@ fun ClassesScreen(
 
           Spacer(Modifier.height(6.dp))
 
-          // Redesigned Non-scrolling Control Toolbar
+          // Scrollable Control Toolbar
           Row(
             modifier =
               Modifier.fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
                 .padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
           ) {
             val isTree = viewMode == ClassesViewMode.TREE
             FilterChip(
@@ -809,7 +707,7 @@ fun ClassesScreen(
             val activeCount = filterState.extraFilterCount
             FilterChip(
               selected = showExtraFilters || activeCount > 0,
-              onClick = { showExtraFilters = !showExtraFilters },
+              onClick = { showExtraFilters = true },
               leadingIcon = {
                 Icon(
                   imageVector = Icons.Rounded.Tune,
@@ -821,25 +719,6 @@ fun ClassesScreen(
                 Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
               },
               modifier = Modifier.testTag("chip_extra_filters"),
-            )
-
-            FilterChip(
-              selected = showSelectionCheckboxes,
-              onClick = { showSelectionCheckboxes = !showSelectionCheckboxes },
-              leadingIcon = {
-                Icon(
-                  imageVector = Icons.Rounded.CheckBox,
-                  contentDescription = null,
-                  modifier = Modifier.size(16.dp),
-                )
-              },
-              label = {
-                Text(
-                  if (selectedMethodIds.isNotEmpty()) "Select (${selectedMethodIds.size})"
-                  else "Select"
-                )
-              },
-              modifier = Modifier.testTag("chip_select_mode"),
             )
 
             val loadedDexNames =
@@ -903,10 +782,11 @@ fun ClassesScreen(
             }
           }
 
-          // Expandable Clean Filter Tray
-          ClassesFilterTray(
+          // Modal Bottom Sheet Filter UI
+          ClassesFilterSheet(
             visible = showExtraFilters,
             filterState = filterState,
+            onDismiss = { showExtraFilters = false },
             onClassTypeFilterChange = onClassTypeFilterChange,
             onToggleHideInnerClasses = onToggleHideInnerClasses,
             onToggleNonEmptyPackages = onToggleNonEmptyPackages,
@@ -1125,6 +1005,7 @@ fun ClassesScreen(
             } else {
               onTogglePackageSelection(emptyList())
             }
+            showSelectionCheckboxes = false
           },
           onSelectAll = {
             if (onSelectAllClasses != null) {
@@ -1139,6 +1020,7 @@ fun ClassesScreen(
             } else {
               onTogglePackageSelection(emptyList())
             }
+            showSelectionCheckboxes = false
           },
           onInvertSelection = {
             if (onInvertClassSelection != null) {

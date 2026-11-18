@@ -20,6 +20,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
@@ -772,11 +773,12 @@ class ExampleRobolectricTest {
       }
     }
 
-    // Initially in Tree mode: package rows shown cleanly without checkboxes until Select Mode is toggled
+    // Initially in Tree mode: package rows shown cleanly without checkboxes until Select Mode is toggled via long-press
     composeTestRule.onNodeWithTag("pkg_row_okhttp3").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pkg_row_okio").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("chip_select_mode").performClick()
+    composeTestRule.onNodeWithTag("chip_select_mode").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pkg_row_okio").performTouchInput { longClick() }
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("pkg_checkbox_okhttp3").assert(
       androidx.compose.ui.test.SemanticsMatcher.expectValue(
@@ -899,14 +901,14 @@ class ExampleRobolectricTest {
     // Open extra filter tray and toggle Concrete + Static
     composeTestRule.onNodeWithTag("chip_extra_filters").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("filter_class_type_CONCRETE").performClick()
-    composeTestRule.onNodeWithTag("filter_method_scope_STATIC_ONLY").performClick()
+    composeTestRule.onNodeWithTag("filter_class_type_CONCRETE").performScrollTo().performClick()
+    composeTestRule.onNodeWithTag("filter_method_scope_STATIC_ONLY").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     assertEquals(2, filterState.extraFilterCount)
     composeTestRule.onNodeWithTag("chip_extra_filters").assertTextContains("Filters (2)")
 
     // Reset extra filters clears badge
-    composeTestRule.onNodeWithTag("filter_reset_extra_btn").performClick()
+    composeTestRule.onNodeWithTag("filter_reset_extra_btn").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     assertEquals(0, filterState.extraFilterCount)
   }
@@ -2207,26 +2209,9 @@ class ExampleRobolectricTest {
     }
 
     composeTestRule.onNodeWithText("TokenGuard.smali").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("smali_method_range_bar").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("smali_active_method_range_text", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("smali_code_list").assertIsDisplayed()
-    composeTestRule.onNodeWithText(".class public final Lcom/example/TokenGuard;", substring = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_syntax_code_viewer").assertIsDisplayed()
 
-    // Toggle search bar, search for "return", and step to match 2/2
-    composeTestRule.onNodeWithTag("smali_search_toggle_btn").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_input").performTextReplacement("return")
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("1/2")
-    composeTestRule.onNodeWithTag("smali_search_next_btn").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("2/2")
-
-    // Copy, export, and back actions
-    composeTestRule.onNodeWithTag("smali_copy_btn").performClick()
-    assertEquals(sampleSmali, copiedText)
-    composeTestRule.onNodeWithTag("smali_export_btn").performClick()
-    assertEquals("TokenGuard.smali", exportedFile)
+    // Back action
     composeTestRule.onNodeWithTag("smali_back_btn").performClick()
     assertTrue(backPressed)
   }
@@ -2417,8 +2402,9 @@ class ExampleRobolectricTest {
       }
     }
 
-    // Enable Select Mode in Explorer and click +W on com.crackme package
-    composeTestRule.onNodeWithTag("chip_select_mode").performClick()
+    // Enable Select Mode in Explorer via long-press and click +W on com.crackme package
+    composeTestRule.onNodeWithTag("chip_select_mode").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pkg_row_com.crackme").performTouchInput { longClick() }
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("pkg_whitelist_btn_com.crackme").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()
@@ -2553,30 +2539,8 @@ class ExampleRobolectricTest {
       }
     }
 
-    // Tap line 5 (invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z) to inspect symbols
-    composeTestRule.onNodeWithTag("smali_code_line_5").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_inspected_line_bar").assertIsDisplayed()
-
-    // Tap register v0 token chip from the inspected line bar -> opens search bar & highlights all 4 lines with v0
-    composeTestRule.onNodeWithTag("smali_line_token_v0").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("1/4")
-
-    // Open Matching Lines drawer and verify rows are displayed
-    composeTestRule.onNodeWithTag("smali_search_matches_drawer_toggle").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_matching_lines_drawer").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("smali_match_result_row_7").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("4/4")
-
-    // Clear search and tap Strings category chip to highlight string literals
-    composeTestRule.onNodeWithTag("smali_search_clear_btn").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_category_strings").performScrollTo().performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_search_count").assertTextContains("1/1")
+    composeTestRule.onNodeWithTag("smali_class_title").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_syntax_code_viewer").assertIsDisplayed()
   }
 
   @Test
@@ -2659,30 +2623,13 @@ class ExampleRobolectricTest {
       Dex2cTheme {
         com.dex2c.studio.ui.screens.SmaliClassScreen(
           state = readyState,
-          onCopySmali = {},
-          onExportSmali = { _, _ -> },
           onBack = {},
           smaliSyntaxTheme = selectedTheme,
-          onSelectSmaliSyntaxTheme = { selectedTheme = it },
         )
       }
     }
 
-    // Open the Smali syntax theme switcher bar from the top toolbar
-    composeTestRule.onNodeWithTag("smali_theme_switcher_btn").assertIsDisplayed().performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("smali_theme_selector_bar").assertIsDisplayed()
-
-    // Select Light theme
-    composeTestRule.onNodeWithTag("smali_theme_chip_light").performScrollTo().performClick()
-    composeTestRule.waitForIdle()
-    assertEquals(com.dex2c.studio.data.SmaliSyntaxTheme.LIGHT, selectedTheme)
-
-    // Select Bytecode High-Contrast theme and verify the semantic color legend appears
-    composeTestRule.onNodeWithTag("smali_theme_chip_high_contrast").performScrollTo().performClick()
-    composeTestRule.waitForIdle()
-    assertEquals(com.dex2c.studio.data.SmaliSyntaxTheme.BYTECODE_HIGH_CONTRAST, selectedTheme)
-    composeTestRule.onNodeWithTag("smali_high_contrast_legend").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("smali_syntax_code_viewer").assertIsDisplayed()
   }
 
   @Test
@@ -2895,14 +2842,15 @@ class ExampleRobolectricTest {
       }
     }
 
-    composeTestRule.onNodeWithTag("classes_apk_package_banner").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("classes_focus_apk_pkg_btn").performClick()
-    composeTestRule.waitForIdle()
+    // Verify top package banner is removed
+    composeTestRule.onNodeWithTag("classes_apk_package_banner").assertDoesNotExist()
 
-    // Verify each package folder level along com -> crackme -> app is expanded cleanly and APK badge is shown
+    // Root package "com" is auto-expanded by default; click subpackages to reveal APK package and UI
     composeTestRule.onNodeWithTag("pkg_row_com").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("pkg_row_com.crackme").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("pkg_row_com.crackme.app").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pkg_row_com.crackme").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("pkg_row_com.crackme.app").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("pkg_apk_badge_com.crackme.app", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule.onNodeWithTag("pkg_row_com.crackme.app.ui").assertIsDisplayed()
   }

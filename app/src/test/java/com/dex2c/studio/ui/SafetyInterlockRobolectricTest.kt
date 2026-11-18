@@ -4,9 +4,11 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexHeaderInfo
 import com.dex2c.studio.dex.DexParsedFile
@@ -89,10 +91,7 @@ class SafetyInterlockRobolectricTest {
       Dex2cTheme {
         SmaliClassScreen(
           state = state,
-          onCopySmali = {},
-          onExportSmali = { _, _ -> },
           onBack = {},
-          dexEditingEnabled = false,
         )
       }
     }
@@ -138,10 +137,7 @@ class SafetyInterlockRobolectricTest {
       Dex2cTheme {
         SmaliClassScreen(
           state = state,
-          onCopySmali = {},
-          onExportSmali = { _, _ -> },
           onBack = {},
-          dexEditingEnabled = true,
         )
       }
     }
@@ -201,8 +197,9 @@ class SafetyInterlockRobolectricTest {
       }
     }
 
-    // Enable selection mode so class action buttons (+W, !B, delete) are displayed
-    composeTestRule.onNodeWithTag("chip_select_mode").performClick()
+    // Enable selection mode via long-pressing class row so class action buttons (+W, !B, delete) are displayed
+    composeTestRule.onNodeWithTag("chip_select_mode").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("class_row_0").performTouchInput { longClick() }
     composeTestRule.waitForIdle()
 
     // Click delete icon

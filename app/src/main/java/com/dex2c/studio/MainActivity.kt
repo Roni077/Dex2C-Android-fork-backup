@@ -232,8 +232,6 @@ fun Dex2cApp(
   val isCompilingDex by viewModel.isCompilingDex.collectAsStateWithLifecycle()
   val lastCompileError by viewModel.lastCompileError.collectAsStateWithLifecycle()
   val dexEditUndoPrompt by viewModel.dexEditUndoPrompt.collectAsStateWithLifecycle()
-  val classViewerTabs by viewModel.classViewerTabs.collectAsStateWithLifecycle()
-  val activeClassTabId by viewModel.activeClassTabId.collectAsStateWithLifecycle()
   var pendingSmaliExportText by remember { mutableStateOf<String?>(null) }
 
   val appSettings by viewModel.appSettings.collectAsStateWithLifecycle()
@@ -731,48 +729,13 @@ fun Dex2cApp(
                 }
               }
               if (currentSmali != null) {
-                val availableClasses = (loadState as? DexLoadState.Ready)?.mergedClasses.orEmpty()
                 SmaliClassScreen(
                   state = currentSmali,
-                  onCopySmali = { copyText(it) },
-                  onExportSmali = { fileName, smaliText ->
-                    pendingSmaliExportText = smaliText
-                    exportSmaliLauncher.launch(fileName)
-                  },
                   onBack = {
                     viewModel.clearSmaliInspection()
                     navController.popBackStack()
                   },
-                  selectedMethodIds = selectedMethodIds,
-                  onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
-                  onInspectMethodC = { method ->
-                    viewModel.openClassInViewer(currentSmali.dexClass, focusMethodName = method.methodRef.name)
-                  },
                   smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
-                  onSelectSmaliSyntaxTheme = { selectedTheme ->
-                    viewModel.updateAppSettings { it.copy(smaliSyntaxTheme = selectedTheme) }
-                  },
-                  isCompilingDex = isCompilingDex,
-                  compileError = lastCompileError,
-                  onClearCompileError = { viewModel.clearCompileError() },
-                  onCompileSmali = { editedSmaliText ->
-                    viewModel.compileEditedSmaliClass(currentSmali.dexClass, editedSmaliText)
-                  },
-                  tabs = classViewerTabs,
-                  activeTabId = activeClassTabId,
-                  onSelectTab = { viewModel.selectClassTab(it) },
-                  onCloseTab = { viewModel.closeClassTab(it) },
-                  onCloseOtherTabs = { viewModel.closeOtherTabs(it) },
-                  onCloseAllTabs = { viewModel.closeAllTabs() },
-                  onToggleClassSelection = { viewModel.toggleClassSelection(it) },
-                  onSelectAllMethodsInClass = { viewModel.selectAllMethodsInClass(it) },
-                  onDeselectAllMethodsInClass = { viewModel.deselectAllMethodsInClass(it) },
-                  onInvertClassMethodSelection = { viewModel.invertClassMethodSelection(it) },
-                  availableClasses = availableClasses,
-                  onOpenClassInViewer = { viewModel.openClassInViewer(it) },
-                  onSmaliContentChanged = { tabId, newLines ->
-                    viewModel.updateTabSmaliText(tabId, newLines)
-                  },
                 )
               }
             }

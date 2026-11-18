@@ -14,9 +14,7 @@ import com.dex2c.studio.dex.SmaliMethodSpan
 import com.dex2c.studio.ui.components.ClassMethodsSelectorSheet
 import com.dex2c.studio.ui.components.ClassPickerSheet
 import com.dex2c.studio.ui.components.ClassSelectionHeader
-import com.dex2c.studio.ui.components.ClassViewerTabBar
 import com.dex2c.studio.ui.components.SymbolQuickBar
-import com.dex2c.studio.ui.editor.ClassViewerTab
 import com.dex2c.studio.ui.theme.Dex2cTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -77,58 +75,6 @@ class ClassSelectionTabsRobolectricTest {
       instanceFields = emptyList(),
       staticFields = emptyList(),
     )
-  }
-
-  @Test
-  fun testClassViewerTabBarRendersAndSelectsTabs() {
-    val classA = createDummyClass("Lcom/example/MainActivity;")
-    val classB = createDummyClass("Lcom/example/HttpHelper;")
-
-    val tabA = ClassViewerTab(
-      id = "tab_a",
-      dexClass = classA,
-      initialLines = listOf(".class public Lcom/example/MainActivity;"),
-    )
-    val tabB = ClassViewerTab(
-      id = "tab_b",
-      dexClass = classB,
-      initialLines = listOf(".class public Lcom/example/HttpHelper;"),
-    )
-
-    var selectedTabId: String? = "tab_a"
-    var closedTabId: String? = null
-    var addClicked = false
-
-    composeTestRule.setContent {
-      Dex2cTheme {
-        ClassViewerTabBar(
-          tabs = listOf(tabA, tabB),
-          activeTabId = selectedTabId,
-          selectedMethodIds = setOf("Lcom/example/MainActivity;->onCreate()V"),
-          onSelectTab = { selectedTabId = it },
-          onCloseTab = { closedTabId = it },
-          onCloseOtherTabs = {},
-          onCloseAllTabs = {},
-          onOpenNewTabClick = { addClicked = true },
-        )
-      }
-    }
-
-    composeTestRule.onNodeWithTag("class_tab_tab_a").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("class_tab_tab_b").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("class_tab_add_btn").assertIsDisplayed()
-
-    // Click tab B title to select it
-    composeTestRule.onNodeWithTag("class_tab_title_tab_b", useUnmergedTree = true).performClick()
-    assertEquals("tab_b", selectedTabId)
-
-    // Click tab A close button
-    composeTestRule.onNodeWithTag("class_tab_close_tab_a", useUnmergedTree = true).performClick()
-    assertEquals("tab_a", closedTabId)
-
-    // Click add button
-    composeTestRule.onNodeWithTag("class_tab_add_btn").performClick()
-    assertTrue(addClicked)
   }
 
   @Test
