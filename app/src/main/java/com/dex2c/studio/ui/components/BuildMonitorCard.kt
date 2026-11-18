@@ -374,9 +374,9 @@ fun BuildMonitorCard(
                       Text(
                         text =
                           if (isLogOnlyArtifact) {
-                            "${formatArtifactBytes(artifact.sizeInBytes)} • Failure build log (.zip)"
+                            "${formatArtifactBytes(artifact.sizeInBytes)} • Build log (.log)"
                           } else {
-                            "${formatArtifactBytes(artifact.sizeInBytes)} • Signed APK + build log"
+                            "${formatArtifactBytes(artifact.sizeInBytes)} • Signed APK (.apk)"
                           },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

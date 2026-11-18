@@ -1,5 +1,6 @@
 package com.dex2c.studio
 
+import com.dex2c.studio.cloud.CloudNamingConvention
 import com.dex2c.studio.cloud.CloudSettings
 import com.dex2c.studio.cloud.CloudSigningMode
 import com.dex2c.studio.cloud.Dex2cWorkflowGenerator
@@ -93,7 +94,8 @@ class GitHubCloudWorkflowTest {
     assertTrue(yaml.contains("dex2c-signed-apk"))
     assertTrue(yaml.contains("dex2c-signed-output.apk"))
     assertTrue(yaml.contains("dex2c-build-log"))
-    assertTrue(yaml.contains("if: failure()"))
+    assertTrue(yaml.contains("if: always()"))
+    assertTrue(yaml.contains("app_name:"))
   }
 
   @Test
@@ -182,6 +184,83 @@ class GitHubCloudWorkflowTest {
     assertTrue(fallback.isZipFallback)
     assertTrue(fallback.fileName.endsWith(".zip"))
     assertArrayEquals(rawLogOnly, fallback.bytes)
+  }
+
+  @Test
+  fun cloudNamingConvention_sanitizesAndFormatsNamesCorrectly() {
+    assertEquals("dex2c_studio", CloudNamingConvention.sanitizeBaseName("Dex2C Studio (base.apk)"))
+    assertEquals("com.example.app-v1.0", CloudNamingConvention.sanitizeBaseName("com.example.app-v1.0.apk"))
+    assertEquals("myapp_debug", CloudNamingConvention.sanitizeBaseName("MyApp (Debug).apk"))
+    assertEquals("target", CloudNamingConvention.sanitizeBaseName("target.apk"))
+    assertEquals("custom_app", CloudNamingConvention.sanitizeBaseName("/data/app/~~abc/custom_app.apk"))
+    assertEquals("app", CloudNamingConvention.sanitizeBaseName(null))
+    assertEquals("app", CloudNamingConvention.sanitizeBaseName("   "))
+    assertEquals("clean_name", CloudNamingConvention.sanitizeBaseName("clean___name###.apk"))
+
+    assertEquals("input/myapp.apk", CloudNamingConvention.uploadApkRepoPath("myapp"))
+    assertEquals("Upload myapp.apk for Dex2C build", CloudNamingConvention.uploadCommitMessage("myapp"))
+    assertEquals("myapp_dex2c_signed.apk", CloudNamingConvention.signedApkFileName("myapp"))
+    assertEquals("myapp_dex2c_signed.apk", CloudNamingConvention.signedApkFileName("myapp_dex2c"))
+    assertEquals("myapp_dex2c_build.log", CloudNamingConvention.buildLogFileName("myapp"))
+    assertEquals("myapp_dex2c_build.log", CloudNamingConvention.buildLogFileName("myapp_dex2c"))
+    assertEquals("myapp-signed-apk", CloudNamingConvention.signedApkArtifactName("myapp"))
+    assertEquals("myapp-build-log", CloudNamingConvention.buildLogArtifactName("myapp"))
+  }
+
+  @Test
+  fun extractArtifactPayload_extractsApkAndLogWithProperNaming() {
+    val client = GitHubApiClient()
+    val fakeApk = byteArrayOf(0x50, 0x4B, 0x03, 0x04, 0x10, 0x20)
+    val fakeLog = "dex2c compilation success\n".toByteArray()
+
+    val comboZip = ByteArrayOutputStream()
+    ZipOutputStream(comboZip).use { zos ->
+      zos.putNextEntry(ZipEntry("dex2c_build.log"))
+      zos.write(fakeLog)
+      zos.closeEntry()
+
+      zos.putNextEntry(ZipEntry("nested/dex2c-signed-output.apk"))
+      zos.write(fakeApk)
+      zos.closeEntry()
+    }
+    val comboBytes = comboZip.toByteArray()
+
+    // When targeting signed APK
+    val extractedApk = client.extractArtifactPayload(
+      zipBytes = comboBytes,
+      artifactName = "whatsapp-signed-apk",
+      defaultBaseName = "whatsapp",
+    )
+    assertFalse(extractedApk.isZipFallback)
+    assertEquals("whatsapp_dex2c_signed.apk", extractedApk.fileName)
+    assertArrayEquals(fakeApk, extractedApk.bytes)
+
+    // When targeting build log
+    val extractedLog = client.extractArtifactPayload(
+      zipBytes = comboBytes,
+      artifactName = "whatsapp-build-log",
+      defaultBaseName = "whatsapp",
+    )
+    assertFalse(extractedLog.isZipFallback)
+    assertEquals("whatsapp_dex2c_build.log", extractedLog.fileName)
+    assertArrayEquals(fakeLog, extractedLog.bytes)
+
+    // Standalone failure log zip
+    val logOnlyZip = ByteArrayOutputStream()
+    ZipOutputStream(logOnlyZip).use { zos ->
+      zos.putNextEntry(ZipEntry("dex2c_build.log"))
+      zos.write(fakeLog)
+      zos.closeEntry()
+    }
+    val failureLogBytes = logOnlyZip.toByteArray()
+    val extractedFailureLog = client.extractArtifactPayload(
+      zipBytes = failureLogBytes,
+      artifactName = "dex2c-build-log",
+      defaultBaseName = "myapp",
+    )
+    assertFalse(extractedFailureLog.isZipFallback)
+    assertEquals("myapp_dex2c_build.log", extractedFailureLog.fileName)
+    assertArrayEquals(fakeLog, extractedFailureLog.bytes)
   }
 
   @Test

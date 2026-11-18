@@ -20,6 +20,7 @@ import com.dex2c.studio.cloud.CloudBuildRunState
 import com.dex2c.studio.cloud.CloudDownloadedApk
 import com.dex2c.studio.cloud.CloudErrorAction
 import com.dex2c.studio.cloud.CloudLiveNotificationContent
+import com.dex2c.studio.cloud.CloudNamingConvention
 import com.dex2c.studio.cloud.CloudSettings
 import com.dex2c.studio.cloud.CloudTimeUtil
 import com.dex2c.studio.cloud.Dex2cWorkflowGenerator
@@ -2535,6 +2536,10 @@ class Dex2cViewModel @JvmOverloads constructor(
               )
             postLiveUploadNotification("Uploading ${apkChoice.label}", 0.22f, 0L, apkTotalBytes)
 
+            val uploadBaseName = CloudNamingConvention.sanitizeBaseName(apkChoice.label)
+            val uploadPath = CloudNamingConvention.uploadApkRepoPath(uploadBaseName)
+            val uploadCommitMsg = CloudNamingConvention.uploadCommitMessage(uploadBaseName)
+
             var lastUiUpdateMs = 0L
             var lastNotifyAtMs = 0L
             NetworkResilience.retryTransient(maxAttempts = 3) {
@@ -2543,9 +2548,9 @@ class Dex2cViewModel @JvmOverloads constructor(
                   token = settings.accessToken,
                   owner = owner,
                   repo = repo,
-                  path = Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
+                  path = uploadPath,
                   branch = branch,
-                  commitMessage = "Upload target APK (${apkChoice.label}) for Dex2C build",
+                  commitMessage = uploadCommitMsg,
                   contentBytes = apkBytes,
                   onUploadProgress = { written, wireTotal ->
                     val wireRatio =
@@ -2586,6 +2591,11 @@ class Dex2cViewModel @JvmOverloads constructor(
                 .getOrNull()
             }
 
+          val appBaseName = apkChoice?.let { CloudNamingConvention.sanitizeBaseName(it.label) }
+            ?: CloudNamingConvention.sanitizeBaseName(urlFallback.substringAfterLast('/').substringBefore('?'))
+          val targetRepoPath = apkChoice?.let { CloudNamingConvention.uploadApkRepoPath(appBaseName) }
+            ?: Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH
+
           _cloudRunState.value = CloudBuildRunState.Dispatching
           postLiveUploadNotification("Triggering dex2c.yml workflow…", 0.98f)
           NetworkResilience.retryTransient(maxAttempts = 3) {
@@ -2597,7 +2607,8 @@ class Dex2cViewModel @JvmOverloads constructor(
                 ref = branch,
                 inputs =
                   mapOf(
-                    "apk_path" to Dex2cWorkflowGenerator.DEFAULT_APK_REPO_PATH,
+                    "apk_path" to targetRepoPath,
+                    "app_name" to appBaseName,
                     "apk_url" to urlFallback,
                     "allow_init" to transCfg.allowInit.toString(),
                     "skip_synthetic" to transCfg.skipSynthetic.toString(),
@@ -3006,7 +3017,15 @@ class Dex2cViewModel @JvmOverloads constructor(
                   }
                 },
               )
-            gitHubClient.extractApkFromArtifactZip(zipBytes)
+            val activeChoice = _cloudApkChoice.value?.label
+            val loadedLabel = (_loadState.value as? DexLoadState.Ready)?.sourceLabel
+            val rawBase = activeChoice ?: loadedLabel ?: artifact.name
+            val baseName = CloudNamingConvention.sanitizeBaseName(rawBase)
+            gitHubClient.extractArtifactPayload(
+              zipBytes = zipBytes,
+              artifactName = artifact.name,
+              defaultBaseName = baseName,
+            )
           }
         _cloudRunState.value = prevState
         _pendingCloudApkSave.value = extracted

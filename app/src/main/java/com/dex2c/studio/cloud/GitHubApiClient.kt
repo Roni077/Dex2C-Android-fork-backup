@@ -484,6 +484,88 @@ class GitHubApiClient(
     }
   }
 
+  fun extractArtifactPayload(
+    zipBytes: ByteArray,
+    artifactName: String = "",
+    defaultBaseName: String = "dex2c",
+  ): CloudDownloadedApk {
+    val cleanBase = CloudNamingConvention.sanitizeBaseName(
+      raw = defaultBaseName.ifBlank {
+        artifactName.removeSuffix("-signed-apk").removeSuffix("-build-log")
+      },
+      fallback = "dex2c",
+    )
+    val isLogTarget = artifactName.contains("log", ignoreCase = true)
+
+    ZipInputStream(ByteArrayInputStream(zipBytes)).use { zis ->
+      var firstLogBytes: ByteArray? = null
+      var firstLogName: String? = null
+      var firstApkBytes: ByteArray? = null
+      var firstApkName: String? = null
+
+      while (true) {
+        val entry = zis.nextEntry ?: break
+        if (!entry.isDirectory) {
+          val name = entry.name.substringAfterLast('/')
+          if (name.endsWith(".apk", ignoreCase = true) && firstApkBytes == null) {
+            firstApkBytes = zis.readBytes()
+            firstApkName = name
+          } else if ((name.endsWith(".log", ignoreCase = true) || name.endsWith(".txt", ignoreCase = true)) && firstLogBytes == null) {
+            firstLogBytes = zis.readBytes()
+            firstLogName = name
+          }
+        }
+        zis.closeEntry()
+      }
+
+      if (isLogTarget && firstLogBytes != null) {
+        val resolvedName = if (firstLogName != null && firstLogName.contains(cleanBase)) {
+          firstLogName
+        } else {
+          CloudNamingConvention.buildLogFileName(cleanBase)
+        }
+        return CloudDownloadedApk(
+          fileName = resolvedName,
+          bytes = firstLogBytes,
+          isZipFallback = false,
+        )
+      }
+
+      if (firstApkBytes != null) {
+        val resolvedName = if (firstApkName != null && firstApkName.contains(cleanBase) && !firstApkName.startsWith("dex2c-signed-output")) {
+          firstApkName
+        } else {
+          CloudNamingConvention.signedApkFileName(cleanBase)
+        }
+        return CloudDownloadedApk(
+          fileName = resolvedName,
+          bytes = firstApkBytes,
+          isZipFallback = false,
+        )
+      }
+
+      if (firstLogBytes != null) {
+        val resolvedName = if (firstLogName != null && firstLogName.contains(cleanBase)) {
+          firstLogName
+        } else {
+          CloudNamingConvention.buildLogFileName(cleanBase)
+        }
+        return CloudDownloadedApk(
+          fileName = resolvedName,
+          bytes = firstLogBytes,
+          isZipFallback = false,
+        )
+      }
+    }
+
+    val fallbackExt = if (isLogTarget) "log.zip" else "artifact.zip"
+    return CloudDownloadedApk(
+      fileName = "${cleanBase}_$fallbackExt",
+      bytes = zipBytes,
+      isZipFallback = true,
+    )
+  }
+
   fun extractApkFromArtifactZip(zipBytes: ByteArray, defaultBaseName: String = "dex2c-signed-output"): CloudDownloadedApk {
     ZipInputStream(ByteArrayInputStream(zipBytes)).use { zis ->
       while (true) {

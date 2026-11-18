@@ -30,6 +30,10 @@ object Dex2cWorkflowGenerator {
       |        description: 'Repository path to input APK'
       |        required: false
       |        default: '$DEFAULT_APK_REPO_PATH'
+      |      app_name:
+      |        description: 'Base name for output APK and artifacts'
+      |        required: false
+      |        default: 'app'
       |      apk_url:
       |        description: 'Optional direct URL fallback for large APKs'
       |        required: false
@@ -309,6 +313,16 @@ object Dex2cWorkflowGenerator {
       |        run: |
       |          BUILD_TOOLS=${'$'}(find "${'$'}ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
       |          "${'$'}BUILD_TOOLS/zipalign" -p -f 4 /tmp/work/unsigned_dex2c.apk /tmp/work/aligned_dex2c.apk
+      |          APP_NAME="${'$'}{{ github.event.inputs.app_name }}"
+      |          if [ -z "${'$'}APP_NAME" ] || [ "${'$'}APP_NAME" = "app" ]; then
+      |            RAW_APK="${'$'}{{ github.event.inputs.apk_path }}"
+      |            APP_NAME=${'$'}(basename "${'$'}RAW_APK" .apk)
+      |          fi
+      |          APP_NAME=${'$'}(echo "${'$'}APP_NAME" | sed 's/[^A-Za-z0-9._-]//g')
+      |          if [ -z "${'$'}APP_NAME" ]; then APP_NAME="dex2c_output"; fi
+      |          OUTPUT_APK="/tmp/work/${'$'}{APP_NAME}_dex2c_signed.apk"
+      |          OUTPUT_LOG="/tmp/work/${'$'}{APP_NAME}_dex2c_build.log"
+      |          cp /tmp/work/dex2c_build.log "${'$'}OUTPUT_LOG" || true
       |          if [ "${'$'}{{ github.event.inputs.signing_mode }}" = "REPO_KEYSTORE_SECRETS" ] && [ -n "${'$'}KEYSTORE_B64" ]; then
       |            echo "${'$'}KEYSTORE_B64" | base64 --decode > /tmp/work/release.jks
       |            "${'$'}BUILD_TOOLS/apksigner" sign \
@@ -316,7 +330,7 @@ object Dex2cWorkflowGenerator {
       |              --ks-pass "env:KEYSTORE_PASS" \
       |              --ks-key-alias "${'$'}KEY_ALIAS" \
       |              --key-pass "env:KEY_PASS" \
-      |              --out /tmp/work/dex2c-signed-output.apk \
+      |              --out "${'$'}OUTPUT_APK" \
       |              /tmp/work/aligned_dex2c.apk
       |          else
       |            keytool -genkeypair -v \
@@ -329,26 +343,31 @@ object Dex2cWorkflowGenerator {
       |              --ks-pass pass:android \
       |              --ks-key-alias androiddebugkey \
       |              --key-pass pass:android \
-      |              --out /tmp/work/dex2c-signed-output.apk \
+      |              --out "${'$'}OUTPUT_APK" \
       |              /tmp/work/aligned_dex2c.apk
       |          fi
+      |          echo "ARTIFACT_APK_NAME=${'$'}{APP_NAME}-signed-apk" >> "${'$'}GITHUB_ENV"
+          echo "ARTIFACT_LOG_NAME=${'$'}{APP_NAME}-build-log" >> "${'$'}GITHUB_ENV"
+          cp "${'$'}OUTPUT_APK" /tmp/work/dex2c-signed-output.apk || true
       |
       |      - name: Upload Signed Dex2C APK Artifact
       |        if: success()
       |        uses: actions/upload-artifact@v4
       |        with:
-      |          name: dex2c-signed-apk
+      |          name: ${'$'}{{ env.ARTIFACT_APK_NAME || 'dex2c-signed-apk' }}
       |          path: |
+      |            /tmp/work/*_dex2c_signed.apk
       |            /tmp/work/dex2c-signed-output.apk
-      |            /tmp/work/dex2c_build.log
       |          retention-days: 14
       |
-      |      - name: Upload Failure Build Log
-      |        if: failure()
+      |      - name: Upload Dex2C Build Log
+      |        if: always()
       |        uses: actions/upload-artifact@v4
       |        with:
-      |          name: dex2c-build-log
-      |          path: /tmp/work/dex2c_build.log
+      |          name: ${'$'}{{ env.ARTIFACT_LOG_NAME || 'dex2c-build-log' }}
+      |          path: |
+      |            /tmp/work/*_dex2c_build.log
+      |            /tmp/work/dex2c_build.log
       |          if-no-files-found: ignore
       |          retention-days: 14
       """.trimMargin() + "\n"
