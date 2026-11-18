@@ -46,11 +46,14 @@ jobs:
             yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           fi
 
-      - name: Set up Gradle 9.3.1
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "9.3.1"
           cache-provider: basic
+
+      - name: Make Gradlew executable
+        shell: bash
+        run: chmod +x gradlew
 
       - name: Prepare debug keystore
         shell: bash
@@ -72,10 +75,10 @@ jobs:
 
       - name: Run unit and Robolectric tests
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_tests }}
-        run: gradle :app:testDebugUnitTest --stacktrace
+        run: ./gradlew :app:testDebugUnitTest --stacktrace
 
       - name: Assemble Debug APK
-        run: gradle :app:assembleDebug --stacktrace
+        run: ./gradlew :app:assembleDebug --stacktrace
 
       - name: Upload Debug APK artifact
         uses: actions/upload-artifact@v6
@@ -108,7 +111,7 @@ jobs:
           {
             echo "### Debug & Test Stage"
             echo "- **JDK**: 21 (Temurin)"
-            echo "- **Gradle**: 9.3.1"
+            echo "- **Gradle**: 9.4.1 (Wrapper)"
             echo "- **Unit Tests**: ${TEST_STATUS}"
             echo "- **Debug APK**: :app:assembleDebug -> dex2c-studio-debug-apk"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -137,11 +140,14 @@ jobs:
             yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           fi
 
-      - name: Set up Gradle 9.3.1
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "9.3.1"
           cache-provider: basic
+
+      - name: Make Gradlew executable
+        shell: bash
+        run: chmod +x gradlew
 
       - name: Configure debug and release signing keystores
         shell: bash
@@ -182,7 +188,7 @@ jobs:
           fi
 
       - name: Assemble Release APK & Bundle AAB
-        run: gradle :app:assembleRelease :app:bundleRelease --stacktrace
+        run: ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
 
       - name: Upload Release APK artifact
         uses: actions/upload-artifact@v6
@@ -206,6 +212,7 @@ jobs:
         run: |
           {
             echo "### Release Build Stage"
+            echo "- **Gradle**: 9.4.1 (Wrapper)"
             echo "- **Signing Mode**: ${SIGNING_MODE:-Unknown}"
             echo "- **Release APK**: \`:app:assembleRelease\` -> artifact \`dex2c-studio-release-apk\`"
             echo "- **Release AAB**: \`:app:bundleRelease\` -> artifact \`dex2c-studio-release-aab\`"
