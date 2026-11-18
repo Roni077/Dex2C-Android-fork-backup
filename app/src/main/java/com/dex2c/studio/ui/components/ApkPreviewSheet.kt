@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -72,74 +73,79 @@ fun ApkPreviewSheet(
     shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
   ) {
-    Column(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
-      verticalArrangement = Arrangement.spacedBy(14.dp),
+    Box(
+      modifier = Modifier.fillMaxWidth(),
+      contentAlignment = Alignment.TopCenter,
     ) {
-      Text(
-        text = stringResource(R.string.preview_title),
-        style = MaterialTheme.typography.titleLarge,
-      )
+      Column(
+        modifier = Modifier.fillMaxWidth().widthIn(max = 640.dp).padding(horizontal = 20.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+      ) {
+        Text(
+          text = stringResource(R.string.preview_title),
+          style = MaterialTheme.typography.titleLarge,
+        )
 
-      when (stagingState) {
-        is ApkStagingState.Loading -> {
-          Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 28.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-          ) {
-            CircularProgressIndicator(modifier = Modifier.size(28.dp))
-            Column {
-              Text(
-                text = stringResource(R.string.preview_staging_loading),
-                style = MaterialTheme.typography.titleMedium,
-              )
-              Text(
-                text = stagingState.label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            }
-          }
-        }
-
-        is ApkStagingState.Error -> {
-          Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.errorContainer,
-          ) {
+        when (stagingState) {
+          is ApkStagingState.Loading -> {
             Row(
-              modifier = Modifier.padding(18.dp),
+              modifier = Modifier.fillMaxWidth().padding(vertical = 28.dp),
               verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.spacedBy(12.dp),
+              horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-              Icon(Icons.Rounded.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-              Text(stagingState.message, style = MaterialTheme.typography.bodyMedium)
+              CircularProgressIndicator(modifier = Modifier.size(28.dp))
+              Column {
+                Text(
+                  text = stringResource(R.string.preview_staging_loading),
+                  style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                  text = stagingState.label,
+                  style = MaterialTheme.typography.bodyMedium,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              }
             }
           }
-          OutlinedButton(
-            onClick = onDismiss,
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier.fillMaxWidth(),
-          ) {
-            Text("Close")
+
+          is ApkStagingState.Error -> {
+            Surface(
+              modifier = Modifier.fillMaxWidth(),
+              shape = RoundedCornerShape(24.dp),
+              color = MaterialTheme.colorScheme.errorContainer,
+            ) {
+              Row(
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+              ) {
+                Icon(Icons.Rounded.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                Text(stagingState.message, style = MaterialTheme.typography.bodyMedium)
+              }
+            }
+            OutlinedButton(
+              onClick = onDismiss,
+              shape = RoundedCornerShape(20.dp),
+              modifier = Modifier.fillMaxWidth(),
+            ) {
+              Text("Close")
+            }
+          }
+
+          is ApkStagingState.Ready -> {
+            PreviewReadyContent(
+              preview = stagingState.preview,
+              selectedEntries = stagingState.selectedEntryNames,
+              onToggleDexEntry = onSelectDexEntry,
+              onSelectAllDexEntries = onSelectAllDexEntries,
+              onSelectPrimaryDexEntry = onSelectPrimaryDexEntry,
+              onConfirmLoad = onConfirmLoad,
+              onDismiss = onDismiss,
+            )
           }
         }
-
-        is ApkStagingState.Ready -> {
-          PreviewReadyContent(
-            preview = stagingState.preview,
-            selectedEntries = stagingState.selectedEntryNames,
-            onToggleDexEntry = onSelectDexEntry,
-            onSelectAllDexEntries = onSelectAllDexEntries,
-            onSelectPrimaryDexEntry = onSelectPrimaryDexEntry,
-            onConfirmLoad = onConfirmLoad,
-            onDismiss = onDismiss,
-          )
-        }
+        Spacer(Modifier.height(16.dp))
       }
-      Spacer(Modifier.height(16.dp))
     }
   }
 }

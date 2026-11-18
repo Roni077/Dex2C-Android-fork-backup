@@ -93,7 +93,21 @@ import com.dex2c.studio.ui.components.DexStringsExplorerTab
 import com.dex2c.studio.ui.components.PackageFolderRow
 import com.dex2c.studio.ui.components.QuickRuleBadgeButton
 import com.dex2c.studio.ui.components.SelectedClassesFilterDialog
+import com.dex2c.studio.data.SmaliSyntaxTheme
+import com.dex2c.studio.dex.formatAccessFlags
+import com.dex2c.studio.ui.theme.LocalEditorSettings
+import com.dex2c.studio.ui.SmaliClassUiState
+import com.dex2c.studio.ui.components.ClassSelectionHeader
+import com.dex2c.studio.ui.components.SmaliSoraEditor
+import com.dex2c.studio.ui.components.TagPill
+import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.material.icons.rounded.DataObject
+import androidx.compose.material.icons.rounded.OpenInNew
 
 enum class ClassesViewMode {
   TREE,
@@ -317,13 +331,13 @@ fun ClassesScreen(
   filterState: ClassFilterState,
   selectedMethodIds: Set<String>,
   allowInit: Boolean,
-  onSearchChange: (String) -> Unit,
-  onToggleHideFramework: () -> Unit,
-  onToggleOnlyBytecode: () -> Unit,
-  onToggleOnlySelected: () -> Unit,
-  onToggleClassSelection: (DexClassInfo) -> Unit,
-  onToggleMethodSelection: (String) -> Unit,
-  onInspectMethod: (DexClassInfo, DexEncodedMethod) -> Unit,
+  onSearchChange: (String) -> Unit = {},
+  onToggleHideFramework: () -> Unit = {},
+  onToggleOnlyBytecode: () -> Unit = {},
+  onToggleOnlySelected: () -> Unit = {},
+  onToggleClassSelection: (DexClassInfo) -> Unit = {},
+  onToggleMethodSelection: (String) -> Unit = {},
+  onInspectMethod: (DexClassInfo, DexEncodedMethod) -> Unit = { _, _ -> },
   modifier: Modifier = Modifier,
   onInspectClassSmali: (DexClassInfo) -> Unit = {},
   onSortOrderChange: (ClassSortOrder) -> Unit = {},
@@ -351,6 +365,9 @@ fun ClassesScreen(
   onSelectAllClasses: ((List<DexClassInfo>) -> Unit)? = null,
   onDeselectAllClasses: ((List<DexClassInfo>?) -> Unit)? = null,
   onInvertClassSelection: ((List<DexClassInfo>) -> Unit)? = null,
+  smaliClassState: SmaliClassUiState? = null,
+  smaliSyntaxTheme: SmaliSyntaxTheme? = null,
+  onSelectClassInTwoPane: ((DexClassInfo) -> Unit)? = null,
 ) {
   var activeSubTab by rememberSaveable(initialSubTab) { mutableStateOf(initialSubTab) }
   var viewMode by rememberSaveable { mutableStateOf(ClassesViewMode.TREE) }
@@ -527,9 +544,13 @@ fun ClassesScreen(
     )
   }
 
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-    Column(modifier = Modifier.fillMaxSize().widthIn(max = 840.dp)) {
+  BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    val screenWidth = maxWidth
+    val screenHeight = maxHeight
+    val adaptiveInfo = rememberWindowAdaptiveInfo(screenWidth, screenHeight)
+    val isTwoPane = adaptiveInfo.isTwoPane
 
+    val explorerMainContent: @Composable () -> Unit = {
       Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
 
         // TOP SUB-TAB STRIP: CLASSES | METHODS | FIELDS | STRINGS | RULES + Summary Stats & Actions
@@ -958,13 +979,54 @@ fun ClassesScreen(
                     onWhitelistClass = { onQuickClassRule(item.dexClass, false) },
                     onBlacklistClass = { onQuickClassRule(item.dexClass, true) },
                     onDeleteClass = { pendingDeleteClass = item.dexClass },
-                    onOpenSmali = { onInspectClassSmali(item.dexClass) },
+                    onOpenSmali = {
+                      if (isTwoPane) {
+                        onSelectClassInTwoPane?.invoke(item.dexClass) ?: onInspectClassSmali(item.dexClass)
+                      } else {
+                        onInspectClassSmali(item.dexClass)
+                      }
+                    },
                   )
                 }
               }
             }
           }
         }
+      }
+    }
+
+    if (isTwoPane && activeSubTab == ClassesSubTab.EXPLORER) {
+      Row(modifier = Modifier.fillMaxSize()) {
+        Box(
+          modifier =
+            Modifier
+              .width(if (screenWidth >= 1200.dp) 440.dp else 380.dp)
+              .fillMaxHeight(),
+        ) {
+          Column(modifier = Modifier.fillMaxSize()) {
+            explorerMainContent()
+          }
+        }
+        VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+          ClassesDetailPane(
+            state = smaliClassState,
+            syntaxTheme = smaliSyntaxTheme,
+            selectedMethodIds = selectedMethodIds,
+            onToggleClassSelection = onToggleClassSelection,
+            onToggleMethodSelection = onToggleMethodSelection,
+            onInspectClassSmali = onInspectClassSmali,
+          )
+        }
+      }
+    } else {
+      Column(
+        modifier =
+          Modifier
+            .fillMaxSize()
+            .widthIn(max = if (isTwoPane) 1200.dp else 840.dp),
+      ) {
+        explorerMainContent()
       }
     }
 
@@ -1028,6 +1090,182 @@ fun ClassesScreen(
           }
         },
       )
+    }
+  }
+}
+
+@Composable
+private fun ClassesDetailPane(
+  state: SmaliClassUiState?,
+  syntaxTheme: SmaliSyntaxTheme?,
+  selectedMethodIds: Set<String>,
+  onToggleClassSelection: (DexClassInfo) -> Unit,
+  onToggleMethodSelection: (String) -> Unit,
+  onInspectClassSmali: (DexClassInfo) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val editorSettings = LocalEditorSettings.current
+  val activeSyntaxTheme = syntaxTheme ?: editorSettings.smaliSyntaxTheme
+
+  Surface(
+    modifier = modifier.fillMaxSize().padding(12.dp),
+    shape = RoundedCornerShape(16.dp),
+    color = MaterialTheme.colorScheme.surfaceContainerLow,
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+  ) {
+    when (state) {
+      null -> {
+        Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+          Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+          ) {
+            Column(
+              modifier = Modifier.padding(28.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.DataObject,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(44.dp),
+              )
+              Text(
+                text = "Select a Class to Inspect",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+              )
+              Text(
+                text = "Choose a class from the explorer on the left to inspect bytecode disassembly and select methods.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        }
+      }
+
+      is SmaliClassUiState.Loading -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+          ) {
+            CircularProgressIndicator()
+            Text(
+              text = stringResource(R.string.smali_disassembling),
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+      }
+
+      is SmaliClassUiState.Error -> {
+        Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+          Text(text = state.message, color = MaterialTheme.colorScheme.error)
+        }
+      }
+
+      is SmaliClassUiState.Ready -> {
+        val dexClass = state.dexClass
+        val accessLabel = formatAccessFlags(dexClass.accessFlags).ifBlank { "public" }
+
+        Column(modifier = Modifier.fillMaxSize().padding(10.dp)) {
+          // Top row: Class title + full screen action
+          Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Column(modifier = Modifier.weight(1f)) {
+              Text(
+                text = "${dexClass.simpleName}.smali",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+              Text(
+                text = dexClass.descriptor,
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = JetBrainsMonoFontFamily,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+              )
+            }
+            IconButton(
+              onClick = { onInspectClassSmali(dexClass) },
+              modifier = Modifier.testTag("smali_open_fullscreen_btn"),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.OpenInNew,
+                contentDescription = "Open Full Screen",
+                modifier = Modifier.size(20.dp),
+              )
+            }
+          }
+
+          // Metadata pills
+          Row(
+            modifier =
+              Modifier.fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            TagPill(text = accessLabel)
+            TagPill(text = dexClass.sourceEntryName)
+            TagPill(
+              text = "${state.methodCount} methods",
+              containerColor = MaterialTheme.colorScheme.primaryContainer,
+              contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            TagPill(text = "${state.fieldCount} fields")
+            TagPill(text = "${state.lines.size} lines")
+          }
+
+          // Class Selection Header
+          ClassSelectionHeader(
+            dexClass = dexClass,
+            selectedMethodIds = selectedMethodIds,
+            onToggleSelectClass = { onToggleClassSelection(dexClass) },
+            onSelectAllMethods = {
+              val methods = (dexClass.directMethods + dexClass.virtualMethods).ifEmpty { dexClass.allMethods }
+              methods.forEach { if (it.id !in selectedMethodIds) onToggleMethodSelection(it.id) }
+            },
+            onDeselectAllMethods = {
+              val methods = (dexClass.directMethods + dexClass.virtualMethods).ifEmpty { dexClass.allMethods }
+              methods.forEach { if (it.id in selectedMethodIds) onToggleMethodSelection(it.id) }
+            },
+            onInvertMethodSelection = {
+              val methods = (dexClass.directMethods + dexClass.virtualMethods).ifEmpty { dexClass.allMethods }
+              methods.forEach { onToggleMethodSelection(it.id) }
+            },
+            onOpenMethodsSheet = { onInspectClassSmali(dexClass) },
+          )
+
+          Spacer(Modifier.height(4.dp))
+
+          Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            SmaliSoraEditor(
+              text = state.smaliText,
+              isReadOnly = true,
+              activeLineIndex = null,
+              onLineClick = {},
+              onLabelJump = {},
+              syntaxTheme = activeSyntaxTheme,
+              fontSizeSp = editorSettings.fontSizeSp,
+              showLineNumbers = editorSettings.showLineNumbers,
+              modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
+            )
+          }
+        }
+      }
     }
   }
 }

@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import com.dex2c.studio.ui.WindowHeightSizeClass
+import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -422,7 +425,8 @@ fun Dex2cApp(
   }
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-    val useRail = maxWidth >= 720.dp
+    val adaptiveInfo = rememberWindowAdaptiveInfo(maxWidth, maxHeight)
+    val useRail = adaptiveInfo.useNavRail
 
     Scaffold(
       modifier = Modifier.fillMaxSize(),
@@ -477,8 +481,10 @@ fun Dex2cApp(
     ) { innerPadding ->
       Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
         if (showTopBarAndNav && useRail) {
+          val isCompactLandscape = adaptiveInfo.isLandscape && adaptiveInfo.heightSizeClass == WindowHeightSizeClass.COMPACT
           NavigationRail(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            modifier = Modifier.fillMaxHeight(),
           ) {
             navItems.forEach { item ->
               val selected = currentRoute == item.route
@@ -486,6 +492,7 @@ fun Dex2cApp(
                 selected = selected,
                 onClick = { navigateTopLevel(item.route) },
                 modifier = Modifier.testTag(item.testTag),
+                alwaysShowLabel = !isCompactLandscape,
                 icon = {
                   if (item.route == ROUTE_BUILD && selectedMethodIds.isNotEmpty()) {
                     BadgedBox(badge = { Badge { Text("${selectedMethodIds.size}") } }) {
@@ -501,7 +508,7 @@ fun Dex2cApp(
                     )
                   }
                 },
-                label = { Text(stringResource(item.labelRes)) },
+                label = if (!isCompactLandscape) { { Text(stringResource(item.labelRes)) } } else null,
               )
             }
           }
@@ -636,6 +643,9 @@ fun Dex2cApp(
                 onSelectAllClasses = { viewModel.selectAllClasses(it) },
                 onDeselectAllClasses = { viewModel.deselectAllClasses(it) },
                 onInvertClassSelection = { viewModel.invertClassSelection(it) },
+                smaliClassState = smaliClassState,
+                smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
+                onSelectClassInTwoPane = { cls -> viewModel.openClassInViewer(cls) },
               )
             }
 

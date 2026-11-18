@@ -65,6 +65,8 @@ import com.dex2c.studio.apk.BinarySourceType
 import com.dex2c.studio.apk.PickerTab
 import com.dex2c.studio.apk.RecentBinaryItem
 import com.dex2c.studio.ui.DexLoadState
+import com.dex2c.studio.ui.WindowWidthSizeClass
+import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
 import com.dex2c.studio.ui.components.ExpressiveMotion
 import com.dex2c.studio.ui.components.MetricTile
 import com.dex2c.studio.ui.components.TagPill
@@ -84,7 +86,10 @@ fun HomeScreen(
   modifier: Modifier = Modifier,
 ) {
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-    val isWide = maxWidth >= 680.dp
+    val adaptiveInfo = rememberWindowAdaptiveInfo(maxWidth, maxHeight)
+    val isWide = adaptiveInfo.widthSizeClass != WindowWidthSizeClass.COMPACT
+    val isExpanded = adaptiveInfo.widthSizeClass == WindowWidthSizeClass.EXPANDED
+    val contentMax = if (isExpanded) 1100.dp else 880.dp
 
     when (loadState) {
       is DexLoadState.Ready -> {
@@ -103,10 +108,10 @@ fun HomeScreen(
             modifier =
               Modifier
                 .fillMaxSize()
-                .widthIn(max = 880.dp)
+                .widthIn(max = contentMax)
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.Top,
           ) {
             Column(
@@ -127,6 +132,13 @@ fun HomeScreen(
                 onBrowseClasses = onNavigateToClasses,
                 compact = true,
               )
+              if (recentFiles.isNotEmpty() && isExpanded) {
+                RecentQuickStrip(
+                  recentFiles = recentFiles.take(5),
+                  onSelectRecent = onSelectRecent,
+                  onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                )
+              }
             }
             Column(
               modifier = Modifier.weight(0.95f),
@@ -137,8 +149,15 @@ fun HomeScreen(
                 totalMethods = totalMethods,
                 totalStrings = totalStrings,
                 totalSizeBytes = totalSizeBytes,
-                compact = true,
+                compact = !isExpanded,
               )
+              if (recentFiles.isNotEmpty() && !isExpanded) {
+                RecentQuickStrip(
+                  recentFiles = recentFiles.take(5),
+                  onSelectRecent = onSelectRecent,
+                  onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                )
+              }
             }
           }
         } else {
@@ -172,88 +191,183 @@ fun HomeScreen(
               totalSizeBytes = totalSizeBytes,
               compact = true,
             )
+            if (recentFiles.isNotEmpty()) {
+              RecentQuickStrip(
+                recentFiles = recentFiles.take(5),
+                onSelectRecent = onSelectRecent,
+                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+              )
+            }
           }
         }
       }
 
       else -> {
         val scrollState = rememberScrollState()
-        Column(
-          modifier =
-            Modifier
-              .fillMaxSize()
-              .widthIn(max = 880.dp)
-              .verticalScroll(scrollState)
-              .padding(horizontal = 16.dp, vertical = 12.dp),
-          verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-          HeroHomeBanner(
-            onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
-            onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
-          )
-
-          when (loadState) {
-            is DexLoadState.Loading -> {
-              Surface(
-                modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
-                shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
-              ) {
-                Row(
-                  modifier = Modifier.padding(20.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                  CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
-                  Column {
-                    Text(
-                      text = stringResource(R.string.msg_loading_dex),
-                      style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                      text = loadState.label,
-                      style = MaterialTheme.typography.bodyMedium,
-                      color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+        if (isWide && recentFiles.isNotEmpty()) {
+          Row(
+            modifier =
+              Modifier
+                .fillMaxSize()
+                .widthIn(max = contentMax)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.Top,
+          ) {
+            Column(
+              modifier = Modifier.weight(1.05f),
+              verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+              HeroHomeBanner(
+                onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
+                onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
+              )
+              when (loadState) {
+                is DexLoadState.Loading -> {
+                  Surface(
+                    modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
+                  ) {
+                    Row(
+                      modifier = Modifier.padding(20.dp),
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                      CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
+                      Column {
+                        Text(
+                          text = stringResource(R.string.msg_loading_dex),
+                          style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                          text = loadState.label,
+                          style = MaterialTheme.typography.bodyMedium,
+                          color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                      }
+                    }
                   }
                 }
-              }
-            }
 
-            is DexLoadState.Error -> {
-              Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.errorContainer,
-              ) {
-                Row(
-                  modifier = Modifier.padding(20.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(14.dp),
-                ) {
-                  Icon(
-                    imageVector = Icons.Rounded.ErrorOutline,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                  )
-                  Column(modifier = Modifier.weight(1f)) {
-                    Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
-                    Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
+                is DexLoadState.Error -> {
+                  Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                  ) {
+                    Row(
+                      modifier = Modifier.padding(20.dp),
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    ) {
+                      Icon(
+                        imageVector = Icons.Rounded.ErrorOutline,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                      )
+                      Column(modifier = Modifier.weight(1f)) {
+                        Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
+                        Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
+                      }
+                    }
                   }
                 }
+
+                is DexLoadState.Empty, is DexLoadState.Ready -> Unit
               }
             }
-
-            is DexLoadState.Empty, is DexLoadState.Ready -> Unit
+            Column(
+              modifier = Modifier.weight(0.95f),
+              verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+              RecentQuickStrip(
+                recentFiles = recentFiles.take(8),
+                onSelectRecent = onSelectRecent,
+                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+              )
+            }
           }
-
-          if (recentFiles.isNotEmpty()) {
-            RecentQuickStrip(
-              recentFiles = recentFiles.take(5),
-              onSelectRecent = onSelectRecent,
-              onViewAll = { onOpenPicker(PickerTab.RECENT) },
+        } else {
+          Column(
+            modifier =
+              Modifier
+                .fillMaxSize()
+                .widthIn(max = contentMax)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+          ) {
+            HeroHomeBanner(
+              onOpenPicker = { onOpenPicker(PickerTab.STORAGE) },
+              onOpenInstalledApps = { onOpenPicker(PickerTab.APPS) },
             )
+
+            when (loadState) {
+              is DexLoadState.Loading -> {
+                Surface(
+                  modifier = Modifier.fillMaxWidth().animateContentSize(ExpressiveMotion.spatialSpring()),
+                  shape = RoundedCornerShape(24.dp),
+                  color = MaterialTheme.colorScheme.surfaceContainer,
+                  border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
+                ) {
+                  Row(
+                    modifier = Modifier.padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                  ) {
+                    CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
+                    Column {
+                      Text(
+                        text = stringResource(R.string.msg_loading_dex),
+                        style = MaterialTheme.typography.titleMedium,
+                      )
+                      Text(
+                        text = loadState.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      )
+                    }
+                  }
+                }
+              }
+
+              is DexLoadState.Error -> {
+                Surface(
+                  modifier = Modifier.fillMaxWidth(),
+                  shape = RoundedCornerShape(24.dp),
+                  color = MaterialTheme.colorScheme.errorContainer,
+                ) {
+                  Row(
+                    modifier = Modifier.padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                  ) {
+                    Icon(
+                      imageVector = Icons.Rounded.ErrorOutline,
+                      contentDescription = null,
+                      tint = MaterialTheme.colorScheme.error,
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                      Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
+                      Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
+                    }
+                  }
+                }
+              }
+
+              is DexLoadState.Empty, is DexLoadState.Ready -> Unit
+            }
+
+            if (recentFiles.isNotEmpty()) {
+              RecentQuickStrip(
+                recentFiles = recentFiles.take(5),
+                onSelectRecent = onSelectRecent,
+                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+              )
+            }
           }
         }
       }

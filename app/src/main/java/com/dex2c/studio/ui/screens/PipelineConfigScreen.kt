@@ -112,12 +112,13 @@ fun PipelineConfigScreen(
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val isWide = maxWidth >= 680.dp
     val needsCompactScroll = maxHeight < 360.dp
+    val contentMax = if (maxWidth >= 960.dp) 1100.dp else 880.dp
 
     Column(
       modifier =
         Modifier
           .fillMaxSize()
-          .widthIn(max = 880.dp)
+          .widthIn(max = contentMax)
           .padding(horizontal = 16.dp, vertical = 10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {

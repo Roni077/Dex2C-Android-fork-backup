@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -100,79 +101,84 @@ fun ApkPickerSheet(
     shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
   ) {
-    Column(
-      modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+    Box(
+      modifier = Modifier.fillMaxWidth(),
+      contentAlignment = Alignment.TopCenter,
     ) {
-      Text(
-        text = stringResource(R.string.picker_title),
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
-      )
-      Spacer(Modifier.height(8.dp))
+      Column(
+        modifier = Modifier.fillMaxWidth().widthIn(max = 640.dp).padding(bottom = 24.dp),
+      ) {
+        Text(
+          text = stringResource(R.string.picker_title),
+          style = MaterialTheme.typography.titleLarge,
+          modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+        )
+        Spacer(Modifier.height(8.dp))
 
-      val tabIndex =
+        val tabIndex =
+          when (activeTab) {
+            PickerTab.STORAGE -> 0
+            PickerTab.APPS -> 1
+            PickerTab.RECENT -> 2
+          }
+
+        PrimaryTabRow(selectedTabIndex = tabIndex) {
+          Tab(
+            selected = activeTab == PickerTab.STORAGE,
+            onClick = { onSelectTab(PickerTab.STORAGE) },
+            text = { Text(stringResource(R.string.picker_tab_storage)) },
+            icon = { Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            modifier = Modifier.testTag("picker_tab_storage"),
+          )
+          Tab(
+            selected = activeTab == PickerTab.APPS,
+            onClick = { onSelectTab(PickerTab.APPS) },
+            text = { Text(stringResource(R.string.picker_tab_apps)) },
+            icon = { Icon(Icons.Rounded.Apps, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            modifier = Modifier.testTag("picker_tab_apps"),
+          )
+          Tab(
+            selected = activeTab == PickerTab.RECENT,
+            onClick = { onSelectTab(PickerTab.RECENT) },
+            text = {
+              val label =
+                if (recentFiles.isNotEmpty()) "${stringResource(R.string.picker_tab_recent)} (${recentFiles.size})"
+                else stringResource(R.string.picker_tab_recent)
+              Text(label)
+            },
+            icon = { Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            modifier = Modifier.testTag("picker_tab_recent"),
+          )
+        }
+
+        Spacer(Modifier.height(14.dp))
+
         when (activeTab) {
-          PickerTab.STORAGE -> 0
-          PickerTab.APPS -> 1
-          PickerTab.RECENT -> 2
-        }
+          PickerTab.STORAGE -> {
+            StoragePickerTab(
+              onBrowseStorage = onBrowseStorage,
+              onInspectSelfApk = onInspectSelfApk,
+            )
+          }
 
-      PrimaryTabRow(selectedTabIndex = tabIndex) {
-        Tab(
-          selected = activeTab == PickerTab.STORAGE,
-          onClick = { onSelectTab(PickerTab.STORAGE) },
-          text = { Text(stringResource(R.string.picker_tab_storage)) },
-          icon = { Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp)) },
-          modifier = Modifier.testTag("picker_tab_storage"),
-        )
-        Tab(
-          selected = activeTab == PickerTab.APPS,
-          onClick = { onSelectTab(PickerTab.APPS) },
-          text = { Text(stringResource(R.string.picker_tab_apps)) },
-          icon = { Icon(Icons.Rounded.Apps, contentDescription = null, modifier = Modifier.size(18.dp)) },
-          modifier = Modifier.testTag("picker_tab_apps"),
-        )
-        Tab(
-          selected = activeTab == PickerTab.RECENT,
-          onClick = { onSelectTab(PickerTab.RECENT) },
-          text = {
-            val label =
-              if (recentFiles.isNotEmpty()) "${stringResource(R.string.picker_tab_recent)} (${recentFiles.size})"
-              else stringResource(R.string.picker_tab_recent)
-            Text(label)
-          },
-          icon = { Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(18.dp)) },
-          modifier = Modifier.testTag("picker_tab_recent"),
-        )
-      }
+          PickerTab.APPS -> {
+            InstalledAppsTab(
+              apps = installedApps,
+              isLoading = isLoadingApps,
+              searchQuery = appSearchQuery,
+              onSearchChange = onAppSearchChange,
+              onSelectApp = onSelectInstalledApp,
+            )
+          }
 
-      Spacer(Modifier.height(14.dp))
-
-      when (activeTab) {
-        PickerTab.STORAGE -> {
-          StoragePickerTab(
-            onBrowseStorage = onBrowseStorage,
-            onInspectSelfApk = onInspectSelfApk,
-          )
-        }
-
-        PickerTab.APPS -> {
-          InstalledAppsTab(
-            apps = installedApps,
-            isLoading = isLoadingApps,
-            searchQuery = appSearchQuery,
-            onSearchChange = onAppSearchChange,
-            onSelectApp = onSelectInstalledApp,
-          )
-        }
-
-        PickerTab.RECENT -> {
-          RecentBinariesTab(
-            items = recentFiles,
-            onSelectRecent = onSelectRecent,
-            onRemoveRecent = onRemoveRecent,
-            onClearRecent = onClearRecent,
-          )
+          PickerTab.RECENT -> {
+            RecentBinariesTab(
+              items = recentFiles,
+              onSelectRecent = onSelectRecent,
+              onRemoveRecent = onRemoveRecent,
+              onClearRecent = onClearRecent,
+            )
+          }
         }
       }
     }
@@ -385,7 +391,7 @@ private fun InstalledAppsTab(
       }
     } else {
       LazyColumn(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp, max = 380.dp).testTag("picker_apps_list"),
+        modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp, max = 480.dp).testTag("picker_apps_list"),
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         items(displayedApps, key = { it.packageName }) { app ->
@@ -622,7 +628,7 @@ internal fun RecentBinariesTab(
         }
       } else {
         LazyColumn(
-          modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp).testTag("picker_recent_list"),
+          modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 460.dp).testTag("picker_recent_list"),
           verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           items(displayedItems, key = { it.id }) { item ->
