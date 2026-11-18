@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\MainActivity.kt": {
-    "mtime": 1794994044.577663,
-    "ast_hash": "a4a9704529ada78450f0ea20aa7e1826",
+    "mtime": 1795015781.8293781,
+    "ast_hash": "fdcc0fba872652bcbc708084d7911417",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\ApkMetadataInspector.kt": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\InstalledAppRepository.kt": {
-    "mtime": 1794824497.186124,
-    "ast_hash": "493e2a157b0c6c8a649c4a1b7c109f6e",
+    "mtime": 1795015610.9590054,
+    "ast_hash": "f14324bc5fcc168de6c413771e8acd06",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\cloud\\CloudBuildMonitorWorker.kt": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\dex\\SmaliEditorEngine.kt": {
-    "mtime": 1794824497.2202818,
-    "ast_hash": "e54b194ec35b1633408375597834af0d",
+    "mtime": 1795015693.525048,
+    "ast_hash": "f04c9affaa570da3c88a8d959e8259c8",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\D2cConfigEngine.kt": {
@@ -160,8 +160,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\Dex2cViewModel.kt": {
-    "mtime": 1794985162.8399978,
-    "ast_hash": "d8e63b1694beb99a3830e187657d5818",
+    "mtime": 1795015673.21692,
+    "ast_hash": "e2c3dec1b3f8e61c349603725fadd79a",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ApkPickerSheet.kt": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\ClassesScreen.kt": {
-    "mtime": 1794993893.947996,
-    "ast_hash": "c76a89cc8789a2b9a28bb6232c145079",
+    "mtime": 1795016184.0776544,
+    "ast_hash": "eb5cb28d43c6822d99c56e6132c049e3",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\CloudBuildScreen.kt": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleRobolectricTest.kt": {
-    "mtime": 1794985279.4004178,
-    "ast_hash": "44be264e85dc27b26882b6f5bc46ccfb",
+    "mtime": 1795015472.3950438,
+    "ast_hash": "37ca31a3c2bbcb28276146f094403c41",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleUnitTest.kt": {
@@ -860,8 +860,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ClassesTreeComponents.kt": {
-    "mtime": 1794983758.769892,
-    "ast_hash": "b76cc59109a25fb0d8126d47b6ff704b",
+    "mtime": 1795015504.0991745,
+    "ast_hash": "f41eeecf41f08aa1419661ba87b1822e",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\assets\\textmate\\smali\\language-configuration.json": {
@@ -890,8 +890,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\SmaliSoraEditor.kt": {
-    "mtime": 1794891673.1151175,
-    "ast_hash": "3a291bc2efd858e41214a04a2baf4aae",
+    "mtime": 1795015734.0585446,
+    "ast_hash": "cc0f56f4e11de17b78c3601361f8da58",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\editor\\SmaliEditorManager.kt": {

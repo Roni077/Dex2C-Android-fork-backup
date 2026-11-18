@@ -102,9 +102,13 @@ object SmaliEditorEngine {
     val lineNumber: Int,
   )
 
-  fun resolveLabelJumpForLine(lines: List<String>, lineIndex: Int): LabelJumpTarget? {
-    if (lineIndex !in lines.indices) return null
-    val line = lines[lineIndex].trim()
+  fun resolveLabelJumpForLine(
+    lineCount: Int,
+    getLine: (Int) -> CharSequence,
+    lineIndex: Int,
+  ): LabelJumpTarget? {
+    if (lineIndex !in 0 until lineCount) return null
+    val line = getLine(lineIndex).toString().trim()
     val targetLabel = when {
       line.startsWith("goto ") || line.startsWith("goto/16 ") || line.startsWith("goto/32 ") ->
         line.substringAfter(' ').trim()
@@ -115,8 +119,8 @@ object SmaliEditorEngine {
       else -> null
     } ?: return null
 
-    for (idx in lines.indices) {
-      val candidate = lines[idx].trim()
+    for (idx in 0 until lineCount) {
+      val candidate = getLine(idx).toString().trim()
       if (candidate.startsWith(targetLabel) || candidate.contains("$targetLabel:")) {
         return LabelJumpTarget(
           label = targetLabel,
@@ -127,6 +131,9 @@ object SmaliEditorEngine {
     }
     return null
   }
+
+  fun resolveLabelJumpForLine(lines: List<String>, lineIndex: Int): LabelJumpTarget? =
+    resolveLabelJumpForLine(lines.size, { lines[it] }, lineIndex)
 
   fun replaceMatches(
     lines: List<String>,

@@ -209,8 +209,9 @@ fun SmaliSoraEditor(
 
             // Check if clicked line contains a label jump target
             val labelJump = SmaliEditorEngine.resolveLabelJumpForLine(
-              lines = this.text.toString().lines(),
-              lineIndex = clickedLine
+              lineCount = this.lineCount,
+              getLine = { this.text.getLine(it) },
+              lineIndex = clickedLine,
             )
             if (labelJump != null) {
               currentOnLabelJump?.invoke(labelJump.lineIndex)
@@ -228,7 +229,7 @@ fun SmaliSoraEditor(
         }
 
         // Update Text if changed externally
-        if (text != lastKnownText && text != editor.text.toString()) {
+        if (text != lastKnownText) {
           lastKnownText = text
           editor.setText(text)
           undoController?.updateState()

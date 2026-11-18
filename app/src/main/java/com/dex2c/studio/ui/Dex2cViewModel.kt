@@ -149,9 +149,9 @@ sealed interface SmaliClassUiState {
     val durationMs: Long,
     val initialFocusMethodName: String? = null,
     val methodSpans: List<SmaliMethodSpan> = SmaliClassDisassembler.extractMethodSpans(lines),
+    val cachedSmaliText: String? = null,
   ) : SmaliClassUiState {
-    val smaliText: String
-      get() = lines.joinToString("\n")
+    val smaliText: String = cachedSmaliText ?: lines.joinToString("\n")
 
     constructor(
       dexClass: DexClassInfo,
@@ -172,6 +172,7 @@ sealed interface SmaliClassUiState {
       durationMs = durationMs,
       initialFocusMethodName = initialFocusMethodName,
       methodSpans = methodSpans,
+      cachedSmaliText = smaliText,
     )
   }
 
@@ -382,9 +383,19 @@ class Dex2cViewModel @JvmOverloads constructor(
       withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+  private var lastNonSelectedResult: List<DexClassInfo>? = null
+  private var lastNonSelectedKey: Triple<DexLoadState, ClassFilterState, FilterMatchSummary?>? = null
+
   val filteredClasses: StateFlow<List<DexClassInfo>> =
     combine(_loadState, _filterState, _selectedMethodIds, filterMatchSummary) { load, filter, selected, ruleMatch ->
       val ready = load as? DexLoadState.Ready ?: return@combine emptyList()
+      val isSelectionIndependent = !filter.onlySelected && filter.sortOrder != ClassSortOrder.SELECTED_FIRST
+      val cacheKey = Triple(load, filter, ruleMatch)
+
+      if (isSelectionIndependent && cacheKey == lastNonSelectedKey && lastNonSelectedResult != null) {
+        return@combine lastNonSelectedResult!!
+      }
+
       val activeDexFilter =
         filter.dexSourceFilter?.takeIf { it in ready.loadedDexes }
       val query = filter.searchQuery.trim()
@@ -439,7 +450,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           filtered
         }
 
-      when (filter.sortOrder) {
+      val sorted = when (filter.sortOrder) {
         ClassSortOrder.NAME_ASC ->
           packageFiltered.sortedWith(
             compareBy<DexClassInfo, String>(String.CASE_INSENSITIVE_ORDER) { it.simpleName }
@@ -473,6 +484,12 @@ class Dex2cViewModel @JvmOverloads constructor(
         }
         ClassSortOrder.DEX_ORDER -> packageFiltered
       }
+
+      if (isSelectionIndependent) {
+        lastNonSelectedKey = cacheKey
+        lastNonSelectedResult = sorted
+      }
+      sorted
     }
       .flowOn(Dispatchers.Default)
       .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -537,6 +554,8 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   fun closePicker() {
     _isPickerOpen.value = false
+    _installedApps.value = emptyList()
+    InstalledAppRepository.clearIconCache()
   }
 
   fun setPickerTab(tab: PickerTab) {
@@ -1641,6 +1660,7 @@ class Dex2cViewModel @JvmOverloads constructor(
    */
   fun onTrimMemory(level: Int = android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
     SmaliClassDisassembler.clearCache()
+    InstalledAppRepository.clearIconCache()
     if (!_isPickerOpen.value && _installedApps.value.isNotEmpty()) {
       _installedApps.value = emptyList()
     }

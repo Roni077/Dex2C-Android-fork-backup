@@ -14,6 +14,14 @@ import java.io.File
 
 object InstalledAppRepository {
 
+  private val iconCache = object : android.util.LruCache<String, Bitmap>(64) {
+    override fun sizeOf(key: String, value: Bitmap): Int = 1
+  }
+
+  fun clearIconCache() {
+    iconCache.evictAll()
+  }
+
   fun queryLaunchableApps(context: Context): List<InstalledAppItem> {
     val pm = context.packageManager
     val launcherIntent =
@@ -56,7 +64,9 @@ object InstalledAppRepository {
       val isSystemApp =
         (appInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0
       val lastUpdateTimeMillis = pkgInfo?.lastUpdateTime ?: apkFile.lastModified()
-      val iconBitmap = runCatching { drawableToBitmap(ri.loadIcon(pm)) }.getOrNull()
+      val iconBitmap = iconCache.get(pkgName) ?: runCatching {
+        drawableToBitmap(ri.loadIcon(pm)).also { iconCache.put(pkgName, it) }
+      }.getOrNull()
 
       items +=
         InstalledAppItem(

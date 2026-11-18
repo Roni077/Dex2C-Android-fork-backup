@@ -2449,12 +2449,11 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("selected_classes_filter_dialog").assertDoesNotExist()
     composeTestRule.onNodeWithTag("batch_add_to_filter_btn").assertDoesNotExist()
 
-    // Verify RULES sub-tab is removed from ClassesScreen, leaving 4 explorer tabs
+    // Verify subtabs (rules, methods, fields, strings) are removed from ClassesScreen, focusing on Class Explorer
     composeTestRule.onNodeWithTag("classes_subtab_rules").assertDoesNotExist()
-    composeTestRule.onNodeWithTag("classes_subtab_explorer").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("classes_subtab_methods").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("classes_subtab_fields").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("classes_subtab_strings").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("classes_subtab_methods").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("classes_subtab_fields").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("classes_subtab_strings").assertDoesNotExist()
   }
 
   @Test

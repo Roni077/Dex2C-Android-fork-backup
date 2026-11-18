@@ -87,9 +87,6 @@ import com.dex2c.studio.ui.components.ActiveFilterSummaryStrip
 import com.dex2c.studio.ui.components.BatchActionBar
 import com.dex2c.studio.ui.components.ClassesFilterSheet
 import com.dex2c.studio.ui.components.CompactClassRow
-import com.dex2c.studio.ui.components.DexFieldsExplorerTab
-import com.dex2c.studio.ui.components.DexMethodsExplorerTab
-import com.dex2c.studio.ui.components.DexStringsExplorerTab
 import com.dex2c.studio.ui.components.PackageFolderRow
 import com.dex2c.studio.ui.components.QuickRuleBadgeButton
 import com.dex2c.studio.ui.components.SelectedClassesFilterDialog
@@ -112,13 +109,6 @@ import androidx.compose.material.icons.rounded.OpenInNew
 enum class ClassesViewMode {
   TREE,
   FLAT,
-}
-
-enum class ClassesSubTab(val label: String, val tagSuffix: String) {
-  EXPLORER("CLASSES", "explorer"),
-  METHODS("METHODS", "methods"),
-  FIELDS("FIELDS", "fields"),
-  STRINGS("STRINGS", "strings"),
 }
 
 data class PackageGroup(
@@ -259,6 +249,28 @@ internal fun buildNestedPackageTree(
   return sortPackageGroups(topGroups, sortOrder)
 }
 
+internal fun updateSelectionCounts(
+  groups: List<PackageGroup>,
+  selectedMethodIds: Set<String>,
+): List<PackageGroup> {
+  if (groups.isEmpty() || selectedMethodIds.isEmpty()) return groups
+  return groups.map { group ->
+    val directCount = group.directClasses.sumOf { cls ->
+      cls.allMethods.count { it.id in selectedMethodIds }
+    }
+    val updatedChildren = updateSelectionCounts(group.children, selectedMethodIds)
+    val totalCount = directCount + updatedChildren.sumOf { it.selectedMethodCount }
+    if (totalCount == group.selectedMethodCount && updatedChildren === group.children) {
+      group
+    } else {
+      group.copy(
+        selectedMethodCount = totalCount,
+        children = updatedChildren,
+      )
+    }
+  }
+}
+
 internal fun sortPackageGroups(
   groups: List<PackageGroup>,
   sortOrder: ClassSortOrder,
@@ -356,9 +368,6 @@ fun ClassesScreen(
   onToggleOnlyMatchingFilterRules: () -> Unit = {},
   onQuickPackageRule: (packageName: String, isBlacklist: Boolean) -> Unit = { _, _ -> },
   onQuickClassRule: (dexClass: DexClassInfo, isBlacklist: Boolean) -> Unit = { _, _ -> },
-  initialSubTab: ClassesSubTab = ClassesSubTab.EXPLORER,
-  onReplaceStringInDex: (searchQuery: String, replacement: String, ignoreCase: Boolean) -> Unit = { _, _, _ -> },
-  onCopyText: (String) -> Unit = {},
   onExportPatchedDex: () -> Unit = {},
   onExportPatchedApk: () -> Unit = {},
   onDeleteDexClass: (DexClassInfo) -> Unit = {},
@@ -369,7 +378,6 @@ fun ClassesScreen(
   smaliSyntaxTheme: SmaliSyntaxTheme? = null,
   onSelectClassInTwoPane: ((DexClassInfo) -> Unit)? = null,
 ) {
-  var activeSubTab by rememberSaveable(initialSubTab) { mutableStateOf(initialSubTab) }
   var viewMode by rememberSaveable { mutableStateOf(ClassesViewMode.TREE) }
   var compactMiddlePackages by rememberSaveable { mutableStateOf(false) }
   var showSelectionCheckboxes by rememberSaveable { mutableStateOf(false) }
@@ -377,6 +385,7 @@ fun ClassesScreen(
   var showDexMenu by remember { mutableStateOf(false) }
   var showExtraFilters by remember { mutableStateOf(false) }
   var showSelectedClassesDialog by remember { mutableStateOf(false) }
+  var expansionMutationMarker by remember { mutableStateOf(0) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
 
@@ -402,23 +411,45 @@ fun ClassesScreen(
   LaunchedEffect(autoExpandPackages) {
     if (!autoExpandPackages) {
       searchCollapsedPackages.clear()
+      expansionMutationMarker++
     }
   }
 
   val defaultPackageLabel = stringResource(R.string.label_default_package)
-  val packageGroups =
-    remember(classes, selectedMethodIds, filterState.sortOrder, defaultPackageLabel, compactMiddlePackages) {
+  val structuralPackageGroups =
+    remember(classes, filterState.sortOrder, defaultPackageLabel, compactMiddlePackages) {
       buildNestedPackageTree(
         classes = classes,
-        selectedMethodIds = selectedMethodIds,
+        selectedMethodIds = emptySet(),
         sortOrder = filterState.sortOrder,
         defaultPackageLabel = defaultPackageLabel,
         compactMiddlePackages = compactMiddlePackages,
       )
     }
 
+  val packageGroups =
+    remember(structuralPackageGroups, selectedMethodIds, filterState.sortOrder) {
+      if (selectedMethodIds.isEmpty()) {
+        structuralPackageGroups
+      } else if (filterState.sortOrder == ClassSortOrder.SELECTED_FIRST) {
+        buildNestedPackageTree(
+          classes = classes,
+          selectedMethodIds = selectedMethodIds,
+          sortOrder = filterState.sortOrder,
+          defaultPackageLabel = defaultPackageLabel,
+          compactMiddlePackages = compactMiddlePackages,
+        )
+      } else {
+        updateSelectionCounts(structuralPackageGroups, selectedMethodIds)
+      }
+    }
+
   val flatClasses =
-    remember(classes, selectedMethodIds, filterState.sortOrder) {
+    remember(
+      classes,
+      if (filterState.sortOrder == ClassSortOrder.SELECTED_FIRST) selectedMethodIds else emptySet(),
+      filterState.sortOrder,
+    ) {
       sortClassesForDisplay(classes, filterState.sortOrder, selectedMethodIds)
     }
 
@@ -429,8 +460,7 @@ fun ClassesScreen(
       packageGroups,
       flatClasses,
       autoExpandPackages,
-      manualExpandedPackages.toMap(),
-      searchCollapsedPackages.toMap(),
+      expansionMutationMarker,
     ) {
       buildList {
         fun isGroupExpanded(group: PackageGroup): Boolean {
@@ -547,83 +577,8 @@ fun ClassesScreen(
 
     val explorerMainContent: @Composable () -> Unit = {
       Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
-
-        // TOP SUB-TAB STRIP: CLASSES | METHODS | FIELDS | STRINGS | RULES + Summary Stats & Actions
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-          Row(
-            modifier = Modifier.weight(1f).horizontalScroll(rememberScrollState()),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-          ) {
-            ClassesSubTab.entries.forEach { tab ->
-              val isSelected = activeSubTab == tab
-              val tabText = tab.label
-              Column(
-                modifier =
-                  Modifier
-                    .clickable { activeSubTab = tab }
-                    .padding(vertical = 4.dp)
-                    .testTag("classes_subtab_${tab.tagSuffix}"),
-              ) {
-                Text(
-                  text = tabText,
-                  style = MaterialTheme.typography.labelMedium,
-                  fontWeight = FontWeight.Bold,
-                  color =
-                    if (isSelected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(2.dp))
-                Box(
-                  modifier =
-                    Modifier.width(52.dp)
-                      .height(2.dp)
-                      .background(
-                        if (isSelected) MaterialTheme.colorScheme.primary
-                        else Color.Transparent,
-                        RoundedCornerShape(1.dp),
-                      )
-                )
-              }
-            }
-          }
-
-          if (loadState is DexLoadState.Ready) {
-            if (activeSubTab == ClassesSubTab.EXPLORER && classes.isNotEmpty()) {
-              if (hasAnyExpandedPackage) {
-                TextButton(
-                  onClick = {
-                    packageGroups.forEach { top -> manualExpandedPackages[top.packageName] = false }
-                    manualExpandedPackages.keys.toList().forEach { key ->
-                      manualExpandedPackages[key] = false
-                    }
-                  },
-                  contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
-                  modifier =
-                    Modifier.defaultMinSize(minHeight = 30.dp).testTag("classes_collapse_all_btn"),
-                ) {
-                  Icon(
-                    imageVector = Icons.Rounded.UnfoldLess,
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp),
-                  )
-                  Spacer(Modifier.width(2.dp))
-                  Text("Collapse", style = MaterialTheme.typography.labelSmall)
-                }
-              }
-            }
-          }
-        }
-
-        // EXPLORER CONTROLS (Only visible on EXPLORER tab)
-        if (activeSubTab == ClassesSubTab.EXPLORER) {
-
-          // Search Field
-          OutlinedTextField(
+        // Search Field
+        OutlinedTextField(
             value = filterState.searchQuery,
             onValueChange = onSearchChange,
             modifier = Modifier.fillMaxWidth().testTag("class_search_input"),
@@ -680,6 +635,28 @@ fun ClassesScreen(
               },
               modifier = Modifier.testTag("chip_view_mode_toggle"),
             )
+
+            if (loadState is DexLoadState.Ready && classes.isNotEmpty() && hasAnyExpandedPackage) {
+              FilterChip(
+                selected = false,
+                onClick = {
+                  packageGroups.forEach { top -> manualExpandedPackages[top.packageName] = false }
+                  manualExpandedPackages.keys.toList().forEach { key ->
+                    manualExpandedPackages[key] = false
+                  }
+                  expansionMutationMarker++
+                },
+                leadingIcon = {
+                  Icon(
+                    imageVector = Icons.Rounded.UnfoldLess,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                  )
+                },
+                label = { Text("Collapse") },
+                modifier = Modifier.testTag("classes_collapse_all_btn"),
+              )
+            }
 
             Box {
               FilterChip(
@@ -827,10 +804,8 @@ fun ClassesScreen(
             onClearNonEmpty = onToggleNonEmptyPackages,
             onClearMatchRules = onToggleOnlyMatchingFilterRules,
           )
-        }
       }
 
-      // SUB-TAB SCREENS
       if (loadState !is DexLoadState.Ready) {
         Box(
           modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -852,28 +827,6 @@ fun ClassesScreen(
             )
           }
         }
-      } else if (activeSubTab == ClassesSubTab.METHODS) {
-        DexMethodsExplorerTab(
-          classes = classes.ifEmpty { loadState.mergedClasses },
-          selectedMethodIds = selectedMethodIds,
-          onToggleMethodSelection = onToggleMethodSelection,
-          onInspectMethod = onInspectMethod,
-          onInspectClassSmali = { cls, _ -> onInspectClassSmali(cls) },
-          modifier = Modifier.fillMaxSize(),
-        )
-      } else if (activeSubTab == ClassesSubTab.FIELDS) {
-        DexFieldsExplorerTab(
-          classes = classes.ifEmpty { loadState.mergedClasses },
-          onInspectClassSmali = onInspectClassSmali,
-          modifier = Modifier.fillMaxSize(),
-        )
-      } else if (activeSubTab == ClassesSubTab.STRINGS) {
-        DexStringsExplorerTab(
-          parsedDex = loadState.parsedDex,
-          onReplaceStringInDex = onReplaceStringInDex,
-          onCopyString = onCopyText,
-          modifier = Modifier.fillMaxSize(),
-        )
       } else if (classes.isEmpty()) {
         Box(
           modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -946,6 +899,7 @@ fun ClassesScreen(
                       } else {
                         manualExpandedPackages[item.group.packageName] = !item.expanded
                       }
+                      expansionMutationMarker++
                     },
                     onTogglePackageSelect = {
                       showSelectionCheckboxes = true
@@ -990,7 +944,7 @@ fun ClassesScreen(
       }
     }
 
-    if (isTwoPane && activeSubTab == ClassesSubTab.EXPLORER) {
+    if (isTwoPane) {
       Row(modifier = Modifier.fillMaxSize()) {
         Box(
           modifier =

@@ -79,34 +79,35 @@ fun PackageFolderRow(
   onBlacklistPackage: () -> Unit = {},
   modifier: Modifier = Modifier,
 ) {
-  val targetIds =
-    remember(group, allowInit, methodScopeFilter, showSelectionCheckboxes) {
-      if (!showSelectionCheckboxes) {
-        emptyList()
-      } else {
-        val scoped =
-          group.subtreeClasses.flatMap { cls ->
-            cls.allMethods.filter { matchesMethodScope(it, methodScopeFilter) }
-          }
-        val bytecodeIds =
-          scoped.filter { it.hasBytecode && (allowInit || !it.isInitConstructor) }.map { it.id }
-        bytecodeIds.ifEmpty { scoped.map { it.id } }
+  val totalMethodsCount: Int
+  val selectedCount: Int
+
+  if (methodScopeFilter == MethodScopeFilter.ALL) {
+    totalMethodsCount =
+      if (allowInit) group.totalBytecodeMethods
+      else group.subtreeClasses.sumOf { cls -> cls.allMethods.count { it.hasBytecode && !it.isInitConstructor } }
+    selectedCount =
+      if (selectedMethodIds.isEmpty()) 0
+      else group.selectedMethodCount
+  } else {
+    var total = 0
+    var selected = 0
+    for (cls in group.subtreeClasses) {
+      for (m in cls.allMethods) {
+        if (matchesMethodScope(m, methodScopeFilter) && m.hasBytecode && (allowInit || !m.isInitConstructor)) {
+          total++
+          if (m.id in selectedMethodIds) selected++
+        }
       }
     }
-
-  val selectedCount =
-    if (selectedMethodIds.isEmpty()) {
-      0
-    } else if (!showSelectionCheckboxes) {
-      group.selectedMethodCount
-    } else {
-      targetIds.count { it in selectedMethodIds }
-    }
+    totalMethodsCount = total
+    selectedCount = selected
+  }
 
   val toggleState =
     when {
-      !showSelectionCheckboxes || targetIds.isEmpty() || selectedCount == 0 -> ToggleableState.Off
-      selectedCount >= targetIds.size -> ToggleableState.On
+      !showSelectionCheckboxes || totalMethodsCount == 0 || selectedCount == 0 -> ToggleableState.Off
+      selectedCount >= totalMethodsCount -> ToggleableState.On
       else -> ToggleableState.Indeterminate
     }
 

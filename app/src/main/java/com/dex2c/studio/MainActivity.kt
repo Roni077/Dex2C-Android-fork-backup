@@ -118,7 +118,6 @@ import com.dex2c.studio.ui.components.ApkPickerSheet
 import com.dex2c.studio.ui.components.ApkPreviewSheet
 import com.dex2c.studio.ui.components.ExpressiveMotion
 import com.dex2c.studio.ui.screens.ClassesScreen
-import com.dex2c.studio.ui.screens.ClassesSubTab
 import com.dex2c.studio.ui.screens.CloudBuildScreen
 import com.dex2c.studio.ui.screens.HomeScreen
 import com.dex2c.studio.ui.screens.MethodDetailScreen
@@ -128,7 +127,10 @@ import com.dex2c.studio.ui.screens.SettingsScreen
 import com.dex2c.studio.ui.screens.SmaliClassScreen
 import com.dex2c.studio.ui.theme.Dex2cTheme
 import com.dex2c.studio.ui.theme.EditorDisplaySettings
+import com.dex2c.studio.ui.editor.SmaliEditorManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 const val ROUTE_HOME = "home"
 const val ROUTE_CLASSES = "classes"
@@ -247,6 +249,11 @@ fun Dex2cApp(
   val appSettingsHydrated by viewModel.appSettingsHydrated.collectAsStateWithLifecycle()
   LaunchedEffect(appSettings) {
     CloudBuildNotifier.ensureNotificationChannel(context, appSettings)
+  }
+  LaunchedEffect(Unit) {
+    withContext(Dispatchers.IO) {
+      SmaliEditorManager.ensureInitialized(context)
+    }
   }
   DisposableEffect(context, viewModel) {
     val callbacks =
@@ -393,8 +400,6 @@ fun Dex2cApp(
     val pending = pendingCloudApkSave ?: return@LaunchedEffect
     saveCloudApkLauncher.launch(pending.fileName)
   }
-
-  var classesSubTab by rememberSaveable { mutableStateOf(ClassesSubTab.EXPLORER) }
 
   val navItems =
     remember {
@@ -600,7 +605,6 @@ fun Dex2cApp(
                 onAutoSelectAppMethods = { viewModel.autoSelectAppMethods() },
                 onClearSelection = { viewModel.clearSelection() },
                 onNavigateToClasses = {
-                  classesSubTab = ClassesSubTab.EXPLORER
                   navigateTopLevel(ROUTE_CLASSES)
                 },
               )
@@ -627,10 +631,6 @@ fun Dex2cApp(
                 onDexSourceFilterChange = { viewModel.setDexSourceFilter(it) },
                 onToggleClassSelection = { viewModel.toggleClassSelection(it) },
                 onToggleMethodSelection = { viewModel.toggleMethodSelection(it) },
-                onInspectMethod = { cls, method ->
-                  viewModel.openClassInViewer(cls, focusMethodName = method.methodRef.name)
-                  navController.navigate(ROUTE_SMALI_CLASS)
-                },
                 onInspectClassSmali = { cls ->
                   viewModel.openClassInViewer(cls)
                   navController.navigate(ROUTE_SMALI_CLASS)
@@ -649,11 +649,6 @@ fun Dex2cApp(
                 onQuickClassRule = { cls, isBlacklist ->
                   viewModel.addQuickClassRule(cls, isBlacklist)
                 },
-                initialSubTab = classesSubTab,
-                onReplaceStringInDex = { searchQuery, replacement, ignoreCase ->
-                  viewModel.replaceStringInActiveDex(searchQuery, replacement, ignoreCase)
-                },
-                onCopyText = { copyText(it) },
                 onExportPatchedDex = {
                   val activeEntry = (loadState as? DexLoadState.Ready)?.activeEntryName ?: "classes.dex"
                   exportPatchedDexLauncher.launch("patched_$activeEntry")
