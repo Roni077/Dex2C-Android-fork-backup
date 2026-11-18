@@ -86,7 +86,7 @@ The table below outlines the 13 files modified during this optimization cycle:
 
 ---
 
-### 2.8. `app/src/main/java/com/dex2c/studio/ui/screens/SettingsSubScreens.kt`
+### 2.7. `app/src/main/java/com/dex2c/studio/ui/screens/SettingsSubScreens.kt`
 - **Issue Addressed:** Accessibility / Touch Target
 - **Problem:** In settings screens, `SettingsToggleRow` only accepted clicks on the small `Switch` control itself, failing Android accessibility guidelines for 48dp minimum touch targets.
 - **Solution:** Attached `.clickable { onCheckedChange(!checked) }` to the parent row container.
@@ -94,7 +94,7 @@ The table below outlines the 13 files modified during this optimization cycle:
 
 ---
 
-### 2.9. `app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt`
+### 2.8. `app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt`
 - **Issue Addressed:** DATA-001, DATA-002
 - **Problem:** Instantiating `GitHubApiClient` using the default parameter constructed a brand-new `OkHttpClient` with an isolated connection pool each time, risking TCP socket exhaustion during repeated Cloud polling passes.
 - **Solution:** Introduced a shared `ConnectionPool(5, 5, TimeUnit.MINUTES)` across all default client instances.
@@ -102,7 +102,7 @@ The table below outlines the 13 files modified during this optimization cycle:
 
 ---
 
-### 2.10. `app/src/main/java/com/dex2c/studio/MainActivity.kt` & `app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt`
+### 2.9. `app/src/main/java/com/dex2c/studio/MainActivity.kt` & `app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt`
 - **Issue Addressed:** PERF-001, MEM-003, MEM-004
 - **Problem:**
   1. Over 25 StateFlows were collected at the root `Dex2cApp` composable level via `collectAsStateWithLifecycle()`. Any update to `filteredClasses` (thousands of items) or `selectedMethodIds` triggered recomposition of the entire root tree (Scaffold, TopAppBar, NavRail, FloatingBottomBar).
@@ -118,7 +118,7 @@ The table below outlines the 13 files modified during this optimization cycle:
 
 ---
 
-### 2.11. `app/src/main/java/com/dex2c/studio/dex/SmaliDexCompiler.kt`
+### 2.10. `app/src/main/java/com/dex2c/studio/dex/SmaliDexCompiler.kt`
 - **Issue Addressed:** Background I/O / Memory Safety
 - **Problem:**
   1. `repackApkWithPatchedDexes` utilized unbuffered raw streams for reading and writing large APK zip archives, incurring high kernel syscall overhead.
