@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,6 +45,8 @@ import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudQueue
 import androidx.compose.material.icons.outlined.Code
@@ -134,6 +138,8 @@ const val ROUTE_METHOD_DETAIL = "method_detail"
 const val ROUTE_SMALI_CLASS = "smali_class"
 const val ROUTE_SETTINGS = "settings"
 const val ROUTE_ONBOARDING = "onboarding"
+
+val TOP_LEVEL_ROUTES = setOf(ROUTE_HOME, ROUTE_CLASSES, ROUTE_BUILD, ROUTE_CLOUD)
 
 private data class NavDestinationItem(
   val route: String,
@@ -391,12 +397,14 @@ fun Dex2cApp(
   var classesSubTab by rememberSaveable { mutableStateOf(ClassesSubTab.EXPLORER) }
 
   val navItems =
-    listOf(
-      NavDestinationItem(ROUTE_HOME, R.string.nav_home, Icons.Rounded.Home, Icons.Outlined.Home, "nav_home"),
-      NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Outlined.DataObject, "nav_classes"),
-      NavDestinationItem(ROUTE_BUILD, R.string.nav_build, Icons.Rounded.Code, Icons.Outlined.Code, "nav_build"),
-      NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Outlined.CloudQueue, "nav_cloud"),
-    )
+    remember {
+      listOf(
+        NavDestinationItem(ROUTE_HOME, R.string.nav_home, Icons.Rounded.Home, Icons.Outlined.Home, "nav_home"),
+        NavDestinationItem(ROUTE_CLASSES, R.string.nav_classes, Icons.Rounded.DataObject, Icons.Outlined.DataObject, "nav_classes"),
+        NavDestinationItem(ROUTE_BUILD, R.string.nav_build, Icons.Rounded.Code, Icons.Outlined.Code, "nav_build"),
+        NavDestinationItem(ROUTE_CLOUD, R.string.nav_cloud, Icons.Rounded.CloudQueue, Icons.Outlined.CloudQueue, "nav_cloud"),
+      )
+    }
 
   val backStackEntry by navController.currentBackStackEntryAsState()
   val currentRoute = backStackEntry?.destination?.route ?: ROUTE_HOME
@@ -408,11 +416,16 @@ fun Dex2cApp(
       currentRoute != ROUTE_ONBOARDING
 
   fun navigateTopLevel(route: String) {
+    if (navController.currentDestination?.route == route) return
     navController.navigate(route) {
       popUpTo(navController.graph.findStartDestination().id) { saveState = true }
       launchSingleTop = true
       restoreState = true
     }
+  }
+
+  val onNavigateTopLevel = remember<(String) -> Unit>(navController) {
+    { route -> navigateTopLevel(route) }
   }
 
   LaunchedEffect(deepLinkTarget, appSettingsHydrated) {
@@ -474,7 +487,7 @@ fun Dex2cApp(
             navItems = navItems,
             currentRoute = currentRoute,
             queuedMethodCount = selectedMethodIds.size,
-            onNavigate = ::navigateTopLevel,
+            onNavigate = onNavigateTopLevel,
           )
         }
       },
@@ -490,7 +503,7 @@ fun Dex2cApp(
               val selected = currentRoute == item.route
               NavigationRailItem(
                 selected = selected,
-                onClick = { navigateTopLevel(item.route) },
+                onClick = { onNavigateTopLevel(item.route) },
                 modifier = Modifier.testTag(item.testTag),
                 alwaysShowLabel = !isCompactLandscape,
                 icon = {
@@ -525,38 +538,54 @@ fun Dex2cApp(
               navController = navController,
               startDestination = startDestination,
               enterTransition = {
-                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                val fromRoute = initialState.destination.route
+                val toRoute = targetState.destination.route
+                if (fromRoute == ROUTE_ONBOARDING || toRoute == ROUTE_ONBOARDING) {
                   EnterTransition.None
+                } else if (fromRoute in TOP_LEVEL_ROUTES && toRoute in TOP_LEVEL_ROUTES) {
+                  ExpressiveMotion.topLevelFadeThroughEnter()
                 } else {
-                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  val fromIdx = routeOrder.indexOf(fromRoute).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(toRoute).coerceAtLeast(0)
                   ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
                 }
               },
               exitTransition = {
-                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                val fromRoute = initialState.destination.route
+                val toRoute = targetState.destination.route
+                if (fromRoute == ROUTE_ONBOARDING || toRoute == ROUTE_ONBOARDING) {
                   ExitTransition.None
+                } else if (fromRoute in TOP_LEVEL_ROUTES && toRoute in TOP_LEVEL_ROUTES) {
+                  ExpressiveMotion.topLevelFadeThroughExit()
                 } else {
-                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  val fromIdx = routeOrder.indexOf(fromRoute).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(toRoute).coerceAtLeast(0)
                   ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
                 }
               },
               popEnterTransition = {
-                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                val fromRoute = initialState.destination.route
+                val toRoute = targetState.destination.route
+                if (fromRoute == ROUTE_ONBOARDING || toRoute == ROUTE_ONBOARDING) {
                   EnterTransition.None
+                } else if (fromRoute in TOP_LEVEL_ROUTES && toRoute in TOP_LEVEL_ROUTES) {
+                  ExpressiveMotion.topLevelFadeThroughEnter()
                 } else {
-                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  val fromIdx = routeOrder.indexOf(fromRoute).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(toRoute).coerceAtLeast(0)
                   ExpressiveMotion.navEnterTransition(forward = toIdx >= fromIdx)
                 }
               },
               popExitTransition = {
-                if (initialState.destination.route == ROUTE_ONBOARDING || targetState.destination.route == ROUTE_ONBOARDING) {
+                val fromRoute = initialState.destination.route
+                val toRoute = targetState.destination.route
+                if (fromRoute == ROUTE_ONBOARDING || toRoute == ROUTE_ONBOARDING) {
                   ExitTransition.None
+                } else if (fromRoute in TOP_LEVEL_ROUTES && toRoute in TOP_LEVEL_ROUTES) {
+                  ExpressiveMotion.topLevelFadeThroughExit()
                 } else {
-                  val fromIdx = routeOrder.indexOf(initialState.destination.route).coerceAtLeast(0)
-                  val toIdx = routeOrder.indexOf(targetState.destination.route).coerceAtLeast(0)
+                  val fromIdx = routeOrder.indexOf(fromRoute).coerceAtLeast(0)
+                  val toIdx = routeOrder.indexOf(toRoute).coerceAtLeast(0)
                   ExpressiveMotion.navExitTransition(forward = toIdx >= fromIdx)
                 }
               },
@@ -922,122 +951,155 @@ private fun Dex2cFloatingBottomBar(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         navItems.forEach { item ->
-          val selected = currentRoute == item.route
-          val pillColor by
-            animateColorAsState(
-              targetValue =
-                if (selected) {
-                  MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.88f)
-                } else {
-                  Color.Transparent
-                },
-              animationSpec = ExpressiveMotion.effectsSpring(),
-              label = "navPillColor_${item.route}",
-            )
-          val contentColor by
-            animateColorAsState(
-              targetValue =
-                if (selected) {
-                  MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                  MaterialTheme.colorScheme.onSurfaceVariant
-                },
-              animationSpec = ExpressiveMotion.effectsSpring(),
-              label = "navContentColor_${item.route}",
-            )
-          val iconScale by
-            animateFloatAsState(
-              targetValue = if (selected) 1.08f else 1.0f,
-              animationSpec = ExpressiveMotion.spatialSpring(),
-              label = "navIconScale_${item.route}",
-            )
-          val dotAlpha by
-            animateFloatAsState(
-              targetValue = if (selected) 1f else 0f,
-              animationSpec = ExpressiveMotion.effectsSpring(),
-              label = "navDotAlpha_${item.route}",
-            )
-
-          val label = stringResource(item.labelRes)
-          Column(
-            modifier =
-              Modifier
-                .weight(1f)
-                .minimumInteractiveComponentSize()
-                .clip(RoundedCornerShape(22.dp))
-                .background(pillColor, RoundedCornerShape(22.dp))
-                .selectable(
-                  selected = selected,
-                  onClick = { onNavigate(item.route) },
-                  role = Role.Tab,
-                )
-                .padding(horizontal = 6.dp, vertical = 6.dp)
-                .testTag(item.testTag),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-          ) {
-            Box(
-              modifier = Modifier.graphicsLayer {
-                scaleX = iconScale
-                scaleY = iconScale
-              },
-              contentAlignment = Alignment.Center,
-            ) {
-              val iconVector = if (selected) item.selectedIcon else item.unselectedIcon
-              if (item.route == ROUTE_BUILD && queuedMethodCount > 0) {
-                BadgedBox(
-                  badge = {
-                    Badge(
-                      containerColor = MaterialTheme.colorScheme.primary,
-                      contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ) {
-                      Text(
-                        text = if (queuedMethodCount > 999) "999+" else "$queuedMethodCount",
-                        style = MaterialTheme.typography.labelSmall,
-                      )
-                    }
-                  }
-                ) {
-                  Icon(
-                    imageVector = iconVector,
-                    contentDescription = label,
-                    tint = contentColor,
-                    modifier = Modifier.size(20.dp),
-                  )
-                }
-              } else {
-                Icon(
-                  imageVector = iconVector,
-                  contentDescription = label,
-                  tint = contentColor,
-                  modifier = Modifier.size(20.dp),
-                )
-              }
-            }
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-              text = label,
-              style = MaterialTheme.typography.labelSmall,
-              fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-              color = contentColor,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Box(
-              modifier =
-                Modifier
-                  .size(width = if (selected) 14.dp else 4.dp, height = 3.dp)
-                  .graphicsLayer { alpha = dotAlpha }
-                  .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape,
-                  )
-            )
-          }
+          Dex2cFloatingBottomBarItem(
+            item = item,
+            selected = currentRoute == item.route,
+            queuedMethodCount = queuedMethodCount,
+            onNavigate = onNavigate,
+          )
         }
       }
     }
+  }
+}
+
+@Composable
+private fun RowScope.Dex2cFloatingBottomBarItem(
+  item: NavDestinationItem,
+  selected: Boolean,
+  queuedMethodCount: Int,
+  onNavigate: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val pillColor by
+    animateColorAsState(
+      targetValue =
+        if (selected) {
+          MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.88f)
+        } else {
+          Color.Transparent
+        },
+      animationSpec = ExpressiveMotion.effectsSpring(),
+      label = "navPillColor_${item.route}",
+    )
+  val contentColor by
+    animateColorAsState(
+      targetValue =
+        if (selected) {
+          MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+          MaterialTheme.colorScheme.onSurfaceVariant
+        },
+      animationSpec = ExpressiveMotion.effectsSpring(),
+      label = "navContentColor_${item.route}",
+    )
+  val iconScale by
+    animateFloatAsState(
+      targetValue = if (selected) 1.08f else 1.0f,
+      animationSpec = ExpressiveMotion.spatialSpring(),
+      label = "navIconScale_${item.route}",
+    )
+  val dotAlpha by
+    animateFloatAsState(
+      targetValue = if (selected) 1f else 0f,
+      animationSpec = ExpressiveMotion.effectsSpring(),
+      label = "navDotAlpha_${item.route}",
+    )
+  val dotWidth by
+    animateDpAsState(
+      targetValue = if (selected) 14.dp else 0.dp,
+      animationSpec = ExpressiveMotion.spatialSpring(),
+      label = "navDotWidth_${item.route}",
+    )
+
+  val label = stringResource(item.labelRes)
+  Column(
+    modifier =
+      modifier
+        .weight(1f)
+        .minimumInteractiveComponentSize()
+        .clip(RoundedCornerShape(22.dp))
+        .drawBehind {
+          if (pillColor.alpha > 0f) {
+            drawRoundRect(
+              color = pillColor,
+              cornerRadius = CornerRadius(22.dp.toPx(), 22.dp.toPx()),
+            )
+          }
+        }
+        .selectable(
+          selected = selected,
+          onClick = {
+            if (!selected) {
+              onNavigate(item.route)
+            }
+          },
+          role = Role.Tab,
+        )
+        .padding(horizontal = 6.dp, vertical = 6.dp)
+        .testTag(item.testTag),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+  ) {
+    Box(
+      modifier =
+        Modifier.graphicsLayer {
+          scaleX = iconScale
+          scaleY = iconScale
+        },
+      contentAlignment = Alignment.Center,
+    ) {
+      val iconVector = if (selected) item.selectedIcon else item.unselectedIcon
+      if (item.route == ROUTE_BUILD && queuedMethodCount > 0) {
+        BadgedBox(
+          badge = {
+            Badge(
+              containerColor = MaterialTheme.colorScheme.primary,
+              contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
+              Text(
+                text = if (queuedMethodCount > 999) "999+" else "$queuedMethodCount",
+                style = MaterialTheme.typography.labelSmall,
+              )
+            }
+          }
+        ) {
+          Icon(
+            imageVector = iconVector,
+            contentDescription = label,
+            tint = contentColor,
+            modifier = Modifier.size(20.dp),
+          )
+        }
+      } else {
+        Icon(
+          imageVector = iconVector,
+          contentDescription = label,
+          tint = contentColor,
+          modifier = Modifier.size(20.dp),
+        )
+      }
+    }
+    Spacer(modifier = Modifier.height(2.dp))
+    Text(
+      text = label,
+      style = MaterialTheme.typography.labelSmall,
+      fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+      color = contentColor,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+    Spacer(modifier = Modifier.height(2.dp))
+    Box(
+      modifier =
+        Modifier
+          .size(width = dotWidth, height = 3.dp)
+          .graphicsLayer { alpha = dotAlpha }
+          .background(
+            color = MaterialTheme.colorScheme.primary,
+            shape = CircleShape,
+          )
+    )
   }
 }
 

@@ -2,13 +2,18 @@ package com.dex2c.studio.ui.components
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -110,6 +115,19 @@ object ExpressiveMotion {
       animationSpec = spring(dampingRatio = 0.88f, stiffness = Spring.StiffnessMedium),
     ) { w -> (w * (if (forward) -0.10f else 0.10f)).toInt() } +
       fadeOut(animationSpec = tween(120))
+
+  fun topLevelFadeThroughEnter(): EnterTransition =
+    fadeIn(
+      animationSpec = tween(durationMillis = 180, delayMillis = 60, easing = LinearOutSlowInEasing),
+    ) + scaleIn(
+      initialScale = 0.98f,
+      animationSpec = tween(durationMillis = 180, delayMillis = 60, easing = LinearOutSlowInEasing),
+    )
+
+  fun topLevelFadeThroughExit(): ExitTransition =
+    fadeOut(
+      animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing),
+    )
 }
 
 fun Modifier.expressivePressScale(

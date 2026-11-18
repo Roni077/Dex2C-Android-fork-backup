@@ -417,11 +417,6 @@ fun ClassesScreen(
       )
     }
 
-  val totalDistinctPackages =
-    remember(classes, defaultPackageLabel) {
-      classes.map { normalizePackageName(it.packageName, defaultPackageLabel) }.distinct().size
-    }
-
   val flatClasses =
     remember(classes, selectedMethodIds, filterState.sortOrder) {
       sortClassesForDisplay(classes, filterState.sortOrder, selectedMethodIds)
