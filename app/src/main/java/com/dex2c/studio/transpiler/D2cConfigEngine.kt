@@ -3,6 +3,7 @@ package com.dex2c.studio.transpiler
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.DexParsedFile
+import com.dex2c.studio.nativeengine.DexNativeEngine
 
 data class FilterMatchSummary(
   val matchedMethodIds: Set<String>,
@@ -17,6 +18,13 @@ object FilterRuleEngine {
     evaluateAll(listOf(dex), config)
 
   fun evaluateAll(dexFiles: Collection<DexParsedFile>, config: TranspilerConfig): FilterMatchSummary {
+    if (DexNativeEngine.isAvailable) {
+      val nativeResult = tryNativeEvaluateAll(dexFiles, config)
+      if (nativeResult != null) {
+        return nativeResult
+      }
+    }
+
     val includes = mutableListOf<Regex>()
     val excludes = mutableListOf<Regex>()
     val invalid = mutableListOf<String>()
@@ -64,6 +72,59 @@ object FilterRuleEngine {
       matchedClassCount = matchedClasses.size,
       skippedInitCount = skippedInits,
       invalidRules = invalid,
+    )
+  }
+
+  private fun tryNativeEvaluateAll(
+    dexFiles: Collection<DexParsedFile>,
+    config: TranspilerConfig,
+  ): FilterMatchSummary? {
+    if (!DexNativeEngine.isAvailable || dexFiles.isEmpty()) return null
+    val ruleLines =
+      config.filterRulesText
+        .lines()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") }
+    if (ruleLines.isEmpty()) return null
+
+    val matchedIds = linkedSetOf<String>()
+    val matchedClasses = linkedSetOf<String>()
+    var skippedInits = 0
+
+    for (dex in dexFiles) {
+      if (dex.rawBytes.isEmpty()) return null
+      val matchedIndices =
+        DexNativeEngine.evaluateFilterRules(
+          dexBytes = dex.rawBytes,
+          rules = ruleLines,
+          allowInit = config.allowInit,
+          skipSynthetic = config.skipSynthetic,
+        ) ?: return null
+
+      for (cls in dex.classes) {
+        var classMatched = false
+        for (m in cls.allMethods) {
+          if (!m.hasBytecode) continue
+          if (!config.allowInit && m.isInitConstructor) {
+            skippedInits++
+            continue
+          }
+          if (m.methodIndex in matchedIndices) {
+            matchedIds += m.id
+            classMatched = true
+          }
+        }
+        if (classMatched) {
+          matchedClasses += cls.uniqueKey
+        }
+      }
+    }
+
+    return FilterMatchSummary(
+      matchedMethodIds = matchedIds,
+      matchedClassCount = matchedClasses.size,
+      skippedInitCount = skippedInits,
+      invalidRules = emptyList(),
     )
   }
 

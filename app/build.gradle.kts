@@ -30,7 +30,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     ndk {
-      abiFilters += listOf("arm64-v8a")
+      abiFilters += listOf("arm64-v8a", "x86_64")
     }
 
     val enableDexEditing =
@@ -81,6 +81,11 @@ android {
   buildFeatures {
     compose = true
     buildConfig = true
+  }
+  sourceSets {
+    named("main") {
+      jniLibs.directories.add("src/main/jniLibs")
+    }
   }
   testOptions {
     unitTests {

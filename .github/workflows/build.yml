@@ -73,6 +73,21 @@ jobs:
               -dname "CN=Android Debug,O=Android,C=US"
           fi
 
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,x86_64-linux-android
+
+      - name: Install cargo-ndk
+        shell: bash
+        run: which cargo-ndk || cargo install cargo-ndk
+
+      - name: Build Rust Native Engine (.so)
+        shell: bash
+        run: |
+          cd rust-engine
+          cargo ndk -t arm64-v8a -t x86_64 -o ../app/src/main/jniLibs build --release
+
       - name: Run unit and Robolectric tests
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_tests }}
         run: ./gradlew :app:testDebugUnitTest --stacktrace
@@ -186,6 +201,21 @@ jobs:
               echo "SIGNING_MODE=Ephemeral CI Verification Key (configure RELEASE_KEYSTORE_BASE64, STORE_PASSWORD, and KEY_PASSWORD secrets for production signing)"
             } >> "$GITHUB_ENV"
           fi
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,x86_64-linux-android
+
+      - name: Install cargo-ndk
+        shell: bash
+        run: which cargo-ndk || cargo install cargo-ndk
+
+      - name: Build Rust Native Engine (.so)
+        shell: bash
+        run: |
+          cd rust-engine
+          cargo ndk -t arm64-v8a -t x86_64 -o ../app/src/main/jniLibs build --release
 
       - name: Assemble Release APK & Bundle AAB
         run: ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
