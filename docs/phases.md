@@ -168,9 +168,10 @@ Eliminate JVM heap churn from `DexParser.kt` by offloading full class definition
   - `DexNativeEngine.kt`: Added `nativeParseDex` and `parseClassesFast` helper
   - `DexParser.kt`: Multi-tier fallback (Tier 1: Rust D2CN -> Tier 2: smali-dexlib2 -> Tier 3: Kotlin loop)
   - `DexNativeEngineTest.kt`: Added `testD2cnBinaryDecoderSynthesizedBuffer` verifying field/method/code decoding parity
-- [x] **CI Automated Verification (Run ID `44707041888`)**:
-  - `Verify Tests & Debug APK` (5m 36s) -> **100% PASSED** (Rust unit tests in `dex.rs` + full Robolectric/unit test suite + Debug APK assembly)
-  - `Build Release APK & AAB` (4m 34s) -> **100% PASSED** (Release Rust compilation + ProGuard/R8 + Release APK & AAB assembly)
+- [x] **CI Automated Verification (Run ID `44707041888` & `44713507852`)**:
+  - `Verify Tests & Debug APK` (5m 10s) -> **100% PASSED** (Rust unit tests in `dex.rs` + full Robolectric/unit test suite + Debug APK assembly)
+  - `Build Release APK & AAB` (4m 6s) -> **100% PASSED** (Release Rust compilation + ProGuard/R8 + Release APK & AAB assembly)
   - Artifacts: `dex2c-studio-release-apk`, `dex2c-studio-release-aab`, `dex2c-studio-debug-apk`, `unit-test-reports`
+  - **Zero Compiler Warnings**: Remediated Rust `unused_mut` in `lib.rs`, guarded Kotlin `TRIM_MEMORY_*` deprecations in `MainActivity.kt`, `InstalledAppRepository.kt`, and `Dex2cViewModel.kt`, and enabled Node 24 runtime flags in workflow. Verified 0 compilation warnings in CI run `44713507852`.
 
 
