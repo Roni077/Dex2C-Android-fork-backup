@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\D2cConfigEngine.kt": {
-    "mtime": 1795189218.5062146,
-    "ast_hash": "53f26061946d2ccb44a143f63b186212",
+    "mtime": 1795189725.5138314,
+    "ast_hash": "194d99439ba1155b9efc411d460d7b9e",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\Dex2cTranspiler.kt": {
@@ -205,8 +205,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\FilterRuleBuilderComponents.kt": {
-    "mtime": 1795189259.4511974,
-    "ast_hash": "9ae8d5cfa370fcb4e41050fbc5181968",
+    "mtime": 1795189939.7966013,
+    "ast_hash": "81ad70f9ed8d2ea65892e742f1892dcb",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\GitHubDeviceAuthCard.kt": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\nativeengine\\DexNativeEngine.kt": {
-    "mtime": 1795163084.1376355,
-    "ast_hash": "6c2ed12776874eded65f4094c9d539fc",
+    "mtime": 1795189489.7560856,
+    "ast_hash": "675fab935f8f2e382ec883ff9f1a3c8b",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\nativeengine\\DexNativeEngineTest.kt": {
@@ -1060,18 +1060,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\dex.rs": {
-    "mtime": 1795163460.451089,
-    "ast_hash": "0566b434fabb4a5536ddefdd6f61458d",
+    "mtime": 1795189363.245196,
+    "ast_hash": "93aad51aa6b67897d43dbd02a365b440",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\filter.rs": {
-    "mtime": 1795153080.520865,
-    "ast_hash": "af42b58f74c0445ddac6aff0d262f4e7",
+    "mtime": 1795189378.6277604,
+    "ast_hash": "6f68b4cd72d7090a78f80102219b9601",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\lib.rs": {
-    "mtime": 1795167617.1736667,
-    "ast_hash": "94e1897cbd25cbbecc6fc63d3f4540bf",
+    "mtime": 1795189406.4531348,
+    "ast_hash": "6d86922613a4a3ce86349a771bff3266",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\phases.md": {
@@ -1095,8 +1095,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\transpiler\\FilterRuleOptimizationTest.kt": {
-    "mtime": 1795183804.1778831,
-    "ast_hash": "fe97f3e34c8622ccf2c80a8c6384030e",
+    "mtime": 1795189553.5102308,
+    "ast_hash": "3eeda6ec59e3785ba5d0d22ec4402305",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_classic_src.png": {
@@ -1327,6 +1327,11 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\adaptive_icon_plan.md": {
     "mtime": 1795188467.3854363,
     "ast_hash": "a33a23938fef9e96d2c7bb254f513313",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\scripts\\build_rust_engine.ps1": {
+    "mtime": 1795189521.3934152,
+    "ast_hash": "f6df31468e26ade09c1dfd283c1ea229",
     "semantic_hash": ""
   }
 }

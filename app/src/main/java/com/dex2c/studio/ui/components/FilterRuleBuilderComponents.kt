@@ -102,7 +102,7 @@ fun InteractiveFilterRuleBuilderPanel(
   onlyMatchingExplorerFilter: Boolean? = null,
   onToggleMatchingExplorerFilter: (() -> Unit)? = null,
 ) {
-  var editorSubMode by rememberSaveable { mutableStateOf(FilterEditorSubMode.BUILDER) }
+  var editorSubMode by rememberSaveable { mutableStateOf(FilterEditorSubMode.RAW) }
   var editingRule by remember { mutableStateOf<StructuredFilterRule?>(null) }
   var isAddingRule by remember { mutableStateOf(false) }
 
