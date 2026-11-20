@@ -411,11 +411,17 @@ object FilterRuleEngine {
   fun removeStructuredRule(filterText: String, rule: StructuredFilterRule): String {
     val expr = rule.toRuleExpression().trim()
     val targetLine = rule.toFilterLine().trim()
+    val normTarget = targetLine.replace("\\(", "(").replace("\\)", ")")
     val existingLines =
       filterText
         .lineSequence()
         .map { it.trim() }
-        .filter { it.isNotEmpty() && it != targetLine && it.removePrefix("!").trim() != expr }
+        .filter { line ->
+          if (line.isEmpty()) return@filter false
+          if (line == targetLine || line.removePrefix("!").trim() == expr) return@filter false
+          val normLine = line.replace("\\(", "(").replace("\\)", ")")
+          normLine != normTarget && normLine.removePrefix("!").trim() != normTarget.removePrefix("!")
+        }
         .toList()
     return existingLines.joinToString("\n")
   }
