@@ -78,15 +78,41 @@ jobs:
         with:
           targets: aarch64-linux-android,x86_64-linux-android
 
-      - name: Install cargo-ndk
+      - name: Cache Cargo & NDK build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-ndk
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            rust-engine/target
+          key: ${{ runner.os }}-cargo-ndk-${{ hashFiles('rust-engine/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-ndk-
+
+      - name: Resolve Android NDK and install cargo-ndk
         shell: bash
-        run: which cargo-ndk || cargo install cargo-ndk
+        run: |
+          if [ -z "${ANDROID_NDK_HOME:-}" ]; then
+            LATEST_NDK=$(ls -d $ANDROID_HOME/ndk/* 2>/dev/null | sort -V | tail -n 1)
+            if [ -n "$LATEST_NDK" ]; then
+              echo "ANDROID_NDK_HOME=$LATEST_NDK" >> "$GITHUB_ENV"
+              echo "Resolved ANDROID_NDK_HOME=$LATEST_NDK"
+            fi
+          fi
+          if ! command -v cargo-ndk &> /dev/null; then
+            cargo install cargo-ndk
+          fi
 
       - name: Build Rust Native Engine (.so)
         shell: bash
         run: |
           cd rust-engine
           cargo ndk -t arm64-v8a -t x86_64 -o ../app/src/main/jniLibs build --release
+          echo "=== Built JNI Libraries ==="
+          ls -la ../app/src/main/jniLibs/arm64-v8a/
+          ls -la ../app/src/main/jniLibs/x86_64/
 
       - name: Run unit and Robolectric tests
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_tests }}
@@ -127,6 +153,7 @@ jobs:
             echo "### Debug & Test Stage"
             echo "- **JDK**: 21 (Temurin)"
             echo "- **Gradle**: 9.4.1 (Wrapper)"
+            echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, x86_64) via \`cargo-ndk\`"
             echo "- **Unit Tests**: ${TEST_STATUS}"
             echo "- **Debug APK**: :app:assembleDebug -> dex2c-studio-debug-apk"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -207,15 +234,41 @@ jobs:
         with:
           targets: aarch64-linux-android,x86_64-linux-android
 
-      - name: Install cargo-ndk
+      - name: Cache Cargo & NDK build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-ndk
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            rust-engine/target
+          key: ${{ runner.os }}-cargo-ndk-${{ hashFiles('rust-engine/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-ndk-
+
+      - name: Resolve Android NDK and install cargo-ndk
         shell: bash
-        run: which cargo-ndk || cargo install cargo-ndk
+        run: |
+          if [ -z "${ANDROID_NDK_HOME:-}" ]; then
+            LATEST_NDK=$(ls -d $ANDROID_HOME/ndk/* 2>/dev/null | sort -V | tail -n 1)
+            if [ -n "$LATEST_NDK" ]; then
+              echo "ANDROID_NDK_HOME=$LATEST_NDK" >> "$GITHUB_ENV"
+              echo "Resolved ANDROID_NDK_HOME=$LATEST_NDK"
+            fi
+          fi
+          if ! command -v cargo-ndk &> /dev/null; then
+            cargo install cargo-ndk
+          fi
 
       - name: Build Rust Native Engine (.so)
         shell: bash
         run: |
           cd rust-engine
           cargo ndk -t arm64-v8a -t x86_64 -o ../app/src/main/jniLibs build --release
+          echo "=== Built JNI Libraries ==="
+          ls -la ../app/src/main/jniLibs/arm64-v8a/
+          ls -la ../app/src/main/jniLibs/x86_64/
 
       - name: Assemble Release APK & Bundle AAB
         run: ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
@@ -243,6 +296,7 @@ jobs:
           {
             echo "### Release Build Stage"
             echo "- **Gradle**: 9.4.1 (Wrapper)"
+            echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, x86_64) via \`cargo-ndk\`"
             echo "- **Signing Mode**: ${SIGNING_MODE:-Unknown}"
             echo "- **Release APK**: \`:app:assembleRelease\` -> artifact \`dex2c-studio-release-apk\`"
             echo "- **Release AAB**: \`:app:bundleRelease\` -> artifact \`dex2c-studio-release-aab\`"
