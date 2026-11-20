@@ -249,13 +249,25 @@ internal fun updateSelectionCounts(
   selectedMethodIds: Set<String>,
 ): List<PackageGroup> {
   if (groups.isEmpty() || selectedMethodIds.isEmpty()) return groups
-  return groups.map { group ->
-    val directCount = group.directClasses.sumOf { cls ->
-      cls.allMethods.count { it.id in selectedMethodIds }
+  val countsCache = HashMap<String, Int>(64)
+  fun getCount(cls: DexClassInfo): Int {
+    if (cls.bytecodeMethodCount == 0) return 0
+    return countsCache.getOrPut(cls.uniqueKey) {
+      var c = 0
+      for (m in cls.allMethods) {
+        if (m.id in selectedMethodIds) c++
+      }
+      c
     }
-    val updatedChildren = updateSelectionCounts(group.children, selectedMethodIds)
+  }
+  fun updateGroup(group: PackageGroup): PackageGroup {
+    var directCount = 0
+    for (cls in group.directClasses) {
+      directCount += getCount(cls)
+    }
+    val updatedChildren = group.children.map { updateGroup(it) }
     val totalCount = directCount + updatedChildren.sumOf { it.selectedMethodCount }
-    if (totalCount == group.selectedMethodCount && updatedChildren === group.children) {
+    return if (totalCount == group.selectedMethodCount && updatedChildren === group.children) {
       group
     } else {
       group.copy(
@@ -264,6 +276,7 @@ internal fun updateSelectionCounts(
       )
     }
   }
+  return groups.map { updateGroup(it) }
 }
 
 internal fun sortPackageGroups(
@@ -386,8 +399,12 @@ fun ClassesScreen(
   val searchCollapsedPackages = remember { mutableStateMapOf<String, Boolean>() }
 
   val selectedClassesList =
-    remember(classes, selectedMethodIds) {
-      classes.filter { cls -> cls.allMethods.any { it.id in selectedMethodIds } }
+    remember(showSelectedClassesDialog, classes, selectedMethodIds) {
+      if (showSelectedClassesDialog) {
+        classes.filter { cls -> cls.allMethods.any { it.id in selectedMethodIds } }
+      } else {
+        emptyList()
+      }
     }
 
   BackHandler(enabled = showSelectionCheckboxes) {
@@ -617,22 +634,6 @@ fun ClassesScreen(
               )
             }
 
-            val activeCount = filterState.extraFilterCount
-            FilterChip(
-              selected = filterSheetVisible || activeCount > 0,
-              onClick = { showExtraFilters = true },
-              leadingIcon = {
-                Icon(
-                  imageVector = Icons.Rounded.Tune,
-                  contentDescription = null,
-                  modifier = Modifier.size(16.dp),
-                )
-              },
-              label = {
-                Text(if (activeCount > 0) "Filters ($activeCount)" else "Filters")
-              },
-              modifier = Modifier.testTag("chip_extra_filters"),
-            )
 
             val loadedDexNames =
               (loadState as? DexLoadState.Ready)?.loadedEntryNames ?: emptyList()

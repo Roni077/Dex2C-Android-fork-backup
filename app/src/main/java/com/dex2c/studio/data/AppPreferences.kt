@@ -2,11 +2,13 @@ package com.dex2c.studio.data
 
 import android.content.Context
 import android.os.Build
+import androidx.annotation.DrawableRes
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.dex2c.studio.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -64,10 +66,52 @@ val CURATED_ACCENT_PRESETS =
     AccentPreset("Coral Crimson", "#F43F5E"),
   )
 
+enum class AppIconStyle(
+  val id: String,
+  val label: String,
+  val description: String,
+  val aliasName: String,
+  @param:DrawableRes val previewRes: Int,
+) {
+  CYBER_SHODO(
+    id = "cyber_shodo",
+    label = "Cyber Shodo",
+    description = "Expressive dry-brush Japanese calligraphy D2C with cyan/mint neon energy",
+    aliasName = "MainActivityShodo",
+    previewRes = R.drawable.ic_dex2c_shodo_src,
+  ),
+  CURSIVE_NEON(
+    id = "cursive_neon",
+    label = "Cursive Neon",
+    description = "Fluid continuous handwritten script dex2c with cyan-to-mint gradient",
+    aliasName = "MainActivityCursive",
+    previewRes = R.drawable.ic_dex2c_cursive_src,
+  ),
+  MONOGRAM_LIGATURE(
+    id = "monogram_ligature",
+    label = "Monogram Ligature",
+    description = "Interlocking calligraphic D2C ligature with metallic chisel sheen",
+    aliasName = "MainActivityMonogram",
+    previewRes = R.drawable.ic_dex2c_monogram_src,
+  ),
+  CLASSIC_TECH(
+    id = "classic_tech",
+    label = "Classic Tech",
+    description = "Original geometric hexagon circuit badge and DEX blocks",
+    aliasName = "MainActivityClassic",
+    previewRes = R.drawable.ic_dex2c_classic_src,
+  );
+
+  companion object {
+    val DEFAULT = CYBER_SHODO
+  }
+}
+
 fun defaultDynamicColorForDevice(sdkInt: Int = Build.VERSION.SDK_INT): Boolean = sdkInt >= Build.VERSION_CODES.S
 
 data class AppSettings(
   val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
+  val appIconStyle: AppIconStyle = AppIconStyle.DEFAULT,
   val dynamicColor: Boolean = defaultDynamicColorForDevice(),
   val accentSeedHex: String = "#2EE59D",
   val codeFontSizeSp: Int = 12,
@@ -86,6 +130,7 @@ class AppPreferences(private val context: Context) {
 
   private object Keys {
     val THEME_MODE = stringPreferencesKey("theme_mode")
+    val APP_ICON_STYLE = stringPreferencesKey("app_icon_style")
     val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
     val ACCENT_SEED_HEX = stringPreferencesKey("accent_seed_hex")
     val CODE_FONT_SIZE_SP = intPreferencesKey("code_font_size_sp")
@@ -104,6 +149,9 @@ class AppPreferences(private val context: Context) {
       themeMode =
         prefs[Keys.THEME_MODE]?.let { runCatching { AppThemeMode.valueOf(it) }.getOrNull() }
           ?: defaults.themeMode,
+      appIconStyle =
+        prefs[Keys.APP_ICON_STYLE]?.let { runCatching { AppIconStyle.valueOf(it) }.getOrNull() }
+          ?: defaults.appIconStyle,
       dynamicColor = prefs[Keys.DYNAMIC_COLOR] ?: defaults.dynamicColor,
       accentSeedHex =
         prefs[Keys.ACCENT_SEED_HEX]?.takeIf { isValidHexColor(it) } ?: defaults.accentSeedHex,
@@ -128,6 +176,7 @@ class AppPreferences(private val context: Context) {
     settings: AppSettings,
   ) {
     prefs[Keys.THEME_MODE] = settings.themeMode.name
+    prefs[Keys.APP_ICON_STYLE] = settings.appIconStyle.name
     prefs[Keys.DYNAMIC_COLOR] = settings.dynamicColor
     prefs[Keys.ACCENT_SEED_HEX] =
       if (isValidHexColor(settings.accentSeedHex)) normalizeHexColor(settings.accentSeedHex)

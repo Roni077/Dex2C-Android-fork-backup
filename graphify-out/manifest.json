@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\MainActivity.kt": {
-    "mtime": 1795167631.167537,
-    "ast_hash": "4cb3734fe2c9b7f3f569ed39d1aeb693",
+    "mtime": 1795181974.5825322,
+    "ast_hash": "65651b83efc1a3e394421da2ac3df845",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\ApkMetadataInspector.kt": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\AppPreferences.kt": {
-    "mtime": 1794906146.4342706,
-    "ast_hash": "8e5a617fca0de4d4a1f9feefc9789651",
+    "mtime": 1795183359.0189817,
+    "ast_hash": "236e99cc974f3c13cd7723807fdcb645",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\CloudPreferences.kt": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\D2cConfigEngine.kt": {
-    "mtime": 1795153187.1380146,
-    "ast_hash": "f80725a647ece7681c1dc1dfc19f8d04",
+    "mtime": 1795182155.3844182,
+    "ast_hash": "1b1951de1e91a7282f3709a6e75990ad",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\Dex2cTranspiler.kt": {
@@ -160,8 +160,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\Dex2cViewModel.kt": {
-    "mtime": 1795167660.1583545,
-    "ast_hash": "872e408d45ec0a1085ac1a1d0442fbb3",
+    "mtime": 1795182612.153052,
+    "ast_hash": "56da4ed6c2b053b6a41d92f787560b18",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ApkPickerSheet.kt": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\ClassesScreen.kt": {
-    "mtime": 1795146460.3541226,
-    "ast_hash": "68675fd11a41bd7de7fcbd82807199d7",
+    "mtime": 1795181934.054126,
+    "ast_hash": "fbf7ff1dc3454282c3ddd9df5b69c3b2",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\CloudBuildScreen.kt": {
@@ -270,13 +270,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsScreen.kt": {
-    "mtime": 1794847877.2018573,
-    "ast_hash": "41278a6ae07bdce644cc7b82cb984b80",
+    "mtime": 1795182967.8665419,
+    "ast_hash": "9494cf0b31de6a56448b2138d5cf98a5",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsSubScreens.kt": {
-    "mtime": 1795018180.2940006,
-    "ast_hash": "2edc1dfa0bb3a2b726cc2918a2ae14e7",
+    "mtime": 1795183180.692705,
+    "ast_hash": "8f5a1cf7b7a510f540fbef984a3f79a5",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SmaliClassScreen.kt": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleRobolectricTest.kt": {
-    "mtime": 1795147521.0759013,
-    "ast_hash": "77020017922ce66c4c2b805ff041958c",
+    "mtime": 1795183385.6995702,
+    "ast_hash": "7aac344700288cbc97d041fdc491a5c2",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleUnitTest.kt": {
@@ -579,11 +579,6 @@
     "ast_hash": "661b68f8c01555ce1fd7f1dfe86b5261",
     "semantic_hash": ""
   },
-  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_icon_src.jpg": {
-    "mtime": 1794824497.3131175,
-    "ast_hash": "223cd7557d23ef102702fc2b95896538",
-    "semantic_hash": ""
-  },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\img_dex2c_hero.jpg": {
     "mtime": 1794824497.3131175,
     "ast_hash": "6a5eb4478f8fb9f7167a3c0c421e8aa6",
@@ -595,53 +590,53 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png": {
-    "mtime": 1794824497.3467858,
-    "ast_hash": "8d9ea81ba070abc1dd35f841af8bc27b",
+    "mtime": 1795182563.9780717,
+    "ast_hash": "65e8f06547c70714fec499a7392ddce7",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png": {
-    "mtime": 1794824497.3467858,
-    "ast_hash": "d059b41df73c70d7febb4b4cf5239476",
+    "mtime": 1795182563.9795783,
+    "ast_hash": "cd3e375c6c1e3507924aac4169010467",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher.png": {
-    "mtime": 1794824497.3467858,
-    "ast_hash": "e2b0ca86c0e51b93a6b888c7415f9d4e",
+    "mtime": 1795182563.9443755,
+    "ast_hash": "c2b0cd771e36032fef73b36574c56e93",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_round.png": {
-    "mtime": 1794824497.3467858,
-    "ast_hash": "873870fecb1753aece5149aeacc5b200",
+    "mtime": 1795182563.9458842,
+    "ast_hash": "f8d53ca173e80d8500457a52ec9f598d",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png": {
-    "mtime": 1794824497.3467858,
-    "ast_hash": "5528abe84a950f3722cc2f0ba45f4d93",
+    "mtime": 1795182564.0156493,
+    "ast_hash": "37ef0a7ee318c625e295bcfcf17b892c",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_round.png": {
-    "mtime": 1794824497.3467858,
-    "ast_hash": "fc6d73f5b2192116949406e31be1cee5",
+    "mtime": 1795182564.018649,
+    "ast_hash": "565a79985f680b1b149256657d26fa48",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher.png": {
-    "mtime": 1794824497.3544316,
-    "ast_hash": "c15898498558d73e53a93e1e8b4df859",
+    "mtime": 1795182564.065544,
+    "ast_hash": "b25134cc9ddf3b93acbd68f96c64d94d",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_round.png": {
-    "mtime": 1794824497.3544316,
-    "ast_hash": "6acaa6f19b07dc1650b740c7d7b01bcf",
+    "mtime": 1795182564.0705423,
+    "ast_hash": "a06ac654914bab0cc777ae96899ced98",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher.png": {
-    "mtime": 1794824497.3544316,
-    "ast_hash": "372cec806e25a1f5b1d954ca5abcc80a",
+    "mtime": 1795182564.123163,
+    "ast_hash": "4c9b4bdf239b27d4ffccbc14af9d7312",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_round.png": {
-    "mtime": 1794824497.3544316,
-    "ast_hash": "0752b493f50aee83a57909aa046cb3ad",
+    "mtime": 1795182564.1301444,
+    "ast_hash": "c5dba484c2989d3f19be6bd0c95575e6",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\public\\assets\\aistudio\\class_5cecaab8.jpg": {
@@ -1092,6 +1087,241 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\dex\\D2cnHeader.kt": {
     "mtime": 1795163043.5391169,
     "ast_hash": "7a0bbe79702817d372a8b0c2d8982cb3",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\AppIconManager.kt": {
+    "mtime": 1795182776.01439,
+    "ast_hash": "8cf470b36f22c78a9491b11d6cf54eea",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\transpiler\\FilterRuleOptimizationTest.kt": {
+    "mtime": 1795183804.1778831,
+    "ast_hash": "fe97f3e34c8622ccf2c80a8c6384030e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_classic_src.png": {
+    "mtime": 1795182563.7090647,
+    "ast_hash": "73c6fce43c32f6a4fca86c4287fedc1f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_cursive_src.png": {
+    "mtime": 1795182563.3476117,
+    "ast_hash": "f0c9ff56d2f492c86240039827395896",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_icon_src.png": {
+    "mtime": 1795182563.8873963,
+    "ast_hash": "83f580dd5fc75c749fdabcb1ddcdd1da",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_monogram_src.png": {
+    "mtime": 1795182563.5492363,
+    "ast_hash": "6295d93a6b239a86184721e9329d6efc",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\drawable\\ic_dex2c_shodo_src.png": {
+    "mtime": 1795182563.2146277,
+    "ast_hash": "83f580dd5fc75c749fdabcb1ddcdd1da",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_classic.png": {
+    "mtime": 1795182564.5897257,
+    "ast_hash": "bdc2fb6847bdca4e3a38a0ada26b82ba",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_classic_round.png": {
+    "mtime": 1795182564.6033888,
+    "ast_hash": "bf4848b0b931ed437c1b62c269140aa7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_cursive.png": {
+    "mtime": 1795182564.187931,
+    "ast_hash": "8bb95ecfac0a81a7ab2af399274d66a1",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_cursive_round.png": {
+    "mtime": 1795182564.2032092,
+    "ast_hash": "4ed9f72d637edf6be5f7367ea83d8766",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_monogram.png": {
+    "mtime": 1795182564.3926017,
+    "ast_hash": "13c0de73d2f145c196bd55b4bc86399f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_monogram_round.png": {
+    "mtime": 1795182564.4103286,
+    "ast_hash": "c36a9f348ea43ff51ffe5a03ceec7903",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_shodo.png": {
+    "mtime": 1795182563.961037,
+    "ast_hash": "65e8f06547c70714fec499a7392ddce7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_shodo_round.png": {
+    "mtime": 1795182563.9760652,
+    "ast_hash": "cd3e375c6c1e3507924aac4169010467",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_classic.png": {
+    "mtime": 1795182564.5625014,
+    "ast_hash": "ea8ae61e2f527dd04e11843d0e7d55c0",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_classic_round.png": {
+    "mtime": 1795182564.5749876,
+    "ast_hash": "aac9e81351a00a62588907f01bad3b39",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_cursive.png": {
+    "mtime": 1795182564.1588607,
+    "ast_hash": "6ae6bc242119bcdf9ca3030eb62970f9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_cursive_round.png": {
+    "mtime": 1795182564.1731803,
+    "ast_hash": "50ee19d5e548df6bcd49ac160d6bac9a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_monogram.png": {
+    "mtime": 1795182564.36404,
+    "ast_hash": "a5b37599ae8e42e375c85919cbc1949c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_monogram_round.png": {
+    "mtime": 1795182564.3778396,
+    "ast_hash": "bb77db31b0092367971e2412096367e9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_shodo.png": {
+    "mtime": 1795182563.9277482,
+    "ast_hash": "c2b0cd771e36032fef73b36574c56e93",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_shodo_round.png": {
+    "mtime": 1795182563.9413822,
+    "ast_hash": "f8d53ca173e80d8500457a52ec9f598d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_classic.png": {
+    "mtime": 1795182564.6197553,
+    "ast_hash": "a1e8b3e886f51e5a3bb3caef11f06322",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_classic_round.png": {
+    "mtime": 1795182564.6349509,
+    "ast_hash": "68e17bb5c33d0eb8dc736430a22d4211",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_cursive.png": {
+    "mtime": 1795182564.219719,
+    "ast_hash": "bc5d00ed2604c9799fa1d5f249860462",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_cursive_round.png": {
+    "mtime": 1795182564.237263,
+    "ast_hash": "4538c5d96355797a6f658feb0ae9cc9a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_monogram.png": {
+    "mtime": 1795182564.4293954,
+    "ast_hash": "87162321f04c0170e6dc56da162d4c93",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_monogram_round.png": {
+    "mtime": 1795182564.444856,
+    "ast_hash": "982a8480b716faa6aac03eaf3b1c8ac1",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_shodo.png": {
+    "mtime": 1795182563.996097,
+    "ast_hash": "37ef0a7ee318c625e295bcfcf17b892c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_shodo_round.png": {
+    "mtime": 1795182564.0114193,
+    "ast_hash": "565a79985f680b1b149256657d26fa48",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_classic.png": {
+    "mtime": 1795182564.6511047,
+    "ast_hash": "82c49433a77d228da93be065bcca6561",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_classic_round.png": {
+    "mtime": 1795182564.668209,
+    "ast_hash": "ee83d3bce6b5f7776918ab9b9d19f1c3",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_cursive.png": {
+    "mtime": 1795182564.263813,
+    "ast_hash": "a04bed5a94fdbb779fd6be47f85d4601",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_cursive_round.png": {
+    "mtime": 1795182564.2859826,
+    "ast_hash": "57845a1b38ba0263cc24408973cebae5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_monogram.png": {
+    "mtime": 1795182564.462595,
+    "ast_hash": "0475b607ca96198eedd2c6a7e42343d7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_monogram_round.png": {
+    "mtime": 1795182564.4995065,
+    "ast_hash": "7ba7aabde4de05ff2f7ebdba04821c0d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_shodo.png": {
+    "mtime": 1795182564.0395434,
+    "ast_hash": "b25134cc9ddf3b93acbd68f96c64d94d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_shodo_round.png": {
+    "mtime": 1795182564.0608487,
+    "ast_hash": "a06ac654914bab0cc777ae96899ced98",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_classic.png": {
+    "mtime": 1795182564.6880622,
+    "ast_hash": "aac144321e3d8ca8ac563ab599775921",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_classic_round.png": {
+    "mtime": 1795182564.706756,
+    "ast_hash": "308edcb4d36a69b54926a62e8fdac8f2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_cursive.png": {
+    "mtime": 1795182564.3139505,
+    "ast_hash": "11559838ed965f54dead3dd1bc4124b5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_cursive_round.png": {
+    "mtime": 1795182564.3367765,
+    "ast_hash": "43e2bbd3edd04c58c2cd92b6079844e8",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_monogram.png": {
+    "mtime": 1795182564.521791,
+    "ast_hash": "042a8664b2c92637612bad64523eeb1f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_monogram_round.png": {
+    "mtime": 1795182564.5424316,
+    "ast_hash": "0a86abe8196517ae34415bc12e706819",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_shodo.png": {
+    "mtime": 1795182564.0958006,
+    "ast_hash": "4c9b4bdf239b27d4ffccbc14af9d7312",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_shodo_round.png": {
+    "mtime": 1795182564.1172924,
+    "ast_hash": "c5dba484c2989d3f19be6bd0c95575e6",
     "semantic_hash": ""
   }
 }

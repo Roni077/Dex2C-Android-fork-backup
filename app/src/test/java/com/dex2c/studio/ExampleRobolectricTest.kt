@@ -858,6 +858,8 @@ class ExampleRobolectricTest {
         classes = listOf(cls),
       )
 
+    var isSheetOpen by mutableStateOf(false)
+
     composeTestRule.setContent {
       Dex2cTheme {
         com.dex2c.studio.ui.screens.ClassesScreen(
@@ -866,6 +868,8 @@ class ExampleRobolectricTest {
           filterState = filterState,
           selectedMethodIds = emptySet(),
           allowInit = false,
+          isFilterSheetOpen = isSheetOpen,
+          onCloseFilterSheet = { isSheetOpen = false },
           onSearchChange = {},
           onToggleHideFramework = {},
           onToggleOnlyBytecode = {},
@@ -892,7 +896,7 @@ class ExampleRobolectricTest {
     }
 
     // Open extra filter sheet and select SELECTED_FIRST sort order
-    composeTestRule.onNodeWithTag("chip_extra_filters").performClick()
+    isSheetOpen = true
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("sort_option_SELECTED_FIRST").performScrollTo().performClick()
     composeTestRule.waitForIdle()
@@ -903,7 +907,6 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("filter_method_scope_STATIC_ONLY").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     assertEquals(2, filterState.extraFilterCount)
-    composeTestRule.onNodeWithTag("chip_extra_filters").assertTextContains("Filters (2)")
 
     // Reset extra filters clears badge
     composeTestRule.onNodeWithTag("filter_reset_extra_btn").performScrollTo().performClick()
@@ -1362,7 +1365,7 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithText("Settings").assertIsDisplayed()
     composeTestRule.onNodeWithText("Detailed Settings").assertDoesNotExist()
     composeTestRule.onNodeWithText("Theme, editor, DEX parser, and Cloud NDK").assertIsDisplayed()
-    composeTestRule.onNodeWithText("Follow System • Dynamic").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Follow System • Dynamic", substring = true).assertIsDisplayed()
     composeTestRule.onNodeWithText("dex2c_native • RegisterNatives • C++17 (env->)").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_hub_row_code_editor").assertIsDisplayed()

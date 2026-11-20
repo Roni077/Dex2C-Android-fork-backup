@@ -46,26 +46,32 @@ object FilterRuleEngine {
       }
     }
 
+    val hasCatchAllInclude = includes.isEmpty() || includes.any { it.pattern == ".*" || it.pattern == "^.*$" }
+
     val matchedIds = linkedSetOf<String>()
     val matchedClasses = linkedSetOf<String>()
     var skippedInits = 0
 
-      for (cls in dexFiles.flatMap { it.classes }) {
-        for (method in cls.allMethods) {
-          if (!method.hasBytecode) continue
-          if (!config.allowInit && method.isInitConstructor) {
-            skippedInits++
-            continue
-          }
-          if (config.skipSynthetic && method.isCoroutineOrSyntheticArtifact) {
-            continue
-          }
-          if (matchesRules(cls.fullName, method, includes, excludes)) {
-            matchedIds += method.id
-            matchedClasses += cls.uniqueKey
-          }
+    for (cls in dexFiles.flatMap { it.classes }) {
+      val classDesc = cls.descriptor
+      val classNoSemi = classDesc.removeSuffix(";")
+      val javaName = cls.fullName
+
+      for (method in cls.allMethods) {
+        if (!method.hasBytecode) continue
+        if (!config.allowInit && method.isInitConstructor) {
+          skippedInits++
+          continue
+        }
+        if (config.skipSynthetic && method.isCoroutineOrSyntheticArtifact) {
+          continue
+        }
+        if (matchesRules(javaName, classNoSemi, method, includes, excludes, hasCatchAllInclude)) {
+          matchedIds += method.id
+          matchedClasses += cls.uniqueKey
         }
       }
+    }
 
     return FilterMatchSummary(
       matchedMethodIds = matchedIds,
@@ -201,25 +207,28 @@ object FilterRuleEngine {
 
   private fun matchesRules(
     javaClassName: String,
+    classNoSemi: String,
     method: DexEncodedMethod,
     includes: List<Regex>,
     excludes: List<Regex>,
+    hasCatchAllInclude: Boolean,
   ): Boolean {
     val dalvikSig = method.methodRef.dalvikSignature()
-    val dccSig = "${method.methodRef.definingClass}${method.methodRef.name}${method.methodRef.jniSignature()}"
-    val classNoSemi = method.methodRef.definingClass.removeSuffix(";")
-    val dotSig = "$javaClassName.${method.methodRef.name}"
 
-    fun matchesAny(regex: Regex): Boolean =
-      regex.containsMatchIn(dalvikSig) ||
-        regex.containsMatchIn(dccSig) ||
-        regex.containsMatchIn(classNoSemi) ||
-        regex.containsMatchIn(dotSig)
+    fun matchesAny(regex: Regex): Boolean {
+      if (regex.containsMatchIn(dalvikSig)) return true
+      if (regex.containsMatchIn(classNoSemi)) return true
+      val dotSig = "$javaClassName.${method.methodRef.name}"
+      if (regex.containsMatchIn(dotSig)) return true
+      val dccSig = "${method.methodRef.definingClass}${method.methodRef.name}${method.methodRef.jniSignature()}"
+      return regex.containsMatchIn(dccSig)
+    }
 
-    val isExcluded = excludes.any(::matchesAny)
-    if (isExcluded) return false
+    if (excludes.isNotEmpty() && excludes.any(::matchesAny)) {
+      return false
+    }
 
-    if (includes.isEmpty()) return true
+    if (hasCatchAllInclude) return true
     return includes.any(::matchesAny)
   }
 

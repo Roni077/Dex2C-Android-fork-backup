@@ -83,6 +83,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -261,7 +262,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   val selectedMethodCount: StateFlow<Int> = _selectedMethodIds
     .map { it.size }
     .distinctUntilChanged()
-    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+    .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
   private val _filterState = MutableStateFlow(ClassFilterState())
   val filterState: StateFlow<ClassFilterState> = _filterState.asStateFlow()
@@ -319,7 +320,7 @@ class Dex2cViewModel @JvmOverloads constructor(
       else apps.filter { it.appLabel.contains(q, ignoreCase = true) || it.packageName.contains(q, ignoreCase = true) }
     }
       .flowOn(Dispatchers.Default)
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+      .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
   val recentFiles: StateFlow<List<RecentBinaryItem>> =
     recentStore.recentItemsFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -396,11 +397,18 @@ class Dex2cViewModel @JvmOverloads constructor(
   private var cloudRunPollJob: Job? = null
   private var inspectionJob: Job? = null
 
+  @OptIn(kotlinx.coroutines.FlowPreview::class)
   val filterMatchSummary: StateFlow<FilterMatchSummary?> =
-    combine(_loadState, _config) { load, cfg ->
+    combine(
+      _loadState,
+      _config.map { Triple(it.filterRulesText, it.allowInit, it.skipSynthetic) }
+        .distinctUntilChanged()
+        .debounce(250L)
+    ) { load, _ ->
       val ready = load as? DexLoadState.Ready ?: return@combine null
+      val cfg = _config.value
       withContext(Dispatchers.Default) { FilterRuleEngine.evaluateAll(ready.loadedDexes.values, cfg) }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
   private var lastNonSelectedResult: List<DexClassInfo>? = null
   private var lastNonSelectedKey: Triple<DexLoadState, ClassFilterState, FilterMatchSummary?>? = null
@@ -511,7 +519,7 @@ class Dex2cViewModel @JvmOverloads constructor(
       sorted
     }
       .flowOn(Dispatchers.Default)
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+      .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
   private var hasInitializedFilterDefaults = false
   private var pendingAppSettingsWrites = 0

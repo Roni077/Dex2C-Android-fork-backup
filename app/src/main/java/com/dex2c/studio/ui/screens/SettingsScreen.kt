@@ -540,7 +540,7 @@ private fun sectionSummary(
             it.hex.equals(appSettings.accentSeedHex, ignoreCase = true)
           }?.name ?: normalizeHexColor(appSettings.accentSeedHex)
         }
-      "${appSettings.themeMode.label} • $paletteLabel"
+      "${appSettings.themeMode.label} • $paletteLabel • ${appSettings.appIconStyle.label}"
     }
     SettingsSection.CODE_EDITOR ->
       "${appSettings.codeFontSizeSp}sp • ${appSettings.smaliSyntaxTheme.shortLabel} • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"

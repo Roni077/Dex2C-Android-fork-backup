@@ -241,6 +241,7 @@ fun Dex2cApp(
   val recentFiles by viewModel.recentFiles.collectAsStateWithLifecycle()
   val stagingState by viewModel.stagingState.collectAsStateWithLifecycle()
   val filterMatchSummary by viewModel.filterMatchSummary.collectAsStateWithLifecycle()
+  val classFilterState by viewModel.filterState.collectAsStateWithLifecycle()
   val smaliClassState by viewModel.smaliClassState.collectAsStateWithLifecycle()
   val isCompilingDex by viewModel.isCompilingDex.collectAsStateWithLifecycle()
   val lastCompileError by viewModel.lastCompileError.collectAsStateWithLifecycle()
@@ -468,10 +469,19 @@ fun Dex2cApp(
                   onClick = { viewModel.openClassesFilterSheet() },
                   modifier = Modifier.testTag("topbar_classes_filter_button"),
                 ) {
-                  Icon(
-                    imageVector = Icons.Rounded.FilterList,
-                    contentDescription = stringResource(R.string.pipeline_tab_filters),
-                  )
+                  if (classFilterState.extraFilterCount > 0) {
+                    BadgedBox(badge = { Badge { Text("${classFilterState.extraFilterCount}") } }) {
+                      Icon(
+                        imageVector = Icons.Rounded.FilterList,
+                        contentDescription = stringResource(R.string.pipeline_tab_filters),
+                      )
+                    }
+                  } else {
+                    Icon(
+                      imageVector = Icons.Rounded.FilterList,
+                      contentDescription = stringResource(R.string.pipeline_tab_filters),
+                    )
+                  }
                 }
               }
               IconButton(
@@ -617,13 +627,12 @@ fun Dex2cApp(
 
             composable(ROUTE_CLASSES) {
               val filteredClasses by viewModel.filteredClasses.collectAsStateWithLifecycle()
-              val filterState by viewModel.filterState.collectAsStateWithLifecycle()
               val selectedMethodIds by viewModel.selectedMethodIds.collectAsStateWithLifecycle()
               val isClassesFilterSheetOpen by viewModel.isClassesFilterSheetOpen.collectAsStateWithLifecycle()
               ClassesScreen(
                 loadState = loadState,
                 classes = filteredClasses,
-                filterState = filterState,
+                filterState = classFilterState,
                 selectedMethodIds = selectedMethodIds,
                 allowInit = config.allowInit,
                 isFilterSheetOpen = isClassesFilterSheetOpen,

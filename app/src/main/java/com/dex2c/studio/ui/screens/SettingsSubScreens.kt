@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -75,8 +76,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -91,6 +94,8 @@ import com.dex2c.studio.cloud.CloudSigningMode
 import com.dex2c.studio.cloud.Dex2cWorkflowGenerator
 import com.dex2c.studio.cloud.SUPPORTED_JDK_VERSIONS
 import com.dex2c.studio.cloud.SUPPORTED_NDK_VERSIONS
+import com.dex2c.studio.data.AppIconManager
+import com.dex2c.studio.data.AppIconStyle
 import com.dex2c.studio.data.AppSettings
 import com.dex2c.studio.data.AppThemeMode
 import com.dex2c.studio.data.CURATED_ACCENT_PRESETS
@@ -198,6 +203,84 @@ fun SettingsAppearanceSubScreen(
           enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
           onSelectHex = { hex -> onUpdateAppSettings { it.copy(accentSeedHex = hex, dynamicColor = false) } },
         )
+      }
+    }
+
+    item {
+      val context = LocalContext.current
+      SubScreenCard(title = "App Launcher Icon", icon = Icons.Rounded.AutoAwesome) {
+        Text(
+          text = "Select your preferred calligraphic launcher icon. Changes are applied dynamically to your device home screen.",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(12.dp))
+        AppIconStyle.entries.forEachIndexed { index, style ->
+          val isSelected = appSettings.appIconStyle == style
+          Row(
+            modifier =
+              Modifier.fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .clickable {
+                  onUpdateAppSettings { it.copy(appIconStyle = style) }
+                  AppIconManager.setAppIcon(context, style)
+                }
+                .padding(vertical = 8.dp, horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+          ) {
+            Surface(
+              shape = RoundedCornerShape(12.dp),
+              color = MaterialTheme.colorScheme.surfaceContainerHigh,
+              border = BorderStroke(
+                width = if (isSelected) 2.dp else 1.dp,
+                color =
+                  if (isSelected) MaterialTheme.colorScheme.primary
+                  else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+              ),
+              modifier = Modifier.size(46.dp),
+            ) {
+              Image(
+                painter = painterResource(id = style.previewRes),
+                contentDescription = style.label,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
+              )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+              ) {
+                Text(style.label, style = MaterialTheme.typography.titleSmall)
+                if (style == AppIconStyle.DEFAULT) {
+                  TagPill(
+                    text = "Default",
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                  )
+                }
+              }
+              Text(
+                text = style.description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+            RadioButton(
+              selected = isSelected,
+              onClick = {
+                onUpdateAppSettings { it.copy(appIconStyle = style) }
+                AppIconManager.setAppIcon(context, style)
+              },
+              modifier =
+                Modifier.minimumInteractiveComponentSize().testTag("settings_app_icon_${style.name}"),
+            )
+          }
+          if (index < AppIconStyle.entries.lastIndex) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+          }
+        }
       }
     }
   }
@@ -1209,6 +1292,47 @@ fun SettingsAboutSubScreen(
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
+    item {
+      Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Row(
+          modifier = Modifier.padding(16.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            modifier = Modifier.size(56.dp),
+          ) {
+            Image(
+              painter = painterResource(id = R.drawable.ic_dex2c_icon_src),
+              contentDescription = stringResource(R.string.app_name),
+              contentScale = ContentScale.Crop,
+              modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
+            )
+          }
+          Column {
+            Text(
+              text = stringResource(R.string.app_name),
+              style = MaterialTheme.typography.titleMedium,
+              fontWeight = FontWeight.Bold,
+            )
+            Text(
+              text = "Native Dalvik-to-C Transpiler & Cloud Build Studio",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+      }
+    }
+
     item {
       SubScreenCard(title = "Dex2C Studio", icon = Icons.Rounded.Info) {
         AboutRow("App Name", stringResource(R.string.app_name))
