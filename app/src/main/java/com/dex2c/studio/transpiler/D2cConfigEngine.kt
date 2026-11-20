@@ -10,6 +10,7 @@ data class FilterMatchSummary(
   val matchedClassCount: Int,
   val skippedInitCount: Int,
   val invalidRules: List<String>,
+  val matchedClassKeys: Set<String> = emptySet(),
 )
 
 object FilterRuleEngine {
@@ -78,6 +79,7 @@ object FilterRuleEngine {
       matchedClassCount = matchedClasses.size,
       skippedInitCount = skippedInits,
       invalidRules = invalid,
+      matchedClassKeys = matchedClasses,
     )
   }
 
@@ -99,29 +101,30 @@ object FilterRuleEngine {
 
     for (dex in dexFiles) {
       if (dex.rawBytes.isEmpty()) return null
-      val matchedIndices =
-        DexNativeEngine.evaluateFilterRules(
+      val nativeResult =
+        DexNativeEngine.evaluateFilterRulesFast(
           dexBytes = dex.rawBytes,
           rules = ruleLines,
           allowInit = config.allowInit,
           skipSynthetic = config.skipSynthetic,
         ) ?: return null
 
+      val matchedClassIndices = nativeResult.matchedClassIndices
+      val matchedMethodIndices = nativeResult.matchedMethodIndices
+
       for (cls in dex.classes) {
-        var classMatched = false
+        if (cls.classIndex in matchedClassIndices) {
+          matchedClasses += cls.uniqueKey
+        }
         for (m in cls.allMethods) {
           if (!m.hasBytecode) continue
           if (!config.allowInit && m.isInitConstructor) {
             skippedInits++
             continue
           }
-          if (m.methodIndex in matchedIndices) {
+          if (m.methodIndex in matchedMethodIndices) {
             matchedIds += m.id
-            classMatched = true
           }
-        }
-        if (classMatched) {
-          matchedClasses += cls.uniqueKey
         }
       }
     }
@@ -131,6 +134,7 @@ object FilterRuleEngine {
       matchedClassCount = matchedClasses.size,
       skippedInitCount = skippedInits,
       invalidRules = emptyList(),
+      matchedClassKeys = matchedClasses,
     )
   }
 
@@ -401,6 +405,18 @@ object FilterRuleEngine {
       clean == expr
     }
     existingLines.add(targetLine)
+    return existingLines.joinToString("\n")
+  }
+
+  fun removeStructuredRule(filterText: String, rule: StructuredFilterRule): String {
+    val expr = rule.toRuleExpression().trim()
+    val targetLine = rule.toFilterLine().trim()
+    val existingLines =
+      filterText
+        .lineSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && it != targetLine && it.removePrefix("!").trim() != expr }
+        .toList()
     return existingLines.joinToString("\n")
   }
 

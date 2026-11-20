@@ -140,7 +140,49 @@ class FilterRuleOptimizationTest {
     // 800 non-androidx classes * 10 methods = 8,000 matched methods
     assertEquals(8000, summary.matchedMethodIds.size)
     assertEquals(800, summary.matchedClassCount)
+    assertEquals(800, summary.matchedClassKeys.size)
+
+    // Verify O(1) class set lookup performance across 1,000 classes
+    val classLookupStart = System.nanoTime()
+    val matchingClasses = classes.filter { it.uniqueKey in summary.matchedClassKeys }
+    val classLookupElapsedMs = (System.nanoTime() - classLookupStart) / 1_000_000.0
+    assertEquals(800, matchingClasses.size)
+    assertTrue("Class O(1) matching took ${classLookupElapsedMs}ms, expected < 10ms", classLookupElapsedMs < 10.0)
+
     // Ensure 10,000 methods are evaluated in < 6000ms on JVM
     assertTrue("Elapsed time was ${elapsed}ms, expected < 6000ms", elapsed < 6000)
+  }
+
+  @Test
+  fun testRemoveAndUpsertStructuredRule() {
+    val initialFilter = """
+      com/example/MainActivity;onCreate(.*
+      !com/example/SecretClass;.*
+    """.trimIndent()
+
+    val ruleToRemove = StructuredFilterRule(
+      id = "rule_1",
+      packageName = "com/example",
+      className = "MainActivity",
+      methodName = "onCreate(.*",
+      isBlacklist = false,
+      ruleType = FilterRuleType.CLASS_METHOD,
+    )
+
+    val afterRemove = FilterRuleEngine.removeStructuredRule(initialFilter, ruleToRemove)
+    assertTrue(!afterRemove.contains("MainActivity"))
+    assertTrue(afterRemove.contains("SecretClass"))
+
+    val ruleToUpsert = StructuredFilterRule(
+      id = "rule_2",
+      packageName = "com/example",
+      className = "NewActivity",
+      methodName = "onResume(.*",
+      isBlacklist = false,
+      ruleType = FilterRuleType.CLASS_METHOD,
+    )
+
+    val afterUpsert = FilterRuleEngine.upsertStructuredRule(afterRemove, ruleToUpsert)
+    assertTrue(afterUpsert.contains("NewActivity"))
   }
 }

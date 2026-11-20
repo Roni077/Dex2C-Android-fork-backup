@@ -43,8 +43,21 @@ object DexNativeEngine {
   @JvmStatic
   external fun nativeGetStringCount(handle: Long): Int
 
+  data class NativeFilterResult(
+    val matchedClassIndices: Set<Int>,
+    val matchedMethodIndices: Set<Int>,
+  )
+
   @JvmStatic
   external fun nativeFilterMethods(
+    handle: Long,
+    rules: Array<String>,
+    allowInit: Boolean,
+    skipSynthetic: Boolean,
+  ): IntArray?
+
+  @JvmStatic
+  external fun nativeFilterClassesAndMethods(
     handle: Long,
     rules: Array<String>,
     allowInit: Boolean,
@@ -94,20 +107,49 @@ object DexNativeEngine {
     allowInit: Boolean = false,
     skipSynthetic: Boolean = true,
   ): Set<Int>? {
+    val res = evaluateFilterRulesFast(dexBytes, rules, allowInit, skipSynthetic)
+    return res?.matchedMethodIndices
+  }
+
+  /**
+   * Evaluates filter rules returning both matched class indices and method indices in a single fast JNI pass.
+   */
+  fun evaluateFilterRulesFast(
+    dexBytes: ByteArray,
+    rules: List<String>,
+    allowInit: Boolean = false,
+    skipSynthetic: Boolean = true,
+  ): NativeFilterResult? {
     if (!isAvailable || dexBytes.isEmpty()) return null
 
     val handle = runCatching { nativeOpenDex(dexBytes, dexBytes.size) }.getOrDefault(0L)
     if (handle == 0L) return null
 
     return try {
-      val matchedArray =
-        nativeFilterMethods(
+      val packed =
+        nativeFilterClassesAndMethods(
           handle = handle,
           rules = rules.toTypedArray(),
           allowInit = allowInit,
           skipSynthetic = skipSynthetic,
-        )
-      matchedArray?.toSet()
+        ) ?: return null
+
+      if (packed.size < 2) return null
+      val classCount = packed[0]
+      val methodCount = packed[1]
+      val classes = HashSet<Int>(classCount)
+      val methods = HashSet<Int>(methodCount)
+
+      val classEnd = 2 + classCount
+      for (i in 2 until classEnd) {
+        classes.add(packed[i])
+      }
+      val methodEnd = classEnd + methodCount
+      for (i in classEnd until methodEnd) {
+        methods.add(packed[i])
+      }
+
+      NativeFilterResult(classes, methods)
     } catch (e: Throwable) {
       safeLog(TAG, "Native filter evaluation failed, falling back to Kotlin", e)
       null

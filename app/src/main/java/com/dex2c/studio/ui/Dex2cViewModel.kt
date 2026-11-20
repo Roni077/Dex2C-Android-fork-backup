@@ -434,8 +434,13 @@ class Dex2cViewModel @JvmOverloads constructor(
           if (filter.hideFramework && cls.isFrameworkOrLibraryClass(resolvedApkPkg)) return@filter false
           if (filter.onlyWithBytecode && cls.bytecodeMethodCount == 0) return@filter false
           if (filter.onlySelected && cls.allMethods.none { it.id in selected }) return@filter false
-          if (filter.onlyMatchingFilterRules && ruleMatchedIds != null) {
-            if (cls.allMethods.none { it.id in ruleMatchedIds }) return@filter false
+          if (filter.onlyMatchingFilterRules && ruleMatch != null) {
+            val classKeys = ruleMatch.matchedClassKeys
+            if (classKeys.isNotEmpty()) {
+              if (cls.uniqueKey !in classKeys) return@filter false
+            } else if (ruleMatchedIds != null) {
+              if (cls.allMethods.none { it.id in ruleMatchedIds }) return@filter false
+            }
           }
           val isInterfaceOrEnum = (cls.accessFlags and 0x4200) != 0
           when (filter.classTypeFilter) {

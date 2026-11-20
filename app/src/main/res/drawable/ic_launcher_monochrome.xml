@@ -4,17 +4,29 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Centered Calligraphic D2C Silhouette within 66dp safe zone (21..87) -->
-    <!-- 'D' Stroke & Loop -->
+    <!-- Cyber Shodo Dry-Brush Calligraphy D2C Silhouette -->
+    <!-- 'D' Bristle Stroke -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M34,36 C34,36 39,32 44,32 C52,32 58,37 58,45 C58,54 50,61 41,61 C37,61 34,60 34,60 L34,76 C34,77.5 32.5,78 31,76 C29.5,74 30,71 30,68 L30,39 C30,36.5 32,35.5 34,36 Z M34,40 L34,56 C36.5,56.5 39,57 41.5,56 C47,54 52,49 52,45 C52,39.5 47.5,36.5 42.5,36.5 C39,36.5 36,38 34,40 Z" />
-    <!-- '2' Calligraphic Wave -->
+        android:pathData="M24,36 C27,33 33,32 39,32 C48,32 54,37 54,46 C54,55 46,62 38,62 C34,62 31,61 31,61 L29,76 C28,78 25,78 24,76 C23,73 24,67 24,63 L24,36 Z M30,39 L30,55 C33,56 36,56.5 39,55.5 C44,53.5 48,48 48,44 C48,39 44,36.5 39,36.5 C35,36.5 32,38 30,39 Z" />
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M52,50 C52,44 56,40 61,40 C65.5,40 68,43 67,47 C65.5,52 60,57 55,62 L51,66 L68,66 C69.5,66 70,68 68,69 C66,70 63,70 59,70 L49,70 C47,70 46.5,68 48,66.5 L55.5,59 C59,55 62,51.5 62.5,48 C63,45.5 61.5,44 59.5,44 C56.5,44 54.5,46 54,49 C53.5,51 51,51.5 52,50 Z" />
-    <!-- 'C' Swash Terminal -->
+        android:pathData="M20,38 L22,34 L25,37 L23,41 Z" />
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M78,42 C80,39 83,40 82,43 C80,48 76.5,50 74,53 C70,58 70,64 74,68 C77,71 81,69.5 83,67 C84.5,65 86,66.5 85,68.5 C82.5,72.5 76.5,74.5 70.5,71 C64.5,67.5 64,57.5 69,50 C72,45.5 75.5,42.5 78,42 Z" />
+        android:pathData="M18,52 L22,50 L21,55 L17,56 Z" />
+    <!-- '2' Energy Brush Wave -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M48,48 C49,43 53,39 58,39 C62.5,39 65,42 64,46 C62.5,51 57,56 52,61 L48,65 L65,65 C66.5,65 67,67 65,68 C63,69 60,69 56,69 L46,69 C44,69 43.5,67 45,65.5 L52.5,58 C56,54 59,50.5 59.5,47 C60,44.5 58.5,43 56.5,43 C53.5,43 51.5,45 51,48 C50.5,50 47,50 48,48 Z" />
+    <!-- 'C' Dry-Brush Arc & Splatter -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M76,40 C78,37 81,38 80,41 C78,46 74.5,48 72,51 C68,56 68,62 72,66 C75,69 79,67.5 81,65 C82.5,63 84,64.5 83,66.5 C80.5,70.5 74.5,72.5 68.5,69 C62.5,65.5 62,55.5 67,48 C70,43.5 73.5,40.5 76,40 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M84,36 C86,34 88,36 86,38 C84,40 82,38 84,36 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M86,58 C88,57 89,59 88,61 C87,63 85,61 86,58 Z" />
 </vector>

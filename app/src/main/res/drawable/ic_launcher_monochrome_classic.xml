@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Classic Tech Hexagon & Circuit & Bracket Silhouette -->
+    <!-- Hexagon Outline -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,26 L79,40 L79,68 L54,82 L29,68 L29,40 Z M54,29 L31.5,41.5 L31.5,66.5 L54,79 L76.5,66.5 L76.5,41.5 Z" />
+    <!-- Isometric DEX Blocks -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M36,41 L45,36 L45,43 L36,48 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M36,51 L45,46 L45,53 L36,58 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M36,61 L45,56 L45,63 L36,68 Z" />
+    <!-- Curly Braces & Circuit Trace -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M58,44 C61,44 62,46 62,49 L62,51 C62,53 64,54 66,54 L66,54 C64,54 62,55 62,57 L62,59 C62,62 61,64 58,64 L56,64 L56,62 L58,62 C59.5,62 60,61 60,59 L60,56.5 C60,54.5 58,53.5 56,53.5 L56,54.5 C58,54.5 60,53.5 60,51.5 L60,49 C60,47 59.5,46 58,46 L56,46 L56,44 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M70,46 C71.5,46 72,47 72,49 L72,51.5 C72,53.5 74,54.5 76,54.5 L76,53.5 C74,53.5 72,52.5 72,50.5 L72,49 C72,47 71.5,46 70,46 Z" />
+</vector>

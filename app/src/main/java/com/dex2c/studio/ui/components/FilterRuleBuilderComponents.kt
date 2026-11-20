@@ -102,6 +102,15 @@ fun InteractiveFilterRuleBuilderPanel(
   onlyMatchingExplorerFilter: Boolean? = null,
   onToggleMatchingExplorerFilter: (() -> Unit)? = null,
 ) {
+  var editorSubMode by rememberSaveable { mutableStateOf(FilterEditorSubMode.BUILDER) }
+  var editingRule by remember { mutableStateOf<StructuredFilterRule?>(null) }
+  var isAddingRule by remember { mutableStateOf(false) }
+
+  val structuredRules =
+    remember(config.filterRulesText) {
+      FilterRuleEngine.parseStructuredRules(config.filterRulesText)
+    }
+
   val lineCount = remember(config.filterRulesText) {
     config.filterRulesText.lineSequence().count { it.trim().isNotEmpty() && !it.trim().startsWith("#") }
   }
@@ -192,18 +201,120 @@ fun InteractiveFilterRuleBuilderPanel(
       }
     }
 
-    OutlinedTextField(
-      value = config.filterRulesText,
-      onValueChange = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
-      label = { Text(stringResource(R.string.config_filter_txt_label)) },
-      shape = RoundedCornerShape(14.dp),
-      textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
-      modifier =
-        Modifier
-          .fillMaxWidth()
-          .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 260.dp))
-          .testTag("input_filter_txt"),
-    )
+    // Sub-mode selector: Structured Rule Builder vs Raw Text Editor
+    SingleChoiceSegmentedButtonRow(
+      modifier = Modifier.fillMaxWidth().testTag("filter_submode_selector"),
+    ) {
+      SegmentedButton(
+        selected = editorSubMode == FilterEditorSubMode.BUILDER,
+        onClick = { editorSubMode = FilterEditorSubMode.BUILDER },
+        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+        modifier = Modifier.testTag("filter_submode_builder"),
+      ) {
+        Text("Rules (${structuredRules.size})")
+      }
+      SegmentedButton(
+        selected = editorSubMode == FilterEditorSubMode.RAW,
+        onClick = { editorSubMode = FilterEditorSubMode.RAW },
+        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+        modifier = Modifier.testTag("filter_submode_raw"),
+      ) {
+        Text("Raw filter.txt")
+      }
+    }
+
+    when (editorSubMode) {
+      FilterEditorSubMode.BUILDER -> {
+        Column(
+          modifier = Modifier.fillMaxWidth(),
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+          FilledTonalButton(
+            onClick = { isAddingRule = true },
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("builder_add_rule_btn"),
+          ) {
+            Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("Add Filter Rule", style = MaterialTheme.typography.labelMedium)
+          }
+
+          if (structuredRules.isEmpty()) {
+            Surface(
+              shape = RoundedCornerShape(12.dp),
+              color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
+              modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            ) {
+              Text(
+                text = "No structured rules defined. Click 'Add Filter Rule' or switch to 'Raw filter.txt'.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(14.dp),
+              )
+            }
+          } else {
+            LazyColumn(
+              modifier =
+                Modifier
+                  .fillMaxWidth()
+                  .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 280.dp))
+                  .testTag("structured_rules_lazy_list"),
+              verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+              items(
+                items = structuredRules,
+                key = { it.id },
+              ) { rule ->
+                StructuredRuleItemCard(
+                  rule = rule,
+                  onToggleBlacklist = {
+                    val updated = FilterRuleEngine.toggleRuleLine(config.filterRulesText, rule.toFilterLine())
+                    onUpdateConfig { it.copy(filterRulesText = updated) }
+                  },
+                  onEdit = { editingRule = rule },
+                  onDelete = {
+                    val updated = FilterRuleEngine.removeStructuredRule(config.filterRulesText, rule)
+                    onUpdateConfig { it.copy(filterRulesText = updated) }
+                  },
+                )
+              }
+            }
+          }
+        }
+      }
+
+      FilterEditorSubMode.RAW -> {
+        OutlinedTextField(
+          value = config.filterRulesText,
+          onValueChange = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
+          label = { Text(stringResource(R.string.config_filter_txt_label)) },
+          shape = RoundedCornerShape(14.dp),
+          textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 260.dp))
+              .testTag("input_filter_txt"),
+        )
+      }
+    }
+
+    if (isAddingRule || editingRule != null) {
+      FilterRuleDialogSheet(
+        initialRule = editingRule,
+        onDismiss = {
+          isAddingRule = false
+          editingRule = null
+        },
+        onSave = { savedRule ->
+          val updated = FilterRuleEngine.upsertStructuredRule(config.filterRulesText, savedRule)
+          onUpdateConfig { it.copy(filterRulesText = updated) }
+          isAddingRule = false
+          editingRule = null
+        },
+      )
+    }
 
     Row(
       modifier = Modifier.fillMaxWidth(),

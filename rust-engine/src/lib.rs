@@ -5,7 +5,7 @@ pub mod dex;
 pub mod filter;
 
 use dex::DexFile;
-use filter::evaluate_dex_methods;
+use filter::{evaluate_dex_methods, evaluate_dex_methods_and_classes};
 use jni::objects::{JByteArray, JClass, JObjectArray, JString};
 use jni::sys::{jboolean, jint, jintArray, jlong, jobject, jsize, jstring, JNI_TRUE};
 use jni::JNIEnv;
@@ -185,6 +185,75 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
         };
 
         if env.set_int_array_region(&out_array, 0, &matched).is_err() {
+            return std::ptr::null_mut();
+        }
+
+        out_array.into_raw()
+    }));
+
+    result.unwrap_or(std::ptr::null_mut())
+}
+
+#[no_mangle]
+pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeFilterClassesAndMethods(
+    mut env: JNIEnv,
+    _class: JClass,
+    handle: jlong,
+    rules_array: JObjectArray,
+    allow_init: jboolean,
+    skip_synthetic: jboolean,
+) -> jintArray {
+    if handle == 0 || rules_array.is_null() {
+        return std::ptr::null_mut();
+    }
+
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        let holder = &*(handle as *const DexHolder);
+        let dex = DexFile {
+            data: &holder._buffer,
+            header: holder.header,
+        };
+
+        let len = match env.get_array_length(&rules_array) {
+            Ok(l) => l,
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        let mut rule_strings = Vec::with_capacity(len as usize);
+
+        for i in 0..len {
+            if let Ok(obj) = env.get_object_array_element(&rules_array, i) {
+                let jstr: JString = obj.into();
+                if !jstr.is_null() {
+                    if let Ok(java_str) = env.get_string(&jstr) {
+                        rule_strings.push(java_str.to_string_lossy().into_owned());
+                    }
+                }
+            }
+        }
+
+        let rust_rules: Vec<&str> = rule_strings.iter().map(|s| s.as_str()).collect();
+
+        let matched = evaluate_dex_methods_and_classes(
+            &dex,
+            &rust_rules,
+            allow_init == JNI_TRUE,
+            skip_synthetic == JNI_TRUE,
+        );
+
+        let total_size = 2 + matched.matched_classes.len() + matched.matched_methods.len();
+        let mut packed = Vec::with_capacity(total_size);
+        packed.push(matched.matched_classes.len() as i32);
+        packed.push(matched.matched_methods.len() as i32);
+        packed.extend_from_slice(&matched.matched_classes);
+        packed.extend_from_slice(&matched.matched_methods);
+
+        let out_array = match env.new_int_array(packed.len() as jsize) {
+            Ok(arr) => arr,
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        if env.set_int_array_region(&out_array, 0, &packed).is_err() {
             return std::ptr::null_mut();
         }
 

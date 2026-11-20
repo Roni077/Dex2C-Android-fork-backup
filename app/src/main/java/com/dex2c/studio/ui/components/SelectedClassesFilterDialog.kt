@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,7 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.transpiler.FilterRuleEngine
+import com.dex2c.studio.transpiler.StructuredFilterRule
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Modal dialog that presents the user's selected classes and their auto-generated
@@ -69,16 +73,26 @@ fun SelectedClassesFilterDialog(
 
   var isExclude by remember { mutableStateOf(false) }
 
-  val generatedRules =
-    remember(selectedClasses, selectedMethodIds, allowInit, isExclude) {
-      FilterRuleEngine.generateWildcardRulesFromSelection(
-        classes = selectedClasses,
-        selectedMethodIds = selectedMethodIds,
-        allowInit = allowInit,
-        isBlacklist = isExclude,
-      )
+  val generatedRulesState =
+    produceState(
+      initialValue = emptyList<StructuredFilterRule>(),
+      selectedClasses,
+      selectedMethodIds,
+      allowInit,
+      isExclude,
+    ) {
+      value =
+        withContext(Dispatchers.Default) {
+          FilterRuleEngine.generateWildcardRulesFromSelection(
+            classes = selectedClasses,
+            selectedMethodIds = selectedMethodIds,
+            allowInit = allowInit,
+            isBlacklist = isExclude,
+          )
+        }
     }
 
+  val generatedRules = generatedRulesState.value
   val generatedRuleLines = remember(generatedRules) { generatedRules.map { it.toFilterLine() } }
 
   AlertDialog(
@@ -127,152 +141,159 @@ fun SelectedClassesFilterDialog(
       }
     },
     text = {
-      Column(
-        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+      LazyColumn(
+        modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 460.dp).testTag("selected_classes_dialog_list"),
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
-        // Toggle: Include (Protect) vs Exclude (!)
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          FilterChip(
-            selected = !isExclude,
-            onClick = { isExclude = false },
-            leadingIcon = {
-              Icon(
-                imageVector = Icons.Rounded.CheckCircle,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-              )
-            },
-            label = { Text("Include / Protect") },
-            modifier = Modifier.testTag("dialog_chip_include"),
-          )
-          FilterChip(
-            selected = isExclude,
-            onClick = { isExclude = true },
-            leadingIcon = {
-              Icon(
-                imageVector = Icons.Rounded.Block,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-              )
-            },
-            label = { Text("Exclude (!)") },
-            modifier = Modifier.testTag("dialog_chip_exclude"),
+        item(key = "toggle_filter_mode") {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            FilterChip(
+              selected = !isExclude,
+              onClick = { isExclude = false },
+              leadingIcon = {
+                Icon(
+                  imageVector = Icons.Rounded.CheckCircle,
+                  contentDescription = null,
+                  modifier = Modifier.size(14.dp),
+                )
+              },
+              label = { Text("Include / Protect") },
+              modifier = Modifier.testTag("dialog_chip_include"),
+            )
+            FilterChip(
+              selected = isExclude,
+              onClick = { isExclude = true },
+              leadingIcon = {
+                Icon(
+                  imageVector = Icons.Rounded.Block,
+                  contentDescription = null,
+                  modifier = Modifier.size(14.dp),
+                )
+              },
+              label = { Text("Exclude (!)") },
+              modifier = Modifier.testTag("dialog_chip_exclude"),
+            )
+          }
+        }
+
+        item(key = "divider") {
+          HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+        }
+
+        item(key = "rules_header") {
+          Text(
+            text = "Generated Rules (${generatedRuleLines.size}):",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.primary,
           )
         }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-
-        // Generated filter.txt rule preview
-        Text(
-          text = "Generated Rules (${generatedRuleLines.size}):",
-          style = MaterialTheme.typography.labelMedium,
-          fontWeight = FontWeight.SemiBold,
-          color = MaterialTheme.colorScheme.primary,
-        )
-
-        Surface(
-          shape = RoundedCornerShape(10.dp),
-          color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          Column(
-            modifier =
-              Modifier.fillMaxWidth()
-                .padding(8.dp)
-                .horizontalScroll(rememberScrollState()),
+        item(key = "rules_preview_box") {
+          Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+            modifier = Modifier.fillMaxWidth(),
           ) {
-            if (generatedRuleLines.isEmpty()) {
-              Text(
-                text = "No rules generated from current selection.",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            } else {
-              generatedRuleLines.forEach { line ->
+            Column(
+              modifier =
+                Modifier.fillMaxWidth()
+                  .padding(8.dp)
+                  .horizontalScroll(rememberScrollState()),
+            ) {
+              if (generatedRuleLines.isEmpty()) {
                 Text(
-                  text = line,
+                  text = "No rules generated from current selection.",
                   style = MaterialTheme.typography.labelSmall,
-                  fontFamily = JetBrainsMonoFontFamily,
-                  color =
-                    if (line.startsWith("!")) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurface,
-                  modifier = Modifier.testTag("generated_rule_line"),
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+              } else {
+                val previewLines = generatedRuleLines.take(100)
+                previewLines.forEach { line ->
+                  Text(
+                    text = line,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontFamily = JetBrainsMonoFontFamily,
+                    color =
+                      if (line.startsWith("!")) MaterialTheme.colorScheme.error
+                      else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.testTag("generated_rule_line"),
+                  )
+                }
+                if (generatedRuleLines.size > 100) {
+                  Text(
+                    text = "... and ${generatedRuleLines.size - 100} more rules",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontFamily = JetBrainsMonoFontFamily,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp),
+                  )
+                }
               }
             }
           }
         }
 
-        // Selected Classes List
-        Text(
-          text = "Classes Included in Sync:",
-          style = MaterialTheme.typography.labelMedium,
-          fontWeight = FontWeight.SemiBold,
-          color = MaterialTheme.colorScheme.onSurface,
-        )
+        item(key = "classes_header") {
+          Text(
+            text = "Classes Included in Sync (${selectedClasses.size}):",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+          )
+        }
 
-        Surface(
-          shape = RoundedCornerShape(12.dp),
-          color = MaterialTheme.colorScheme.surfaceContainerLow,
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
-          modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp, max = 220.dp),
-        ) {
-          LazyColumn(
-            modifier = Modifier.fillMaxWidth().testTag("selected_classes_dialog_list"),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+        items(
+          items = selectedClasses,
+          key = { it.uniqueKey },
+        ) { dexClass ->
+          Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier.fillMaxWidth(),
           ) {
-            items(selectedClasses, key = { it.uniqueKey }) { dexClass ->
-              Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                modifier = Modifier.fillMaxWidth(),
-              ) {
-                Row(
-                  modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                  Icon(
-                    imageVector = Icons.Rounded.Class,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp),
-                  )
-                  Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                      text = dexClass.simpleName,
-                      style = MaterialTheme.typography.labelMedium,
-                      fontFamily = JetBrainsMonoFontFamily,
-                      fontWeight = FontWeight.Bold,
-                      maxLines = 1,
-                      overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                      text = dexClass.packageName.ifBlank { "(default package)" },
-                      style = MaterialTheme.typography.labelSmall,
-                      fontFamily = JetBrainsMonoFontFamily,
-                      fontSize = 10.sp,
-                      color = MaterialTheme.colorScheme.onSurfaceVariant,
-                      maxLines = 1,
-                      overflow = TextOverflow.Ellipsis,
-                    )
-                  }
-                  Text(
-                    text = "${dexClass.bytecodeMethodCount} mtds",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontFamily = JetBrainsMonoFontFamily,
-                    fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.secondary,
-                  )
-                }
+            Row(
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.Class,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+              )
+              Column(modifier = Modifier.weight(1f)) {
+                Text(
+                  text = dexClass.simpleName,
+                  style = MaterialTheme.typography.labelMedium,
+                  fontFamily = JetBrainsMonoFontFamily,
+                  fontWeight = FontWeight.Bold,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                  text = dexClass.packageName.ifBlank { "(default package)" },
+                  style = MaterialTheme.typography.labelSmall,
+                  fontFamily = JetBrainsMonoFontFamily,
+                  fontSize = 10.sp,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
+                )
               }
+              Text(
+                text = "${dexClass.bytecodeMethodCount} mtds",
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = JetBrainsMonoFontFamily,
+                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.secondary,
+              )
             }
           }
         }

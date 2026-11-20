@@ -39,6 +39,7 @@ pub struct MethodRef<'a> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ClassMethodSummary<'a> {
     pub method_idx: u32,
+    pub class_idx: u32,
     pub class_desc: &'a str,
     pub method_name: &'a str,
     pub is_init: bool,
@@ -547,6 +548,7 @@ impl<'a> DexFile<'a> {
                     let is_init = m_name == "<init>";
                     callback(ClassMethodSummary {
                         method_idx: last_idx,
+                        class_idx,
                         class_desc,
                         method_name: m_name,
                         is_init,
@@ -569,6 +571,7 @@ impl<'a> DexFile<'a> {
                     let is_init = m_name == "<init>";
                     callback(ClassMethodSummary {
                         method_idx: last_idx,
+                        class_idx,
                         class_desc,
                         method_name: m_name,
                         is_init,

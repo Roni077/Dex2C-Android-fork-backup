@@ -106,6 +106,42 @@ impl CompiledFilter {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DexFilterMatchResult {
+    pub matched_classes: Vec<i32>,
+    pub matched_methods: Vec<i32>,
+}
+
+/// Evaluates a DEX file against the filter rules, returning both matching method indices
+/// and matching class indices with zero intermediate string or collection overhead.
+pub fn evaluate_dex_methods_and_classes(
+    dex: &DexFile,
+    rules: &[&str],
+    allow_init: bool,
+    skip_synthetic: bool,
+) -> DexFilterMatchResult {
+    let filter = CompiledFilter::new(rules, allow_init, skip_synthetic);
+    let mut matched_methods = Vec::with_capacity(1024);
+    let mut matched_classes = Vec::with_capacity(256);
+    let mut last_matched_class = u32::MAX;
+
+    dex.for_each_method(|m: ClassMethodSummary| {
+        // Only methods with actual Dalvik bytecode instructions (code_off > 0) are transpiled
+        if m.code_off > 0 && filter.matches(m.class_desc, m.method_name, m.is_init, m.access_flags) {
+            matched_methods.push(m.method_idx as i32);
+            if m.class_idx != last_matched_class {
+                matched_classes.push(m.class_idx as i32);
+                last_matched_class = m.class_idx;
+            }
+        }
+    });
+
+    DexFilterMatchResult {
+        matched_classes,
+        matched_methods,
+    }
+}
+
 /// Evaluates a DEX file against the filter rules, returning a vector of matching method indices.
 pub fn evaluate_dex_methods(
     dex: &DexFile,
@@ -113,17 +149,7 @@ pub fn evaluate_dex_methods(
     allow_init: bool,
     skip_synthetic: bool,
 ) -> Vec<i32> {
-    let filter = CompiledFilter::new(rules, allow_init, skip_synthetic);
-    let mut matched_indices = Vec::with_capacity(1024);
-
-    dex.for_each_method(|m: ClassMethodSummary| {
-        // Only methods with actual Dalvik bytecode instructions (code_off > 0) are transpiled
-        if m.code_off > 0 && filter.matches(m.class_desc, m.method_name, m.is_init, m.access_flags) {
-            matched_indices.push(m.method_idx as i32);
-        }
-    });
-
-    matched_indices
+    evaluate_dex_methods_and_classes(dex, rules, allow_init, skip_synthetic).matched_methods
 }
 
 #[inline]
