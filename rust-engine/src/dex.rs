@@ -1,8 +1,6 @@
 //! Zero-copy Dalvik Executable (DEX) binary parser for Dex2C Studio.
 //! Operates directly on borrowed memory slices (&[u8]) with zero JVM heap allocations.
 
-use std::borrow::Cow;
-
 #[derive(Debug, Clone, Copy)]
 pub struct DexHeader {
     pub file_size: u32,

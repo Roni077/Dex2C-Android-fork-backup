@@ -6,8 +6,8 @@ pub mod filter;
 
 use dex::DexFile;
 use filter::evaluate_dex_methods;
-use jni::objects::{JClass, JObjectArray, JString};
-use jni::sys::{jboolean, jbyteArray, jint, jintArray, jlong, jsize, JNI_FALSE, JNI_TRUE};
+use jni::objects::{JByteArray, JClass, JObjectArray, JString};
+use jni::sys::{jboolean, jint, jintArray, jlong, jsize, jstring, JNI_TRUE};
 use jni::JNIEnv;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 
@@ -20,23 +20,24 @@ struct DexHolder {
 pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeOpenDex(
     mut env: JNIEnv,
     _class: JClass,
-    bytes_array: jbyteArray,
+    bytes_array: JByteArray,
     size: jsize,
 ) -> jlong {
     let result = catch_unwind(AssertUnwindSafe(|| {
         if bytes_array.is_null() || size <= 0x70 {
-            return 0jlong;
+            return 0i64;
         }
 
         let mut buffer = vec![0u8; size as usize];
-        if env.get_byte_array_region(bytes_array, 0, bytemuck_cast(&mut buffer)).is_err() {
-            return 0jlong;
+        let slice_i8: &mut [i8] = std::slice::from_raw_parts_mut(buffer.as_mut_ptr() as *mut i8, buffer.len());
+        if env.get_byte_array_region(&bytes_array, 0, slice_i8).is_err() {
+            return 0i64;
         }
 
         // Parse header and validate DEX binary
         let dex = match DexFile::parse(&buffer) {
             Ok(d) => d,
-            Err(_) => return 0jlong,
+            Err(_) => return 0i64,
         };
 
         let holder = Box::new(DexHolder {
@@ -47,7 +48,7 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
         Box::into_raw(holder) as jlong
     }));
 
-    result.unwrap_or(0jlong)
+    result.unwrap_or(0i64)
 }
 
 #[no_mangle]
@@ -116,32 +117,26 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
             header: holder.header,
         };
 
-        // Extract Java string rules into Rust &str vectors
+        // Extract Java string rules into owned Rust String vector
         let len = match env.get_array_length(&rules_array) {
             Ok(l) => l,
             Err(_) => return std::ptr::null_mut(),
         };
 
         let mut rule_strings = Vec::with_capacity(len as usize);
-        let mut rust_rules = Vec::with_capacity(len as usize);
 
         for i in 0..len {
-            let jstr: JString = match env.get_object_array_element(&rules_array, i) {
-                Ok(obj) => obj.into(),
-                Err(_) => continue,
-            };
-            if jstr.is_null() {
-                continue;
-            }
-            if let Ok(rust_str) = env.get_string(&jstr) {
-                let s: String = rust_str.into();
-                rule_strings.push(s);
+            if let Ok(obj) = env.get_object_array_element(&rules_array, i) {
+                let jstr: JString = obj.into();
+                if !jstr.is_null() {
+                    if let Ok(java_str) = env.get_string(&jstr) {
+                        rule_strings.push(java_str.to_string_lossy().into_owned());
+                    }
+                }
             }
         }
 
-        for s in &rule_strings {
-            rust_rules.push(s.as_str());
-        }
+        let rust_rules: Vec<&str> = rule_strings.iter().map(|s| s.as_str()).collect();
 
         let matched = evaluate_dex_methods(
             &dex,
@@ -167,14 +162,9 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
 
 #[no_mangle]
 pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeGetVersion(
-    env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
 ) -> jstring {
     let s = env.new_string("rust_dex2c 0.1.0 (SIMD RegexSet + Zero-Copy DEX)").ok();
     s.map(|s| s.into_raw()).unwrap_or(std::ptr::null_mut())
-}
-
-#[inline(always)]
-fn bytemuck_cast(buf: &mut [u8]) -> &mut [i8] {
-    unsafe { std::slice::from_raw_parts_mut(buf.as_mut_ptr() as *mut i8, buf.len()) }
 }
