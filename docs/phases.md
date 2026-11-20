@@ -131,6 +131,11 @@ Ensure complete behavioral equivalence between Kotlin and Rust implementations a
   - `testCorruptedDexBufferSafety`: Verifies resilience against truncated/corrupted DEX buffers
 - [x] **Automated Verification**:
   - Ran `.\gradlew.bat :app:testDebugUnitTest --tests "com.dex2c.studio.nativeengine.*"` -> **BUILD SUCCESSFUL (3/3 tests passed)**
+  - GitHub Actions CI Run **`44698664144`**: **100% GREEN SUCCESS**
+    - `Verify Tests & Debug APK` (5m 47s) -> Passed
+    - `Build Release APK & AAB` (4m 23s) -> Passed
+    - Artifacts produced: `dex2c-studio-debug-apk`, `dex2c-studio-release-apk`, `dex2c-studio-release-aab`, `unit-test-reports`
+    - Rust `.so` binaries compiled & packed: `arm64-v8a/librust_dex2c.so` (1.06 MB), `x86_64/librust_dex2c.so` (1.29 MB)
 
 ---
 
