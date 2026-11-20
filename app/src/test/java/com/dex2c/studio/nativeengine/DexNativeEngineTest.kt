@@ -1,5 +1,7 @@
 package com.dex2c.studio.nativeengine
 
+import com.dex2c.studio.dex.D2cnBinaryDecoder
+import com.dex2c.studio.dex.D2cnHeader
 import com.dex2c.studio.dex.DexParser
 import com.dex2c.studio.transpiler.FilterRuleEngine
 import com.dex2c.studio.transpiler.TranspilerConfig
@@ -61,6 +63,121 @@ class DexNativeEngineTest {
 
     assertEquals(null, res1)
     assertEquals(null, res2)
+  }
+
+  @Test
+  fun testD2cnBinaryDecoderSynthesizedBuffer() {
+    val stringPool = listOf(
+      "Lcom/example/TestClass;",
+      "com.example.TestClass",
+      "com.example",
+      "TestClass",
+      "Ljava/lang/Object;",
+      "TestClass.java",
+      "Ljava/lang/Runnable;",
+      "myField",
+      "I",
+      "testMethod",
+      "V"
+    )
+
+    val out = ByteArrayOutputStream()
+    // 1. Header (32 bytes placeholder)
+    val headerBytes = ByteArray(32)
+    out.write(headerBytes)
+
+    val stringPoolOff = out.size()
+    stringPool.forEach { s ->
+      val bytes = s.toByteArray(Charsets.UTF_8)
+      out.write(bytes.size and 0xFF)
+      out.write((bytes.size ushr 8) and 0xFF)
+      out.write(bytes)
+    }
+
+    val classesOff = out.size()
+    val buf = ByteBuffer.allocate(1024).order(ByteOrder.LITTLE_ENDIAN)
+    // Class record:
+    buf.putInt(0) // class_def_idx
+    buf.putInt(1) // access_flags (public)
+    buf.putInt(0) // descriptor_idx -> "Lcom/example/TestClass;"
+    buf.putInt(1) // full_name_idx -> "com.example.TestClass"
+    buf.putInt(2) // pkg_name_idx -> "com.example"
+    buf.putInt(3) // simple_name_idx -> "TestClass"
+    buf.putInt(4) // superclass_idx -> "Ljava/lang/Object;"
+    buf.putInt(5) // source_file_idx -> "TestClass.java"
+    buf.putInt(0x100) // annotations_off
+    buf.putInt(0x200) // static_values_off
+    buf.putInt(0x300) // class_data_off
+
+    // Interfaces: 1
+    buf.putShort(1)
+    buf.putInt(6) // "Ljava/lang/Runnable;"
+
+    // Static fields: 0
+    buf.putShort(0)
+
+    // Instance fields: 1
+    buf.putShort(1)
+    buf.putInt(10) // field_idx
+    buf.putInt(2)  // access_flags (private)
+    buf.putInt(7)  // name_idx -> "myField"
+    buf.putInt(8)  // type_idx -> "I"
+
+    // Direct methods: 1
+    buf.putShort(1)
+    buf.putInt(20) // method_idx
+    buf.putInt(1)  // access_flags (public)
+    buf.putInt(9)  // name_idx -> "testMethod"
+    buf.putInt(10) // shorty_idx -> "V"
+    buf.putInt(10) // ret_idx -> "V"
+    buf.putShort(0) // param_count: 0
+    buf.put(1.toByte()) // has_code = 1
+    buf.putShort(4) // regs
+    buf.putShort(1) // ins
+    buf.putShort(2) // outs
+    buf.putShort(0) // tries
+    buf.putInt(3)   // insns_count
+    buf.putInt(0x400) // insns_offset_bytes
+    buf.putInt(0x380) // code_item_offset
+    buf.putInt(0x500) // debug_info_offset
+
+    // Virtual methods: 0
+    buf.putShort(0)
+
+    out.write(buf.array(), 0, buf.position())
+
+    val totalBytes = out.toByteArray()
+    // Patch header at offset 0
+    val headerBuf = ByteBuffer.wrap(totalBytes).order(ByteOrder.LITTLE_ENDIAN)
+    headerBuf.putInt(0, D2cnHeader.MAGIC)
+    headerBuf.putShort(4, 1.toShort()) // version
+    headerBuf.putShort(6, 0.toShort()) // flags
+    headerBuf.putInt(8, 32) // header_size
+    headerBuf.putInt(12, stringPool.size)
+    headerBuf.putInt(16, 1) // class_count
+    headerBuf.putInt(20, 1) // method_count
+    headerBuf.putInt(24, stringPoolOff)
+    headerBuf.putInt(28, classesOff)
+
+    val classes = D2cnBinaryDecoder.decodeClasses(ByteBuffer.wrap(totalBytes))
+    assertEquals(1, classes.size)
+    val cls = classes.first()
+    assertEquals("Lcom/example/TestClass;", cls.descriptor)
+    assertEquals("com.example.TestClass", cls.fullName)
+    assertEquals("com.example", cls.packageName)
+    assertEquals("TestClass", cls.simpleName)
+    assertEquals("Ljava/lang/Object;", cls.superclass)
+    assertEquals("TestClass.java", cls.sourceFile)
+    assertEquals(listOf("Ljava/lang/Runnable;"), cls.interfaces)
+    assertEquals(1, cls.instanceFields.size)
+    assertEquals("myField", cls.instanceFields[0].fieldRef.name)
+    assertEquals("I", cls.instanceFields[0].fieldRef.type)
+    assertEquals(1, cls.directMethods.size)
+    val m = cls.directMethods.first()
+    assertEquals("testMethod", m.methodRef.name)
+    assertNotNull(m.codeMeta)
+    assertEquals(4, m.codeMeta?.registersSize)
+    assertEquals(3, m.codeMeta?.insnsCount)
   }
 
   private fun buildMinimalTestDex(): ByteArray {

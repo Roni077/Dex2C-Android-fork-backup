@@ -19,3 +19,4 @@ debug.keystore
 graphify-out/cache/
 .archify/
 .security-audit/
+rust-engine/target/

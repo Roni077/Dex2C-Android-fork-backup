@@ -105,6 +105,12 @@ jobs:
             cargo install cargo-ndk
           fi
 
+      - name: Run Rust unit tests
+        shell: bash
+        run: |
+          cd rust-engine
+          cargo test --verbose
+
       - name: Build Rust Native Engine (.so)
         shell: bash
         run: |
@@ -260,6 +266,12 @@ jobs:
           if ! command -v cargo-ndk &> /dev/null; then
             cargo install cargo-ndk
           fi
+
+      - name: Run Rust unit tests
+        shell: bash
+        run: |
+          cd rust-engine
+          cargo test --verbose
 
       - name: Build Rust Native Engine (.so)
         shell: bash

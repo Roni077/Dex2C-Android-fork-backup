@@ -11,6 +11,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+import com.dex2c.studio.nativeengine.DexNativeEngine
 
 object DexParser {
 
@@ -222,144 +223,160 @@ object DexParser {
     val callSites = parseCallSites(buf, rawBytes, mapItems, strings, types, protos, fields, methods, methodHandles)
     val hiddenApiSummary = parseHiddenApiSummary(buf, rawBytes.size, mapItems, classDefsSize)
 
-    // 8. Class Defs (via smali-dexlib2 DexBackedDexFile with raw offset hydration)
-    val dexlib2Classes =
-      SmaliClassDisassembler.indexClassesWithDexlib2(
-        rawBytes = rawBytes,
-        buf = buf,
-        version = version,
-        sha1Hex = sha1Hex,
-        entryName = entryName,
-        classDefsSize = classDefsSize,
-        classDefsOff = classDefsOff,
-        types = types,
-        fields = fields,
-        methods = methods,
-        readCodeMeta = { codeOff -> readCodeMeta(buf, rawBytes.size, codeOff) },
-      )
+    // 8. Class Defs:
+    // First attempt: Accelerated zero-copy Rust Native Engine (D2CN direct buffer)
+    // Second attempt (fallback): smali-dexlib2 / DexBackedDexFile
+    // Third attempt (ultimate fallback): Pure Kotlin manual DEX parser
+    var parserEngineUsed = "Kotlin DexFile + smali-dexlib2"
+    val nativeClasses =
+      if (DexNativeEngine.isAvailable) {
+        DexNativeEngine.parseClassesFast(rawBytes, entryName)
+      } else {
+        null
+      }
+
     val classes =
-      dexlib2Classes
-        ?: List(classDefsSize) { i ->
-          val base = classDefsOff + i * 32
-          val classIdx = buf.getInt(base)
-          val accessFlags = buf.getInt(base + 4)
-        val superIdx = buf.getInt(base + 8)
-        val interfacesOff = buf.getInt(base + 12)
-        val sourceFileIdx = buf.getInt(base + 16)
-        val annotationsOff = buf.getInt(base + 20)
-        val classDataOff = buf.getInt(base + 24)
-        val staticValuesOff = buf.getInt(base + 28)
+      if (nativeClasses != null && nativeClasses.isNotEmpty()) {
+        parserEngineUsed = "Rust Native Engine (D2CN zero-copy)"
+        nativeClasses
+      } else {
+        val dexlib2Classes =
+          SmaliClassDisassembler.indexClassesWithDexlib2(
+            rawBytes = rawBytes,
+            buf = buf,
+            version = version,
+            sha1Hex = sha1Hex,
+            entryName = entryName,
+            classDefsSize = classDefsSize,
+            classDefsOff = classDefsOff,
+            types = types,
+            fields = fields,
+            methods = methods,
+            readCodeMeta = { codeOff -> readCodeMeta(buf, rawBytes.size, codeOff) },
+          )
+        dexlib2Classes
+          ?: List(classDefsSize) { i ->
+            val base = classDefsOff + i * 32
+            val classIdx = buf.getInt(base)
+            val accessFlags = buf.getInt(base + 4)
+            val superIdx = buf.getInt(base + 8)
+            val interfacesOff = buf.getInt(base + 12)
+            val sourceFileIdx = buf.getInt(base + 16)
+            val annotationsOff = buf.getInt(base + 20)
+            val classDataOff = buf.getInt(base + 24)
+            val staticValuesOff = buf.getInt(base + 28)
 
-        val descriptor = types.getOrElse(classIdx) { "Lunknown/Class$i;" }
-        val parsedDesc = parseClassDescriptor(descriptor)
-        val fullName = parsedDesc.fullName
-        val pkgName = parsedDesc.packageName
-        val simpleName = parsedDesc.simpleName
+            val descriptor = types.getOrElse(classIdx) { "Lunknown/Class$i;" }
+            val parsedDesc = parseClassDescriptor(descriptor)
+            val fullName = parsedDesc.fullName
+            val pkgName = parsedDesc.packageName
+            val simpleName = parsedDesc.simpleName
 
-        val superclass =
-          if (superIdx == -1 || superIdx >= types.size) null else types[superIdx]
-        val sourceFile =
-          if (sourceFileIdx == -1 || sourceFileIdx >= strings.size) null else strings[sourceFileIdx]
+            val superclass =
+              if (superIdx == -1 || superIdx >= types.size) null else types[superIdx]
+            val sourceFile =
+              if (sourceFileIdx == -1 || sourceFileIdx >= strings.size) null else strings[sourceFileIdx]
 
-        val interfaces =
-          if (interfacesOff == 0) {
-            emptyList()
-          } else {
-            val count = buf.getInt(interfacesOff)
-            List(count) { k ->
-              val tIdx = buf.getShort(interfacesOff + 4 + k * 2).toInt() and 0xFFFF
-              types.getOrElse(tIdx) { "Ljava/lang/Object;" }
+            val interfaces =
+              if (interfacesOff == 0) {
+                emptyList()
+              } else {
+                val count = buf.getInt(interfacesOff)
+                List(count) { k ->
+                  val tIdx = buf.getShort(interfacesOff + 4 + k * 2).toInt() and 0xFFFF
+                  types.getOrElse(tIdx) { "Ljava/lang/Object;" }
+                }
+              }
+
+            val staticFields = mutableListOf<DexEncodedField>()
+            val instanceFields = mutableListOf<DexEncodedField>()
+            val directMethods = mutableListOf<DexEncodedMethod>()
+            val virtualMethods = mutableListOf<DexEncodedMethod>()
+
+            if (classDataOff != 0 && classDataOff < rawBytes.size) {
+              val reader = UlebReader(rawBytes, classDataOff)
+              val staticFieldsSize = reader.readUleb128()
+              val instanceFieldsSize = reader.readUleb128()
+              val directMethodsSize = reader.readUleb128()
+              val virtualMethodsSize = reader.readUleb128()
+
+              var fieldIdx = 0
+              repeat(staticFieldsSize) {
+                fieldIdx += reader.readUleb128()
+                val flags = reader.readUleb128()
+                val ref = fields.getOrNull(fieldIdx)
+                if (ref != null) staticFields += DexEncodedField(fieldIdx, ref, flags, isStatic = true)
+              }
+
+              fieldIdx = 0
+              repeat(instanceFieldsSize) {
+                fieldIdx += reader.readUleb128()
+                val flags = reader.readUleb128()
+                val ref = fields.getOrNull(fieldIdx)
+                if (ref != null) instanceFields += DexEncodedField(fieldIdx, ref, flags, isStatic = false)
+              }
+
+              var methodIdx = 0
+              repeat(directMethodsSize) {
+                methodIdx += reader.readUleb128()
+                val flags = reader.readUleb128()
+                val codeOff = reader.readUleb128()
+                val ref = methods.getOrNull(methodIdx)
+                if (ref != null) {
+                  directMethods +=
+                    DexEncodedMethod(
+                      id = "$entryName::$descriptor#$methodIdx",
+                      methodIndex = methodIdx,
+                      methodRef = ref,
+                      accessFlags = flags,
+                      isDirect = true,
+                      codeMeta = readCodeMeta(buf, rawBytes.size, codeOff),
+                      sourceEntryName = entryName,
+                    )
+                }
+              }
+
+              methodIdx = 0
+              repeat(virtualMethodsSize) {
+                methodIdx += reader.readUleb128()
+                val flags = reader.readUleb128()
+                val codeOff = reader.readUleb128()
+                val ref = methods.getOrNull(methodIdx)
+                if (ref != null) {
+                  virtualMethods +=
+                    DexEncodedMethod(
+                      id = "$entryName::$descriptor#$methodIdx",
+                      methodIndex = methodIdx,
+                      methodRef = ref,
+                      accessFlags = flags,
+                      isDirect = false,
+                      codeMeta = readCodeMeta(buf, rawBytes.size, codeOff),
+                      sourceEntryName = entryName,
+                    )
+                }
+              }
             }
+
+            DexClassInfo(
+              classIndex = classIdx,
+              descriptor = descriptor,
+              fullName = fullName,
+              simpleName = simpleName,
+              packageName = pkgName,
+              superclass = superclass,
+              interfaces = interfaces,
+              sourceFile = sourceFile,
+              accessFlags = accessFlags,
+              staticFields = staticFields,
+              instanceFields = instanceFields,
+              directMethods = directMethods,
+              virtualMethods = virtualMethods,
+              annotationsOffset = annotationsOff,
+              staticValuesOffset = staticValuesOff,
+              classDataOffset = classDataOff,
+              sourceEntryName = entryName,
+            )
           }
-
-        val staticFields = mutableListOf<DexEncodedField>()
-        val instanceFields = mutableListOf<DexEncodedField>()
-        val directMethods = mutableListOf<DexEncodedMethod>()
-        val virtualMethods = mutableListOf<DexEncodedMethod>()
-
-        if (classDataOff != 0 && classDataOff < rawBytes.size) {
-          val reader = UlebReader(rawBytes, classDataOff)
-          val staticFieldsSize = reader.readUleb128()
-          val instanceFieldsSize = reader.readUleb128()
-          val directMethodsSize = reader.readUleb128()
-          val virtualMethodsSize = reader.readUleb128()
-
-          var fieldIdx = 0
-          repeat(staticFieldsSize) {
-            fieldIdx += reader.readUleb128()
-            val flags = reader.readUleb128()
-            val ref = fields.getOrNull(fieldIdx)
-            if (ref != null) staticFields += DexEncodedField(fieldIdx, ref, flags, isStatic = true)
-          }
-
-          fieldIdx = 0
-          repeat(instanceFieldsSize) {
-            fieldIdx += reader.readUleb128()
-            val flags = reader.readUleb128()
-            val ref = fields.getOrNull(fieldIdx)
-            if (ref != null) instanceFields += DexEncodedField(fieldIdx, ref, flags, isStatic = false)
-          }
-
-          var methodIdx = 0
-          repeat(directMethodsSize) {
-            methodIdx += reader.readUleb128()
-            val flags = reader.readUleb128()
-            val codeOff = reader.readUleb128()
-            val ref = methods.getOrNull(methodIdx)
-            if (ref != null) {
-              directMethods +=
-                DexEncodedMethod(
-                  id = "$entryName::$descriptor#$methodIdx",
-                  methodIndex = methodIdx,
-                  methodRef = ref,
-                  accessFlags = flags,
-                  isDirect = true,
-                  codeMeta = readCodeMeta(buf, rawBytes.size, codeOff),
-                  sourceEntryName = entryName,
-                )
-            }
-          }
-
-          methodIdx = 0
-          repeat(virtualMethodsSize) {
-            methodIdx += reader.readUleb128()
-            val flags = reader.readUleb128()
-            val codeOff = reader.readUleb128()
-            val ref = methods.getOrNull(methodIdx)
-            if (ref != null) {
-              virtualMethods +=
-                DexEncodedMethod(
-                  id = "$entryName::$descriptor#$methodIdx",
-                  methodIndex = methodIdx,
-                  methodRef = ref,
-                  accessFlags = flags,
-                  isDirect = false,
-                  codeMeta = readCodeMeta(buf, rawBytes.size, codeOff),
-                  sourceEntryName = entryName,
-                )
-            }
-          }
-        }
-
-        DexClassInfo(
-          classIndex = classIdx,
-          descriptor = descriptor,
-          fullName = fullName,
-          simpleName = simpleName,
-          packageName = pkgName,
-          superclass = superclass,
-          interfaces = interfaces,
-          sourceFile = sourceFile,
-          accessFlags = accessFlags,
-          staticFields = staticFields,
-          instanceFields = instanceFields,
-          directMethods = directMethods,
-          virtualMethods = virtualMethods,
-          annotationsOffset = annotationsOff,
-          staticValuesOffset = staticValuesOff,
-          classDataOffset = classDataOff,
-          sourceEntryName = entryName,
-        )
       }
 
     val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
@@ -380,7 +397,7 @@ object DexParser {
       callSites = callSites,
       hiddenApiSummary = hiddenApiSummary,
       parseDurationMs = elapsedMs,
-      parserEngine = "Kotlin DexFile + smali-dexlib2",
+      parserEngine = parserEngineUsed,
     )
   }
 

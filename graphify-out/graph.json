@@ -666,7 +666,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L154",
       "id": "studio_mainactivity_mainactivity",
-      "community": 4,
+      "community": 72,
       "norm_label": "mainactivity"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L157",
       "id": "studio_mainactivity_mainactivity_oncreate",
-      "community": 4,
+      "community": 72,
       "norm_label": ".oncreate()"
     },
     {
@@ -684,7 +684,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L211",
       "id": "studio_mainactivity_mainactivity_onnewintent",
-      "community": 4,
+      "community": 72,
       "norm_label": ".onnewintent()"
     },
     {
@@ -909,7 +909,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_apk_apkmodels_kt",
-      "community": 16,
+      "community": 8,
       "norm_label": "apkmodels.kt"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L6",
       "id": "apk_apkmodels_binarysourcetype",
-      "community": 16,
+      "community": 8,
       "norm_label": "binarysourcetype"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L11",
       "id": "apk_apkmodels_pickertab",
-      "community": 16,
+      "community": 8,
       "norm_label": "pickertab"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L17",
       "id": "apk_apkmodels_appscopefilter",
-      "community": 16,
+      "community": 8,
       "norm_label": "appscopefilter"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L24",
       "id": "apk_apkmodels_pickersortorder",
-      "community": 16,
+      "community": 8,
       "norm_label": "pickersortorder"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L31",
       "id": "apk_apkmodels_recentsourcefilter",
-      "community": 16,
+      "community": 8,
       "norm_label": "recentsourcefilter"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L37",
       "id": "apk_apkmodels_installedappitem",
-      "community": 16,
+      "community": 8,
       "norm_label": "installedappitem"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/ApkModels.kt",
       "source_location": "L51",
       "id": "apk_apkmodels_recentbinaryitem",
-      "community": 16,
+      "community": 23,
       "norm_label": "recentbinaryitem"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_apk_installedapprepository_kt",
-      "community": 16,
+      "community": 8,
       "norm_label": "installedapprepository.kt"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L15",
       "id": "apk_installedapprepository_installedapprepository",
-      "community": 16,
+      "community": 8,
       "norm_label": "installedapprepository"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L21",
       "id": "apk_installedapprepository_sizeof",
-      "community": 16,
+      "community": 8,
       "norm_label": "sizeof()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L24",
       "id": "apk_installedapprepository_installedapprepository_cleariconcache",
-      "community": 16,
+      "community": 8,
       "norm_label": ".cleariconcache()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L28",
       "id": "apk_installedapprepository_installedapprepository_geticon",
-      "community": 16,
+      "community": 8,
       "norm_label": ".geticon()"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L30",
       "id": "apk_installedapprepository_installedapprepository_cacheicon",
-      "community": 16,
+      "community": 8,
       "norm_label": ".cacheicon()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L34",
       "id": "apk_installedapprepository_installedapprepository_loadrecenticon",
-      "community": 16,
+      "community": 8,
       "norm_label": ".loadrecenticon()"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L79",
       "id": "apk_installedapprepository_installedapprepository_trimmemory",
-      "community": 16,
+      "community": 8,
       "norm_label": ".trimmemory()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L87",
       "id": "apk_installedapprepository_installedapprepository_querylaunchableapps",
-      "community": 16,
+      "community": 8,
       "norm_label": ".querylaunchableapps()"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L156",
       "id": "apk_installedapprepository_installedapprepository_getpackageinfosafe",
-      "community": 16,
+      "community": 8,
       "norm_label": ".getpackageinfosafe()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
       "source_location": "L167",
       "id": "apk_installedapprepository_installedapprepository_drawabletobitmap",
-      "community": 16,
+      "community": 8,
       "norm_label": ".drawabletobitmap()"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_cloud_jsonmini_kt",
-      "community": 18,
+      "community": 100,
       "norm_label": "jsonmini.kt"
     },
     {
@@ -1953,7 +1953,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L7",
       "id": "cloud_jsonmini_jsonmini",
-      "community": 18,
+      "community": 100,
       "norm_label": "jsonmini"
     },
     {
@@ -1962,7 +1962,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L9",
       "id": "cloud_jsonmini_jsonmini_parseobject",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parseobject()"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L11",
       "id": "cloud_jsonmini_jsonmini_escape",
-      "community": 18,
+      "community": 100,
       "norm_label": ".escape()"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L25",
       "id": "cloud_jsonmini_jsonmini_objectjson",
-      "community": 18,
+      "community": 100,
       "norm_label": ".objectjson()"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L36",
       "id": "cloud_jsonmini_jsonmini_valuejson",
-      "community": 18,
+      "community": 100,
       "norm_label": ".valuejson()"
     },
     {
@@ -1998,7 +1998,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L48",
       "id": "cloud_jsonmini_parser",
-      "community": 18,
+      "community": 100,
       "norm_label": "parser"
     },
     {
@@ -2007,7 +2007,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L51",
       "id": "cloud_jsonmini_parser_parseobject",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parseobject()"
     },
     {
@@ -2016,7 +2016,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L82",
       "id": "cloud_jsonmini_parser_parsevalue",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parsevalue()"
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L96",
       "id": "cloud_jsonmini_parser_parsearray",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parsearray()"
     },
     {
@@ -2034,7 +2034,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L120",
       "id": "cloud_jsonmini_parser_parsestring",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parsestring()"
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L151",
       "id": "cloud_jsonmini_parser_parseliteral",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parseliteral()"
     },
     {
@@ -2052,7 +2052,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L159",
       "id": "cloud_jsonmini_parser_parsenumber",
-      "community": 18,
+      "community": 100,
       "norm_label": ".parsenumber()"
     },
     {
@@ -2061,7 +2061,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L167",
       "id": "cloud_jsonmini_parser_skipwhitespace",
-      "community": 18,
+      "community": 100,
       "norm_label": ".skipwhitespace()"
     },
     {
@@ -2070,7 +2070,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L171",
       "id": "cloud_jsonmini_parser_peek",
-      "community": 18,
+      "community": 100,
       "norm_label": ".peek()"
     },
     {
@@ -2596,6 +2596,78 @@
       "norm_label": ".saveconfig()"
     },
     {
+      "label": "D2cnBinaryDecoder.kt",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L1",
+      "id": "app_src_main_java_com_dex2c_studio_dex_d2cnbinarydecoder_kt",
+      "community": 101,
+      "norm_label": "d2cnbinarydecoder.kt"
+    },
+    {
+      "label": "D2cnBinaryDecoder",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L11",
+      "id": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
+      "community": 101,
+      "norm_label": "d2cnbinarydecoder"
+    },
+    {
+      "label": ".decodeClasses()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L29",
+      "id": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "community": 101,
+      "norm_label": ".decodeclasses()"
+    },
+    {
+      "label": ".decodeHeader()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L209",
+      "id": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader",
+      "community": 101,
+      "norm_label": ".decodeheader()"
+    },
+    {
+      "label": ".unpackStringPool()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L239",
+      "id": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool",
+      "community": 101,
+      "norm_label": ".unpackstringpool()"
+    },
+    {
+      "label": ".decodeMethodRecord()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L275",
+      "id": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
+      "community": 19,
+      "norm_label": ".decodemethodrecord()"
+    },
+    {
+      "label": "D2cnHeader.kt",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnHeader.kt",
+      "source_location": "L1",
+      "id": "app_src_main_java_com_dex2c_studio_dex_d2cnheader_kt",
+      "community": 101,
+      "norm_label": "d2cnheader.kt"
+    },
+    {
+      "label": "D2cnHeader",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnHeader.kt",
+      "source_location": "L7",
+      "id": "dex_d2cnheader_d2cnheader",
+      "community": 101,
+      "norm_label": "d2cnheader"
+    },
+    {
       "label": "DalvikControlFlowGraph.kt",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikControlFlowGraph.kt",
@@ -2988,7 +3060,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexHelper.kt",
       "source_location": "L20",
       "id": "dex_dexhelper_dexhelper_getfields",
-      "community": 64,
+      "community": 101,
       "norm_label": ".getfields()"
     },
     {
@@ -3159,7 +3231,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L61",
       "id": "dex_dexmodels_dexcallsiteinfo",
-      "community": 15,
+      "community": 64,
       "norm_label": "dexcallsiteinfo"
     },
     {
@@ -3213,7 +3285,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L107",
       "id": "dex_dexmodels_dexfieldref",
-      "community": 64,
+      "community": 101,
       "norm_label": "dexfieldref"
     },
     {
@@ -3339,7 +3411,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L222",
       "id": "dex_dexmodels_dexencodedfield",
-      "community": 15,
+      "community": 101,
       "norm_label": "dexencodedfield"
     },
     {
@@ -3357,7 +3429,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L254",
       "id": "dex_dexmodels_dexclassinfo",
-      "community": 87,
+      "community": 15,
       "norm_label": "dexclassinfo"
     },
     {
@@ -3366,7 +3438,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L297",
       "id": "dex_dexmodels_dexclassinfo_isframeworkorlibraryclass",
-      "community": 87,
+      "community": 15,
       "norm_label": ".isframeworkorlibraryclass()"
     },
     {
@@ -3393,7 +3465,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L319",
       "id": "dex_dexmodels_parsedclassdescriptor",
-      "community": 64,
+      "community": 15,
       "norm_label": "parsedclassdescriptor"
     },
     {
@@ -3411,7 +3483,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L340",
       "id": "dex_dexmodels_parseclassdescriptor",
-      "community": 64,
+      "community": 15,
       "norm_label": "parseclassdescriptor()"
     },
     {
@@ -3580,7 +3652,7 @@
       "label": "DexParser",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L15",
+      "source_location": "L16",
       "id": "dex_dexparser_dexparser",
       "community": 65,
       "norm_label": "dexparser"
@@ -3589,7 +3661,7 @@
       "label": ".inspectApkOrDexFromUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L17",
+      "source_location": "L18",
       "id": "dex_dexparser_dexparser_inspectapkordexfromuri",
       "community": 65,
       "norm_label": ".inspectapkordexfromuri()"
@@ -3598,7 +3670,7 @@
       "label": ".inspectSelfApk()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L24",
+      "source_location": "L25",
       "id": "dex_dexparser_dexparser_inspectselfapk",
       "community": 65,
       "norm_label": ".inspectselfapk()"
@@ -3607,7 +3679,7 @@
       "label": ".extractDexContainersFromStream()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L46",
+      "source_location": "L47",
       "id": "dex_dexparser_dexparser_extractdexcontainersfromstream",
       "community": 65,
       "norm_label": ".extractdexcontainersfromstream()"
@@ -3616,7 +3688,7 @@
       "label": ".extractDexContainers()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L78",
+      "source_location": "L79",
       "id": "dex_dexparser_dexparser_extractdexcontainers",
       "community": 65,
       "norm_label": ".extractdexcontainers()"
@@ -3625,7 +3697,7 @@
       "label": ".parseDex()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L86",
+      "source_location": "L87",
       "id": "dex_dexparser_dexparser_parsedex",
       "community": 64,
       "norm_label": ".parsedex()"
@@ -3634,7 +3706,7 @@
       "label": ".parseMapList()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L387",
+      "source_location": "L404",
       "id": "dex_dexparser_dexparser_parsemaplist",
       "community": 65,
       "norm_label": ".parsemaplist()"
@@ -3643,7 +3715,7 @@
       "label": ".mapItemTypeName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L408",
+      "source_location": "L425",
       "id": "dex_dexparser_dexparser_mapitemtypename",
       "community": 65,
       "norm_label": ".mapitemtypename()"
@@ -3652,7 +3724,7 @@
       "label": ".parseMethodHandles()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L434",
+      "source_location": "L451",
       "id": "dex_dexparser_dexparser_parsemethodhandles",
       "community": 98,
       "norm_label": ".parsemethodhandles()"
@@ -3661,7 +3733,7 @@
       "label": ".parseCallSites()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L476",
+      "source_location": "L493",
       "id": "dex_dexparser_dexparser_parsecallsites",
       "community": 64,
       "norm_label": ".parsecallsites()"
@@ -3670,7 +3742,7 @@
       "label": ".parseHiddenApiSummary()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L534",
+      "source_location": "L551",
       "id": "dex_dexparser_dexparser_parsehiddenapisummary",
       "community": 64,
       "norm_label": ".parsehiddenapisummary()"
@@ -3679,7 +3751,7 @@
       "label": ".readCodeMeta()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L556",
+      "source_location": "L573",
       "id": "dex_dexparser_dexparser_readcodemeta",
       "community": 64,
       "norm_label": ".readcodemeta()"
@@ -3688,7 +3760,7 @@
       "label": ".readMutf8String()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L576",
+      "source_location": "L593",
       "id": "dex_dexparser_dexparser_readmutf8string",
       "community": 64,
       "norm_label": ".readmutf8string()"
@@ -3697,7 +3769,7 @@
       "label": ".wrapOrderedBuffer()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L606",
+      "source_location": "L623",
       "id": "dex_dexparser_dexparser_wraporderedbuffer",
       "community": 65,
       "norm_label": ".wraporderedbuffer()"
@@ -3706,7 +3778,7 @@
       "label": ".readStringAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L615",
+      "source_location": "L632",
       "id": "dex_dexparser_dexparser_readstringat",
       "community": 65,
       "norm_label": ".readstringat()"
@@ -3715,7 +3787,7 @@
       "label": ".readTypeAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L627",
+      "source_location": "L644",
       "id": "dex_dexparser_dexparser_readtypeat",
       "community": 65,
       "norm_label": ".readtypeat()"
@@ -3724,7 +3796,7 @@
       "label": ".readProtoAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L638",
+      "source_location": "L655",
       "id": "dex_dexparser_dexparser_readprotoat",
       "community": 65,
       "norm_label": ".readprotoat()"
@@ -3733,7 +3805,7 @@
       "label": ".readFieldAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L670",
+      "source_location": "L687",
       "id": "dex_dexparser_dexparser_readfieldat",
       "community": 65,
       "norm_label": ".readfieldat()"
@@ -3742,7 +3814,7 @@
       "label": ".readMethodAt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L687",
+      "source_location": "L704",
       "id": "dex_dexparser_dexparser_readmethodat",
       "community": 65,
       "norm_label": ".readmethodat()"
@@ -3751,7 +3823,7 @@
       "label": "UlebReader",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L704",
+      "source_location": "L721",
       "id": "dex_dexparser_ulebreader",
       "community": 64,
       "norm_label": "ulebreader"
@@ -3760,7 +3832,7 @@
       "label": ".readUleb128()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
-      "source_location": "L705",
+      "source_location": "L722",
       "id": "dex_dexparser_ulebreader_readuleb128",
       "community": 64,
       "norm_label": ".readuleb128()"
@@ -3915,7 +3987,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L277",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_todexencodedmethod",
-      "community": 18,
+      "community": 19,
       "norm_label": ".todexencodedmethod()"
     },
     {
@@ -3924,7 +3996,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L324",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_buildshorty",
-      "community": 18,
+      "community": 77,
       "norm_label": ".buildshorty()"
     },
     {
@@ -4333,19 +4405,37 @@
       "norm_label": ".nativefiltermethods()"
     },
     {
-      "label": ".nativeGetVersion()",
+      "label": ".nativeParseDex()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L54",
+      "id": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex",
+      "community": 82,
+      "norm_label": ".nativeparsedex()"
+    },
+    {
+      "label": ".nativeGetVersion()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L57",
       "id": "nativeengine_dexnativeengine_dexnativeengine_nativegetversion",
       "community": 82,
       "norm_label": ".nativegetversion()"
     },
     {
+      "label": ".parseClassesFast()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L67",
+      "id": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
+      "community": 82,
+      "norm_label": ".parseclassesfast()"
+    },
+    {
       "label": ".evaluateFilterRules()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
-      "source_location": "L63",
+      "source_location": "L91",
       "id": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules",
       "community": 82,
       "norm_label": ".evaluatefilterrules()"
@@ -4354,7 +4444,7 @@
       "label": ".safeLog()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
-      "source_location": "L91",
+      "source_location": "L119",
       "id": "nativeengine_dexnativeengine_dexnativeengine_safelog",
       "community": 82,
       "norm_label": ".safelog()"
@@ -4707,7 +4797,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/transpiler/Dex2cTranspiler.kt",
       "source_location": "L53",
       "id": "transpiler_dex2ctranspiler_streamedfilebuilder_append",
-      "community": 18,
+      "community": 77,
       "norm_label": ".append()"
     },
     {
@@ -5337,7 +5427,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L239",
       "id": "ui_dex2cviewmodel_cloudapkchoice",
-      "community": 23,
+      "community": 24,
       "norm_label": "cloudapkchoice"
     },
     {
@@ -6120,7 +6210,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L2012",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updatecloudsettings",
-      "community": 23,
+      "community": 1,
       "norm_label": ".updatecloudsettings()"
     },
     {
@@ -6129,7 +6219,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L2034",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setnotificationsenabled",
-      "community": 23,
+      "community": 1,
       "norm_label": ".setnotificationsenabled()"
     },
     {
@@ -6147,7 +6237,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L2051",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectcloudapkfromsaf",
-      "community": 23,
+      "community": 24,
       "norm_label": ".selectcloudapkfromsaf()"
     },
     {
@@ -6156,7 +6246,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L2066",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_useliveapkforcloud",
-      "community": 23,
+      "community": 24,
       "norm_label": ".useliveapkforcloud()"
     },
     {
@@ -6282,7 +6372,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L2943",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshcloudruns",
-      "community": 39,
+      "community": 23,
       "norm_label": ".refreshcloudruns()"
     },
     {
@@ -6327,7 +6417,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L3110",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_querydisplayname",
-      "community": 23,
+      "community": 24,
       "norm_label": ".querydisplayname()"
     },
     {
@@ -6534,7 +6624,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassesFilterTray.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_classesfiltertray_kt",
-      "community": 48,
+      "community": 99,
       "norm_label": "classesfiltertray.kt"
     },
     {
@@ -6543,7 +6633,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassesFilterTray.kt",
       "source_location": "L52",
       "id": "components_classesfiltertray_classesfiltertray",
-      "community": 48,
+      "community": 99,
       "norm_label": "classesfiltertray()"
     },
     {
@@ -6552,7 +6642,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassesFilterTray.kt",
       "source_location": "L202",
       "id": "components_classesfiltertray_activefiltersummarystrip",
-      "community": 48,
+      "community": 99,
       "norm_label": "activefiltersummarystrip()"
     },
     {
@@ -6561,7 +6651,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassesFilterTray.kt",
       "source_location": "L300",
       "id": "components_classesfiltertray_activefilterpill",
-      "community": 48,
+      "community": 99,
       "norm_label": "activefilterpill()"
     },
     {
@@ -6570,7 +6660,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassesFilterTray.kt",
       "source_location": "L339",
       "id": "components_classesfiltertray_classesfiltersheet",
-      "community": 48,
+      "community": 99,
       "norm_label": "classesfiltersheet()"
     },
     {
@@ -6669,7 +6759,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassPickerSheet.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_classpickersheet_kt",
-      "community": 4,
+      "community": 76,
       "norm_label": "classpickersheet.kt"
     },
     {
@@ -6678,7 +6768,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassPickerSheet.kt",
       "source_location": "L54",
       "id": "components_classpickersheet_classpickersheet",
-      "community": 4,
+      "community": 76,
       "norm_label": "classpickersheet()"
     },
     {
@@ -6687,7 +6777,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassSelectionHeader.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_classselectionheader_kt",
-      "community": 76,
+      "community": 104,
       "norm_label": "classselectionheader.kt"
     },
     {
@@ -6696,7 +6786,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassSelectionHeader.kt",
       "source_location": "L51",
       "id": "components_classselectionheader_classselectionheader",
-      "community": 76,
+      "community": 104,
       "norm_label": "classselectionheader()"
     },
     {
@@ -7209,7 +7299,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/SelectedClassesFilterDialog.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_selectedclassesfilterdialog_kt",
-      "community": 48,
+      "community": 99,
       "norm_label": "selectedclassesfilterdialog.kt"
     },
     {
@@ -7218,7 +7308,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/SelectedClassesFilterDialog.kt",
       "source_location": "L58",
       "id": "components_selectedclassesfilterdialog_selectedclassesfilterdialog",
-      "community": 48,
+      "community": 99,
       "norm_label": "selectedclassesfilterdialog()"
     },
     {
@@ -7704,7 +7794,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt",
       "source_location": "L334",
       "id": "screens_classesscreen_classesscreen",
-      "community": 48,
+      "community": 99,
       "norm_label": "classesscreen()"
     },
     {
@@ -7713,7 +7803,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt",
       "source_location": "L969",
       "id": "screens_classesscreen_classesdetailpane",
-      "community": 76,
+      "community": 104,
       "norm_label": "classesdetailpane()"
     },
     {
@@ -8397,7 +8487,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/theme/Theme.kt",
       "source_location": "L55",
       "id": "theme_theme_dex2ctheme",
-      "community": 81,
+      "community": 76,
       "norm_label": "dex2ctheme()"
     },
     {
@@ -8622,7 +8712,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/ExampleRobolectricTest.kt",
       "source_location": "L181",
       "id": "studio_examplerobolectrictest_examplerobolectrictest_onboarding_shows_step_header_progress_and_swipes_across_intro_about_github_theme_alerts_in_order",
-      "community": 6,
+      "community": 2,
       "norm_label": ".`onboarding shows step header progress and swipes across intro, about, github, theme, alerts in order`()"
     },
     {
@@ -9072,52 +9162,61 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_nativeengine_dexnativeenginetest_kt",
-      "community": 19,
+      "community": 102,
       "norm_label": "dexnativeenginetest.kt"
     },
     {
       "label": "DexNativeEngineTest",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
-      "source_location": "L15",
+      "source_location": "L17",
       "id": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "community": 19,
+      "community": 102,
       "norm_label": "dexnativeenginetest"
     },
     {
       "label": ".testEngineFallbackGraceful()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
-      "source_location": "L17",
+      "source_location": "L19",
       "id": "nativeengine_dexnativeenginetest_dexnativeenginetest_testenginefallbackgraceful",
-      "community": 19,
+      "community": 102,
       "norm_label": ".testenginefallbackgraceful()"
     },
     {
       "label": ".testFilterRuleEngineParityWithFallback()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
-      "source_location": "L29",
+      "source_location": "L31",
       "id": "nativeengine_dexnativeenginetest_dexnativeenginetest_testfilterruleengineparitywithfallback",
-      "community": 19,
+      "community": 102,
       "norm_label": ".testfilterruleengineparitywithfallback()"
     },
     {
       "label": ".testCorruptedDexBufferSafety()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
-      "source_location": "L53",
+      "source_location": "L55",
       "id": "nativeengine_dexnativeenginetest_dexnativeenginetest_testcorrupteddexbuffersafety",
-      "community": 19,
+      "community": 102,
       "norm_label": ".testcorrupteddexbuffersafety()"
+    },
+    {
+      "label": ".testD2cnBinaryDecoderSynthesizedBuffer()",
+      "file_type": "code",
+      "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
+      "source_location": "L68",
+      "id": "nativeengine_dexnativeenginetest_dexnativeenginetest_testd2cnbinarydecodersynthesizedbuffer",
+      "community": 102,
+      "norm_label": ".testd2cnbinarydecodersynthesizedbuffer()"
     },
     {
       "label": ".buildMinimalTestDex()",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
-      "source_location": "L66",
+      "source_location": "L183",
       "id": "nativeengine_dexnativeenginetest_dexnativeenginetest_buildminimaltestdex",
-      "community": 19,
+      "community": 102,
       "norm_label": ".buildminimaltestdex()"
     },
     {
@@ -9729,7 +9828,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_verification_phase5verificationtest_kt",
-      "community": 20,
+      "community": 19,
       "norm_label": "phase5verificationtest.kt"
     },
     {
@@ -9738,7 +9837,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L56",
       "id": "verification_phase5verificationtest_phase5verificationtest",
-      "community": 20,
+      "community": 19,
       "norm_label": "phase5verificationtest"
     },
     {
@@ -9747,7 +9846,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L62",
       "id": "verification_phase5verificationtest_phase5verificationtest_testsmalireassemblyroundtripintegrity",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testsmalireassemblyroundtripintegrity()"
     },
     {
@@ -9756,7 +9855,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L117",
       "id": "verification_phase5verificationtest_phase5verificationtest_testsmalireassemblysyntaxerrorsafety",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testsmalireassemblysyntaxerrorsafety()"
     },
     {
@@ -9765,7 +9864,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L139",
       "id": "verification_phase5verificationtest_phase5verificationtest_testbytecodestringreplacementroundtrip",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testbytecodestringreplacementroundtrip()"
     },
     {
@@ -9783,7 +9882,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L306",
       "id": "verification_phase5verificationtest_phase5verificationtest_testapkrepackingalignmentandsignaturestrippingwithzipalign",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testapkrepackingalignmentandsignaturestrippingwithzipalign()"
     },
     {
@@ -9792,7 +9891,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L433",
       "id": "verification_phase5verificationtest_phase5verificationtest_buildmulticlassdex",
-      "community": 20,
+      "community": 19,
       "norm_label": ".buildmulticlassdex()"
     },
     {
@@ -9810,7 +9909,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L504",
       "id": "verification_phase5verificationtest_phase5verificationtest_buildsyntheticdex",
-      "community": 64,
+      "community": 15,
       "norm_label": ".buildsyntheticdex()"
     },
     {
@@ -9828,7 +9927,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L604",
       "id": "verification_phase5verificationtest_zipalignlocator",
-      "community": 20,
+      "community": 19,
       "norm_label": "zipalignlocator"
     },
     {
@@ -9837,7 +9936,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L605",
       "id": "verification_phase5verificationtest_zipalignlocator_findzipalign",
-      "community": 20,
+      "community": 19,
       "norm_label": ".findzipalign()"
     },
     {
@@ -9846,7 +9945,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L633",
       "id": "verification_phase5verificationtest_zipalignlocator_scanbuildtools",
-      "community": 20,
+      "community": 19,
       "norm_label": ".scanbuildtools()"
     },
     {
@@ -9862,7 +9961,7 @@
       "label": "DexHeader",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L7",
+      "source_location": "L10",
       "id": "src_dex_dexheader",
       "community": 59,
       "norm_label": "dexheader"
@@ -9871,7 +9970,7 @@
       "label": "DexFile",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L23",
+      "source_location": "L27",
       "id": "src_dex_dexfile",
       "community": 59,
       "norm_label": "dexfile"
@@ -9880,7 +9979,7 @@
       "label": "MethodRef",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L29",
+      "source_location": "L33",
       "id": "src_dex_methodref",
       "community": 59,
       "norm_label": "methodref"
@@ -9889,16 +9988,61 @@
       "label": "ClassMethodSummary",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L36",
+      "source_location": "L40",
       "id": "src_dex_classmethodsummary",
       "community": 59,
       "norm_label": "classmethodsummary"
     },
     {
+      "label": "DexCodeMeta",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L51",
+      "id": "src_dex_dexcodemeta",
+      "community": 59,
+      "norm_label": "dexcodemeta"
+    },
+    {
+      "label": "DexFieldMeta",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L64",
+      "id": "src_dex_dexfieldmeta",
+      "community": 59,
+      "norm_label": "dexfieldmeta"
+    },
+    {
+      "label": "DexMethodMeta",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L74",
+      "id": "src_dex_dexmethodmeta",
+      "community": 59,
+      "norm_label": "dexmethodmeta"
+    },
+    {
+      "label": "DexClassDefFull",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L88",
+      "id": "src_dex_dexclassdeffull",
+      "community": 59,
+      "norm_label": "dexclassdeffull"
+    },
+    {
+      "label": "PackageTreeNode",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L107",
+      "id": "src_dex_packagetreenode",
+      "community": 59,
+      "norm_label": "packagetreenode"
+    },
+    {
       "label": "DexFile<'a>",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L45",
+      "source_location": "L118",
       "id": "src_dex_dexfile_a",
       "community": 59,
       "norm_label": "dexfile<'a>"
@@ -9907,7 +10051,7 @@
       "label": ".parse()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L46",
+      "source_location": "L119",
       "id": "src_dex_dexfile_a_parse",
       "community": 59,
       "norm_label": ".parse()"
@@ -9916,7 +10060,7 @@
       "label": ".string_count()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L81",
+      "source_location": "L154",
       "id": "src_dex_dexfile_a_string_count",
       "community": 59,
       "norm_label": ".string_count()"
@@ -9925,7 +10069,7 @@
       "label": ".class_def_count()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L86",
+      "source_location": "L159",
       "id": "src_dex_dexfile_a_class_def_count",
       "community": 59,
       "norm_label": ".class_def_count()"
@@ -9934,7 +10078,7 @@
       "label": ".get_string()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L90",
+      "source_location": "L163",
       "id": "src_dex_dexfile_a_get_string",
       "community": 59,
       "norm_label": ".get_string()"
@@ -9943,16 +10087,34 @@
       "label": ".get_type_descriptor()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L111",
+      "source_location": "L184",
       "id": "src_dex_dexfile_a_get_type_descriptor",
       "community": 59,
       "norm_label": ".get_type_descriptor()"
     },
     {
+      "label": ".get_proto()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L193",
+      "id": "src_dex_dexfile_a_get_proto",
+      "community": 59,
+      "norm_label": ".get_proto()"
+    },
+    {
+      "label": ".get_field_info()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L224",
+      "id": "src_dex_dexfile_a_get_field_info",
+      "community": 59,
+      "norm_label": ".get_field_info()"
+    },
+    {
       "label": ".get_method_name()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L120",
+      "source_location": "L236",
       "id": "src_dex_dexfile_a_get_method_name",
       "community": 59,
       "norm_label": ".get_method_name()"
@@ -9961,34 +10123,241 @@
       "label": ".get_method_class_desc()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L129",
+      "source_location": "L245",
       "id": "src_dex_dexfile_a_get_method_class_desc",
       "community": 59,
       "norm_label": ".get_method_class_desc()"
     },
     {
+      "label": ".get_method_proto()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L254",
+      "id": "src_dex_dexfile_a_get_method_proto",
+      "community": 59,
+      "norm_label": ".get_method_proto()"
+    },
+    {
       "label": ".get_class_def_desc()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L138",
+      "source_location": "L263",
       "id": "src_dex_dexfile_a_get_class_def_desc",
       "community": 59,
       "norm_label": ".get_class_def_desc()"
     },
     {
+      "label": ".get_code_meta()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L272",
+      "id": "src_dex_dexfile_a_get_code_meta",
+      "community": 59,
+      "norm_label": ".get_code_meta()"
+    },
+    {
+      "label": ".get_class_def_full()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L300",
+      "id": "src_dex_dexfile_a_get_class_def_full",
+      "community": 59,
+      "norm_label": ".get_class_def_full()"
+    },
+    {
       "label": ".for_each_method()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L148",
+      "source_location": "L478",
       "id": "src_dex_dexfile_a_for_each_method",
       "community": 59,
       "norm_label": ".for_each_method()"
     },
     {
+      "label": ".pack_dex_classes()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L590",
+      "id": "src_dex_dexfile_a_pack_dex_classes",
+      "community": 59,
+      "norm_label": ".pack_dex_classes()"
+    },
+    {
+      "label": "extract_package_and_simple_name()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L826",
+      "id": "src_dex_extract_package_and_simple_name",
+      "community": 59,
+      "norm_label": "extract_package_and_simple_name()"
+    },
+    {
+      "label": "parse_class_descriptor()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L838",
+      "id": "src_dex_parse_class_descriptor",
+      "community": 59,
+      "norm_label": "parse_class_descriptor()"
+    },
+    {
+      "label": "build_package_tree()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L850",
+      "id": "src_dex_build_package_tree",
+      "community": 59,
+      "norm_label": "build_package_tree()"
+    },
+    {
+      "label": "StringPool",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L899",
+      "id": "src_dex_stringpool",
+      "community": 59,
+      "norm_label": "stringpool"
+    },
+    {
+      "label": "StringPool<'a>",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L904",
+      "id": "src_dex_stringpool_a",
+      "community": 59,
+      "norm_label": "stringpool<'a>"
+    },
+    {
+      "label": ".new()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L905",
+      "id": "src_dex_stringpool_a_new",
+      "community": 59,
+      "norm_label": ".new()"
+    },
+    {
+      "label": ".intern()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L912",
+      "id": "src_dex_stringpool_a_intern",
+      "community": 59,
+      "norm_label": ".intern()"
+    },
+    {
+      "label": ".intern_borrowed()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L924",
+      "id": "src_dex_stringpool_a_intern_borrowed",
+      "community": 59,
+      "norm_label": ".intern_borrowed()"
+    },
+    {
+      "label": ".intern_owned()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L929",
+      "id": "src_dex_stringpool_a_intern_owned",
+      "community": 59,
+      "norm_label": ".intern_owned()"
+    },
+    {
+      "label": "BufferWriter",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L935",
+      "id": "src_dex_bufferwriter",
+      "community": 59,
+      "norm_label": "bufferwriter"
+    },
+    {
+      "label": ".new()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L940",
+      "id": "src_dex_bufferwriter_new",
+      "community": 59,
+      "norm_label": ".new()"
+    },
+    {
+      "label": ".write_u8()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L947",
+      "id": "src_dex_bufferwriter_write_u8",
+      "community": 59,
+      "norm_label": ".write_u8()"
+    },
+    {
+      "label": ".write_u16()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L952",
+      "id": "src_dex_bufferwriter_write_u16",
+      "community": 59,
+      "norm_label": ".write_u16()"
+    },
+    {
+      "label": ".write_u32()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L957",
+      "id": "src_dex_bufferwriter_write_u32",
+      "community": 59,
+      "norm_label": ".write_u32()"
+    },
+    {
+      "label": ".write_i32()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L962",
+      "id": "src_dex_bufferwriter_write_i32",
+      "community": 59,
+      "norm_label": ".write_i32()"
+    },
+    {
+      "label": ".write_bytes()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L967",
+      "id": "src_dex_bufferwriter_write_bytes",
+      "community": 59,
+      "norm_label": ".write_bytes()"
+    },
+    {
+      "label": ".len()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L972",
+      "id": "src_dex_bufferwriter_len",
+      "community": 59,
+      "norm_label": ".len()"
+    },
+    {
+      "label": ".patch_u32()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L977",
+      "id": "src_dex_bufferwriter_patch_u32",
+      "community": 59,
+      "norm_label": ".patch_u32()"
+    },
+    {
+      "label": ".into_vec()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L983",
+      "id": "src_dex_bufferwriter_into_vec",
+      "community": 59,
+      "norm_label": ".into_vec()"
+    },
+    {
       "label": "read_u16_le()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L255",
+      "source_location": "L989",
       "id": "src_dex_read_u16_le",
       "community": 59,
       "norm_label": "read_u16_le()"
@@ -9997,7 +10366,7 @@
       "label": "read_u32_le()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L263",
+      "source_location": "L997",
       "id": "src_dex_read_u32_le",
       "community": 59,
       "norm_label": "read_u32_le()"
@@ -10006,10 +10375,46 @@
       "label": "read_uleb128()",
       "file_type": "code",
       "source_file": "rust-engine/src/dex.rs",
-      "source_location": "L276",
+      "source_location": "L1010",
       "id": "src_dex_read_uleb128",
       "community": 59,
       "norm_label": "read_uleb128()"
+    },
+    {
+      "label": "test_extract_package_and_simple_name()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1033",
+      "id": "src_dex_test_extract_package_and_simple_name",
+      "community": 59,
+      "norm_label": "test_extract_package_and_simple_name()"
+    },
+    {
+      "label": "test_parse_class_descriptor()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1049",
+      "id": "src_dex_test_parse_class_descriptor",
+      "community": 59,
+      "norm_label": "test_parse_class_descriptor()"
+    },
+    {
+      "label": "test_package_tree_grouping()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1062",
+      "id": "src_dex_test_package_tree_grouping",
+      "community": 59,
+      "norm_label": "test_package_tree_grouping()"
+    },
+    {
+      "label": "test_synthetic_dex_parse_and_pack_roundtrip()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1127",
+      "id": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
+      "community": 59,
+      "norm_label": "test_synthetic_dex_parse_and_pack_roundtrip()"
     },
     {
       "label": "filter.rs",
@@ -10087,7 +10492,7 @@
       "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeOpenDex()",
       "file_type": "code",
       "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L20",
+      "source_location": "L21",
       "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeopendex",
       "community": 66,
       "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativeopendex()"
@@ -10096,7 +10501,7 @@
       "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeCloseDex()",
       "file_type": "code",
       "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L54",
+      "source_location": "L57",
       "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeclosedex",
       "community": 66,
       "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativeclosedex()"
@@ -10105,7 +10510,7 @@
       "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeGetClassCount()",
       "file_type": "code",
       "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L68",
+      "source_location": "L71",
       "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetclasscount",
       "community": 66,
       "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetclasscount()"
@@ -10114,16 +10519,25 @@
       "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeGetStringCount()",
       "file_type": "code",
       "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L84",
+      "source_location": "L87",
       "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetstringcount",
       "community": 66,
       "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetstringcount()"
     },
     {
+      "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeParseDex()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/lib.rs",
+      "source_location": "L103",
+      "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeparsedex",
+      "community": 66,
+      "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativeparsedex()"
+    },
+    {
       "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeFilterMethods()",
       "file_type": "code",
       "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L100",
+      "source_location": "L135",
       "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativefiltermethods",
       "community": 66,
       "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativefiltermethods()"
@@ -10132,19 +10546,10 @@
       "label": "Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeGetVersion()",
       "file_type": "code",
       "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L169",
+      "source_location": "L198",
       "id": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetversion",
       "community": 66,
       "norm_label": "java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetversion()"
-    },
-    {
-      "label": "bytemuck_cast()",
-      "file_type": "code",
-      "source_file": "rust-engine/src/lib.rs",
-      "source_location": "L178",
-      "id": "src_lib_bytemuck_cast",
-      "community": 66,
-      "norm_label": "bytemuck_cast()"
     },
     {
       "label": "WORKFLOW.md",
@@ -11059,7 +11464,7 @@
       "label": "\ud83d\udccb Phase 0: Branching & Environment Setup",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L32",
+      "source_location": "L33",
       "id": "docs_phases_phase_0_branching_environment_setup",
       "community": 53,
       "norm_label": "\ud83d\udccb phase 0: branching & environment setup"
@@ -11068,7 +11473,7 @@
       "label": "Windows Setup Instructions (Optional Local Rust Builds)",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L39",
+      "source_location": "L40",
       "id": "docs_phases_windows_setup_instructions_optional_local_rust_builds",
       "community": 53,
       "norm_label": "windows setup instructions (optional local rust builds)"
@@ -11077,7 +11482,7 @@
       "label": "code:powershell (# 1. Install Rust via winget)",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L41",
+      "source_location": "L42",
       "id": "docs_phases_codeblock_1",
       "community": 53,
       "norm_label": "code:powershell (# 1. install rust via winget)"
@@ -11086,7 +11491,7 @@
       "label": "\ud83d\udccb Phase 1: Rust Native Engine Core (`rust-engine/`)",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L58",
+      "source_location": "L59",
       "id": "docs_phases_phase_1_rust_native_engine_core_rust_engine",
       "community": 53,
       "norm_label": "\ud83d\udccb phase 1: rust native engine core (`rust-engine/`)"
@@ -11095,7 +11500,7 @@
       "label": "Goals",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L60",
+      "source_location": "L61",
       "id": "docs_phases_goals",
       "community": 53,
       "norm_label": "goals"
@@ -11104,7 +11509,7 @@
       "label": "Tasks & Checklist",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L63",
+      "source_location": "L64",
       "id": "docs_phases_tasks_checklist",
       "community": 53,
       "norm_label": "tasks & checklist"
@@ -11113,7 +11518,7 @@
       "label": "\ud83d\udccb Phase 2: JNI Bridge & Android Integration",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L85",
+      "source_location": "L86",
       "id": "docs_phases_phase_2_jni_bridge_android_integration",
       "community": 53,
       "norm_label": "\ud83d\udccb phase 2: jni bridge & android integration"
@@ -11122,8 +11527,8 @@
       "label": "Goals",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L87",
-      "id": "docs_phases_goals_87",
+      "source_location": "L88",
+      "id": "docs_phases_goals_88",
       "community": 53,
       "norm_label": "goals"
     },
@@ -11131,8 +11536,8 @@
       "label": "Tasks & Checklist",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L90",
-      "id": "docs_phases_tasks_checklist_90",
+      "source_location": "L91",
+      "id": "docs_phases_tasks_checklist_91",
       "community": 53,
       "norm_label": "tasks & checklist"
     },
@@ -11140,7 +11545,7 @@
       "label": "\ud83d\udccb Phase 3: GitHub Actions CI Integration",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L105",
+      "source_location": "L106",
       "id": "docs_phases_phase_3_github_actions_ci_integration",
       "community": 53,
       "norm_label": "\ud83d\udccb phase 3: github actions ci integration"
@@ -11149,8 +11554,8 @@
       "label": "Goals",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L107",
-      "id": "docs_phases_goals_107",
+      "source_location": "L108",
+      "id": "docs_phases_goals_108",
       "community": 53,
       "norm_label": "goals"
     },
@@ -11158,8 +11563,8 @@
       "label": "Tasks & Checklist",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L110",
-      "id": "docs_phases_tasks_checklist_110",
+      "source_location": "L111",
+      "id": "docs_phases_tasks_checklist_111",
       "community": 53,
       "norm_label": "tasks & checklist"
     },
@@ -11167,7 +11572,7 @@
       "label": "code:bash (cargo ndk -t arm64-v8a -t x86_64 -o app/src/main/jniLibs bui)",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L115",
+      "source_location": "L116",
       "id": "docs_phases_codeblock_2",
       "community": 53,
       "norm_label": "code:bash (cargo ndk -t arm64-v8a -t x86_64 -o app/src/main/jnilibs bui)"
@@ -11176,7 +11581,7 @@
       "label": "\ud83d\udccb Phase 4: Parity Verification & Benchmark Suite",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L122",
+      "source_location": "L123",
       "id": "docs_phases_phase_4_parity_verification_benchmark_suite",
       "community": 53,
       "norm_label": "\ud83d\udccb phase 4: parity verification & benchmark suite"
@@ -11185,8 +11590,8 @@
       "label": "Goals",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L124",
-      "id": "docs_phases_goals_124",
+      "source_location": "L125",
+      "id": "docs_phases_goals_125",
       "community": 53,
       "norm_label": "goals"
     },
@@ -11194,8 +11599,8 @@
       "label": "Tasks & Checklist",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L127",
-      "id": "docs_phases_tasks_checklist_127",
+      "source_location": "L128",
+      "id": "docs_phases_tasks_checklist_128",
       "community": 53,
       "norm_label": "tasks & checklist"
     },
@@ -11203,10 +11608,37 @@
       "label": "\ud83d\udccb Phase 5: Rollout & Walkthrough",
       "file_type": "document",
       "source_file": "docs/phases.md",
-      "source_location": "L137",
+      "source_location": "L143",
       "id": "docs_phases_phase_5_rollout_walkthrough",
       "community": 53,
       "norm_label": "\ud83d\udccb phase 5: rollout & walkthrough"
+    },
+    {
+      "label": "\ud83d\udccb Phase 6: Zero-Copy DEX & Package Tree Indexer (Track 1)",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L150",
+      "id": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
+      "community": 53,
+      "norm_label": "\ud83d\udccb phase 6: zero-copy dex & package tree indexer (track 1)"
+    },
+    {
+      "label": "Goals",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L152",
+      "id": "docs_phases_goals_152",
+      "community": 53,
+      "norm_label": "goals"
+    },
+    {
+      "label": "Tasks & Deliverables",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L155",
+      "id": "docs_phases_tasks_deliverables",
+      "community": 53,
+      "norm_label": "tasks & deliverables"
     },
     {
       "label": "precision-engine.md",
@@ -12424,6 +12856,69 @@
       "norm_label": "ui-003: deprecated icon reference"
     },
     {
+      "label": "bytemuck_cast()",
+      "file_type": "code",
+      "source_file": "rust-engine/src/lib.rs",
+      "source_location": "L178",
+      "community": 66,
+      "norm_label": "bytemuck_cast()",
+      "id": "src_lib_bytemuck_cast"
+    },
+    {
+      "label": "Goals",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L87",
+      "community": 53,
+      "norm_label": "goals",
+      "id": "docs_phases_goals_87"
+    },
+    {
+      "label": "Tasks & Checklist",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L90",
+      "community": 53,
+      "norm_label": "tasks & checklist",
+      "id": "docs_phases_tasks_checklist_90"
+    },
+    {
+      "label": "Goals",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L107",
+      "community": 53,
+      "norm_label": "goals",
+      "id": "docs_phases_goals_107"
+    },
+    {
+      "label": "Tasks & Checklist",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L110",
+      "community": 53,
+      "norm_label": "tasks & checklist",
+      "id": "docs_phases_tasks_checklist_110"
+    },
+    {
+      "label": "Goals",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L124",
+      "community": 53,
+      "norm_label": "goals",
+      "id": "docs_phases_goals_124"
+    },
+    {
+      "label": "Tasks & Checklist",
+      "file_type": "document",
+      "source_file": "docs/phases.md",
+      "source_location": "L127",
+      "community": 53,
+      "norm_label": "tasks & checklist",
+      "id": "docs_phases_tasks_checklist_127"
+    },
+    {
       "label": "ClassesViewMode",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt",
@@ -12536,7 +13031,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassViewerTabBar.kt",
       "source_location": "L1",
-      "community": 18,
+      "community": 76,
       "norm_label": "classviewertabbar.kt",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_classviewertabbar_kt"
     },
@@ -12545,7 +13040,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/ClassViewerTabBar.kt",
       "source_location": "L54",
-      "community": 18,
+      "community": 76,
       "norm_label": "classviewertabbar()",
       "id": "components_classviewertabbar_classviewertabbar"
     },
@@ -12725,7 +13220,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L1",
-      "community": 33,
+      "community": 103,
       "norm_label": "bytecodeoverviewcard.kt",
       "id": "app_src_main_java_com_dex2c_studio_ui_components_bytecodeoverviewcard_kt"
     },
@@ -12734,7 +13229,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L42",
-      "community": 33,
+      "community": 103,
       "norm_label": "bytecodeoverviewcard()",
       "id": "components_bytecodeoverviewcard_bytecodeoverviewcard"
     },
@@ -12743,7 +13238,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L259",
-      "community": 33,
+      "community": 103,
       "norm_label": "overviewstatbox()",
       "id": "components_bytecodeoverviewcard_overviewstatbox"
     },
@@ -12752,7 +13247,7 @@
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/BytecodeOverviewCard.kt",
       "source_location": "L307",
-      "community": 33,
+      "community": 103,
       "norm_label": "topclassdefinitionrow()",
       "id": "components_bytecodeoverviewcard_topclassdefinitionrow"
     },
@@ -17471,6 +17966,187 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "app_src_main_java_com_dex2c_studio_dex_d2cnbinarydecoder_kt",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L209",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L239",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L275",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L148",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_dexmodels_parseclassdescriptor"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_dexmodels_dexfieldref"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_dexmodels_dexencodedfield"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L184",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
+      "target": "dex_dexmodels_dexclassinfo"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L226",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader",
+      "target": "dex_d2cnheader_d2cnheader"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L313",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
+      "target": "dex_dexmodels_dexproto"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L324",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
+      "target": "dex_dexmodels_dexmethodref"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
+      "source_location": "L355",
+      "weight": 1.0,
+      "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
+      "target": "dex_dexmodels_dexencodedmethod"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnHeader.kt",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "app_src_main_java_com_dex2c_studio_dex_d2cnheader_kt",
+      "target": "dex_d2cnheader_d2cnheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikControlFlowGraph.kt",
       "source_location": "L3",
       "weight": 1.0,
@@ -22073,9 +22749,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_nativeengine_dexnativeengine_kt",
-      "target": "nativeengine_dexnativeengine_dexnativeengine",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine"
     },
     {
       "relation": "method",
@@ -22083,9 +22759,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex"
     },
     {
       "relation": "method",
@@ -22093,9 +22769,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex"
     },
     {
       "relation": "method",
@@ -22103,9 +22779,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativegetclasscount",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativegetclasscount"
     },
     {
       "relation": "method",
@@ -22113,9 +22789,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativegetstringcount",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativegetstringcount"
     },
     {
       "relation": "method",
@@ -22123,9 +22799,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativefiltermethods",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativefiltermethods"
     },
     {
       "relation": "method",
@@ -22134,7 +22810,27 @@
       "source_location": "L54",
       "weight": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativegetversion",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "nativeengine_dexnativeengine_dexnativeengine",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativegetversion"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "nativeengine_dexnativeengine_dexnativeengine",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
       "confidence_score": 1.0
     },
     {
@@ -22143,9 +22839,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules"
     },
     {
       "relation": "method",
@@ -22153,8 +22849,19 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex",
       "confidence_score": 1.0
     },
     {
@@ -22164,8 +22871,19 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex",
       "confidence_score": 1.0
     },
     {
@@ -22175,9 +22893,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex"
     },
     {
       "relation": "calls",
@@ -22186,8 +22904,30 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativefiltermethods",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativefiltermethods"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
+      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog",
       "confidence_score": 1.0
     },
     {
@@ -22197,9 +22937,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_evaluatefilterrules",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog"
     },
     {
       "relation": "contains",
@@ -22289,9 +23029,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/transpiler/D2cConfigEngine.kt",
       "source_location": "L123",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "transpiler_d2cconfigengine_filterruleengine_trynativeevaluateall",
-      "target": "transpiler_d2cconfigengine_filtermatchsummary",
-      "confidence_score": 1.0
+      "target": "transpiler_d2cconfigengine_filtermatchsummary"
     },
     {
       "relation": "method",
@@ -22319,9 +23059,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/transpiler/D2cConfigEngine.kt",
       "source_location": "L78",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "transpiler_d2cconfigengine_filterruleengine",
-      "target": "transpiler_d2cconfigengine_filterruleengine_trynativeevaluateall",
-      "confidence_score": 1.0
+      "target": "transpiler_d2cconfigengine_filterruleengine_trynativeevaluateall"
     },
     {
       "relation": "method",
@@ -22431,9 +23171,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/transpiler/D2cConfigEngine.kt",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "transpiler_d2cconfigengine_filterruleengine_evaluateall",
-      "target": "transpiler_d2cconfigengine_filterruleengine_trynativeevaluateall",
-      "confidence_score": 1.0
+      "target": "transpiler_d2cconfigengine_filterruleengine_trynativeevaluateall"
     },
     {
       "relation": "calls",
@@ -33503,9 +34243,9 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_test_java_com_dex2c_studio_nativeengine_dexnativeenginetest_kt",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest"
     },
     {
       "relation": "method",
@@ -33513,9 +34253,9 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testenginefallbackgraceful",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testenginefallbackgraceful"
     },
     {
       "relation": "method",
@@ -33523,9 +34263,9 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testfilterruleengineparitywithfallback",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testfilterruleengineparitywithfallback"
     },
     {
       "relation": "method",
@@ -33533,8 +34273,18 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testcorrupteddexbuffersafety",
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testcorrupteddexbuffersafety"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "nativeengine_dexnativeenginetest_dexnativeenginetest",
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testd2cnbinarydecodersynthesizedbuffer",
       "confidence_score": 1.0
     },
     {
@@ -33543,9 +34293,9 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_buildminimaltestdex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_buildminimaltestdex"
     },
     {
       "relation": "calls",
@@ -33554,9 +34304,9 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeenginetest_dexnativeenginetest_testfilterruleengineparitywithfallback",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_buildminimaltestdex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_buildminimaltestdex"
     },
     {
       "relation": "contains",
@@ -35018,9 +35768,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_dexheader",
-      "confidence_score": 1.0
+      "target": "src_dex_dexheader"
     },
     {
       "relation": "contains",
@@ -35028,9 +35778,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_dexfile",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile"
     },
     {
       "relation": "contains",
@@ -35038,9 +35788,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_methodref",
-      "confidence_score": 1.0
+      "target": "src_dex_methodref"
     },
     {
       "relation": "contains",
@@ -35048,8 +35798,108 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_classmethodsummary",
+      "target": "src_dex_classmethodsummary"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_dexcodemeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_dexfieldmeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_dexmethodmeta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_dexclassdeffull",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_packagetreenode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L826",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_extract_package_and_simple_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L838",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_parse_class_descriptor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L850",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_build_package_tree",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L899",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_stringpool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L935",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_bufferwriter",
       "confidence_score": 1.0
     },
     {
@@ -35058,9 +35908,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L255",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_read_u16_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u16_le"
     },
     {
       "relation": "contains",
@@ -35068,9 +35918,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L263",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_read_u32_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u32_le"
     },
     {
       "relation": "contains",
@@ -35078,8 +35928,48 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L276",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_read_uleb128",
+      "target": "src_dex_read_uleb128"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1033",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_test_extract_package_and_simple_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1049",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_test_parse_class_descriptor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1062",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_test_package_tree_grouping",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1127",
+      "weight": 1.0,
+      "source": "rust_engine_src_dex_rs",
+      "target": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
       "confidence_score": 1.0
     },
     {
@@ -35088,9 +35978,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_parse",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_parse"
     },
     {
       "relation": "method",
@@ -35098,9 +35988,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L81",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_string_count",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_string_count"
     },
     {
       "relation": "method",
@@ -35108,9 +35998,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_class_def_count",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_class_def_count"
     },
     {
       "relation": "method",
@@ -35118,9 +36008,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L90",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_string",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_string"
     },
     {
       "relation": "method",
@@ -35128,8 +36018,28 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L111",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_type_descriptor",
+      "target": "src_dex_dexfile_a_get_type_descriptor"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L193",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a",
+      "target": "src_dex_dexfile_a_get_proto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L224",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a",
+      "target": "src_dex_dexfile_a_get_field_info",
       "confidence_score": 1.0
     },
     {
@@ -35138,9 +36048,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L120",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_method_name",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_method_name"
     },
     {
       "relation": "method",
@@ -35148,8 +36058,18 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L129",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_method_class_desc",
+      "target": "src_dex_dexfile_a_get_method_class_desc"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L254",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a",
+      "target": "src_dex_dexfile_a_get_method_proto",
       "confidence_score": 1.0
     },
     {
@@ -35158,8 +36078,28 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_class_def_desc",
+      "target": "src_dex_dexfile_a_get_class_def_desc"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L272",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a",
+      "target": "src_dex_dexfile_a_get_code_meta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L300",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a",
+      "target": "src_dex_dexfile_a_get_class_def_full",
       "confidence_score": 1.0
     },
     {
@@ -35168,8 +36108,29 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L148",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_for_each_method",
+      "target": "src_dex_dexfile_a_for_each_method"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L590",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a",
+      "target": "src_dex_dexfile_a_pack_dex_classes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_parse",
+      "target": "src_dex_bufferwriter_len",
       "confidence_score": 1.0
     },
     {
@@ -35179,8 +36140,19 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_parse",
-      "target": "src_dex_read_u32_le",
+      "target": "src_dex_read_u32_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1283",
+      "weight": 1.0,
+      "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
+      "target": "src_dex_dexfile_a_parse",
       "confidence_score": 1.0
     },
     {
@@ -35190,8 +36162,19 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_string",
-      "target": "src_dex_read_u32_le",
+      "target": "src_dex_read_u32_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_string",
+      "target": "src_dex_bufferwriter_len",
       "confidence_score": 1.0
     },
     {
@@ -35201,9 +36184,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L101",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_string",
-      "target": "src_dex_read_uleb128",
-      "confidence_score": 1.0
+      "target": "src_dex_read_uleb128"
     },
     {
       "relation": "calls",
@@ -35212,7 +36195,29 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L117",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_type_descriptor",
+      "target": "src_dex_dexfile_a_get_string"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L202",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_proto",
+      "target": "src_dex_dexfile_a_get_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L231",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_field_info",
       "target": "src_dex_dexfile_a_get_string",
       "confidence_score": 1.0
     },
@@ -35223,7 +36228,18 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L126",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_method_name",
+      "target": "src_dex_dexfile_a_get_string"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L327",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
       "target": "src_dex_dexfile_a_get_string",
       "confidence_score": 1.0
     },
@@ -35234,8 +36250,30 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L116",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_type_descriptor",
-      "target": "src_dex_read_u32_le",
+      "target": "src_dex_read_u32_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_proto",
+      "target": "src_dex_dexfile_a_get_type_descriptor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L232",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_field_info",
+      "target": "src_dex_dexfile_a_get_type_descriptor",
       "confidence_score": 1.0
     },
     {
@@ -35245,9 +36283,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L135",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_method_class_desc",
-      "target": "src_dex_dexfile_a_get_type_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_type_descriptor"
     },
     {
       "relation": "calls",
@@ -35256,7 +36294,18 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L144",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_desc",
+      "target": "src_dex_dexfile_a_get_type_descriptor"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
       "target": "src_dex_dexfile_a_get_type_descriptor",
       "confidence_score": 1.0
     },
@@ -35267,8 +36316,96 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L158",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_for_each_method",
-      "target": "src_dex_dexfile_a_get_type_descriptor",
+      "target": "src_dex_dexfile_a_get_type_descriptor"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L198",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_proto",
+      "target": "src_dex_read_u32_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L205",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_proto",
+      "target": "src_dex_bufferwriter_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L206",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_proto",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L213",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_proto",
+      "target": "src_dex_read_u16_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L260",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_method_proto",
+      "target": "src_dex_dexfile_a_get_proto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_field_info",
+      "target": "src_dex_read_u16_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L230",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_field_info",
+      "target": "src_dex_read_u32_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L374",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_dexfile_a_get_field_info",
       "confidence_score": 1.0
     },
     {
@@ -35278,8 +36415,19 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L125",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_method_name",
-      "target": "src_dex_read_u32_le",
+      "target": "src_dex_read_u32_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L414",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_dexfile_a_get_method_name",
       "confidence_score": 1.0
     },
     {
@@ -35289,9 +36437,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L216",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_for_each_method",
-      "target": "src_dex_dexfile_a_get_method_name",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_method_name"
     },
     {
       "relation": "calls",
@@ -35300,8 +36448,30 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L134",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_method_class_desc",
+      "target": "src_dex_read_u16_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L259",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_method_proto",
       "target": "src_dex_read_u16_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L415",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_dexfile_a_get_method_proto",
       "confidence_score": 1.0
     },
     {
@@ -35311,8 +36481,129 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L143",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_desc",
+      "target": "src_dex_read_u32_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L277",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_code_meta",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L280",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_code_meta",
+      "target": "src_dex_read_u16_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L284",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_code_meta",
       "target": "src_dex_read_u32_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L416",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_dexfile_a_get_code_meta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L305",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L309",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_read_u32_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L332",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_bufferwriter_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L340",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_read_u16_le",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L357",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_get_class_def_full",
+      "target": "src_dex_read_uleb128",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L596",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_dexfile_a_get_class_def_full",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1288",
+      "weight": 1.0,
+      "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
+      "target": "src_dex_dexfile_a_get_class_def_full",
       "confidence_score": 1.0
     },
     {
@@ -35322,8 +36613,19 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L154",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_for_each_method",
-      "target": "src_dex_read_u32_le",
+      "target": "src_dex_read_u32_le"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L497",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_for_each_method",
+      "target": "src_dex_bufferwriter_len",
       "confidence_score": 1.0
     },
     {
@@ -35333,8 +36635,435 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L172",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_for_each_method",
-      "target": "src_dex_read_uleb128",
+      "target": "src_dex_read_uleb128"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L597",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L602",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L622",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_stringpool_a_intern_borrowed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L624",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_parse_class_descriptor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L625",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_stringpool_a_intern_owned",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L694",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_write_u32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L695",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_write_u16",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L710",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_write_bytes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L715",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_patch_u32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L724",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_write_i32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L774",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_write_u8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L818",
+      "weight": 1.0,
+      "source": "src_dex_dexfile_a_pack_dex_classes",
+      "target": "src_dex_bufferwriter_into_vec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1306",
+      "weight": 1.0,
+      "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
+      "target": "src_dex_dexfile_a_pack_dex_classes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L839",
+      "weight": 1.0,
+      "source": "src_dex_parse_class_descriptor",
+      "target": "src_dex_extract_package_and_simple_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L860",
+      "weight": 1.0,
+      "source": "src_dex_build_package_tree",
+      "target": "src_dex_extract_package_and_simple_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1050",
+      "weight": 1.0,
+      "source": "src_dex_test_parse_class_descriptor",
+      "target": "src_dex_parse_class_descriptor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L852",
+      "weight": 1.0,
+      "source": "src_dex_build_package_tree",
+      "target": "src_dex_bufferwriter_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L864",
+      "weight": 1.0,
+      "source": "src_dex_build_package_tree",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1114",
+      "weight": 1.0,
+      "source": "src_dex_test_package_tree_grouping",
+      "target": "src_dex_build_package_tree",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L905",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a",
+      "target": "src_dex_stringpool_a_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L912",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a",
+      "target": "src_dex_stringpool_a_intern",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L924",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a",
+      "target": "src_dex_stringpool_a_intern_borrowed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L929",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a",
+      "target": "src_dex_stringpool_a_intern_owned",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L907",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a_new",
+      "target": "src_dex_bufferwriter_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L916",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a_intern",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L925",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a_intern_borrowed",
+      "target": "src_dex_stringpool_a_intern",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L930",
+      "weight": 1.0,
+      "source": "src_dex_stringpool_a_intern_owned",
+      "target": "src_dex_stringpool_a_intern",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L940",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L947",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_write_u8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L952",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_write_u16",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L957",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_write_u32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L962",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_write_i32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L967",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_write_bytes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L972",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L977",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_patch_u32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L983",
+      "weight": 1.0,
+      "source": "src_dex_bufferwriter",
+      "target": "src_dex_bufferwriter_into_vec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L990",
+      "weight": 1.0,
+      "source": "src_dex_read_u16_le",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L998",
+      "weight": 1.0,
+      "source": "src_dex_read_u32_le",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1013",
+      "weight": 1.0,
+      "source": "src_dex_read_uleb128",
+      "target": "src_dex_bufferwriter_len",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/dex.rs",
+      "source_location": "L1160",
+      "weight": 1.0,
+      "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
+      "target": "src_dex_bufferwriter_len",
       "confidence_score": 1.0
     },
     {
@@ -35343,9 +37072,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_filter_rs",
-      "target": "src_filter_compiledfilter",
-      "confidence_score": 1.0
+      "target": "src_filter_compiledfilter"
     },
     {
       "relation": "contains",
@@ -35353,9 +37082,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L110",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_filter_rs",
-      "target": "src_filter_evaluate_dex_methods",
-      "confidence_score": 1.0
+      "target": "src_filter_evaluate_dex_methods"
     },
     {
       "relation": "contains",
@@ -35363,9 +37092,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L130",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_filter_rs",
-      "target": "src_filter_to_java_name",
-      "confidence_score": 1.0
+      "target": "src_filter_to_java_name"
     },
     {
       "relation": "method",
@@ -35373,9 +37102,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_filter_compiledfilter",
-      "target": "src_filter_compiledfilter_new",
-      "confidence_score": 1.0
+      "target": "src_filter_compiledfilter_new"
     },
     {
       "relation": "method",
@@ -35383,9 +37112,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_filter_compiledfilter",
-      "target": "src_filter_compiledfilter_matches",
-      "confidence_score": 1.0
+      "target": "src_filter_compiledfilter_matches"
     },
     {
       "relation": "calls",
@@ -35394,9 +37123,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L116",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_filter_evaluate_dex_methods",
-      "target": "src_filter_compiledfilter_new",
-      "confidence_score": 1.0
+      "target": "src_filter_compiledfilter_new"
     },
     {
       "relation": "calls",
@@ -35405,9 +37134,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L81",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_filter_compiledfilter_matches",
-      "target": "src_filter_to_java_name",
-      "confidence_score": 1.0
+      "target": "src_filter_to_java_name"
     },
     {
       "relation": "calls",
@@ -35416,9 +37145,9 @@
       "source_file": "rust-engine/src/filter.rs",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_filter_evaluate_dex_methods",
-      "target": "src_filter_compiledfilter_matches",
-      "confidence_score": 1.0
+      "target": "src_filter_compiledfilter_matches"
     },
     {
       "relation": "calls",
@@ -35437,9 +37166,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_dexholder",
-      "confidence_score": 1.0
+      "target": "src_lib_dexholder"
     },
     {
       "relation": "contains",
@@ -35447,9 +37176,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeopendex",
-      "confidence_score": 1.0
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeopendex"
     },
     {
       "relation": "contains",
@@ -35457,9 +37186,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeclosedex",
-      "confidence_score": 1.0
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeclosedex"
     },
     {
       "relation": "contains",
@@ -35467,9 +37196,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetclasscount",
-      "confidence_score": 1.0
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetclasscount"
     },
     {
       "relation": "contains",
@@ -35477,8 +37206,18 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetstringcount",
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetstringcount"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rust-engine/src/lib.rs",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "rust_engine_src_lib_rs",
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeparsedex",
       "confidence_score": 1.0
     },
     {
@@ -35487,9 +37226,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativefiltermethods",
-      "confidence_score": 1.0
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativefiltermethods"
     },
     {
       "relation": "contains",
@@ -35497,9 +37236,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L169",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetversion",
-      "confidence_score": 1.0
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativegetversion"
     },
     {
       "relation": "contains",
@@ -35507,9 +37246,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_bytemuck_cast",
-      "confidence_score": 1.0
+      "target": "src_lib_bytemuck_cast"
     },
     {
       "relation": "calls",
@@ -35518,9 +37257,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeopendex",
-      "target": "src_lib_bytemuck_cast",
-      "confidence_score": 1.0
+      "target": "src_lib_bytemuck_cast"
     },
     {
       "relation": "contains",
@@ -36528,9 +38267,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_md",
-      "target": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "confidence_score": 1.0
+      "target": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases"
     },
     {
       "relation": "contains",
@@ -36538,9 +38277,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_executive_summary_objectives",
-      "confidence_score": 1.0
+      "target": "docs_phases_executive_summary_objectives"
     },
     {
       "relation": "contains",
@@ -36548,9 +38287,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_master_phase_tracker",
-      "confidence_score": 1.0
+      "target": "docs_phases_master_phase_tracker"
     },
     {
       "relation": "contains",
@@ -36558,9 +38297,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_0_branching_environment_setup",
-      "confidence_score": 1.0
+      "target": "docs_phases_phase_0_branching_environment_setup"
     },
     {
       "relation": "contains",
@@ -36568,9 +38307,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L58",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_1_rust_native_engine_core_rust_engine",
-      "confidence_score": 1.0
+      "target": "docs_phases_phase_1_rust_native_engine_core_rust_engine"
     },
     {
       "relation": "contains",
@@ -36578,9 +38317,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_2_jni_bridge_android_integration",
-      "confidence_score": 1.0
+      "target": "docs_phases_phase_2_jni_bridge_android_integration"
     },
     {
       "relation": "contains",
@@ -36588,9 +38327,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_3_github_actions_ci_integration",
-      "confidence_score": 1.0
+      "target": "docs_phases_phase_3_github_actions_ci_integration"
     },
     {
       "relation": "contains",
@@ -36598,9 +38337,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L122",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_4_parity_verification_benchmark_suite",
-      "confidence_score": 1.0
+      "target": "docs_phases_phase_4_parity_verification_benchmark_suite"
     },
     {
       "relation": "contains",
@@ -36608,8 +38347,18 @@
       "source_file": "docs/phases.md",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_5_rollout_walkthrough",
+      "target": "docs_phases_phase_5_rollout_walkthrough"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L150",
+      "weight": 1.0,
+      "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
+      "target": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
       "confidence_score": 1.0
     },
     {
@@ -36618,9 +38367,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_0_branching_environment_setup",
-      "target": "docs_phases_windows_setup_instructions_optional_local_rust_builds",
-      "confidence_score": 1.0
+      "target": "docs_phases_windows_setup_instructions_optional_local_rust_builds"
     },
     {
       "relation": "contains",
@@ -36628,9 +38377,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_windows_setup_instructions_optional_local_rust_builds",
-      "target": "docs_phases_codeblock_1",
-      "confidence_score": 1.0
+      "target": "docs_phases_codeblock_1"
     },
     {
       "relation": "contains",
@@ -36638,9 +38387,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_1_rust_native_engine_core_rust_engine",
-      "target": "docs_phases_goals",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals"
     },
     {
       "relation": "contains",
@@ -36648,8 +38397,28 @@
       "source_file": "docs/phases.md",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_1_rust_native_engine_core_rust_engine",
-      "target": "docs_phases_tasks_checklist",
+      "target": "docs_phases_tasks_checklist"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "docs_phases_phase_2_jni_bridge_android_integration",
+      "target": "docs_phases_goals_88",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "docs_phases_phase_2_jni_bridge_android_integration",
+      "target": "docs_phases_tasks_checklist_91",
       "confidence_score": 1.0
     },
     {
@@ -36658,9 +38427,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_2_jni_bridge_android_integration",
-      "target": "docs_phases_goals_87",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_87"
     },
     {
       "relation": "contains",
@@ -36668,8 +38437,28 @@
       "source_file": "docs/phases.md",
       "source_location": "L90",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_2_jni_bridge_android_integration",
-      "target": "docs_phases_tasks_checklist_90",
+      "target": "docs_phases_tasks_checklist_90"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "docs_phases_phase_3_github_actions_ci_integration",
+      "target": "docs_phases_goals_108",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L111",
+      "weight": 1.0,
+      "source": "docs_phases_phase_3_github_actions_ci_integration",
+      "target": "docs_phases_tasks_checklist_111",
       "confidence_score": 1.0
     },
     {
@@ -36678,9 +38467,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_3_github_actions_ci_integration",
-      "target": "docs_phases_goals_107",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_107"
     },
     {
       "relation": "contains",
@@ -36688,8 +38477,18 @@
       "source_file": "docs/phases.md",
       "source_location": "L110",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_3_github_actions_ci_integration",
-      "target": "docs_phases_tasks_checklist_110",
+      "target": "docs_phases_tasks_checklist_110"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "docs_phases_tasks_checklist_111",
+      "target": "docs_phases_codeblock_2",
       "confidence_score": 1.0
     },
     {
@@ -36698,8 +38497,28 @@
       "source_file": "docs/phases.md",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_tasks_checklist_110",
-      "target": "docs_phases_codeblock_2",
+      "target": "docs_phases_codeblock_2"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "docs_phases_phase_4_parity_verification_benchmark_suite",
+      "target": "docs_phases_goals_125",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "docs_phases_phase_4_parity_verification_benchmark_suite",
+      "target": "docs_phases_tasks_checklist_128",
       "confidence_score": 1.0
     },
     {
@@ -36708,9 +38527,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L124",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_4_parity_verification_benchmark_suite",
-      "target": "docs_phases_goals_124",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_124"
     },
     {
       "relation": "contains",
@@ -36718,8 +38537,28 @@
       "source_file": "docs/phases.md",
       "source_location": "L127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_4_parity_verification_benchmark_suite",
-      "target": "docs_phases_tasks_checklist_127",
+      "target": "docs_phases_tasks_checklist_127"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L152",
+      "weight": 1.0,
+      "source": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
+      "target": "docs_phases_goals_152",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/phases.md",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
+      "target": "docs_phases_tasks_deliverables",
       "confidence_score": 1.0
     },
     {
@@ -38381,5 +40220,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e7a7abb4683e42327c50ba86e8873726b13ee754"
+  "built_at_commit": "5761d4c95d59fe3876d8cf7a159f55a7bee0064e"
 }

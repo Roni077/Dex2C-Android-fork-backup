@@ -7,13 +7,14 @@ pub mod filter;
 use dex::DexFile;
 use filter::evaluate_dex_methods;
 use jni::objects::{JByteArray, JClass, JObjectArray, JString};
-use jni::sys::{jboolean, jint, jintArray, jlong, jsize, jstring, JNI_TRUE};
+use jni::sys::{jboolean, jint, jintArray, jlong, jobject, jsize, jstring, JNI_TRUE};
 use jni::JNIEnv;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 
 struct DexHolder {
     _buffer: Vec<u8>,
     header: dex::DexHeader,
+    cached_packed: Option<Vec<u8>>,
 }
 
 #[no_mangle]
@@ -43,6 +44,7 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
         let holder = Box::new(DexHolder {
             header: dex.header,
             _buffer: buffer,
+            cached_packed: None,
         });
 
         Box::into_raw(holder) as jlong
@@ -95,6 +97,38 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
         holder.header.string_ids_size as jint
     }));
     result.unwrap_or(0)
+}
+
+#[no_mangle]
+pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeParseDex(
+    mut env: JNIEnv,
+    _class: JClass,
+    handle: jlong,
+) -> jobject {
+    if handle == 0 {
+        return std::ptr::null_mut();
+    }
+
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        let holder = &mut *(handle as *mut DexHolder);
+        if holder.cached_packed.is_none() {
+            let dex = DexFile {
+                data: &holder._buffer,
+                header: holder.header,
+            };
+            holder.cached_packed = Some(dex.pack_dex_classes());
+        }
+
+        let packed = holder.cached_packed.as_mut().unwrap();
+        let buf = match env.new_direct_byte_buffer(packed.as_mut_ptr(), packed.len()) {
+            Ok(b) => b,
+            Err(_) => return std::ptr::null_mut(),
+        };
+
+        buf.into_raw()
+    }));
+
+    result.unwrap_or(std::ptr::null_mut())
 }
 
 #[no_mangle]

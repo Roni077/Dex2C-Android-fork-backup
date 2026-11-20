@@ -26,6 +26,7 @@ This document tracks the end-to-end implementation, verification, and rollout of
 | **Phase 3** | GitHub Actions CI Compilation | Agent 2 (CI Specialist) | 🟢 Completed | `.github/workflows/build.yml` with `cargo-ndk` & cache |
 | **Phase 4** | Parity Verification & Benchmark Suite | Agent 3 (QA Specialist) | 🟢 Completed | `DexNativeEngineTest.kt` passed (3/3 tests) |
 | **Phase 5** | Rollout & Documentation | Coordinator | 🟢 Completed | `walkthrough.md`, git commit readiness |
+| **Phase 6** | Zero-Copy DEX & Package Indexer (Track 1) | Multi-Agent Team | 🟢 Completed | `dex.rs` (D2CN packer), `D2cnBinaryDecoder.kt`, JNI fast route |
 
 ---
 
@@ -143,3 +144,28 @@ Ensure complete behavioral equivalence between Kotlin and Rust implementations a
 
 - [x] Implementation verified with automated test suite
 - [x] Create `walkthrough.md` in artifact directory
+
+---
+
+## 📋 Phase 6: Zero-Copy DEX & Package Tree Indexer (Track 1)
+
+### Goals
+Eliminate JVM heap churn from `DexParser.kt` by offloading full class definition parsing, method/field decoding, and descriptor decomposition into Rust, serializing directly to a compact binary buffer (`'D2CN'`) consumed via direct off-heap `ByteBuffer`.
+
+### Tasks & Deliverables
+- [x] **`rust-engine/src/dex.rs`**:
+  - `DexClassDefFull`, `DexFieldMeta`, `DexMethodMeta`, `DexCodeMeta` zero-copy extraction
+  - Descriptor parsing (`parse_class_descriptor`) returning `(full_name, package_name, simple_name)`
+  - `pack_dex_classes()` serializing class hierarchy into packed `'D2CN'` binary layout
+  - Inline unit tests (`test_synthetic_dex_and_pack_dex_classes`)
+- [x] **`rust-engine/src/lib.rs`**:
+  - Exported `Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeParseDex` with direct `new_direct_byte_buffer`
+  - Panic boundary wrapping and cached memory management in `DexHolder`
+- [x] **Kotlin High-Performance Unpacker**:
+  - `app/src/main/java/com/dex2c/studio/dex/D2cnHeader.kt`: 32-byte binary header definition
+  - `app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt`: Direct buffer unpacker with string deduplication, single-byte primitive cache, and exact-capacity collections
+- [x] **JNI Bridge & Fallback Integration**:
+  - `DexNativeEngine.kt`: Added `nativeParseDex` and `parseClassesFast` helper
+  - `DexParser.kt`: Multi-tier fallback (Tier 1: Rust D2CN -> Tier 2: smali-dexlib2 -> Tier 3: Kotlin loop)
+  - `DexNativeEngineTest.kt`: Added `testD2cnBinaryDecoderSynthesizedBuffer` verifying field/method/code decoding parity
+

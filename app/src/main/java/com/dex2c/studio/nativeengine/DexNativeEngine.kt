@@ -52,9 +52,37 @@ object DexNativeEngine {
   ): IntArray?
 
   @JvmStatic
+  external fun nativeParseDex(handle: Long): java.nio.ByteBuffer?
+
+  @JvmStatic
   external fun nativeGetVersion(): String?
 
   // --- Safe Kotlin Helper APIs ---
+
+  /**
+   * Fast DEX class indexing via the Rust native engine with direct ByteBuffer decoding.
+   * Returns a list of [com.dex2c.studio.dex.DexClassInfo] instances, or null if the native engine is unavailable,
+   * encounters corrupted structures, or is running on a platform without native libraries.
+   */
+  fun parseClassesFast(
+    dexBytes: ByteArray,
+    sourceEntryName: String = "classes.dex",
+  ): List<com.dex2c.studio.dex.DexClassInfo>? {
+    if (!isAvailable || dexBytes.isEmpty()) return null
+
+    val handle = runCatching { nativeOpenDex(dexBytes, dexBytes.size) }.getOrDefault(0L)
+    if (handle == 0L) return null
+
+    return try {
+      val byteBuffer = nativeParseDex(handle) ?: return null
+      com.dex2c.studio.dex.D2cnBinaryDecoder.decodeClasses(byteBuffer, sourceEntryName)
+    } catch (e: Throwable) {
+      safeLog(TAG, "Native D2CN direct buffer decoding failed, falling back to Kotlin", e)
+      null
+    } finally {
+      runCatching { nativeCloseDex(handle) }
+    }
+  }
 
   /**
    * Evaluates filter rules over a raw DEX binary using the Rust SIMD RegexSet engine.
