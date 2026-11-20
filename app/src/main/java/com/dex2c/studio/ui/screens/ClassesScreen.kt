@@ -106,11 +106,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material.icons.rounded.DataObject
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 
-enum class ClassesViewMode {
-  TREE,
-  FLAT,
-}
-
 data class PackageGroup(
   val packageName: String,
   val displayLabel: String,
@@ -377,13 +372,14 @@ fun ClassesScreen(
   smaliClassState: SmaliClassUiState? = null,
   smaliSyntaxTheme: SmaliSyntaxTheme? = null,
   onSelectClassInTwoPane: ((DexClassInfo) -> Unit)? = null,
+  isFilterSheetOpen: Boolean? = null,
+  onCloseFilterSheet: (() -> Unit)? = null,
 ) {
-  var viewMode by rememberSaveable { mutableStateOf(ClassesViewMode.TREE) }
   var compactMiddlePackages by rememberSaveable { mutableStateOf(false) }
   var showSelectionCheckboxes by rememberSaveable { mutableStateOf(false) }
-  var showSortMenu by remember { mutableStateOf(false) }
   var showDexMenu by remember { mutableStateOf(false) }
   var showExtraFilters by remember { mutableStateOf(false) }
+  val filterSheetVisible = (isFilterSheetOpen == true) || showExtraFilters
   var showSelectedClassesDialog by remember { mutableStateOf(false) }
   var expansionMutationMarker by remember { mutableStateOf(0) }
   val manualExpandedPackages = remember { mutableStateMapOf<String, Boolean>() }
@@ -444,21 +440,9 @@ fun ClassesScreen(
       }
     }
 
-  val flatClasses =
-    remember(
-      classes,
-      if (filterState.sortOrder == ClassSortOrder.SELECTED_FIRST) selectedMethodIds else emptySet(),
-      filterState.sortOrder,
-    ) {
-      sortClassesForDisplay(classes, filterState.sortOrder, selectedMethodIds)
-    }
-
-  val flatCap = 500
   val visibleRows =
     remember(
-      viewMode,
       packageGroups,
-      flatClasses,
       autoExpandPackages,
       expansionMutationMarker,
     ) {
@@ -489,19 +473,12 @@ fun ClassesScreen(
           }
         }
 
-        if (viewMode == ClassesViewMode.TREE) {
-          packageGroups.forEach { group -> appendPackageGroup(group) }
-        } else {
-          flatClasses.take(flatCap).forEach { dexClass ->
-            add(ExplorerRowItem.ClassRow(dexClass = dexClass, inTreeMode = false))
-          }
-        }
+        packageGroups.forEach { group -> appendPackageGroup(group) }
       }
     }
 
   val hasAnyExpandedPackage =
-    viewMode == ClassesViewMode.TREE &&
-      visibleRows.any { it is ExplorerRowItem.PackageRow && it.expanded }
+    visibleRows.any { it is ExplorerRowItem.PackageRow && it.expanded }
 
   var pendingDeleteClass by remember { mutableStateOf<DexClassInfo?>(null) }
 
@@ -618,24 +595,6 @@ fun ClassesScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
           ) {
-            val isTree = viewMode == ClassesViewMode.TREE
-            FilterChip(
-              selected = true,
-              onClick = { viewMode = if (isTree) ClassesViewMode.FLAT else ClassesViewMode.TREE },
-              leadingIcon = {
-                Icon(
-                  imageVector =
-                    if (isTree) Icons.Rounded.AccountTree else Icons.AutoMirrored.Rounded.ViewList,
-                  contentDescription = null,
-                  modifier = Modifier.size(16.dp),
-                )
-              },
-              label = {
-                Text(stringResource(if (isTree) R.string.chip_view_tree else R.string.chip_view_flat))
-              },
-              modifier = Modifier.testTag("chip_view_mode_toggle"),
-            )
-
             if (loadState is DexLoadState.Ready && classes.isNotEmpty() && hasAnyExpandedPackage) {
               FilterChip(
                 selected = false,
@@ -658,49 +617,9 @@ fun ClassesScreen(
               )
             }
 
-            Box {
-              FilterChip(
-                selected = filterState.sortOrder != ClassSortOrder.NAME_ASC,
-                onClick = { showSortMenu = true },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.Sort,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = { Text("Sort: ${filterState.sortOrder.label}") },
-                modifier = Modifier.testTag("chip_class_sort"),
-              )
-              DropdownMenu(
-                expanded = showSortMenu,
-                onDismissRequest = { showSortMenu = false },
-              ) {
-                ClassSortOrder.entries.forEach { order ->
-                  DropdownMenuItem(
-                    text = { Text(order.label) },
-                    trailingIcon = {
-                      if (filterState.sortOrder == order) {
-                        Icon(
-                          imageVector = Icons.Rounded.Check,
-                          contentDescription = null,
-                          modifier = Modifier.size(16.dp),
-                        )
-                      }
-                    },
-                    onClick = {
-                      onSortOrderChange(order)
-                      showSortMenu = false
-                    },
-                    modifier = Modifier.testTag("sort_option_${order.name}"),
-                  )
-                }
-              }
-            }
-
             val activeCount = filterState.extraFilterCount
             FilterChip(
-              selected = showExtraFilters || activeCount > 0,
+              selected = filterSheetVisible || activeCount > 0,
               onClick = { showExtraFilters = true },
               leadingIcon = {
                 Icon(
@@ -778,9 +697,12 @@ fun ClassesScreen(
 
           // Modal Bottom Sheet Filter UI
           ClassesFilterSheet(
-            visible = showExtraFilters,
+            visible = filterSheetVisible,
             filterState = filterState,
-            onDismiss = { showExtraFilters = false },
+            onDismiss = {
+              showExtraFilters = false
+              onCloseFilterSheet?.invoke()
+            },
             onClassTypeFilterChange = onClassTypeFilterChange,
             onToggleHideInnerClasses = onToggleHideInnerClasses,
             onToggleNonEmptyPackages = onToggleNonEmptyPackages,
@@ -792,6 +714,7 @@ fun ClassesScreen(
             onToggleOnlyMatchingFilterRules = onToggleOnlyMatchingFilterRules,
             compactMiddlePackages = compactMiddlePackages,
             onToggleCompactPackages = { compactMiddlePackages = !compactMiddlePackages },
+            onSortOrderChange = onSortOrderChange,
           )
 
           // Active Filter Summary Strip (shown when extra filters or quick filters are active)

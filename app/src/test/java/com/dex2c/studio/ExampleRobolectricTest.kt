@@ -805,8 +805,8 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("class_row_1").assertIsDisplayed()
     composeTestRule.onNodeWithTag("class_row_2").assertIsDisplayed()
 
-    // Switch to Flat view -> shows ForwardingSource without folder nesting
-    composeTestRule.onNodeWithTag("chip_view_mode_toggle").performClick()
+    // Expand okio folder in tree view -> reveals ForwardingSource
+    composeTestRule.onNodeWithTag("pkg_row_okio").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("class_row_3").assertIsDisplayed()
   }
@@ -891,16 +891,14 @@ class ExampleRobolectricTest {
       }
     }
 
-    // Open sort menu and select SELECTED_FIRST
-    composeTestRule.onNodeWithTag("chip_class_sort").performClick()
+    // Open extra filter sheet and select SELECTED_FIRST sort order
+    composeTestRule.onNodeWithTag("chip_extra_filters").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("sort_option_SELECTED_FIRST").performClick()
+    composeTestRule.onNodeWithTag("sort_option_SELECTED_FIRST").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     assertEquals(com.dex2c.studio.ui.ClassSortOrder.SELECTED_FIRST, filterState.sortOrder)
 
-    // Open extra filter tray and toggle Concrete + Static
-    composeTestRule.onNodeWithTag("chip_extra_filters").performClick()
-    composeTestRule.waitForIdle()
+    // Toggle Concrete + Static in extra filter sheet
     composeTestRule.onNodeWithTag("filter_class_type_CONCRETE").performScrollTo().performClick()
     composeTestRule.onNodeWithTag("filter_method_scope_STATIC_ONLY").performScrollTo().performClick()
     composeTestRule.waitForIdle()
@@ -911,6 +909,57 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("filter_reset_extra_btn").performScrollTo().performClick()
     composeTestRule.waitForIdle()
     assertEquals(0, filterState.extraFilterCount)
+  }
+
+  @Test
+  fun `homeScreen recent apks displays two by default and toggles view all`() {
+    val items = (1..4).map { i ->
+      com.dex2c.studio.apk.RecentBinaryItem(
+        id = "rec_$i",
+        displayName = "App $i.apk",
+        sourceType = com.dex2c.studio.apk.BinarySourceType.INSTALLED_APK,
+        uriOrPath = "/path/app$i.apk",
+        packageName = "com.test.app$i",
+        byteSize = 1_000_000L * i,
+        lastOpenedMillis = 1000L * i,
+      )
+    }
+
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.dex2c.studio.ui.screens.HomeScreen(
+          loadState = com.dex2c.studio.ui.DexLoadState.Empty,
+          selectedMethodCount = 0,
+          recentFiles = items,
+          onOpenPicker = {},
+          onSelectRecent = {},
+          onAutoSelectAppMethods = {},
+          onClearSelection = {},
+          onNavigateToClasses = {},
+        )
+      }
+    }
+
+    // Default: 2 items shown
+    composeTestRule.onNodeWithText("App 1.apk").assertIsDisplayed()
+    composeTestRule.onNodeWithText("App 2.apk").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("recent_view_all_button").assertTextContains("View All")
+
+    // Click "View All"
+    composeTestRule.onNodeWithTag("recent_view_all_button").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("recent_view_all_button").assertTextContains("Show Less")
+
+    // Scroll LazyRow to reveal App 3
+    composeTestRule.onNodeWithTag("recent_lazy_row")
+      .performScrollToNode(androidx.compose.ui.test.hasText("App 3.apk"))
+    composeTestRule.onNodeWithText("App 3.apk").assertIsDisplayed()
+
+    // Collapse back to 2 items
+    composeTestRule.onNodeWithTag("recent_view_all_button").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("recent_view_all_button").assertTextContains("View All")
+    composeTestRule.onNodeWithText("App 3.apk").assertDoesNotExist()
   }
 
   @Test

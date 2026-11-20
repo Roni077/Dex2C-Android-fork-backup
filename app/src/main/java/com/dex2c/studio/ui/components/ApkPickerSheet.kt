@@ -60,6 +60,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.dex2c.studio.apk.InstalledAppRepository
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -467,6 +473,48 @@ private fun InstalledAppRow(
 }
 
 @Composable
+fun RecentItemIcon(
+  item: RecentBinaryItem,
+  modifier: Modifier = Modifier,
+  size: androidx.compose.ui.unit.Dp = 24.dp,
+) {
+  val context = LocalContext.current
+  var iconBitmap by remember(item.id) {
+    mutableStateOf(item.packageName?.let { InstalledAppRepository.getIcon(it) })
+  }
+
+  LaunchedEffect(item.id) {
+    if (iconBitmap == null) {
+      val loaded = withContext(Dispatchers.IO) {
+        InstalledAppRepository.loadRecentIcon(context, item)
+      }
+      if (loaded != null) {
+        iconBitmap = loaded
+      }
+    }
+  }
+
+  val bitmap = iconBitmap?.asImageBitmap()
+  if (bitmap != null) {
+    Image(
+      bitmap = bitmap,
+      contentDescription = "${item.displayName} icon",
+      modifier = modifier.size(size).clip(RoundedCornerShape(size / 4)),
+      contentScale = ContentScale.Crop,
+    )
+  } else {
+    Icon(
+      imageVector =
+        if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
+        else Icons.Rounded.FolderOpen,
+      contentDescription = null,
+      tint = MaterialTheme.colorScheme.primary,
+      modifier = modifier.size(size),
+    )
+  }
+}
+
+@Composable
 internal fun RecentBinariesTab(
   items: List<RecentBinaryItem>,
   onSelectRecent: (RecentBinaryItem) -> Unit,
@@ -628,13 +676,9 @@ internal fun RecentBinariesTab(
                 modifier = Modifier.padding(start = 14.dp, end = 6.dp, top = 10.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
               ) {
-                Icon(
-                  imageVector =
-                    if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
-                    else Icons.Rounded.FolderOpen,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.primary,
-                  modifier = Modifier.size(22.dp),
+                RecentItemIcon(
+                  item = item,
+                  size = 32.dp,
                 )
                 Spacer(Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {

@@ -47,7 +47,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,6 +73,7 @@ import com.dex2c.studio.ui.WindowWidthSizeClass
 import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
 import com.dex2c.studio.ui.components.ExpressiveMotion
 import com.dex2c.studio.ui.components.MetricTile
+import com.dex2c.studio.ui.components.RecentItemIcon
 import com.dex2c.studio.ui.components.TagPill
 import com.dex2c.studio.ui.components.expressivePressScale
 import com.dex2c.studio.ui.components.formatApkSize
@@ -134,7 +139,7 @@ fun HomeScreen(
               )
               if (recentFiles.isNotEmpty() && isExpanded) {
                 RecentQuickStrip(
-                  recentFiles = recentFiles.take(5),
+                  recentFiles = recentFiles,
                   onSelectRecent = onSelectRecent,
                   onViewAll = { onOpenPicker(PickerTab.RECENT) },
                 )
@@ -153,7 +158,7 @@ fun HomeScreen(
               )
               if (recentFiles.isNotEmpty() && !isExpanded) {
                 RecentQuickStrip(
-                  recentFiles = recentFiles.take(5),
+                  recentFiles = recentFiles,
                   onSelectRecent = onSelectRecent,
                   onViewAll = { onOpenPicker(PickerTab.RECENT) },
                 )
@@ -193,7 +198,7 @@ fun HomeScreen(
             )
             if (recentFiles.isNotEmpty()) {
               RecentQuickStrip(
-                recentFiles = recentFiles.take(5),
+                recentFiles = recentFiles,
                 onSelectRecent = onSelectRecent,
                 onViewAll = { onOpenPicker(PickerTab.RECENT) },
               )
@@ -284,7 +289,7 @@ fun HomeScreen(
               verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
               RecentQuickStrip(
-                recentFiles = recentFiles.take(8),
+                recentFiles = recentFiles,
                 onSelectRecent = onSelectRecent,
                 onViewAll = { onOpenPicker(PickerTab.RECENT) },
               )
@@ -363,7 +368,7 @@ fun HomeScreen(
 
             if (recentFiles.isNotEmpty()) {
               RecentQuickStrip(
-                recentFiles = recentFiles.take(5),
+                recentFiles = recentFiles,
                 onSelectRecent = onSelectRecent,
                 onViewAll = { onOpenPicker(PickerTab.RECENT) },
               )
@@ -526,6 +531,9 @@ private fun RecentQuickStrip(
   onSelectRecent: (RecentBinaryItem) -> Unit,
   onViewAll: () -> Unit,
 ) {
+  var showAllRecent by rememberSaveable { mutableStateOf(false) }
+  val displayedItems = if (showAllRecent) recentFiles else recentFiles.take(2)
+
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Row(
       modifier = Modifier.fillMaxWidth(),
@@ -536,12 +544,20 @@ private fun RecentQuickStrip(
         Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
         Text("Recent APKs & DEX", style = MaterialTheme.typography.titleMedium)
       }
-      TextButton(onClick = onViewAll) {
-        Text("View All")
+      if (recentFiles.size > 2) {
+        TextButton(
+          onClick = { showAllRecent = !showAllRecent },
+          modifier = Modifier.testTag("recent_view_all_button"),
+        ) {
+          Text(if (showAllRecent) "Show Less" else "View All")
+        }
       }
     }
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-      items(recentFiles, key = { it.id }) { item ->
+    LazyRow(
+      modifier = Modifier.testTag("recent_lazy_row"),
+      horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+      items(displayedItems, key = { it.id }) { item ->
         Surface(
           modifier =
             Modifier.widthIn(min = 170.dp, max = 230.dp)
@@ -556,13 +572,9 @@ private fun RecentQuickStrip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
           ) {
-            Icon(
-              imageVector =
-                if (item.sourceType == BinarySourceType.INSTALLED_APK) Icons.Rounded.Android
-                else Icons.Rounded.FolderOpen,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.primary,
-              modifier = Modifier.size(20.dp),
+            RecentItemIcon(
+              item = item,
+              size = 28.dp,
             )
             Column {
               Text(

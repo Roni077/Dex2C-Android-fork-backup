@@ -25,6 +25,57 @@ object InstalledAppRepository {
     iconCache.evictAll()
   }
 
+  fun getIcon(packageName: String): Bitmap? = iconCache.get(packageName)
+
+  fun cacheIcon(key: String, bitmap: Bitmap) {
+    iconCache.put(key, bitmap)
+  }
+
+  fun loadRecentIcon(context: Context, item: RecentBinaryItem): Bitmap? {
+    val key = item.packageName ?: item.id
+    iconCache.get(key)?.let { return it }
+
+    val pm = context.packageManager
+
+    if (!item.packageName.isNullOrBlank()) {
+      val icon = runCatching {
+        val d = pm.getApplicationIcon(item.packageName)
+        drawableToBitmap(d, 64)
+      }.getOrNull()
+      if (icon != null) {
+        iconCache.put(key, icon)
+        return icon
+      }
+    }
+
+    if (item.sourceType == BinarySourceType.INSTALLED_APK || item.uriOrPath.endsWith(".apk", ignoreCase = true)) {
+      val file = File(item.uriOrPath)
+      if (file.exists() && file.canRead()) {
+        val archiveIcon = runCatching {
+          val pkgInfo =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+              pm.getPackageArchiveInfo(item.uriOrPath, PackageManager.PackageInfoFlags.of(0L))
+            } else {
+              @Suppress("DEPRECATION")
+              pm.getPackageArchiveInfo(item.uriOrPath, 0)
+            }
+          val appInfo = pkgInfo?.applicationInfo
+          if (appInfo != null) {
+            appInfo.sourceDir = item.uriOrPath
+            appInfo.publicSourceDir = item.uriOrPath
+            appInfo.loadIcon(pm)?.let { drawableToBitmap(it, 64) }
+          } else null
+        }.getOrNull()
+        if (archiveIcon != null) {
+          iconCache.put(key, archiveIcon)
+          return archiveIcon
+        }
+      }
+    }
+
+    return null
+  }
+
   fun trimMemory(level: Int) {
     if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
       iconCache.evictAll()

@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\MainActivity.kt": {
-    "mtime": 1795018522.9861627,
-    "ast_hash": "788cc6193d86ba22b3cccc9e3490ca4c",
+    "mtime": 1795146551.4063048,
+    "ast_hash": "85ee0074b7213181e19ba1c9e52fe894",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\ApkMetadataInspector.kt": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\InstalledAppRepository.kt": {
-    "mtime": 1795017951.0688584,
-    "ast_hash": "f2e486fef4133e2ef160e49b27f4c843",
+    "mtime": 1795145983.973872,
+    "ast_hash": "9fc100a45188c3d5b49f5138fecb8649",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\cloud\\CloudBuildMonitorWorker.kt": {
@@ -160,13 +160,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\Dex2cViewModel.kt": {
-    "mtime": 1795020506.7483582,
-    "ast_hash": "dbd285c68627f33707f11ee2edbd2b1d",
+    "mtime": 1795146121.9905648,
+    "ast_hash": "34c1a497e7ba87c77a7147f74a71013c",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ApkPickerSheet.kt": {
-    "mtime": 1795017610.443965,
-    "ast_hash": "d79147c3da22680c4171f0c06489d6aa",
+    "mtime": 1795146024.4504526,
+    "ast_hash": "449dcd41af4df0e55e7f3a39a2fdddcf",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ApkPreviewSheet.kt": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\ClassesScreen.kt": {
-    "mtime": 1795018059.1015368,
-    "ast_hash": "2721c69512932481f9361f7e5d687b80",
+    "mtime": 1795146460.3541226,
+    "ast_hash": "68675fd11a41bd7de7fcbd82807199d7",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\CloudBuildScreen.kt": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\HomeScreen.kt": {
-    "mtime": 1794987635.0425806,
-    "ast_hash": "6397e9ae9ee21aa842f5e0c436d60cc7",
+    "mtime": 1795147098.3891547,
+    "ast_hash": "3aa9fb2b55562cc6b9f4ee2bdaf94a78",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\MethodDetailScreen.kt": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleRobolectricTest.kt": {
-    "mtime": 1795017670.9071329,
-    "ast_hash": "d03c3a970cd77fffb97ae6d2758e60c9",
+    "mtime": 1795147521.0759013,
+    "ast_hash": "77020017922ce66c4c2b805ff041958c",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleUnitTest.kt": {
@@ -855,8 +855,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ClassesFilterTray.kt": {
-    "mtime": 1794975680.8224316,
-    "ast_hash": "4c49fab2c59ab24341d87da6f9d86c27",
+    "mtime": 1795146157.8799157,
+    "ast_hash": "0bee1c74d805271bcafff793f2d8ff5a",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ClassesTreeComponents.kt": {

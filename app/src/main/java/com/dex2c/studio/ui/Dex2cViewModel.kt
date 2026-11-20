@@ -266,6 +266,17 @@ class Dex2cViewModel @JvmOverloads constructor(
   private val _filterState = MutableStateFlow(ClassFilterState())
   val filterState: StateFlow<ClassFilterState> = _filterState.asStateFlow()
 
+  private val _isClassesFilterSheetOpen = MutableStateFlow(false)
+  val isClassesFilterSheetOpen: StateFlow<Boolean> = _isClassesFilterSheetOpen.asStateFlow()
+
+  fun openClassesFilterSheet() {
+    _isClassesFilterSheetOpen.value = true
+  }
+
+  fun closeClassesFilterSheet() {
+    _isClassesFilterSheetOpen.value = false
+  }
+
   private val _config = MutableStateFlow(TranspilerConfig())
   val config: StateFlow<TranspilerConfig> = _config.asStateFlow()
 

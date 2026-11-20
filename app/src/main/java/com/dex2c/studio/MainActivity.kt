@@ -57,7 +57,7 @@ import androidx.compose.material.icons.rounded.CloudQueue
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DataObject
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.foundation.layout.width
@@ -462,14 +462,16 @@ fun Dex2cApp(
               )
             },
             actions = {
-              IconButton(
-                onClick = { viewModel.openPicker(PickerTab.STORAGE) },
-                modifier = Modifier.testTag("topbar_pick_apk_button"),
-              ) {
-                Icon(
-                  imageVector = Icons.Rounded.FolderOpen,
-                  contentDescription = stringResource(R.string.action_open_file),
-                )
+              if (currentRoute == ROUTE_CLASSES) {
+                IconButton(
+                  onClick = { viewModel.openClassesFilterSheet() },
+                  modifier = Modifier.testTag("topbar_classes_filter_button"),
+                ) {
+                  Icon(
+                    imageVector = Icons.Rounded.FilterList,
+                    contentDescription = stringResource(R.string.pipeline_tab_filters),
+                  )
+                }
               }
               IconButton(
                 onClick = { navController.navigate(ROUTE_SETTINGS) },
@@ -616,12 +618,15 @@ fun Dex2cApp(
               val filteredClasses by viewModel.filteredClasses.collectAsStateWithLifecycle()
               val filterState by viewModel.filterState.collectAsStateWithLifecycle()
               val selectedMethodIds by viewModel.selectedMethodIds.collectAsStateWithLifecycle()
+              val isClassesFilterSheetOpen by viewModel.isClassesFilterSheetOpen.collectAsStateWithLifecycle()
               ClassesScreen(
                 loadState = loadState,
                 classes = filteredClasses,
                 filterState = filterState,
                 selectedMethodIds = selectedMethodIds,
                 allowInit = config.allowInit,
+                isFilterSheetOpen = isClassesFilterSheetOpen,
+                onCloseFilterSheet = { viewModel.closeClassesFilterSheet() },
                 onSearchChange = { viewModel.updateSearchQuery(it) },
                 onToggleHideFramework = { viewModel.toggleHideFramework() },
                 onToggleOnlyBytecode = { viewModel.toggleOnlyWithBytecode() },

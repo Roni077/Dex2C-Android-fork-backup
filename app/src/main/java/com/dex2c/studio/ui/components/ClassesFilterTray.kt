@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dex2c.studio.ui.ClassFilterState
+import com.dex2c.studio.ui.ClassSortOrder
 import com.dex2c.studio.ui.ClassTypeFilter
 import com.dex2c.studio.ui.MethodScopeFilter
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
@@ -352,6 +353,7 @@ fun ClassesFilterSheet(
   onResetExtraFilters: () -> Unit,
   compactMiddlePackages: Boolean = false,
   onToggleCompactPackages: (() -> Unit)? = null,
+  onSortOrderChange: ((ClassSortOrder) -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
   if (visible) {
@@ -384,7 +386,7 @@ fun ClassesFilterSheet(
               modifier = Modifier.size(20.dp),
             )
             Text(
-              text = "Filters",
+              text = "Filters & Sort",
               style = MaterialTheme.typography.titleMedium,
               fontWeight = FontWeight.Bold,
             )
@@ -404,6 +406,30 @@ fun ClassesFilterSheet(
         }
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+        // Section 0: Sort Order
+        if (onSortOrderChange != null) {
+          Text(
+            text = "Sort Order",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.primary,
+          )
+          FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            ClassSortOrder.entries.forEach { order ->
+              FilterChip(
+                selected = filterState.sortOrder == order,
+                onClick = { onSortOrderChange(order) },
+                label = { Text(order.label) },
+                modifier = Modifier.testTag("sort_option_${order.name}"),
+              )
+            }
+          }
+        }
 
         // Section 1: Scope & Rules
         Text(
