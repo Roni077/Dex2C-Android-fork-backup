@@ -19,7 +19,7 @@ struct DexHolder {
 
 #[no_mangle]
 pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeOpenDex(
-    mut env: JNIEnv,
+    env: JNIEnv,
     _class: JClass,
     bytes_array: JByteArray,
     size: jsize,
@@ -196,7 +196,7 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine
 
 #[no_mangle]
 pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_DexNativeEngine_nativeGetVersion(
-    mut env: JNIEnv,
+    env: JNIEnv,
     _class: JClass,
 ) -> jstring {
     let s = env.new_string("rust_dex2c 0.1.0 (SIMD RegexSet + Zero-Copy DEX)").ok();

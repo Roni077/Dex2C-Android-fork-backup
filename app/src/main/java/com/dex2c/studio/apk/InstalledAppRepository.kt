@@ -76,6 +76,7 @@ object InstalledAppRepository {
     return null
   }
 
+  @Suppress("DEPRECATION")
   fun trimMemory(level: Int) {
     if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
       iconCache.evictAll()

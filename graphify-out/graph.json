@@ -700,7 +700,7 @@
       "label": "Dex2cFloatingBottomBar()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L924",
+      "source_location": "L925",
       "id": "studio_mainactivity_dex2cfloatingbottombar",
       "community": 72,
       "norm_label": "dex2cfloatingbottombar()"
@@ -709,7 +709,7 @@
       "label": "Dex2cFloatingBottomBarItem()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L977",
+      "source_location": "L978",
       "id": "studio_mainactivity_dex2cfloatingbottombaritem",
       "community": 72,
       "norm_label": "dex2cfloatingbottombaritem()"
@@ -718,7 +718,7 @@
       "label": "isErrorStatusMessage()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1117",
+      "source_location": "L1118",
       "id": "studio_mainactivity_iserrorstatusmessage",
       "community": 72,
       "norm_label": "iserrorstatusmessage()"
@@ -727,7 +727,7 @@
       "label": "Dex2cThemedSnackbarHost()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1127",
+      "source_location": "L1128",
       "id": "studio_mainactivity_dex2cthemedsnackbarhost",
       "community": 72,
       "norm_label": "dex2cthemedsnackbarhost()"
@@ -1060,7 +1060,7 @@
       "label": ".queryLaunchableApps()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L87",
+      "source_location": "L88",
       "id": "apk_installedapprepository_installedapprepository_querylaunchableapps",
       "community": 8,
       "norm_label": ".querylaunchableapps()"
@@ -1069,7 +1069,7 @@
       "label": ".getPackageInfoSafe()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L156",
+      "source_location": "L157",
       "id": "apk_installedapprepository_installedapprepository_getpackageinfosafe",
       "community": 8,
       "norm_label": ".getpackageinfosafe()"
@@ -1078,7 +1078,7 @@
       "label": ".drawableToBitmap()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/apk/InstalledAppRepository.kt",
-      "source_location": "L167",
+      "source_location": "L168",
       "id": "apk_installedapprepository_installedapprepository_drawabletobitmap",
       "community": 8,
       "norm_label": ".drawabletobitmap()"
@@ -6064,7 +6064,7 @@
       "label": ".onCleared()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1710",
+      "source_location": "L1711",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_oncleared",
       "community": 1,
       "norm_label": ".oncleared()"
@@ -6073,7 +6073,7 @@
       "label": ".exportSmaliToUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1721",
+      "source_location": "L1722",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_exportsmalitouri",
       "community": 1,
       "norm_label": ".exportsmalitouri()"
@@ -6082,7 +6082,7 @@
       "label": ".inspectMethod()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1737",
+      "source_location": "L1738",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_inspectmethod",
       "community": 24,
       "norm_label": ".inspectmethod()"
@@ -6091,7 +6091,7 @@
       "label": ".syncSelectedClassesToFilter()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1768",
+      "source_location": "L1769",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_syncselectedclassestofilter",
       "community": 73,
       "norm_label": ".syncselectedclassestofilter()"
@@ -6100,7 +6100,7 @@
       "label": ".syncSelectionToWildcardRules()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1797",
+      "source_location": "L1798",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_syncselectiontowildcardrules",
       "community": 73,
       "norm_label": ".syncselectiontowildcardrules()"
@@ -6109,7 +6109,7 @@
       "label": ".updateConfig()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1801",
+      "source_location": "L1802",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updateconfig",
       "community": 73,
       "norm_label": ".updateconfig()"
@@ -6118,7 +6118,7 @@
       "label": ".refreshInspectionIfActive()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1809",
+      "source_location": "L1810",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshinspectionifactive",
       "community": 73,
       "norm_label": ".refreshinspectionifactive()"
@@ -6127,7 +6127,7 @@
       "label": ".ensureBundleBuilt()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1831",
+      "source_location": "L1832",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_ensurebundlebuilt",
       "community": 45,
       "norm_label": ".ensurebundlebuilt()"
@@ -6136,7 +6136,7 @@
       "label": ".collectSelectedEntries()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1848",
+      "source_location": "L1849",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_collectselectedentries",
       "community": 45,
       "norm_label": ".collectselectedentries()"
@@ -6145,7 +6145,7 @@
       "label": ".rebuildBundle()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1866",
+      "source_location": "L1867",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_rebuildbundle",
       "community": 45,
       "norm_label": ".rebuildbundle()"
@@ -6154,7 +6154,7 @@
       "label": ".exportBundleToZip()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1912",
+      "source_location": "L1913",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_exportbundletozip",
       "community": 45,
       "norm_label": ".exportbundletozip()"
@@ -6163,7 +6163,7 @@
       "label": ".clearStatusBanner()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1933",
+      "source_location": "L1934",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearstatusbanner",
       "community": 1,
       "norm_label": ".clearstatusbanner()"
@@ -6172,7 +6172,7 @@
       "label": ".updateAppSettings()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1939",
+      "source_location": "L1940",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updateappsettings",
       "community": 1,
       "norm_label": ".updateappsettings()"
@@ -6181,7 +6181,7 @@
       "label": ".completeOnboarding()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1966",
+      "source_location": "L1967",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_completeonboarding",
       "community": 1,
       "norm_label": ".completeonboarding()"
@@ -6190,7 +6190,7 @@
       "label": ".sendTestBuildNotification()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1971",
+      "source_location": "L1972",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_sendtestbuildnotification",
       "community": 1,
       "norm_label": ".sendtestbuildnotification()"
@@ -6199,7 +6199,7 @@
       "label": ".resetAllSettingsToDefaults()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L1978",
+      "source_location": "L1979",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_resetallsettingstodefaults",
       "community": 2,
       "norm_label": ".resetallsettingstodefaults()"
@@ -6208,7 +6208,7 @@
       "label": ".updateCloudSettings()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2012",
+      "source_location": "L2013",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updatecloudsettings",
       "community": 1,
       "norm_label": ".updatecloudsettings()"
@@ -6217,7 +6217,7 @@
       "label": ".setNotificationsEnabled()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2034",
+      "source_location": "L2035",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_setnotificationsenabled",
       "community": 1,
       "norm_label": ".setnotificationsenabled()"
@@ -6226,7 +6226,7 @@
       "label": ".updateCloudApkUrl()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2047",
+      "source_location": "L2048",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_updatecloudapkurl",
       "community": 1,
       "norm_label": ".updatecloudapkurl()"
@@ -6235,7 +6235,7 @@
       "label": ".selectCloudApkFromSaf()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2051",
+      "source_location": "L2052",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_selectcloudapkfromsaf",
       "community": 24,
       "norm_label": ".selectcloudapkfromsaf()"
@@ -6244,7 +6244,7 @@
       "label": ".useLiveApkForCloud()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2066",
+      "source_location": "L2067",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_useliveapkforcloud",
       "community": 24,
       "norm_label": ".useliveapkforcloud()"
@@ -6253,7 +6253,7 @@
       "label": ".startDeviceFlowLogin()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2078",
+      "source_location": "L2079",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_startdeviceflowlogin",
       "community": 23,
       "norm_label": ".startdeviceflowlogin()"
@@ -6262,7 +6262,7 @@
       "label": ".cancelDeviceFlowLogin()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2188",
+      "source_location": "L2189",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_canceldeviceflowlogin",
       "community": 1,
       "norm_label": ".canceldeviceflowlogin()"
@@ -6271,7 +6271,7 @@
       "label": ".signOutGitHub()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2196",
+      "source_location": "L2197",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_signoutgithub",
       "community": 1,
       "norm_label": ".signoutgithub()"
@@ -6280,7 +6280,7 @@
       "label": ".verifyOrLoadRepoState()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2212",
+      "source_location": "L2213",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_verifyorloadrepostate",
       "community": 23,
       "norm_label": ".verifyorloadrepostate()"
@@ -6289,7 +6289,7 @@
       "label": ".buildEffectiveCloudFilterText()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2270",
+      "source_location": "L2271",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_buildeffectivecloudfiltertext",
       "community": 45,
       "norm_label": ".buildeffectivecloudfiltertext()"
@@ -6298,7 +6298,7 @@
       "label": ".initializePrivateRepoAndWorkflow()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2282",
+      "source_location": "L2283",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_initializeprivaterepoandworkflow",
       "community": 23,
       "norm_label": ".initializeprivaterepoandworkflow()"
@@ -6307,7 +6307,7 @@
       "label": ".dispatchCloudDex2cBuild()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2414",
+      "source_location": "L2415",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_dispatchclouddex2cbuild",
       "community": 39,
       "norm_label": ".dispatchclouddex2cbuild()"
@@ -6316,7 +6316,7 @@
       "label": ".attachToCloudRun()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2698",
+      "source_location": "L2699",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_attachtocloudrun",
       "community": 39,
       "norm_label": ".attachtocloudrun()"
@@ -6325,7 +6325,7 @@
       "label": ".toggleAutoPoll()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2714",
+      "source_location": "L2715",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_toggleautopoll",
       "community": 39,
       "norm_label": ".toggleautopoll()"
@@ -6334,7 +6334,7 @@
       "label": ".retryCloudMonitorError()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2732",
+      "source_location": "L2733",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_retrycloudmonitorerror",
       "community": 39,
       "norm_label": ".retrycloudmonitorerror()"
@@ -6343,7 +6343,7 @@
       "label": ".refreshActiveCloudRun()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2741",
+      "source_location": "L2742",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshactivecloudrun",
       "community": 39,
       "norm_label": ".refreshactivecloudrun()"
@@ -6352,7 +6352,7 @@
       "label": ".pollWorkflowRunUntilDone()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2780",
+      "source_location": "L2781",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_pollworkflowrununtildone",
       "community": 39,
       "norm_label": ".pollworkflowrununtildone()"
@@ -6361,7 +6361,7 @@
       "label": ".fetchAndApplyRunSnapshot()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2853",
+      "source_location": "L2854",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_fetchandapplyrunsnapshot",
       "community": 39,
       "norm_label": ".fetchandapplyrunsnapshot()"
@@ -6370,7 +6370,7 @@
       "label": ".refreshCloudRuns()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2943",
+      "source_location": "L2944",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_refreshcloudruns",
       "community": 23,
       "norm_label": ".refreshcloudruns()"
@@ -6379,7 +6379,7 @@
       "label": ".downloadArtifactAndPromptSave()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L2961",
+      "source_location": "L2962",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_downloadartifactandpromptsave",
       "community": 39,
       "norm_label": ".downloadartifactandpromptsave()"
@@ -6388,7 +6388,7 @@
       "label": ".savePendingCloudApkToUri()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3066",
+      "source_location": "L3067",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_savependingcloudapktouri",
       "community": 1,
       "norm_label": ".savependingcloudapktouri()"
@@ -6397,7 +6397,7 @@
       "label": ".clearPendingCloudApkSave()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3092",
+      "source_location": "L3093",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_clearpendingcloudapksave",
       "community": 1,
       "norm_label": ".clearpendingcloudapksave()"
@@ -6406,7 +6406,7 @@
       "label": ".postLiveProgressNotification()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3096",
+      "source_location": "L3097",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_postliveprogressnotification",
       "community": 39,
       "norm_label": ".postliveprogressnotification()"
@@ -6415,7 +6415,7 @@
       "label": ".queryDisplayName()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
-      "source_location": "L3110",
+      "source_location": "L3111",
       "id": "ui_dex2cviewmodel_dex2cviewmodel_querydisplayname",
       "community": 24,
       "norm_label": ".querydisplayname()"
@@ -17969,9 +17969,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_dex_d2cnbinarydecoder_kt",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder"
     },
     {
       "relation": "method",
@@ -17979,9 +17979,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses"
     },
     {
       "relation": "method",
@@ -17989,9 +17989,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L209",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader"
     },
     {
       "relation": "method",
@@ -17999,9 +17999,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L239",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool"
     },
     {
       "relation": "method",
@@ -18009,9 +18009,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L275",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord"
     },
     {
       "relation": "calls",
@@ -18020,9 +18020,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeheader"
     },
     {
       "relation": "calls",
@@ -18031,9 +18031,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_unpackstringpool"
     },
     {
       "relation": "calls",
@@ -18042,9 +18042,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnBinaryDecoder.kt",
       "source_location": "L148",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodeclasses",
-      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord",
-      "confidence_score": 1.0
+      "target": "dex_d2cnbinarydecoder_d2cnbinarydecoder_decodemethodrecord"
     },
     {
       "relation": "calls",
@@ -18140,9 +18140,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/D2cnHeader.kt",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_dex_d2cnheader_kt",
-      "target": "dex_d2cnheader_d2cnheader",
-      "confidence_score": 1.0
+      "target": "dex_d2cnheader_d2cnheader"
     },
     {
       "relation": "contains",
@@ -22809,9 +22809,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex"
     },
     {
       "relation": "method",
@@ -22829,9 +22829,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L67",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast"
     },
     {
       "relation": "method",
@@ -22860,9 +22860,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeopendex"
     },
     {
       "relation": "calls",
@@ -22882,9 +22882,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L83",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeclosedex"
     },
     {
       "relation": "calls",
@@ -22915,9 +22915,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_nativeparsedex"
     },
     {
       "relation": "calls",
@@ -22926,9 +22926,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/nativeengine/DexNativeEngine.kt",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeengine_dexnativeengine_parseclassesfast",
-      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeengine_dexnativeengine_safelog"
     },
     {
       "relation": "calls",
@@ -34283,9 +34283,9 @@
       "source_file": "app/src/test/java/com/dex2c/studio/nativeengine/DexNativeEngineTest.kt",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "nativeengine_dexnativeenginetest_dexnativeenginetest",
-      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testd2cnbinarydecodersynthesizedbuffer",
-      "confidence_score": 1.0
+      "target": "nativeengine_dexnativeenginetest_dexnativeenginetest_testd2cnbinarydecodersynthesizedbuffer"
     },
     {
       "relation": "method",
@@ -35808,9 +35808,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_dexcodemeta",
-      "confidence_score": 1.0
+      "target": "src_dex_dexcodemeta"
     },
     {
       "relation": "contains",
@@ -35818,9 +35818,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L64",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_dexfieldmeta",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfieldmeta"
     },
     {
       "relation": "contains",
@@ -35828,9 +35828,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L74",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_dexmethodmeta",
-      "confidence_score": 1.0
+      "target": "src_dex_dexmethodmeta"
     },
     {
       "relation": "contains",
@@ -35838,9 +35838,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_dexclassdeffull",
-      "confidence_score": 1.0
+      "target": "src_dex_dexclassdeffull"
     },
     {
       "relation": "contains",
@@ -35848,9 +35848,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_packagetreenode",
-      "confidence_score": 1.0
+      "target": "src_dex_packagetreenode"
     },
     {
       "relation": "contains",
@@ -35858,9 +35858,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L826",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_extract_package_and_simple_name",
-      "confidence_score": 1.0
+      "target": "src_dex_extract_package_and_simple_name"
     },
     {
       "relation": "contains",
@@ -35868,9 +35868,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L838",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_parse_class_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_parse_class_descriptor"
     },
     {
       "relation": "contains",
@@ -35878,9 +35878,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L850",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_build_package_tree",
-      "confidence_score": 1.0
+      "target": "src_dex_build_package_tree"
     },
     {
       "relation": "contains",
@@ -35888,9 +35888,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L899",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_stringpool",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool"
     },
     {
       "relation": "contains",
@@ -35898,9 +35898,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L935",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_bufferwriter",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter"
     },
     {
       "relation": "contains",
@@ -35938,9 +35938,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1033",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_test_extract_package_and_simple_name",
-      "confidence_score": 1.0
+      "target": "src_dex_test_extract_package_and_simple_name"
     },
     {
       "relation": "contains",
@@ -35948,9 +35948,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1049",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_test_parse_class_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_test_parse_class_descriptor"
     },
     {
       "relation": "contains",
@@ -35958,9 +35958,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1062",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_test_package_tree_grouping",
-      "confidence_score": 1.0
+      "target": "src_dex_test_package_tree_grouping"
     },
     {
       "relation": "contains",
@@ -35968,9 +35968,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_dex_rs",
-      "target": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
-      "confidence_score": 1.0
+      "target": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip"
     },
     {
       "relation": "method",
@@ -36028,9 +36028,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L193",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_proto",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_proto"
     },
     {
       "relation": "method",
@@ -36038,9 +36038,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L224",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_field_info",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_field_info"
     },
     {
       "relation": "method",
@@ -36068,9 +36068,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L254",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_method_proto",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_method_proto"
     },
     {
       "relation": "method",
@@ -36088,9 +36088,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L272",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_code_meta",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_code_meta"
     },
     {
       "relation": "method",
@@ -36098,9 +36098,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L300",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_get_class_def_full",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_class_def_full"
     },
     {
       "relation": "method",
@@ -36118,9 +36118,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L590",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a",
-      "target": "src_dex_dexfile_a_pack_dex_classes",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_pack_dex_classes"
     },
     {
       "relation": "calls",
@@ -36129,9 +36129,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L120",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_parse",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36151,9 +36151,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1283",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
-      "target": "src_dex_dexfile_a_parse",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_parse"
     },
     {
       "relation": "calls",
@@ -36173,9 +36173,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L169",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_string",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36206,9 +36206,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L202",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_proto",
-      "target": "src_dex_dexfile_a_get_string",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_string"
     },
     {
       "relation": "calls",
@@ -36217,9 +36217,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L231",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_field_info",
-      "target": "src_dex_dexfile_a_get_string",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_string"
     },
     {
       "relation": "calls",
@@ -36239,9 +36239,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L327",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_dexfile_a_get_string",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_string"
     },
     {
       "relation": "calls",
@@ -36261,9 +36261,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L203",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_proto",
-      "target": "src_dex_dexfile_a_get_type_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_type_descriptor"
     },
     {
       "relation": "calls",
@@ -36272,9 +36272,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L232",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_field_info",
-      "target": "src_dex_dexfile_a_get_type_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_type_descriptor"
     },
     {
       "relation": "calls",
@@ -36305,9 +36305,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L318",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_dexfile_a_get_type_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_type_descriptor"
     },
     {
       "relation": "calls",
@@ -36327,9 +36327,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L198",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_proto",
-      "target": "src_dex_read_u32_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u32_le"
     },
     {
       "relation": "calls",
@@ -36338,9 +36338,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L205",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_proto",
-      "target": "src_dex_bufferwriter_new",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_new"
     },
     {
       "relation": "calls",
@@ -36349,9 +36349,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L206",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_proto",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36360,9 +36360,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L213",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_proto",
-      "target": "src_dex_read_u16_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u16_le"
     },
     {
       "relation": "calls",
@@ -36371,9 +36371,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L260",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_method_proto",
-      "target": "src_dex_dexfile_a_get_proto",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_proto"
     },
     {
       "relation": "calls",
@@ -36382,9 +36382,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L229",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_field_info",
-      "target": "src_dex_read_u16_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u16_le"
     },
     {
       "relation": "calls",
@@ -36393,9 +36393,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L230",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_field_info",
-      "target": "src_dex_read_u32_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u32_le"
     },
     {
       "relation": "calls",
@@ -36404,9 +36404,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L374",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_dexfile_a_get_field_info",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_field_info"
     },
     {
       "relation": "calls",
@@ -36426,9 +36426,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L414",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_dexfile_a_get_method_name",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_method_name"
     },
     {
       "relation": "calls",
@@ -36459,9 +36459,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L259",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_method_proto",
-      "target": "src_dex_read_u16_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u16_le"
     },
     {
       "relation": "calls",
@@ -36470,9 +36470,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L415",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_dexfile_a_get_method_proto",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_method_proto"
     },
     {
       "relation": "calls",
@@ -36492,9 +36492,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L277",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_code_meta",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36503,9 +36503,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L280",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_code_meta",
-      "target": "src_dex_read_u16_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u16_le"
     },
     {
       "relation": "calls",
@@ -36514,9 +36514,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L284",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_code_meta",
-      "target": "src_dex_read_u32_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u32_le"
     },
     {
       "relation": "calls",
@@ -36525,9 +36525,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L416",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_dexfile_a_get_code_meta",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_code_meta"
     },
     {
       "relation": "calls",
@@ -36536,9 +36536,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L305",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36547,9 +36547,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L309",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_read_u32_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u32_le"
     },
     {
       "relation": "calls",
@@ -36558,9 +36558,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L332",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_bufferwriter_new",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_new"
     },
     {
       "relation": "calls",
@@ -36569,9 +36569,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L340",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_read_u16_le",
-      "confidence_score": 1.0
+      "target": "src_dex_read_u16_le"
     },
     {
       "relation": "calls",
@@ -36580,9 +36580,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L357",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_get_class_def_full",
-      "target": "src_dex_read_uleb128",
-      "confidence_score": 1.0
+      "target": "src_dex_read_uleb128"
     },
     {
       "relation": "calls",
@@ -36591,9 +36591,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L596",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_dexfile_a_get_class_def_full",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_class_def_full"
     },
     {
       "relation": "calls",
@@ -36602,9 +36602,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1288",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
-      "target": "src_dex_dexfile_a_get_class_def_full",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_get_class_def_full"
     },
     {
       "relation": "calls",
@@ -36624,9 +36624,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L497",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_for_each_method",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36646,9 +36646,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L597",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36657,9 +36657,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L602",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_new",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_new"
     },
     {
       "relation": "calls",
@@ -36668,9 +36668,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L622",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_stringpool_a_intern_borrowed",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern_borrowed"
     },
     {
       "relation": "calls",
@@ -36679,9 +36679,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L624",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_parse_class_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_parse_class_descriptor"
     },
     {
       "relation": "calls",
@@ -36690,9 +36690,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L625",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_stringpool_a_intern_owned",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern_owned"
     },
     {
       "relation": "calls",
@@ -36701,9 +36701,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L694",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_write_u32",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_u32"
     },
     {
       "relation": "calls",
@@ -36712,9 +36712,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L695",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_write_u16",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_u16"
     },
     {
       "relation": "calls",
@@ -36723,9 +36723,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L710",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_write_bytes",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_bytes"
     },
     {
       "relation": "calls",
@@ -36734,9 +36734,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L715",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_patch_u32",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_patch_u32"
     },
     {
       "relation": "calls",
@@ -36745,9 +36745,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L724",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_write_i32",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_i32"
     },
     {
       "relation": "calls",
@@ -36756,9 +36756,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L774",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_write_u8",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_u8"
     },
     {
       "relation": "calls",
@@ -36767,9 +36767,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L818",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_dexfile_a_pack_dex_classes",
-      "target": "src_dex_bufferwriter_into_vec",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_into_vec"
     },
     {
       "relation": "calls",
@@ -36778,9 +36778,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1306",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
-      "target": "src_dex_dexfile_a_pack_dex_classes",
-      "confidence_score": 1.0
+      "target": "src_dex_dexfile_a_pack_dex_classes"
     },
     {
       "relation": "calls",
@@ -36789,9 +36789,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L839",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_parse_class_descriptor",
-      "target": "src_dex_extract_package_and_simple_name",
-      "confidence_score": 1.0
+      "target": "src_dex_extract_package_and_simple_name"
     },
     {
       "relation": "calls",
@@ -36800,9 +36800,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L860",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_build_package_tree",
-      "target": "src_dex_extract_package_and_simple_name",
-      "confidence_score": 1.0
+      "target": "src_dex_extract_package_and_simple_name"
     },
     {
       "relation": "calls",
@@ -36811,9 +36811,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1050",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_test_parse_class_descriptor",
-      "target": "src_dex_parse_class_descriptor",
-      "confidence_score": 1.0
+      "target": "src_dex_parse_class_descriptor"
     },
     {
       "relation": "calls",
@@ -36822,9 +36822,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L852",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_build_package_tree",
-      "target": "src_dex_bufferwriter_new",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_new"
     },
     {
       "relation": "calls",
@@ -36833,9 +36833,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L864",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_build_package_tree",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36844,9 +36844,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_test_package_tree_grouping",
-      "target": "src_dex_build_package_tree",
-      "confidence_score": 1.0
+      "target": "src_dex_build_package_tree"
     },
     {
       "relation": "method",
@@ -36854,9 +36854,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L905",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a",
-      "target": "src_dex_stringpool_a_new",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_new"
     },
     {
       "relation": "method",
@@ -36864,9 +36864,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L912",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a",
-      "target": "src_dex_stringpool_a_intern",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern"
     },
     {
       "relation": "method",
@@ -36874,9 +36874,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L924",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a",
-      "target": "src_dex_stringpool_a_intern_borrowed",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern_borrowed"
     },
     {
       "relation": "method",
@@ -36884,9 +36884,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L929",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a",
-      "target": "src_dex_stringpool_a_intern_owned",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern_owned"
     },
     {
       "relation": "calls",
@@ -36895,9 +36895,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L907",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a_new",
-      "target": "src_dex_bufferwriter_new",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_new"
     },
     {
       "relation": "calls",
@@ -36906,9 +36906,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L916",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a_intern",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -36917,9 +36917,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L925",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a_intern_borrowed",
-      "target": "src_dex_stringpool_a_intern",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern"
     },
     {
       "relation": "calls",
@@ -36928,9 +36928,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L930",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_stringpool_a_intern_owned",
-      "target": "src_dex_stringpool_a_intern",
-      "confidence_score": 1.0
+      "target": "src_dex_stringpool_a_intern"
     },
     {
       "relation": "method",
@@ -36938,9 +36938,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L940",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_new",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_new"
     },
     {
       "relation": "method",
@@ -36948,9 +36948,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L947",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_write_u8",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_u8"
     },
     {
       "relation": "method",
@@ -36958,9 +36958,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L952",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_write_u16",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_u16"
     },
     {
       "relation": "method",
@@ -36968,9 +36968,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L957",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_write_u32",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_u32"
     },
     {
       "relation": "method",
@@ -36978,9 +36978,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L962",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_write_i32",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_i32"
     },
     {
       "relation": "method",
@@ -36988,9 +36988,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L967",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_write_bytes",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_write_bytes"
     },
     {
       "relation": "method",
@@ -36998,9 +36998,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L972",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "method",
@@ -37008,9 +37008,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L977",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_patch_u32",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_patch_u32"
     },
     {
       "relation": "method",
@@ -37018,9 +37018,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L983",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_bufferwriter",
-      "target": "src_dex_bufferwriter_into_vec",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_into_vec"
     },
     {
       "relation": "calls",
@@ -37029,9 +37029,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L990",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_read_u16_le",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -37040,9 +37040,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L998",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_read_u32_le",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -37051,9 +37051,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1013",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_read_uleb128",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "calls",
@@ -37062,9 +37062,9 @@
       "source_file": "rust-engine/src/dex.rs",
       "source_location": "L1160",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_dex_test_synthetic_dex_parse_and_pack_roundtrip",
-      "target": "src_dex_bufferwriter_len",
-      "confidence_score": 1.0
+      "target": "src_dex_bufferwriter_len"
     },
     {
       "relation": "contains",
@@ -37216,9 +37216,9 @@
       "source_file": "rust-engine/src/lib.rs",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "rust_engine_src_lib_rs",
-      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeparsedex",
-      "confidence_score": 1.0
+      "target": "src_lib_java_com_dex2c_studio_nativeengine_dexnativeengine_nativeparsedex"
     },
     {
       "relation": "contains",
@@ -38357,9 +38357,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L150",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_dex2c_studio_rust_native_backend_engine_implementation_phases",
-      "target": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
-      "confidence_score": 1.0
+      "target": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1"
     },
     {
       "relation": "contains",
@@ -38407,9 +38407,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_2_jni_bridge_android_integration",
-      "target": "docs_phases_goals_88",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_88"
     },
     {
       "relation": "contains",
@@ -38417,9 +38417,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_2_jni_bridge_android_integration",
-      "target": "docs_phases_tasks_checklist_91",
-      "confidence_score": 1.0
+      "target": "docs_phases_tasks_checklist_91"
     },
     {
       "relation": "contains",
@@ -38447,9 +38447,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L108",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_3_github_actions_ci_integration",
-      "target": "docs_phases_goals_108",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_108"
     },
     {
       "relation": "contains",
@@ -38457,9 +38457,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L111",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_3_github_actions_ci_integration",
-      "target": "docs_phases_tasks_checklist_111",
-      "confidence_score": 1.0
+      "target": "docs_phases_tasks_checklist_111"
     },
     {
       "relation": "contains",
@@ -38487,9 +38487,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L116",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_tasks_checklist_111",
-      "target": "docs_phases_codeblock_2",
-      "confidence_score": 1.0
+      "target": "docs_phases_codeblock_2"
     },
     {
       "relation": "contains",
@@ -38507,9 +38507,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L125",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_4_parity_verification_benchmark_suite",
-      "target": "docs_phases_goals_125",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_125"
     },
     {
       "relation": "contains",
@@ -38517,9 +38517,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L128",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_4_parity_verification_benchmark_suite",
-      "target": "docs_phases_tasks_checklist_128",
-      "confidence_score": 1.0
+      "target": "docs_phases_tasks_checklist_128"
     },
     {
       "relation": "contains",
@@ -38547,9 +38547,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L152",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
-      "target": "docs_phases_goals_152",
-      "confidence_score": 1.0
+      "target": "docs_phases_goals_152"
     },
     {
       "relation": "contains",
@@ -38557,9 +38557,9 @@
       "source_file": "docs/phases.md",
       "source_location": "L155",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_phases_phase_6_zero_copy_dex_package_tree_indexer_track_1",
-      "target": "docs_phases_tasks_deliverables",
-      "confidence_score": 1.0
+      "target": "docs_phases_tasks_deliverables"
     },
     {
       "relation": "contains",
@@ -40220,5 +40220,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5761d4c95d59fe3876d8cf7a159f55a7bee0064e"
+  "built_at_commit": "33d429e4af630ada1c099daabf96b1d839c2af98"
 }

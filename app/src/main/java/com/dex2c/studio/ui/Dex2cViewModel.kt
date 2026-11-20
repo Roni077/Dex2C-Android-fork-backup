@@ -1678,6 +1678,7 @@ class Dex2cViewModel @JvmOverloads constructor(
   /**
    * Reclaims transient caches and non-visible buffers on navigation or system memory pressure.
    */
+  @Suppress("DEPRECATION")
   fun onTrimMemory(level: Int = android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
     SmaliClassDisassembler.clearCache()
     InstalledAppRepository.trimMemory(level)

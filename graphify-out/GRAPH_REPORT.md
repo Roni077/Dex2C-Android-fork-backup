@@ -1,7 +1,7 @@
 # Graph Report - Dex2c-Android  (2026-11-20)
 
 ## Corpus Check
-- 126 files · ~543,243 words
+- 126 files · ~543,310 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5761d4c9`
+- Built from commit: `33d429e4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

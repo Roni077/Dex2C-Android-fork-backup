@@ -262,6 +262,7 @@ fun Dex2cApp(
       object : android.content.ComponentCallbacks2 {
         override fun onConfigurationChanged(newConfig: android.content.res.Configuration) = Unit
 
+        @Suppress("DEPRECATION")
         override fun onLowMemory() {
           viewModel.onTrimMemory(android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
         }
