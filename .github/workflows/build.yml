@@ -80,7 +80,7 @@ jobs:
       - name: Set up Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android,x86_64-linux-android
+          targets: aarch64-linux-android,armv7-linux-androideabi
 
       - name: Cache Cargo & NDK build
         uses: actions/cache@v4
@@ -119,10 +119,10 @@ jobs:
         shell: bash
         run: |
           cd rust-engine
-          cargo ndk -t arm64-v8a -t x86_64 -o ../app/src/main/jniLibs build --release
+          cargo ndk -t arm64-v8a -t armeabi-v7a -o ../app/src/main/jniLibs build --release
           echo "=== Built JNI Libraries ==="
           ls -la ../app/src/main/jniLibs/arm64-v8a/
-          ls -la ../app/src/main/jniLibs/x86_64/
+          ls -la ../app/src/main/jniLibs/armeabi-v7a/
 
       - name: Run unit and Robolectric tests
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_tests }}
@@ -134,7 +134,7 @@ jobs:
       - name: Upload Debug APK artifact
         uses: actions/upload-artifact@v6
         with:
-          name: dex2c-studio-debug-apk
+          name: dex2c-studio-debug-apks
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
@@ -242,7 +242,7 @@ jobs:
       - name: Set up Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android,x86_64-linux-android
+          targets: aarch64-linux-android,armv7-linux-androideabi
 
       - name: Cache Cargo & NDK build
         uses: actions/cache@v4
@@ -281,18 +281,18 @@ jobs:
         shell: bash
         run: |
           cd rust-engine
-          cargo ndk -t arm64-v8a -t x86_64 -o ../app/src/main/jniLibs build --release
+          cargo ndk -t arm64-v8a -t armeabi-v7a -o ../app/src/main/jniLibs build --release
           echo "=== Built JNI Libraries ==="
           ls -la ../app/src/main/jniLibs/arm64-v8a/
-          ls -la ../app/src/main/jniLibs/x86_64/
+          ls -la ../app/src/main/jniLibs/armeabi-v7a/
 
       - name: Assemble Release APK & Bundle AAB
         run: ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
 
-      - name: Upload Release APK artifact
+      - name: Upload Release APK artifacts (arm64, armv7, universal)
         uses: actions/upload-artifact@v6
         with:
-          name: dex2c-studio-release-apk
+          name: dex2c-studio-release-apks
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 14
@@ -312,8 +312,16 @@ jobs:
           {
             echo "### Release Build Stage"
             echo "- **Gradle**: 9.4.1 (Wrapper)"
-            echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, x86_64) via \`cargo-ndk\`"
+            echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, armeabi-v7a) via \`cargo-ndk\`"
             echo "- **Signing Mode**: ${SIGNING_MODE:-Unknown}"
-            echo "- **Release APK**: \`:app:assembleRelease\` -> artifact \`dex2c-studio-release-apk\`"
+            echo "- **Release APKs**: \`:app:assembleRelease\` -> artifact \`dex2c-studio-release-apks\`"
             echo "- **Release AAB**: \`:app:bundleRelease\` -> artifact \`dex2c-studio-release-aab\`"
+            echo ""
+            echo "#### Generated Release APKs & Size Breakdown"
+            for apk in app/build/outputs/apk/release/*.apk; do
+              [ -f "$apk" ] || continue
+              APK_SIZE=$(ls -lh "$apk" | awk '{print $5}')
+              DEX_SIZE=$(unzip -l "$apk" "classes*.dex" 2>/dev/null | awk '{sum+=$1} END {printf "%.2f MB\n", sum/1024/1024}')
+              echo "- \`$(basename "$apk")\`: **$APK_SIZE** (total dex: **$DEX_SIZE**)"
+            done
           } >> "$GITHUB_STEP_SUMMARY"
