@@ -43,9 +43,34 @@
     native <methods>;
 }
 -keep class com.dex2c.studio.nativebridge.** { *; }
+-keep class com.dex2c.studio.nativeengine.** { *; }
 -keep class com.dex2c.studio.transpiler.** { *; }
 -keep class com.dex2c.studio.cloud.** { *; }
 -keep class com.dex2c.studio.model.** { *; }
+
+# --- AndroidX App Startup Rules ---
+-keep class * implements androidx.startup.Initializer {
+    public <init>();
+}
+
+# --- AndroidX WorkManager & Embedded Room Database Rules ---
+-keep class androidx.work.Configuration$* { *; }
+-keep class androidx.work.impl.WorkDatabase_Impl {
+    public <init>();
+    *;
+}
+-keep class * extends androidx.room.RoomDatabase {
+    public <init>();
+}
+-keep class * extends androidx.work.ListenableWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+-keep class * extends androidx.work.Worker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+-keep class androidx.work.impl.background.systemalarm.RescheduleReceiver { *; }
+-keep class androidx.work.impl.diagnostics.DiagnosticsReceiver { *; }
+-dontwarn androidx.work.impl.**
 
 # --- Smali / Dexlib2 Rules ---
 -keep class org.jf.** { *; }

@@ -128,14 +128,30 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_tests }}
         run: ./gradlew :app:testDebugUnitTest --stacktrace
 
-      - name: Assemble Debug APK
+      - name: Assemble Debug APKs
         run: ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Upload Debug APK artifact
+      - name: Upload Debug APK artifact (arm64-v8a)
         uses: actions/upload-artifact@v6
         with:
-          name: dex2c-studio-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: dex2c-studio-arm64-v8a-debug
+          path: app/build/outputs/apk/debug/*arm64-v8a*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Debug APK artifact (armeabi-v7a)
+        uses: actions/upload-artifact@v6
+        with:
+          name: dex2c-studio-armeabi-v7a-debug
+          path: app/build/outputs/apk/debug/*armeabi-v7a*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Debug APK artifact (universal)
+        uses: actions/upload-artifact@v6
+        with:
+          name: dex2c-studio-universal-debug
+          path: app/build/outputs/apk/debug/*universal*.apk
           if-no-files-found: error
           retention-days: 14
 
@@ -165,7 +181,7 @@ jobs:
             echo "- **Gradle**: 9.4.1 (Wrapper)"
             echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, armeabi-v7a) via \`cargo-ndk\`"
             echo "- **Unit Tests**: ${TEST_STATUS}"
-            echo "- **Debug APK**: :app:assembleDebug -> dex2c-studio-debug-apk"
+            echo "- **Debug APKs**: :app:assembleDebug -> artifacts: \`dex2c-studio-arm64-v8a-debug\`, \`dex2c-studio-armeabi-v7a-debug\`, \`dex2c-studio-universal-debug\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
   release-build:
