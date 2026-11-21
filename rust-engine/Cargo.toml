@@ -1,6 +1,15 @@
+[workspace]
+members = [
+    "crates/dex2c-core",
+    "crates/dex2c-dex",
+    "crates/dex2c-smali",
+    "crates/dex2c-transpiler",
+    "crates/dex2c-toolchain",
+]
+
 [package]
 name = "rust_dex2c"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Dex2C Studio Team"]
 description = "High-performance Rust native backend engine for Dex2C Studio"
@@ -9,8 +18,14 @@ description = "High-performance Rust native backend engine for Dex2C Studio"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+dex2c-core = { path = "crates/dex2c-core" }
+dex2c-dex = { path = "crates/dex2c-dex" }
+dex2c-smali = { path = "crates/dex2c-smali" }
+dex2c-transpiler = { path = "crates/dex2c-transpiler" }
+dex2c-toolchain = { path = "crates/dex2c-toolchain" }
 jni = { version = "0.21", default-features = false }
 regex = { version = "1.10", default-features = false, features = ["std", "perf"] }
+serde_json = "1.0"
 
 [profile.release]
 opt-level = 3

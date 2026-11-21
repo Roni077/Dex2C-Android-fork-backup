@@ -1050,13 +1050,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\nativeengine\\DexNativeEngine.kt": {
-    "mtime": 1795189489.7560856,
-    "ast_hash": "675fab935f8f2e382ec883ff9f1a3c8b",
+    "mtime": 1795245407.75854,
+    "ast_hash": "f689c542d73a929e64d7cd66659746e1",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\nativeengine\\DexNativeEngineTest.kt": {
-    "mtime": 1795163608.9126132,
-    "ast_hash": "1b2d5c4635091da090139d4ba1dfb5b4",
+    "mtime": 1795245436.6489794,
+    "ast_hash": "651bf5bf74ee80ffcfee69b54a480e0e",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\dex.rs": {
@@ -1070,8 +1070,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\lib.rs": {
-    "mtime": 1795189406.4531348,
-    "ast_hash": "6d86922613a4a3ce86349a771bff3266",
+    "mtime": 1795245316.9206064,
+    "ast_hash": "df85aceb05ec1bea51257863f6bf3932",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\phases.md": {
@@ -1332,6 +1332,146 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\scripts\\build_rust_engine.ps1": {
     "mtime": 1795189521.3934152,
     "ast_hash": "f6df31468e26ade09c1dfd283c1ea229",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\repository\\Dex2cNativeRepository.kt": {
+    "mtime": 1795245417.383774,
+    "ast_hash": "268b10ddc9a84ff1ee21490308c4b5bd",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-core\\src\\error.rs": {
+    "mtime": 1795244974.2430494,
+    "ast_hash": "58be73125d61dded7574a129805a0866",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-core\\src\\lib.rs": {
+    "mtime": 1795244974.3326416,
+    "ast_hash": "f5f39d0052ac68759450b3d8d73b893c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-core\\src\\models.rs": {
+    "mtime": 1795244974.3026574,
+    "ast_hash": "7e4be6a51cf14b49a16a8341c4118e13",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-core\\src\\task.rs": {
+    "mtime": 1795244974.2718935,
+    "ast_hash": "2d55d6c77cb2d8a1b58a84524d576724",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\cfg.rs": {
+    "mtime": 1795245125.38612,
+    "ast_hash": "6c5eca69d41106ec618d71520e675988",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\disassembler.rs": {
+    "mtime": 1795245084.8587933,
+    "ast_hash": "593ad116fdea7ac5fcdc867ba93c70fe",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\filter.rs": {
+    "mtime": 1795245125.4561622,
+    "ast_hash": "638cd68d5eb768980bbdaa4dd0b4c6c5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\instruction.rs": {
+    "mtime": 1795245013.1405697,
+    "ast_hash": "2b34cb9ccd7985bf50e352ddbf3ed2e2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\lib.rs": {
+    "mtime": 1795245125.4912999,
+    "ast_hash": "957cd282943d7f541b2abbfe964f1bc6",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\parser.rs": {
+    "mtime": 1795245084.8177407,
+    "ast_hash": "b272ac8a020bc9314c65847b2ecc7eb9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-dex\\src\\patcher.rs": {
+    "mtime": 1795245125.423278,
+    "ast_hash": "087850ba007230d395ddfeef346ec539",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-smali\\src\\disassembler.rs": {
+    "mtime": 1795245165.516593,
+    "ast_hash": "e7c1f35450a5340691b05bfc948b0428",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-smali\\src\\lib.rs": {
+    "mtime": 1795245165.5678632,
+    "ast_hash": "bf81e406dd143a8d1825fe6a1f26aee8",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-toolchain\\src\\cmake.rs": {
+    "mtime": 1795245223.308814,
+    "ast_hash": "5a96e15b38056e8b8d892a2e256344ae",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-toolchain\\src\\lib.rs": {
+    "mtime": 1795245223.369077,
+    "ast_hash": "741d9f5e10e6105d994e25ed3e17ffa9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-toolchain\\src\\ndk_make.rs": {
+    "mtime": 1795245223.3373542,
+    "ast_hash": "729ff4329dc36550798c95133e89afcc",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-transpiler\\src\\emitter.rs": {
+    "mtime": 1795245206.603487,
+    "ast_hash": "711c340a455798d3558de634c73fd306",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-transpiler\\src\\jni_registration.rs": {
+    "mtime": 1795245206.6665058,
+    "ast_hash": "fcda123adfa6f4c8059bb42856db02c4",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-transpiler\\src\\lib.rs": {
+    "mtime": 1795245206.742368,
+    "ast_hash": "1586bee60df08b934532af48181642a3",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-transpiler\\src\\runtime_header.rs": {
+    "mtime": 1795245206.5326824,
+    "ast_hash": "d92c9a9d5dce745c6a97c5be785f523a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\existing-codebase-analysis.md": {
+    "mtime": 1795244910.668746,
+    "ast_hash": "74cb37c88f84d7ab268d99727f58df11",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\FINAL-IMPLEMENTATION-REPORT.md": {
+    "mtime": 1795245584.3182204,
+    "ast_hash": "9b8f2b86a731fa6e68d0fa0e226210f5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\migration-progress.md": {
+    "mtime": 1795245549.9673607,
+    "ast_hash": "7e882ea49108cbdbc9177af4d58ce62b",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\multi-agent-task-report.md": {
+    "mtime": 1795244943.7693453,
+    "ast_hash": "5c016a57ceb273dd7a93d5bb07e7314f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\performance-analysis.md": {
+    "mtime": 1795245521.9207213,
+    "ast_hash": "8316d3b5019dddb06ec2d589f912c3eb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\rust-backend-architecture.md": {
+    "mtime": 1795244927.6402676,
+    "ast_hash": "0491b4bfad8bdb1e50274fedea8f6360",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\architecture\\testing-and-compatibility-report.md": {
+    "mtime": 1795245549.914543,
+    "ast_hash": "ef14f0fa7955cf90859aaae4d21c6105",
     "semantic_hash": ""
   }
 }

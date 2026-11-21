@@ -1,0 +1,9 @@
+[package]
+name = "dex2c-toolchain"
+version = "0.1.0"
+edition = "2021"
+description = "Native build system generators (CMake, NDK Android.mk) and toolchain orchestration for Dex2C Studio"
+
+[dependencies]
+dex2c-core = { path = "../dex2c-core" }
+dex2c-transpiler = { path = "../dex2c-transpiler" }

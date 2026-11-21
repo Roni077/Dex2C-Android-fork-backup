@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1541 nodes, 2624 edges, 92 communities. Commit: bc72c52</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1768 nodes, 2899 edges, 136 communities. Commit: f5dd75c</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -76,8 +76,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#community-41">Community 41</a>
     <a href="#community-90">Community 90</a>
     <a href="#community-93">Community 93</a>
+    <a href="#community-118">Community 118</a>
     <a href="#community-96">Community 96</a>
-    <a href="#community-36">Community 36</a>
     <a href="#other">Other</a>
 </div>
 
@@ -88,15 +88,15 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1245 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1405 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>57 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>12 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>25 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>109 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>137 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>23 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>37 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>9 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
@@ -112,11 +112,11 @@ flowchart LR
     class COMMUNITY_90_9F2E858A module;
     COMMUNITY_93_7566A40F("Community 93<br/><small>9 nodes</small>")
     class COMMUNITY_93_7566A40F module;
+    COMMUNITY_118_65661273("Community 118<br/><small>7 nodes</small>")
+    class COMMUNITY_118_65661273 module;
     COMMUNITY_96_3ACF34B2("Community 96<br/><small>5 nodes</small>")
     class COMMUNITY_96_3ACF34B2 module;
-    COMMUNITY_36_F6473446("Community 36<br/><small>2 nodes</small>")
-    class COMMUNITY_36_F6473446 module;
-    OTHER_D0941E68("Other<br/><small>4 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>11 nodes</small>")
     class OTHER_D0941E68 module;
     EXTRACT_PIPELINE_5F350230 -.-> BUILD_GRAPH_321CBB04
     BUILD_GRAPH_321CBB04 -.-> ANALYSIS_CLUSTERING_C79796DA
@@ -129,9 +129,9 @@ flowchart LR
     COMMUNITY_102_1F841217 -.-> COMMUNITY_41_93B2CDFF
     COMMUNITY_41_93B2CDFF -.-> COMMUNITY_90_9F2E858A
     COMMUNITY_90_9F2E858A -.-> COMMUNITY_93_7566A40F
-    COMMUNITY_93_7566A40F -.-> COMMUNITY_96_3ACF34B2
-    COMMUNITY_96_3ACF34B2 -.-> COMMUNITY_36_F6473446
-    COMMUNITY_36_F6473446 -.-> OTHER_D0941E68
+    COMMUNITY_93_7566A40F -.-> COMMUNITY_118_65661273
+    COMMUNITY_118_65661273 -.-> COMMUNITY_96_3ACF34B2
+    COMMUNITY_96_3ACF34B2 -.-> OTHER_D0941E68
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -148,7 +148,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>1245</td><td><code>19, 15, 4, 0, 59, 76, 1, 20, 17, 8, 48, 5, 21, 6, 53, 7, 11, 18, 46, 23, 27, 29, 66, 26, 100, 24, 25, 82, 34, 74, 33, 39, 28, 70, 2, 32, 37, 16, 71, 13, 38, 79, 83, 43, 47, 73, 45, 64, 97, 30, 75, 80, 35, 51, 67, 50, 52, 89, 107, 54, 55, 56, 57, 58, 104</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>12</td><td><code>31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>109</td><td><code>22, 10, 86, 40, 88, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>23</td><td><code>9</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 102</td><td>12</td><td><code>102</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Community 90</td><td>9</td><td><code>90</code></td></tr><tr><td>Community 93</td><td>9</td><td><code>93</code></td></tr><tr><td>Community 96</td><td>5</td><td><code>96</code></td></tr><tr><td>Community 36</td><td>2</td><td><code>36</code></td></tr><tr><td>Other</td><td>4</td><td><code>42, 61, 63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>1405</td><td><code>5, 0, 4, 59, 1, 20, 66, 21, 53, 16, 19, 7, 15, 13, 14, 25, 48, 82, 11, 46, 8, 23, 27, 29, 33, 44, 26, 6, 65, 72, 76, 18, 77, 81, 34, 74, 17, 79, 28, 89, 32, 37, 94, 95, 98, 100, 101, 24, 39, 71, 99, 103, 105, 108, 38, 70, 83, 109, 110, 2, 30, 43, 47, 64, 111, 112, 113, 114, 115, 116, 117, 119, 45, 73, 97, 120, 121, 122, 123, 124, 75, 80, 125, 126, 35, 51, 67, 127, 52, 107, 128, 129, 54, 55, 56, 57, 58, 130, 104</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>25</td><td><code>87, 31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>137</td><td><code>22, 10, 50, 86, 40, 88, 106, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>9, 84</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 102</td><td>12</td><td><code>102</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Community 90</td><td>9</td><td><code>90</code></td></tr><tr><td>Community 93</td><td>9</td><td><code>93</code></td></tr><tr><td>Community 118</td><td>7</td><td><code>118</code></td></tr><tr><td>Community 96</td><td>5</td><td><code>96</code></td></tr><tr><td>Other</td><td>11</td><td><code>36, 42, 131, 132, 133, 134, 135, 61, 63</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -160,8 +160,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1541 nodes · 2624 edges · 92 communities (65 shown, 27 thin omitted)</li>
-      <li>Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 446 edges (avg confidence: 0.8)</li>
+      <li>1768 nodes · 2899 edges · 136 communities (96 shown, 40 thin omitted)</li>
+      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 450 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Dex2cViewModel` - 117 edges</li>
       <li>2. `TagPill()` - 42 edges</li>
@@ -172,12 +172,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around app, dex2c, studio, com, mostly in studio/ui/Dex2cViewModel.kt, rust-engine/src/dex.rs, studio/dex/DexModels.kt. This section covers 1245 nodes and 2353 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around dex2c, studio, com, app, mostly in studio/ui/Dex2cViewModel.kt, rust-engine/src/dex.rs, studio/dex/DexModels.kt. This section covers 1405 nodes and 2571 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (1245 nodes, 2353 edges)
+    %% Section: Extraction Pipeline (1405 nodes, 2571 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -197,9 +197,9 @@ flowchart LR
         apk_apkmetadatainspector_apkmetadatainspector_57261a53("ApkMetadataInspector<br/><small>studio/apk/ApkMetadataInspector.kt</small>")
         apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad("inspectFromUri()<br/><small>studio/apk/ApkMetadataInspector.kt</small>")
     end
-    studio_githubcloudworkflowtest_githubcloudworkfl_218a9a70("GitHubCloudWorkflowTest<br/><small>dex2c/studio/GitHubCloudWorkflowTest.kt</small>")
     cloud_githubapiclient_githubapiclient_da71b89b("GitHubApiClient<br/><small>studio/cloud/GitHubApiClient.kt</small>")
     dex_dexparser_dexparser_5598f965("DexParser<br/><small>studio/dex/DexParser.kt</small>")
+    nativeengine_dexnativeengine_dexnativeengine_54947275("DexNativeEngine<br/><small>studio/nativeengine/DexNativeEngine.kt</small>")
     transpiler_dex2ctranspiler_dex2ctranspiler_caac0e02("Dex2cTranspiler<br/><small>studio/transpiler/Dex2cTranspiler.kt</small>")
     ui_dex2cviewmodel_dex2cviewmodel_268b2d5f("Dex2cViewModel<br/><small>studio/ui/Dex2cViewModel.kt</small>")
     studio_exampleinstrumentedtest_exampleinstrument_00de3fc3 -->|method| studio_exampleinstrumentedtest_exampleinstrument_6616c3d9
@@ -212,7 +212,7 @@ flowchart LR
     studio_mainactivity_dex2cfloatingbottombar_4db61c9e -->|calls| studio_mainactivity_dex2cfloatingbottombaritem_56224b18
     studio_mainactivity_iserrorstatusmessage_cab2b8a3 -->|calls| studio_mainactivity_dex2cthemedsnackbarhost_5c79ace7
     apk_apkmetadatainspector_apkmetadatainspector_57261a53 -->|method| apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad
-    %% Omitted for readability: 1227 nodes, 0 edges
+    %% Omitted for readability: 1387 nodes, 0 edges
     class studio_mainactivity_navdestinationitem_e24ab693 klass;
     class studio_mainactivity_dex2capp_fbfa3080 function;
     class studio_mainactivity_mainactivity_8e09f945 klass;
@@ -226,9 +226,9 @@ flowchart LR
     class studio_exampleinstrumentedtest_exampleinstrument_6616c3d9 test;
     class apk_apkmetadatainspector_apkmetadatainspector_57261a53 test;
     class apk_apkmetadatainspector_apkmetadatainspector_in_3d74cfad test;
-    class studio_githubcloudworkflowtest_githubcloudworkfl_218a9a70 test;
     class cloud_githubapiclient_githubapiclient_da71b89b api;
     class dex_dexparser_dexparser_5598f965 klass;
+    class nativeengine_dexnativeengine_dexnativeengine_54947275 klass;
     class transpiler_dex2ctranspiler_dex2ctranspiler_caac0e02 klass;
     class ui_dex2cviewmodel_dex2cviewmodel_268b2d5f klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -254,243 +254,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>D2cnBinaryDecoder.kt</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
+  <td><code>JsonMini.kt</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>D2cnBinaryDecoder.kt node in studio/dex/D2cnBinaryDecoder.kt.</td>
+  <td>JsonMini.kt node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>D2cnBinaryDecoder</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
+  <td><code>JsonMini</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>decodeClasses()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>decodeHeader()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>decodeMethodRecord()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br>+1 more</td>
-  <td>D2cnBinaryDecoder node in studio/dex/D2cnBinaryDecoder.kt.</td>
+  <td><code>escape()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>objectJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+1 more</td>
+  <td>JsonMini node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>.decodeClasses()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>D2cnBinaryDecoder</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
-  <td><code>decodeHeader()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>decodeMethodRecord()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>DexClassInfo</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br>+4 more</td>
-  <td>.decodeClasses() node in studio/dex/D2cnBinaryDecoder.kt.</td>
+  <td><code>.parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>JsonMini</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>.parseObject() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>.decodeHeader()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
+  <td><code>.escape()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>D2cnBinaryDecoder</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>decodeClasses()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
-  <td><code>D2cnHeader</code><br><small style="color:var(--muted)">studio/dex/D2cnHeader.kt</small></td>
-  <td>.decodeHeader() node in studio/dex/D2cnBinaryDecoder.kt.</td>
+  <td><code>JsonMini</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>objectJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>valueJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>.escape() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>.unpackStringPool()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
+  <td><code>.objectJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>D2cnBinaryDecoder</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>decodeClasses()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.unpackStringPool() node in studio/dex/D2cnBinaryDecoder.kt.</td>
+  <td><code>escape()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>JsonMini</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>valueJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>.objectJson() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>.decodeMethodRecord()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
+  <td><code>.valueJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>D2cnBinaryDecoder</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>decodeClasses()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
-  <td><code>DexEncodedMethod</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexProto</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>.decodeMethodRecord() node in studio/dex/D2cnBinaryDecoder.kt.</td>
+  <td><code>escape()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>JsonMini</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>objectJson()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.valueJson() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>D2cnHeader.kt</code><br><small style="color:var(--muted)">studio/dex/D2cnHeader.kt</small></td>
+  <td><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>D2cnHeader.kt node in studio/dex/D2cnHeader.kt.</td>
+  <td><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>parseArray()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseLiteral()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseNumber()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+5 more</td>
+  <td>Parser node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>D2cnHeader</code><br><small style="color:var(--muted)">studio/dex/D2cnHeader.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>decodeHeader()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>D2cnHeader node in studio/dex/D2cnHeader.kt.</td>
+  <td><code>.parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>parseString()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseValue()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>peek()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+1 more</td>
+  <td>.parseObject() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>DalvikDisassembler.kt</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>DalvikDisassembler.kt node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>.parseValue()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>parseArray()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseLiteral()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseNumber()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+3 more</td>
+  <td>.parseValue() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>DalvikDisassembler</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>disassemble()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>readWordPairInt()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br>+1 more</td>
-  <td>DalvikDisassembler node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>.parseArray()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseValue()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>peek()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>skipWhitespace()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>.parseArray() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>RefKind</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>RefKind node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>.parseString()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseValue()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><code>peek()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>.parseString() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Fmt</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.parseLiteral()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseValue()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>Fmt node in studio/dex/DalvikDisassembler.kt.</td>
+  <td>.parseLiteral() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>OpSpec</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>reg()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td>OpSpec node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>.parseNumber()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseValue()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.parseNumber() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>reg()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
+  <td><code>.skipWhitespace()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>OpSpec</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
+  <td><code>parseArray()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+1 more</td>
   <td>No direct outbound edge</td>
-  <td>reg() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td>.skipWhitespace() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>.disassemble()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>DalvikDisassembler</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>DalvikInstruction</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>readWordPairInt()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>signExtend4()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td>.disassemble() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>.peek()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>parseArray()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>parseObject()</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br><code>Parser</code><br><small style="color:var(--muted)">studio/cloud/JsonMini.kt</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>.peek() node in studio/cloud/JsonMini.kt.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.readWordPairInt()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikDisassembler</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>disassemble()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
+  <td><code>D2cConfigEngine.kt</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>.readWordPairInt() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td>Reads, resolves, or persists project configuration.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>.parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikDisassembler</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>DexCatchHandler</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexTryBlock</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>LebReader</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br>+2 more</td>
-  <td>.parseTryBlocks() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>FilterMatchSummary</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>evaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>tryNativeEvaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>FilterMatchSummary node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.signExtend4()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikDisassembler</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>disassemble()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.signExtend4() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>buildCloudFilterText()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>escapePortableRegex()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>evaluate()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br>+10 more</td>
+  <td>FilterRuleEngine node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>LebReader</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>readSleb128()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>readUleb128()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td>LebReader node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>.evaluate()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>evaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.evaluate() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.readUleb128()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
+  <td><code>.evaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>LebReader</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.readUleb128() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td><code>evaluate()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>FilterMatchSummary</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>matchesRules()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>tryNativeEvaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.evaluateAll() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.readSleb128()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
+  <td><code>.tryNativeEvaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>LebReader</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small><br><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
+  <td><code>evaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>FilterMatchSummary</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.readSleb128() node in studio/dex/DalvikDisassembler.kt.</td>
+  <td>.tryNativeEvaluateAll() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>.getMethods()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
+  <td><code>.buildCloudFilterText()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexHelper</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>DexProto</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>.getMethods() node in studio/dex/DexHelper.kt.</td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>escapePortableRegex()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.buildCloudFilterText() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>DexProto</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>decodeMethodRecord()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>getMethods()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
-  <td><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+11 more</td>
-  <td>DexProto node in studio/dex/DexModels.kt.</td>
+  <td><code>.escapePortableRegex()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>buildCloudFilterText()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td>.escapePortableRegex() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>decodeMethodRecord()</code><br><small style="color:var(--muted)">studio/dex/D2cnBinaryDecoder.kt</small><br><code>getMethods()</code><br><small style="color:var(--muted)">studio/dex/DexHelper.kt</small></td>
-  <td><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/ClangSyntaxValidationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br><code>buildSyntheticMethod()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br>+13 more</td>
-  <td>DexMethodRef node in studio/dex/DexModels.kt.</td>
+  <td><code>.matchesRules()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>evaluateAll()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.matchesRules() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>.jniSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>.generateWildcardRulesFromSelection()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><code>dalvikSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>.jniSignature() node in studio/dex/DexModels.kt.</td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>StructuredFilterRule</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.generateWildcardRulesFromSelection() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.dalvikSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>.parseStructuredRules()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>DexMethodRef</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>jniSignature()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.dalvikSignature() node in studio/dex/DexModels.kt.</td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>StructuredFilterRule</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.parseStructuredRules() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>DexCatchHandler</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>testCppSwitchAndJniGuardClangCompilationZeroErrorsZeroWarnings()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>testExceptionCatchDispatchJniCompliance()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+1 more</td>
-  <td>DexCatchHandler node in studio/dex/DexModels.kt.</td>
+  <td><code>.serializeStructuredRules()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>toFilterLine()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.serializeStructuredRules() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>DexTryBlock</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>parseTryBlocks()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>dalvikDisassemblerDecodesPayloadsAndControlFlowGraphBuildsBlocksAndEdges()</code><br><small style="color:var(--muted)">dex2c/studio/DexDisassemblerAndSmaliTest.kt</small><br><code>testCppSwitchAndJniGuardClangCompilationZeroErrorsZeroWarnings()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>testExceptionCatchDispatchJniCompliance()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+1 more</td>
-  <td>DexTryBlock node in studio/dex/DexModels.kt.</td>
+  <td><code>.toggleRuleLine()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toggleRuleLine() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>DalvikInstruction</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>disassemble()</code><br><small style="color:var(--muted)">studio/dex/DalvikDisassembler.kt</small></td>
-  <td><code>formatHexWords()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>testCppSwitchAndJniGuardClangCompilationZeroErrorsZeroWarnings()</code><br><small style="color:var(--muted)">studio/verification/Phase5VerificationTest.kt</small><br><code>testExceptionCatchDispatchJniCompliance()</code><br><small style="color:var(--muted)">studio/transpiler/Phase2TranspilerRemediationTest.kt</small><br>+12 more</td>
-  <td>DalvikInstruction node in studio/dex/DexModels.kt.</td>
+  <td><code>.upsertStructuredRule()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>toFilterLine()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>toRuleExpression()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.upsertStructuredRule() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>.formatHexWords()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
+  <td><code>.removeStructuredRule()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>DalvikInstruction</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.formatHexWords() node in studio/dex/DexModels.kt.</td>
+  <td><code>FilterRuleEngine</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td><code>toFilterLine()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small><br><code>toRuleExpression()</code><br><small style="color:var(--muted)">studio/transpiler/D2cConfigEngine.kt</small></td>
+  <td>.removeStructuredRule() node in studio/transpiler/D2cConfigEngine.kt.</td>
 </tr>
 </table>
 
@@ -511,7 +511,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x771, method x607, contains x529. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x846, method x658, contains x617. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -870,47 +870,69 @@ flowchart LR
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around dex2c, master, remediation, roadmapmd, mostly in docs/dex2c_master_remediation_roadmap.md. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around docs, performance, dex2c, master, mostly in docs/architecture/performance-analysis.md, docs/dex2c_master_remediation_roadmap.md. This section covers 25 nodes and 23 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (12 nodes, 11 edges)
-    docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852("Dex2C Studio — Master Engineering Remed...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_md_83e9d7ba("master remediation roadmap.md<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_phase_2_tr_01f98010("Phase 2: Transpiler JNI Runtime Safety...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_phase_3_se_be010e48("Phase 3: Security Hardening &amp; Android A...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_overview_c_7eefa60c("Overview &amp; Codebase Audit Summary<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_master_def_e302f162("Master Defect Ledger<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_phase_0_em_47ae2b1e("Phase 0: Emergency Safety Interlocks &amp;...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_phase_1_in_8030dd3a("Phase 1: In-Memory Smali Assembly, Memo...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_phase_4_bu_c8973f73("Phase 4: Build Tooling, Gradle Wrapper...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_phase_5_au_462ad21f("Phase 5: Automated Verification &amp; Test...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_codeblock_60d3832d("code:c (define DEX2C_CHECK_NULL(env, r...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
-    docs_dex2c_master_remediation_roadmap_codeblock_e88bae18("code:xml (&lt;exclude domain='sharedpref'...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
+    %% Section: Analysis &amp; Clustering (25 nodes, 23 edges)
+    subgraph analysis_clustering_docs_architecture_performanc_7022d4dc["docs/architecture/performance-analysis.md"]
+        architecture_performance_analysis_performance_an_c970d68f("Performance and Memory Optimization Ana...<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_3_benchmark_me_17985edd("3. Benchmark Measurements &amp; Results<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_2_benchmark_me_f5d5cc74("2. Benchmark Methodology &amp; Test Environ...<br/><small>docs/architecture/performance-analysis.md</small>")
+        docs_architecture_performance_analysis_md_efeaad8d("performance-analysis.md")
+        architecture_performance_analysis_4_memory_footp_be84fe78("4. Memory Footprint &amp; Allocation Charac...<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_1_executive_su_807616b5("1. Executive Summary<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_2_1_test_envir_44afde9e("2.1 Test Environment<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_2_2_workload_s_40f0408f("2.2 Workload Scenarios<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_3_1_dex_parsin_30a652ae("3.1 DEX Parsing &amp; Class Indexing Latency<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_3_2_filter_rul_0f589ba2("3.2 Filter Rule Evaluation (100+ Inclus...<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_3_3_dalvik_to_8f998bb6("3.3 Dalvik-to-C++ Transpilation &amp; Code...<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_5_ongoing_opti_146a9ef9("5. Ongoing Optimization Opportunities<br/><small>docs/architecture/performance-analysis.md</small>")
+        architecture_performance_analysis_codeblock_1_de53384d("code:mermaid (xychart-beta)<br/><small>docs/architecture/performance-analysis.md</small>")
+    end
+    subgraph analysis_clustering_docs_dex2c_master_remediatio_65501856["docs/dex2c_master_remediation_roadmap.md"]
+        docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852("Dex2C Studio — Master Engineering Remed...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
+        docs_dex2c_master_remediation_roadmap_md_83e9d7ba("master remediation roadmap.md<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
+        docs_dex2c_master_remediation_roadmap_phase_2_tr_01f98010("Phase 2: Transpiler JNI Runtime Safety...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
+        docs_dex2c_master_remediation_roadmap_phase_3_se_be010e48("Phase 3: Security Hardening &amp; Android A...<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
+        docs_dex2c_master_remediation_roadmap_master_def_e302f162("Master Defect Ledger<br/><small>docs/dex2c_master_remediation_roadmap.md</small>")
+    end
     docs_dex2c_master_remediation_roadmap_md_83e9d7ba -->|contains| docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852
-    docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_overview_c_7eefa60c
     docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_master_def_e302f162
-    docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_phase_0_em_47ae2b1e
-    docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_phase_1_in_8030dd3a
     docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_phase_2_tr_01f98010
     docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_phase_3_se_be010e48
-    docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_phase_4_bu_c8973f73
-    docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 -->|contains| docs_dex2c_master_remediation_roadmap_phase_5_au_462ad21f
-    docs_dex2c_master_remediation_roadmap_phase_2_tr_01f98010 -->|contains| docs_dex2c_master_remediation_roadmap_codeblock_60d3832d
-    docs_dex2c_master_remediation_roadmap_phase_3_se_be010e48 -->|contains| docs_dex2c_master_remediation_roadmap_codeblock_e88bae18
+    docs_architecture_performance_analysis_md_efeaad8d -->|contains| architecture_performance_analysis_performance_an_c970d68f
+    architecture_performance_analysis_performance_an_c970d68f -->|contains| architecture_performance_analysis_1_executive_su_807616b5
+    architecture_performance_analysis_performance_an_c970d68f -->|contains| architecture_performance_analysis_2_benchmark_me_f5d5cc74
+    architecture_performance_analysis_performance_an_c970d68f -->|contains| architecture_performance_analysis_3_benchmark_me_17985edd
+    architecture_performance_analysis_performance_an_c970d68f -->|contains| architecture_performance_analysis_4_memory_footp_be84fe78
+    architecture_performance_analysis_performance_an_c970d68f -->|contains| architecture_performance_analysis_5_ongoing_opti_146a9ef9
+    architecture_performance_analysis_2_benchmark_me_f5d5cc74 -->|contains| architecture_performance_analysis_2_1_test_envir_44afde9e
+    architecture_performance_analysis_2_benchmark_me_f5d5cc74 -->|contains| architecture_performance_analysis_2_2_workload_s_40f0408f
+    architecture_performance_analysis_3_benchmark_me_17985edd -->|contains| architecture_performance_analysis_3_1_dex_parsin_30a652ae
+    architecture_performance_analysis_3_benchmark_me_17985edd -->|contains| architecture_performance_analysis_3_2_filter_rul_0f589ba2
+    architecture_performance_analysis_3_benchmark_me_17985edd -->|contains| architecture_performance_analysis_3_3_dalvik_to_8f998bb6
+    architecture_performance_analysis_4_memory_footp_be84fe78 -->|contains| architecture_performance_analysis_codeblock_1_de53384d
+    %% Omitted for readability: 7 nodes, 0 edges
+    class architecture_performance_analysis_performance_an_c970d68f concept;
+    class architecture_performance_analysis_3_benchmark_me_17985edd concept;
+    class architecture_performance_analysis_2_benchmark_me_f5d5cc74 concept;
+    class docs_architecture_performance_analysis_md_efeaad8d concept;
+    class architecture_performance_analysis_4_memory_footp_be84fe78 concept;
+    class architecture_performance_analysis_1_executive_su_807616b5 concept;
+    class architecture_performance_analysis_2_1_test_envir_44afde9e concept;
+    class architecture_performance_analysis_2_2_workload_s_40f0408f concept;
+    class architecture_performance_analysis_3_1_dex_parsin_30a652ae concept;
+    class architecture_performance_analysis_3_2_filter_rul_0f589ba2 concept;
+    class architecture_performance_analysis_3_3_dalvik_to_8f998bb6 concept;
+    class architecture_performance_analysis_5_ongoing_opti_146a9ef9 concept;
+    class architecture_performance_analysis_codeblock_1_de53384d concept;
     class docs_dex2c_master_remediation_roadmap_dex2c_stud_b917b852 concept;
     class docs_dex2c_master_remediation_roadmap_md_83e9d7ba concept;
     class docs_dex2c_master_remediation_roadmap_phase_2_tr_01f98010 concept;
     class docs_dex2c_master_remediation_roadmap_phase_3_se_be010e48 concept;
-    class docs_dex2c_master_remediation_roadmap_overview_c_7eefa60c concept;
     class docs_dex2c_master_remediation_roadmap_master_def_e302f162 concept;
-    class docs_dex2c_master_remediation_roadmap_phase_0_em_47ae2b1e concept;
-    class docs_dex2c_master_remediation_roadmap_phase_1_in_8030dd3a concept;
-    class docs_dex2c_master_remediation_roadmap_phase_4_bu_c8973f73 concept;
-    class docs_dex2c_master_remediation_roadmap_phase_5_au_462ad21f concept;
-    class docs_dex2c_master_remediation_roadmap_codeblock_60d3832d concept;
-    class docs_dex2c_master_remediation_roadmap_codeblock_e88bae18 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -934,6 +956,110 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>performance-analysis.md</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing performance-analysis.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Performance and Memory Optimization Analysis</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Performance and Memory Optimization Analysis.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Executive Summary</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Executive Summary.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>2. Benchmark Methodology &amp; Test Environment</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Benchmark Methodology &amp; Test Environment.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>2.1 Test Environment</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.1 Test Environment.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>2.2 Workload Scenarios</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.2 Workload Scenarios.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>3. Benchmark Measurements &amp; Results</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Benchmark Measurements &amp; Results.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>3.1 DEX Parsing &amp; Class Indexing Latency</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.1 DEX Parsing &amp; Class Indexing Latency.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>3.2 Filter Rule Evaluation (100+ Inclusion/Exclusion Rules)</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.2 Filter Rule Evaluation (100+ Inclusion/Exclusion Rules).</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>3.3 Dalvik-to-C++ Transpilation &amp; Code Generation (1,000 Methods)</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.3 Dalvik-to-C++ Transpilation &amp; Code Generation (1,000 Methods).</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>4. Memory Footprint &amp; Allocation Characteristics</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Memory Footprint &amp; Allocation Characteristics.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>code:mermaid (xychart-beta)</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (xychart-beta).</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>5. Ongoing Optimization Opportunities</code><br><small style="color:var(--muted)">docs/architecture/performance-analysis.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. Ongoing Optimization Opportunities.</td>
+</tr>
+<tr>
+  <td>14</td>
   <td><code>dex2c_master_remediation_roadmap.md</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -941,7 +1067,7 @@ flowchart LR
   <td>Documentation node describing dex2c_master_remediation_roadmap.md.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>15</td>
   <td><code>Dex2C Studio — Master Engineering Remediation Roadmap</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -949,7 +1075,7 @@ flowchart LR
   <td>Documentation node describing Dex2C Studio — Master Engineering Remediation Roadmap.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>16</td>
   <td><code>Overview &amp; Codebase Audit Summary</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -957,7 +1083,7 @@ flowchart LR
   <td>Documentation node describing Overview &amp; Codebase Audit Summary.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>17</td>
   <td><code>Master Defect Ledger</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -965,7 +1091,7 @@ flowchart LR
   <td>Documentation node describing Master Defect Ledger.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>18</td>
   <td><code>Phase 0: Emergency Safety Interlocks &amp; Blast-Radius Mitigation</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -973,7 +1099,7 @@ flowchart LR
   <td>Documentation node describing Phase 0: Emergency Safety Interlocks &amp; Blast-Radius Mitigation.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>19</td>
   <td><code>Phase 1: In-Memory Smali Assembly, MemoryDataStore &amp; DEX Repacking</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -981,7 +1107,7 @@ flowchart LR
   <td>Documentation node describing Phase 1: In-Memory Smali Assembly, MemoryDataStore &amp; DEX Repacking.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>20</td>
   <td><code>Phase 2: Transpiler JNI Runtime Safety &amp; Dalvik Instruction Parity</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -989,7 +1115,7 @@ flowchart LR
   <td>Documentation node describing Phase 2: Transpiler JNI Runtime Safety &amp; Dalvik Instruction Parity.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>21</td>
   <td><code>code:c (#define DEX2C_CHECK_NULL(env, ref) do { \)</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -997,7 +1123,7 @@ flowchart LR
   <td>Documentation node describing code:c (#define DEX2C_CHECK_NULL(env, ref) do { \).</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>22</td>
   <td><code>Phase 3: Security Hardening &amp; Android Auto-Backup Exclusion</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1005,7 +1131,7 @@ flowchart LR
   <td>Documentation node describing Phase 3: Security Hardening &amp; Android Auto-Backup Exclusion.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>23</td>
   <td><code>code:xml (&lt;exclude domain=&quot;sharedpref&quot; path=&quot;dex2c_cloud_prefs.prefere)</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1013,7 +1139,7 @@ flowchart LR
   <td>Documentation node describing code:xml (&lt;exclude domain=&quot;sharedpref&quot; path=&quot;dex2c_cloud_prefs.prefere).</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>24</td>
   <td><code>Phase 4: Build Tooling, Gradle Wrapper &amp; Environment Setup</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1021,7 +1147,7 @@ flowchart LR
   <td>Documentation node describing Phase 4: Build Tooling, Gradle Wrapper &amp; Environment Setup.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>25</td>
   <td><code>Phase 5: Automated Verification &amp; Test Suite Execution</code><br><small style="color:var(--muted)">docs/dex2c_master_remediation_roadmap.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1035,24 +1161,25 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>docs/dex2c_master_remediation_roadmap.md</code></td><td>12 nodes</td></tr>
+      <tr><td><code>docs/architecture/performance-analysis.md</code></td><td>13 nodes</td></tr>
+<tr><td><code>docs/dex2c_master_remediation_roadmap.md</code></td><td>12 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x23. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 5. Outputs & Docs ====== -->
 <h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
-<p>Outputs &amp; Docs groups implementation around docs, performance, detailed, workflow, mostly in docs/detailed_app_workflow_and_usages.md, WORKFLOW.md, docs/performance-audit/PERFORMANCE_REPORT.md. This section covers 109 nodes and 104 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Outputs &amp; Docs groups implementation around docs, reportmd, performance, detailed, mostly in docs/detailed_app_workflow_and_usages.md, WORKFLOW.md, docs/architecture/FINAL-IMPLEMENTATION-REPORT.md. This section covers 137 nodes and 130 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Outputs &amp; Docs (109 nodes, 104 edges)
+    %% Section: Outputs &amp; Docs (137 nodes, 130 edges)
     subgraph outputs_docs_docs_detailed_app_workflow_and_usag_362fe77a["docs/detailed_app_workflow_and_usages.md"]
         docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b("3. Deep-Dive Operational Workflows (Ste...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
         docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a("4. Real-World Practical Usage Recipes<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
@@ -1063,26 +1190,22 @@ flowchart LR
         docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604("Phase 7: Patched DEX &amp; 16KB-Aligned APK...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
         docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1("Phase 8: Zero-NDK Remote Cloud CI via G...<br/><small>docs/detailed_app_workflow_and_usages.md</small>")
     end
-    subgraph outputs_docs_WORKFLOW_md_e7b58299["WORKFLOW.md"]
-        dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b("Dex2C Studio — End-to-End Application W...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925("2. Phase 1: Binary Ingestion &amp; Multi-DE...<br/><small>WORKFLOW.md</small>")
-        dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941("3. Phase 2: DEX Explorer (Classes, Meth...<br/><small>WORKFLOW.md</small>")
+    subgraph outputs_docs_docs_architecture_FINAL_IMPLEMENTAT_7df8e01c["docs/architecture/FINAL-IMPLEMENTATION-REPORT.md"]
+        architecture_final_implementation_report_dex2c_m_b71cd3b3("Dex2C Migration Master Engineering Repo...<br/><small>docs/architecture/FINAL-IMPLEMENTATION-REPORT.md</small>")
+        architecture_final_implementation_report_4_rust_fecb79ef("4. Rust Backend Implementation Details<br/><small>docs/architecture/FINAL-IMPLEMENTATION-REPORT.md</small>")
     end
     subgraph outputs_docs_docs_performance_audit_DATABASE_NET_338686fe["docs/performance-audit/DATABASE_NETWORK_REPORT.md"]
         performance_audit_database_network_report_2_in_d_e464da1f("2. In-Depth Technical Analysis<br/><small>docs/performance-audit/DATABASE_NETWORK_REPORT.md</small>")
         performance_audit_database_network_report_data_l_db5d5c19("Data Layer, Networking &amp; Background Pro...<br/><small>docs/performance-audit/DATABASE_NETWORK_REPORT.md</small>")
     end
-    subgraph outputs_docs_docs_performance_audit_PERFORMANCE_155e01bb["docs/performance-audit/PERFORMANCE_REPORT.md"]
-        performance_audit_performance_report_2_in_depth_a2ac0920("2. In-Depth Root Cause Analysis<br/><small>docs/performance-audit/PERFORMANCE_REPORT.md</small>")
-        performance_audit_performance_report_performance_046b0552("Performance Bottleneck &amp; Optimization R...<br/><small>docs/performance-audit/PERFORMANCE_REPORT.md</small>")
-    end
     subgraph outputs_docs_docs_performance_audit_TESTING_REPO_419d0a4b["docs/performance-audit/TESTING_REPORT.md"]
         performance_audit_testing_report_4_regression_ve_3bf2c102("4. Regression Verification for Implemen...<br/><small>docs/performance-audit/TESTING_REPORT.md</small>")
         performance_audit_testing_report_testing_quality_f78f069c("Testing &amp; Quality Assurance Report: Dex...<br/><small>docs/performance-audit/TESTING_REPORT.md</small>")
     end
+    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b("Dex2C Studio — End-to-End Application W...<br/><small>WORKFLOW.md</small>")
+    architecture_testing_and_compatibility_report_te_43332c6c("Testing and Compatibility Report<br/><small>docs/architecture/testing-and-compatibility-report.md</small>")
+    performance_audit_performance_report_2_in_depth_a2ac0920("2. In-Depth Root Cause Analysis<br/><small>docs/performance-audit/PERFORMANCE_REPORT.md</small>")
     performance_audit_state_management_report_state_420864ac("State Management &amp; Lifecycle Architectu...<br/><small>docs/performance-audit/STATE_MANAGEMENT_REPORT.md</small>")
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925
-    dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b -->|contains| dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941
     docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b
     docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 -->|contains| docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_2_in_7ce897f0
@@ -1090,10 +1213,10 @@ flowchart LR
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604
     docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b -->|contains| docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1
+    architecture_final_implementation_report_dex2c_m_b71cd3b3 -->|contains| architecture_final_implementation_report_4_rust_fecb79ef
     performance_audit_database_network_report_data_l_db5d5c19 -->|contains| performance_audit_database_network_report_2_in_d_e464da1f
-    performance_audit_performance_report_performance_046b0552 -->|contains| performance_audit_performance_report_2_in_depth_a2ac0920
     performance_audit_testing_report_testing_quality_f78f069c -->|contains| performance_audit_testing_report_4_regression_ve_3bf2c102
-    %% Omitted for readability: 91 nodes, 0 edges
+    %% Omitted for readability: 119 nodes, 0 edges
     class docs_detailed_app_workflow_and_usages_3_deep_div_6e30ad3b concept;
     class docs_detailed_app_workflow_and_usages_4_real_wor_9585a58a concept;
     class docs_detailed_app_workflow_and_usages_dex2c_stud_6ff7dea7 concept;
@@ -1102,15 +1225,15 @@ flowchart LR
     class docs_detailed_app_workflow_and_usages_phase_5_da_5d613bb2 concept;
     class docs_detailed_app_workflow_and_usages_phase_7_pa_aa930604 concept;
     class docs_detailed_app_workflow_and_usages_phase_8_ze_07e639e1 concept;
-    class dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b concept;
-    class dex2c_android_workflow_2_phase_1_binary_ingestio_3c71c925 concept;
-    class dex2c_android_workflow_3_phase_2_dex_explorer_cl_f72da941 concept;
+    class architecture_final_implementation_report_dex2c_m_b71cd3b3 concept;
+    class architecture_final_implementation_report_4_rust_fecb79ef concept;
     class performance_audit_database_network_report_2_in_d_e464da1f concept;
     class performance_audit_database_network_report_data_l_db5d5c19 concept;
-    class performance_audit_performance_report_2_in_depth_a2ac0920 concept;
-    class performance_audit_performance_report_performance_046b0552 concept;
     class performance_audit_testing_report_4_regression_ve_3bf2c102 concept;
     class performance_audit_testing_report_testing_quality_f78f069c concept;
+    class dex2c_android_workflow_dex2c_studio_end_to_end_a_afdbca7b concept;
+    class architecture_testing_and_compatibility_report_te_43332c6c concept;
+    class performance_audit_performance_report_2_in_depth_a2ac0920 concept;
     class performance_audit_state_management_report_state_420864ac concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -1382,46 +1505,51 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/detailed_app_workflow_and_usages.md</code></td><td>42 nodes</td></tr>
 <tr><td><code>WORKFLOW.md</code></td><td>23 nodes</td></tr>
+<tr><td><code>docs/architecture/FINAL-IMPLEMENTATION-REPORT.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>docs/performance-audit/PERFORMANCE_REPORT.md</code></td><td>13 nodes</td></tr>
 <tr><td><code>docs/performance-audit/TESTING_REPORT.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>docs/performance-audit/DATABASE_NETWORK_REPORT.md</code></td><td>10 nodes</td></tr>
+<tr><td><code>docs/architecture/testing-and-compatibility-report.md</code></td><td>9 nodes</td></tr>
 <tr><td><code>docs/performance-audit/STATE_MANAGEMENT_REPORT.md</code></td><td>9 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x104. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x130. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 6. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">6. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around workflowmd, app, assets, phase, mostly in main/assets/WORKFLOW.md. This section covers 23 nodes and 23 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around agent, workflowmd, app, assets, mostly in main/assets/WORKFLOW.md, docs/architecture/multi-agent-task-report.md. This section covers 37 nodes and 36 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (23 nodes, 23 edges)
-    assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9("Dex2C Studio — End-to-End Application W...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_2_phase_1_binary_ingestion_multi_3663b496("2. Phase 1: Binary Ingestion &amp; Multi-DE...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_3_phase_2_dex_explorer_classes_m_e1871564("3. Phase 2: DEX Explorer (Classes, Meth...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_4_phase_3_interactive_smali_edit_53b58e30("4. Phase 3: Interactive Smali Editor, J...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_5_phase_4_method_inspection_cont_f83e610e("5. Phase 4: Method Inspection, Control...<br/><small>main/assets/WORKFLOW.md</small>")
-    app_src_main_assets_workflow_md_bf232d4e("WORKFLOW.md")
-    assets_workflow_1_high_level_system_architecture_ad592370("1. High-Level System Architecture &amp; Dat...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_6_phase_5_filter_rules_filter_tx_b56ebc17("6. Phase 5: Filter Rules (filter.txt)...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_7_phase_6_output_export_patched_d5eaff5d("7. Phase 6: Output Export, Patched DEX/...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_7_phase_6_patched_dex_apk_export_906688cc("7. Phase 6: Patched DEX/APK Export &amp; Gi...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_8_phase_7_performance_memory_opt_da3bf162("8. Phase 7: Performance &amp; Memory Optimi...<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_user_workflow_140_78153e41("User Workflow<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_technical_architecture_8b74520f("Technical Architecture<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_technical_architecture_78_6b4f4af1("Technical Architecture<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_technical_architecture_96_12672250("Technical Architecture<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_technical_architecture_116_66ff6005("Technical Architecture<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_user_workflow_433d6ede("User Workflow<br/><small>main/assets/WORKFLOW.md</small>")
-    assets_workflow_user_workflow_63_8cb1f05c("User Workflow<br/><small>main/assets/WORKFLOW.md</small>")
-    app_src_main_assets_workflow_md_bf232d4e -->|contains| assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9
+    %% Section: CLI &amp; Skill Installers (37 nodes, 36 edges)
+    subgraph cli_skills_main_assets_WORKFLOW_md_d3fec8c9["main/assets/WORKFLOW.md"]
+        assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9("Dex2C Studio — End-to-End Application W...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_2_phase_1_binary_ingestion_multi_3663b496("2. Phase 1: Binary Ingestion &amp; Multi-DE...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_3_phase_2_dex_explorer_classes_m_e1871564("3. Phase 2: DEX Explorer (Classes, Meth...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_4_phase_3_interactive_smali_edit_53b58e30("4. Phase 3: Interactive Smali Editor, J...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_5_phase_4_method_inspection_cont_f83e610e("5. Phase 4: Method Inspection, Control...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_1_high_level_system_architecture_ad592370("1. High-Level System Architecture &amp; Dat...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_6_phase_5_filter_rules_filter_tx_b56ebc17("6. Phase 5: Filter Rules (filter.txt)...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_7_phase_6_output_export_patched_d5eaff5d("7. Phase 6: Output Export, Patched DEX/...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_7_phase_6_patched_dex_apk_export_906688cc("7. Phase 6: Patched DEX/APK Export &amp; Gi...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_8_phase_7_performance_memory_opt_da3bf162("8. Phase 7: Performance &amp; Memory Optimi...<br/><small>main/assets/WORKFLOW.md</small>")
+        assets_workflow_user_workflow_140_78153e41("User Workflow<br/><small>main/assets/WORKFLOW.md</small>")
+    end
+    subgraph cli_skills_docs_architecture_multi_agent_task_re_64a51225["docs/architecture/multi-agent-task-report.md"]
+        architecture_multi_agent_task_report_2_module_bo_0237286b("2. Module Boundaries &amp; Detailed Deliver...<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+        architecture_multi_agent_task_report_multi_agent_3a375b5d("Multi-Agent Task Report &amp; Coordination...<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+        architecture_multi_agent_task_report_1_agent_ros_430be9e0("1. Agent Roster &amp; Assignment Status<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+        architecture_multi_agent_task_report_3_inter_age_a4ffd53b("3. Inter-Agent Dependencies &amp; Coordination<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+        architecture_multi_agent_task_report_agent_0_lea_4aaffb9a("Agent 0: Lead Architect &amp; Project Coord...<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+        architecture_multi_agent_task_report_agent_1_rus_2e31929b("Agent 1: Rust Core Backend (dex2c-core)<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+        architecture_multi_agent_task_report_agent_2_dex_75942151("Agent 2: DEX &amp; Smali Processing Engine...<br/><small>docs/architecture/multi-agent-task-report.md</small>")
+    end
     assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 -->|contains| assets_workflow_1_high_level_system_architecture_ad592370
     assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 -->|contains| assets_workflow_2_phase_1_binary_ingestion_multi_3663b496
     assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 -->|contains| assets_workflow_3_phase_2_dex_explorer_classes_m_e1871564
@@ -1431,33 +1559,33 @@ flowchart LR
     assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 -->|contains| assets_workflow_7_phase_6_patched_dex_apk_export_906688cc
     assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 -->|contains| assets_workflow_8_phase_7_performance_memory_opt_da3bf162
     assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 -->|contains| assets_workflow_7_phase_6_output_export_patched_d5eaff5d
-    assets_workflow_2_phase_1_binary_ingestion_multi_3663b496 -->|contains| assets_workflow_user_workflow_433d6ede
-    assets_workflow_2_phase_1_binary_ingestion_multi_3663b496 -->|contains| assets_workflow_technical_architecture_8b74520f
-    assets_workflow_3_phase_2_dex_explorer_classes_m_e1871564 -->|contains| assets_workflow_user_workflow_63_8cb1f05c
-    assets_workflow_3_phase_2_dex_explorer_classes_m_e1871564 -->|contains| assets_workflow_technical_architecture_78_6b4f4af1
-    assets_workflow_4_phase_3_interactive_smali_edit_53b58e30 -->|contains| assets_workflow_technical_architecture_96_12672250
-    assets_workflow_5_phase_4_method_inspection_cont_f83e610e -->|contains| assets_workflow_technical_architecture_116_66ff6005
     assets_workflow_7_phase_6_patched_dex_apk_export_906688cc -->|contains| assets_workflow_user_workflow_140_78153e41
     assets_workflow_user_workflow_140_78153e41 -->|contains| assets_workflow_7_phase_6_output_export_patched_d5eaff5d
-    %% Omitted for readability: 5 nodes, 0 edges
+    architecture_multi_agent_task_report_multi_agent_3a375b5d -->|contains| architecture_multi_agent_task_report_1_agent_ros_430be9e0
+    architecture_multi_agent_task_report_multi_agent_3a375b5d -->|contains| architecture_multi_agent_task_report_2_module_bo_0237286b
+    architecture_multi_agent_task_report_multi_agent_3a375b5d -->|contains| architecture_multi_agent_task_report_3_inter_age_a4ffd53b
+    architecture_multi_agent_task_report_2_module_bo_0237286b -->|contains| architecture_multi_agent_task_report_agent_0_lea_4aaffb9a
+    architecture_multi_agent_task_report_2_module_bo_0237286b -->|contains| architecture_multi_agent_task_report_agent_1_rus_2e31929b
+    architecture_multi_agent_task_report_2_module_bo_0237286b -->|contains| architecture_multi_agent_task_report_agent_2_dex_75942151
+    %% Omitted for readability: 19 nodes, 0 edges
     class assets_workflow_dex2c_studio_end_to_end_applicat_2bea75d9 concept;
     class assets_workflow_2_phase_1_binary_ingestion_multi_3663b496 concept;
     class assets_workflow_3_phase_2_dex_explorer_classes_m_e1871564 concept;
     class assets_workflow_4_phase_3_interactive_smali_edit_53b58e30 concept;
     class assets_workflow_5_phase_4_method_inspection_cont_f83e610e concept;
-    class app_src_main_assets_workflow_md_bf232d4e concept;
     class assets_workflow_1_high_level_system_architecture_ad592370 concept;
     class assets_workflow_6_phase_5_filter_rules_filter_tx_b56ebc17 concept;
     class assets_workflow_7_phase_6_output_export_patched_d5eaff5d concept;
     class assets_workflow_7_phase_6_patched_dex_apk_export_906688cc concept;
     class assets_workflow_8_phase_7_performance_memory_opt_da3bf162 concept;
     class assets_workflow_user_workflow_140_78153e41 concept;
-    class assets_workflow_technical_architecture_8b74520f concept;
-    class assets_workflow_technical_architecture_78_6b4f4af1 concept;
-    class assets_workflow_technical_architecture_96_12672250 concept;
-    class assets_workflow_technical_architecture_116_66ff6005 concept;
-    class assets_workflow_user_workflow_433d6ede concept;
-    class assets_workflow_user_workflow_63_8cb1f05c concept;
+    class architecture_multi_agent_task_report_2_module_bo_0237286b concept;
+    class architecture_multi_agent_task_report_multi_agent_3a375b5d concept;
+    class architecture_multi_agent_task_report_1_agent_ros_430be9e0 concept;
+    class architecture_multi_agent_task_report_3_inter_age_a4ffd53b concept;
+    class architecture_multi_agent_task_report_agent_0_lea_4aaffb9a concept;
+    class architecture_multi_agent_task_report_agent_1_rus_2e31929b concept;
+    class architecture_multi_agent_task_report_agent_2_dex_75942151 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1663,6 +1791,62 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing 7. Phase 6: Output Export, Patched DEX/APK &amp; GitHub Cloud CI.</td>
 </tr>
+<tr>
+  <td>24</td>
+  <td><code>multi-agent-task-report.md</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing multi-agent-task-report.md.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Multi-Agent Task Report &amp; Coordination Ledger</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Multi-Agent Task Report &amp; Coordination Ledger.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Overview</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Overview.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>1. Agent Roster &amp; Assignment Status</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Agent Roster &amp; Assignment Status.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>2. Module Boundaries &amp; Detailed Deliverables</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Module Boundaries &amp; Detailed Deliverables.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Agent 0: Lead Architect &amp; Project Coordinator</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Agent 0: Lead Architect &amp; Project Coordinator.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Agent 1: Rust Core Backend (`dex2c-core`)</code><br><small style="color:var(--muted)">docs/architecture/multi-agent-task-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Agent 1: Rust Core Backend (`dex2c-core`).</td>
+</tr>
 </table>
 
 <div class="grid">
@@ -1671,11 +1855,12 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>main/assets/WORKFLOW.md</code></td><td>23 nodes</td></tr>
+<tr><td><code>docs/architecture/multi-agent-task-report.md</code></td><td>14 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x23. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x36. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2911,8 +3096,130 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. Community 96 ====== -->
-<h2 id="community-96">14. Community 96</h2>
+<!-- ====== 14. Community 118 ====== -->
+<h2 id="community-118">14. Community 118</h2>
+<p>Community 118 groups implementation around migration, progressmd, docs, architecture, mostly in docs/architecture/migration-progress.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 118 (7 nodes, 6 edges)
+    architecture_migration_progress_migration_progre_e2304240("Migration Progress Ledger<br/><small>docs/architecture/migration-progress.md</small>")
+    docs_architecture_migration_progress_md_9f9016ef("migration-progress.md")
+    architecture_migration_progress_1_migration_over_a39edc17("1. Migration Overview<br/><small>docs/architecture/migration-progress.md</small>")
+    architecture_migration_progress_2_module_migrati_9bdce516("2. Module Migration Status<br/><small>docs/architecture/migration-progress.md</small>")
+    architecture_migration_progress_3_deprecated_com_357198d8("3. Deprecated Components &amp; Fallback Ret...<br/><small>docs/architecture/migration-progress.md</small>")
+    architecture_migration_progress_4_next_steps_b3a2681c("4. Next Steps<br/><small>docs/architecture/migration-progress.md</small>")
+    architecture_migration_progress_codeblock_1_5676ec60("code:mermaid (flowchart LR)<br/><small>docs/architecture/migration-progress.md</small>")
+    docs_architecture_migration_progress_md_9f9016ef -->|contains| architecture_migration_progress_migration_progre_e2304240
+    architecture_migration_progress_migration_progre_e2304240 -->|contains| architecture_migration_progress_1_migration_over_a39edc17
+    architecture_migration_progress_migration_progre_e2304240 -->|contains| architecture_migration_progress_2_module_migrati_9bdce516
+    architecture_migration_progress_migration_progre_e2304240 -->|contains| architecture_migration_progress_3_deprecated_com_357198d8
+    architecture_migration_progress_migration_progre_e2304240 -->|contains| architecture_migration_progress_4_next_steps_b3a2681c
+    architecture_migration_progress_1_migration_over_a39edc17 -->|contains| architecture_migration_progress_codeblock_1_5676ec60
+    class architecture_migration_progress_migration_progre_e2304240 concept;
+    class docs_architecture_migration_progress_md_9f9016ef concept;
+    class architecture_migration_progress_1_migration_over_a39edc17 concept;
+    class architecture_migration_progress_2_module_migrati_9bdce516 concept;
+    class architecture_migration_progress_3_deprecated_com_357198d8 concept;
+    class architecture_migration_progress_4_next_steps_b3a2681c concept;
+    class architecture_migration_progress_codeblock_1_5676ec60 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>migration-progress.md</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing migration-progress.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Migration Progress Ledger</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Migration Progress Ledger.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1. Migration Overview</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Migration Overview.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>code:mermaid (flowchart LR)</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:mermaid (flowchart LR).</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>2. Module Migration Status</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Module Migration Status.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>3. Deprecated Components &amp; Fallback Retentions</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Deprecated Components &amp; Fallback Retentions.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>4. Next Steps</code><br><small style="color:var(--muted)">docs/architecture/migration-progress.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Next Steps.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>docs/architecture/migration-progress.md</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 15. Community 96 ====== -->
+<h2 id="community-96">15. Community 96</h2>
 <p>Community 96 groups implementation around master, issue, trackermd, performance, mostly in docs/performance-audit/MASTER_ISSUE_TRACKER.md. This section covers 5 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3011,19 +3318,42 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. Community 36 ====== -->
-<h2 id="community-36">15. Community 36</h2>
-<p>Community 36 groups implementation around graphifymd, agents, rules, graphify, mostly in .agents/rules/graphify.md. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around librs, graphifymd, dex2c, rust, mostly in .agents/rules/graphify.md, .agents/workflows/graphify.md, dex2c-core/src/lib.rs. This section covers 11 nodes and 2 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Community 36 (2 nodes, 1 edges)
-    agents_rules_graphify_md_4b23c981("graphify.md")
-    rules_graphify_graphify_492e01fa("graphify<br/><small>.agents/rules/graphify.md</small>")
+    %% Section: Other (11 nodes, 2 edges)
+    subgraph other_agents_rules_graphify_md_46085eba[".agents/rules/graphify.md"]
+        agents_rules_graphify_md_4b23c981("graphify.md")
+        rules_graphify_graphify_492e01fa("graphify<br/><small>.agents/rules/graphify.md</small>")
+    end
+    subgraph other_agents_workflows_graphify_md_fa0cc363[".agents/workflows/graphify.md"]
+        agents_workflows_graphify_md_bb08c945("graphify.md")
+        workflows_graphify_workflow_graphify_f1045e4e("Workflow: graphify<br/><small>.agents/workflows/graphify.md</small>")
+    end
+    rust_engine_crates_dex2c_core_src_lib_rs_48321338("lib.rs")
+    rust_engine_crates_dex2c_dex_src_lib_rs_0c7dbd1a("lib.rs")
+    rust_engine_crates_dex2c_smali_src_lib_rs_459a568b("lib.rs")
+    rust_engine_crates_dex2c_toolchain_src_lib_rs_7abed055("lib.rs")
+    rust_engine_crates_dex2c_transpiler_src_lib_rs_66e3bad5("lib.rs")
+    settings_gradle_kts_e0ad1c77("settings.gradle.kts")
+    app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05("Type.kt")
     agents_rules_graphify_md_4b23c981 -->|contains| rules_graphify_graphify_492e01fa
+    agents_workflows_graphify_md_bb08c945 -->|contains| workflows_graphify_workflow_graphify_f1045e4e
     class agents_rules_graphify_md_4b23c981 concept;
     class rules_graphify_graphify_492e01fa concept;
+    class agents_workflows_graphify_md_bb08c945 concept;
+    class workflows_graphify_workflow_graphify_f1045e4e concept;
+    class rust_engine_crates_dex2c_core_src_lib_rs_48321338 module;
+    class rust_engine_crates_dex2c_dex_src_lib_rs_0c7dbd1a module;
+    class rust_engine_crates_dex2c_smali_src_lib_rs_459a568b module;
+    class rust_engine_crates_dex2c_toolchain_src_lib_rs_7abed055 module;
+    class rust_engine_crates_dex2c_transpiler_src_lib_rs_66e3bad5 module;
+    class settings_gradle_kts_e0ad1c77 function;
+    class app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3061,65 +3391,8 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing graphify.</td>
 </tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>.agents/rules/graphify.md</code></td><td>2 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around graphifymd, agents, workflows, settingsgradlekts, mostly in .agents/workflows/graphify.md, settings.gradle.kts, ui/theme/Type.kt. This section covers 4 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (4 nodes, 1 edges)
-    subgraph other_agents_workflows_graphify_md_fa0cc363[".agents/workflows/graphify.md"]
-        agents_workflows_graphify_md_bb08c945("graphify.md")
-        workflows_graphify_workflow_graphify_f1045e4e("Workflow: graphify<br/><small>.agents/workflows/graphify.md</small>")
-    end
-    settings_gradle_kts_e0ad1c77("settings.gradle.kts")
-    app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05("Type.kt")
-    agents_workflows_graphify_md_bb08c945 -->|contains| workflows_graphify_workflow_graphify_f1045e4e
-    class agents_workflows_graphify_md_bb08c945 concept;
-    class workflows_graphify_workflow_graphify_f1045e4e concept;
-    class settings_gradle_kts_e0ad1c77 function;
-    class app_src_main_java_com_dex2c_studio_ui_theme_type_03e62d05 klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
 <tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
+  <td>3</td>
   <td><code>graphify.md</code><br><small style="color:var(--muted)">.agents/workflows/graphify.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -3127,7 +3400,7 @@ flowchart LR
   <td>Documentation node describing graphify.md.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>4</td>
   <td><code>Workflow: graphify</code><br><small style="color:var(--muted)">.agents/workflows/graphify.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -3135,7 +3408,47 @@ flowchart LR
   <td>Documentation node describing Workflow: graphify.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>5</td>
+  <td><code>lib.rs</code><br><small style="color:var(--muted)">dex2c-core/src/lib.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lib.rs node in dex2c-core/src/lib.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>lib.rs</code><br><small style="color:var(--muted)">dex2c-dex/src/lib.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lib.rs node in dex2c-dex/src/lib.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>lib.rs</code><br><small style="color:var(--muted)">dex2c-smali/src/lib.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lib.rs node in dex2c-smali/src/lib.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>lib.rs</code><br><small style="color:var(--muted)">dex2c-toolchain/src/lib.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lib.rs node in dex2c-toolchain/src/lib.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>lib.rs</code><br><small style="color:var(--muted)">dex2c-transpiler/src/lib.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lib.rs node in dex2c-transpiler/src/lib.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
   <td><code>settings.gradle.kts</code><br><small style="color:var(--muted)">settings.gradle.kts</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3143,7 +3456,7 @@ flowchart LR
   <td>settings.gradle.kts node in settings.gradle.kts.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>11</td>
   <td><code>Type.kt</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3157,14 +3470,19 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>.agents/workflows/graphify.md</code></td><td>2 nodes</td></tr>
+      <tr><td><code>.agents/rules/graphify.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>.agents/workflows/graphify.md</code></td><td>2 nodes</td></tr>
 <tr><td><code>ui/theme/Type.kt</code></td><td>1 nodes</td></tr>
-<tr><td><code>settings.gradle.kts</code></td><td>1 nodes</td></tr>
+<tr><td><code>dex2c-core/src/lib.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>dex2c-dex/src/lib.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>dex2c-smali/src/lib.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>dex2c-toolchain/src/lib.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>dex2c-transpiler/src/lib.rs</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3175,18 +3493,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1541</td></tr>
-      <tr><td>Edges</td><td>2624</td></tr>
+      <tr><td>Nodes</td><td>1768</td></tr>
+      <tr><td>Edges</td><td>2899</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>92</td></tr>
+      <tr><td>Communities</td><td>136</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>2178</td></tr>
-      <tr><td>INFERRED</td><td>446</td></tr>
+      <tr><td>EXTRACTED</td><td>2449</td></tr>
+      <tr><td>INFERRED</td><td>450</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -3194,7 +3512,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-21 06:44 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-21 07:21 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

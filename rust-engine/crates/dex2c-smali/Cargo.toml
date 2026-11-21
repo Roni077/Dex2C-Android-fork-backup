@@ -1,0 +1,9 @@
+[package]
+name = "dex2c-smali"
+version = "0.1.0"
+edition = "2021"
+description = "High-speed Smali disassembler and formatter for Dex2C Studio"
+
+[dependencies]
+dex2c-core = { path = "../dex2c-core" }
+dex2c-dex = { path = "../dex2c-dex" }

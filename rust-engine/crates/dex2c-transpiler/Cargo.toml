@@ -1,0 +1,9 @@
+[package]
+name = "dex2c-transpiler"
+version = "0.1.0"
+edition = "2021"
+description = "Core Dalvik-to-C++17 transpiler engine, JNI code emitter, and runtime generator for Dex2C Studio"
+
+[dependencies]
+dex2c-core = { path = "../dex2c-core" }
+dex2c-dex = { path = "../dex2c-dex" }

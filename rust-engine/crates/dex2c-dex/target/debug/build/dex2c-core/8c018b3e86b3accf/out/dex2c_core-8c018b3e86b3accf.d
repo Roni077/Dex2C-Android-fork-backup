@@ -1,0 +1,10 @@
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-dex\target\debug\build\dex2c-core/8c018b3e86b3accf\out\dex2c_core-8c018b3e86b3accf.d: C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\lib.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\error.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\models.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\task.rs
+
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-dex\target\debug\build\dex2c-core/8c018b3e86b3accf\out\libdex2c_core-8c018b3e86b3accf.rlib: C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\lib.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\error.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\models.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\task.rs
+
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-dex\target\debug\build\dex2c-core/8c018b3e86b3accf\out\libdex2c_core-8c018b3e86b3accf.rmeta: C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\lib.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\error.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\models.rs C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\task.rs
+
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\lib.rs:
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\error.rs:
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\models.rs:
+C:\Users\roni2\Downloads\Github-Projects\Dex2c-Android\rust-engine\crates\dex2c-core\src\task.rs:

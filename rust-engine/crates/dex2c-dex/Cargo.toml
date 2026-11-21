@@ -1,0 +1,10 @@
+[package]
+name = "dex2c-dex"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance DEX binary parser, Dalvik disassembler, CFG builder, and in-place native patcher"
+
+[dependencies]
+dex2c-core = { path = "../dex2c-core" }
+regex = { version = "1.10", default-features = false, features = ["std", "perf"] }
+log = "0.4"

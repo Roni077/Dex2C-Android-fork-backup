@@ -60,9 +60,32 @@ class DexNativeEngineTest {
 
     val res1 = DexNativeEngine.evaluateFilterRules(emptyBytes, listOf(".*"))
     val res2 = DexNativeEngine.evaluateFilterRules(invalidBytes, listOf(".*"))
+    val res3 = DexNativeEngine.disassembleSmaliFast(emptyBytes, 0)
+    val res4 = DexNativeEngine.transpileMethodFast(emptyBytes, 0, 0)
+    val res5 = DexNativeEngine.patchDexMethodsFast(emptyBytes, setOf(0))
 
     assertEquals(null, res1)
     assertEquals(null, res2)
+    assertEquals(null, res3)
+    assertEquals(null, res4)
+    assertEquals(null, res5)
+  }
+
+  @Test
+  fun testDex2cNativeRepositorySafety() {
+    val repo = com.dex2c.studio.data.repository.Dex2cNativeRepository()
+    kotlinx.coroutines.runBlocking {
+      val parsed = repo.parseClasses(ByteArray(0))
+      assertEquals(null, parsed)
+      val filtered = repo.evaluateFilterRules(ByteArray(0), listOf(".*"))
+      assertEquals(null, filtered)
+      val smali = repo.disassembleSmali(ByteArray(0), 0)
+      assertEquals(null, smali)
+      val cpp = repo.transpileMethod(ByteArray(0), 0, 0)
+      assertEquals(null, cpp)
+      val patched = repo.patchDex(ByteArray(0), setOf(0))
+      assertEquals(null, patched)
+    }
   }
 
   @Test

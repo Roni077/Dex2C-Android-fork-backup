@@ -68,6 +68,31 @@ object DexNativeEngine {
   external fun nativeParseDex(handle: Long): java.nio.ByteBuffer?
 
   @JvmStatic
+  external fun nativeDisassembleClassSmali(
+    handle: Long,
+    classDefIdx: Int,
+  ): String?
+
+  @JvmStatic
+  external fun nativeTranspileMethod(
+    handle: Long,
+    classDefIdx: Int,
+    methodIdx: Int,
+  ): String?
+
+  @JvmStatic
+  external fun nativePatchDexMethods(
+    handle: Long,
+    methodIndices: IntArray,
+  ): Int
+
+  @JvmStatic
+  external fun nativeGenerateBuildFiles(
+    moduleName: String,
+    sourceFiles: Array<String>,
+  ): String?
+
+  @JvmStatic
   external fun nativeGetVersion(): String?
 
   // --- Safe Kotlin Helper APIs ---
@@ -152,6 +177,69 @@ object DexNativeEngine {
       NativeFilterResult(classes, methods)
     } catch (e: Throwable) {
       safeLog(TAG, "Native filter evaluation failed, falling back to Kotlin", e)
+      null
+    } finally {
+      runCatching { nativeCloseDex(handle) }
+    }
+  }
+
+  /**
+   * Disassembles a class to Smali text using the Rust engine.
+   */
+  fun disassembleSmaliFast(
+    dexBytes: ByteArray,
+    classDefIdx: Int,
+  ): String? {
+    if (!isAvailable || dexBytes.isEmpty() || classDefIdx < 0) return null
+    val handle = runCatching { nativeOpenDex(dexBytes, dexBytes.size) }.getOrDefault(0L)
+    if (handle == 0L) return null
+    return try {
+      nativeDisassembleClassSmali(handle, classDefIdx)
+    } catch (e: Throwable) {
+      safeLog(TAG, "Native Smali disassembly failed", e)
+      null
+    } finally {
+      runCatching { nativeCloseDex(handle) }
+    }
+  }
+
+  /**
+   * Transpiles a single method to C++17 JNI code using the Rust engine.
+   */
+  fun transpileMethodFast(
+    dexBytes: ByteArray,
+    classDefIdx: Int,
+    methodIdx: Int,
+  ): String? {
+    if (!isAvailable || dexBytes.isEmpty() || classDefIdx < 0 || methodIdx < 0) return null
+    val handle = runCatching { nativeOpenDex(dexBytes, dexBytes.size) }.getOrDefault(0L)
+    if (handle == 0L) return null
+    return try {
+      nativeTranspileMethod(handle, classDefIdx, methodIdx)
+    } catch (e: Throwable) {
+      safeLog(TAG, "Native C++ transpilation failed", e)
+      null
+    } finally {
+      runCatching { nativeCloseDex(handle) }
+    }
+  }
+
+  /**
+   * In-place patches methods in a DEX binary to native stubs and recomputes signatures.
+   */
+  fun patchDexMethodsFast(
+    dexBytes: ByteArray,
+    methodIndices: Set<Int>,
+  ): ByteArray? {
+    if (!isAvailable || dexBytes.isEmpty() || methodIndices.isEmpty()) return null
+    val copy = dexBytes.copyOf()
+    val handle = runCatching { nativeOpenDex(copy, copy.size) }.getOrDefault(0L)
+    if (handle == 0L) return null
+    return try {
+      val count = nativePatchDexMethods(handle, methodIndices.toIntArray())
+      if (count >= 0) copy else null
+    } catch (e: Throwable) {
+      safeLog(TAG, "Native DEX method patching failed", e)
       null
     } finally {
       runCatching { nativeCloseDex(handle) }
