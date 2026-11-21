@@ -560,7 +560,7 @@ private fun sectionSummary(
       "$recentHistoryCount recent $entryWord • Clear cache & reset"
     }
     SettingsSection.ABOUT ->
-      "v${BuildConfig.VERSION_NAME} • DEX 035–041 • Kirlif/d2c Cloud"
+      "v${BuildConfig.VERSION_NAME} • DEX 035–041 • codehasan/dex2c Cloud"
   }
 
 private fun sectionBadge(

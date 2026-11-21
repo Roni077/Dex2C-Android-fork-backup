@@ -1,6 +1,6 @@
 # Dex2C Studio — End-to-End Application Workflow & Technical Architecture
 
-**Dex2C Studio** is an all-in-one Android reverse engineering, DEX/Smali modification, Java decompilation, and Dalvik-to-C++17 native transpilation IDE. It combines the capabilities of **Kirlif/d2c & codehasan/dex2c** native method transpilation with **Dex-Editor-Android**'s in-memory Smali editing, Java decompilation, global string/field/method inspection, and patched DEX/APK export.
+**Dex2C Studio** is an all-in-one Android reverse engineering, DEX/Smali modification, Java decompilation, and Dalvik-to-C++17 native transpilation IDE. It combines the capabilities of **codehasan/dex2c** native method transpilation with **Dex-Editor-Android**'s in-memory Smali editing, Java decompilation, global string/field/method inspection, and patched DEX/APK export.
 
 ---
 

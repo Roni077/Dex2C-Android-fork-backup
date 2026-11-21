@@ -573,7 +573,7 @@ fun SettingsDexParserSubScreen(
     }
 
     item {
-      SubScreenCard(title = "DEX Disassembly & Kirlif/d2c Integration", icon = Icons.Rounded.Memory) {
+      SubScreenCard(title = "DEX Disassembly & codehasan/dex2c Integration", icon = Icons.Rounded.Memory) {
         Text(
           text = "Engine: Kotlin DexFile + Google smali-dexlib2 & smali-baksmali",
           style = MaterialTheme.typography.bodySmall,
@@ -1385,7 +1385,7 @@ fun SettingsAboutSubScreen(
     item {
       SubScreenCard(title = "Bundled Toolchains & Integrations", icon = Icons.Rounded.Build) {
         Text(
-          text = "• Kirlif/d2c & codehasan/dex2c transpiler parity (dcc.cfg, filter.txt, allow-init, custom loader)\n" +
+          text = "• codehasan/dex2c native transpiler with OLLVM & 16KB alignment (dcc.cfg, filter.txt)\n" +
             "• Google smali-dexlib2 & smali-baksmali class disassembly + Kotlin CFG/payload analysis\n" +
             "• GitHub OAuth Device Flow + Private Workspace dex2c.yml Actions + WorkManager push alerts",
           style = MaterialTheme.typography.bodySmall,

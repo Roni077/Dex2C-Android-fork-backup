@@ -3,6 +3,7 @@ package com.dex2c.studio.data
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -10,6 +11,8 @@ import com.dex2c.studio.transpiler.DEFAULT_FILTER_RULES
 import com.dex2c.studio.transpiler.JniBindingStyle
 import com.dex2c.studio.transpiler.LEGACY_DEFAULT_FILTER_RULES
 import com.dex2c.studio.transpiler.LoaderMode
+import com.dex2c.studio.transpiler.OllvmConfig
+import com.dex2c.studio.transpiler.OllvmPreset
 import com.dex2c.studio.transpiler.TargetCLanguage
 import com.dex2c.studio.transpiler.TranspilerConfig
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +36,21 @@ class TranspilerPreferences(private val context: Context) {
     val TARGET_ABIS = stringSetPreferencesKey("target_abis")
     val FILTER_RULES_TEXT = stringPreferencesKey("filter_rules_text")
     val MODULE_NAME = stringPreferencesKey("module_name")
+
+    // OLLVM Compiler Hardening Keys
+    val OLLVM_ENABLED = booleanPreferencesKey("ollvm_enabled")
+    val OLLVM_PRESET = stringPreferencesKey("ollvm_preset")
+    val OLLVM_FLA = booleanPreferencesKey("ollvm_fla")
+    val OLLVM_SUB = booleanPreferencesKey("ollvm_sub")
+    val OLLVM_SUB_LOOP = intPreferencesKey("ollvm_sub_loop")
+    val OLLVM_BCF = booleanPreferencesKey("ollvm_bcf")
+    val OLLVM_BCF_LOOP = intPreferencesKey("ollvm_bcf_loop")
+    val OLLVM_BCF_PROB = intPreferencesKey("ollvm_bcf_prob")
+    val OLLVM_SPLIT = booleanPreferencesKey("ollvm_split")
+    val OLLVM_SPLIT_NUM = intPreferencesKey("ollvm_split_num")
+    val OLLVM_SOBF = booleanPreferencesKey("ollvm_sobf")
+    val OLLVM_16KB_PAGES = booleanPreferencesKey("ollvm_16kb_pages")
+    val OLLVM_CUSTOM_FLAGS = stringPreferencesKey("ollvm_custom_flags")
   }
 
   val configFlow: Flow<TranspilerConfig> =
@@ -45,6 +63,23 @@ class TranspilerPreferences(private val context: Context) {
         } else {
           prefs[Keys.FILTER_RULES_TEXT] ?: defaults.filterRulesText
         }
+      val resolvedOllvm =
+        OllvmConfig(
+          enabled = prefs[Keys.OLLVM_ENABLED] ?: defaults.ollvm.enabled,
+          preset = prefs[Keys.OLLVM_PRESET]?.let { runCatching { OllvmPreset.valueOf(it) }.getOrNull() } ?: defaults.ollvm.preset,
+          controlFlowFlattening = prefs[Keys.OLLVM_FLA] ?: defaults.ollvm.controlFlowFlattening,
+          instructionSubstitution = prefs[Keys.OLLVM_SUB] ?: defaults.ollvm.instructionSubstitution,
+          subLoop = prefs[Keys.OLLVM_SUB_LOOP] ?: defaults.ollvm.subLoop,
+          bogusControlFlow = prefs[Keys.OLLVM_BCF] ?: defaults.ollvm.bogusControlFlow,
+          bcfLoop = prefs[Keys.OLLVM_BCF_LOOP] ?: defaults.ollvm.bcfLoop,
+          bcfProb = prefs[Keys.OLLVM_BCF_PROB] ?: defaults.ollvm.bcfProb,
+          basicBlockSplit = prefs[Keys.OLLVM_SPLIT] ?: defaults.ollvm.basicBlockSplit,
+          splitNum = prefs[Keys.OLLVM_SPLIT_NUM] ?: defaults.ollvm.splitNum,
+          stringObfuscation = prefs[Keys.OLLVM_SOBF] ?: defaults.ollvm.stringObfuscation,
+          align16KbPages = prefs[Keys.OLLVM_16KB_PAGES] ?: defaults.ollvm.align16KbPages,
+          customFlags = prefs[Keys.OLLVM_CUSTOM_FLAGS] ?: defaults.ollvm.customFlags,
+        )
+
       TranspilerConfig(
         jniStyle = prefs[Keys.JNI_STYLE]?.let { runCatching { JniBindingStyle.valueOf(it) }.getOrNull() } ?: defaults.jniStyle,
         targetLanguage = prefs[Keys.TARGET_LANG]?.let { runCatching { TargetCLanguage.valueOf(it) }.getOrNull() } ?: defaults.targetLanguage,
@@ -59,6 +94,7 @@ class TranspilerPreferences(private val context: Context) {
         targetAbis = prefs[Keys.TARGET_ABIS]?.takeIf { it.isNotEmpty() } ?: defaults.targetAbis,
         filterRulesText = resolvedFilter,
         moduleName = prefs[Keys.MODULE_NAME] ?: defaults.moduleName,
+        ollvm = resolvedOllvm,
       )
     }
 
@@ -77,6 +113,21 @@ class TranspilerPreferences(private val context: Context) {
       prefs[Keys.TARGET_ABIS] = config.targetAbis
       prefs[Keys.FILTER_RULES_TEXT] = config.filterRulesText
       prefs[Keys.MODULE_NAME] = config.moduleName
+
+      // OLLVM
+      prefs[Keys.OLLVM_ENABLED] = config.ollvm.enabled
+      prefs[Keys.OLLVM_PRESET] = config.ollvm.preset.name
+      prefs[Keys.OLLVM_FLA] = config.ollvm.controlFlowFlattening
+      prefs[Keys.OLLVM_SUB] = config.ollvm.instructionSubstitution
+      prefs[Keys.OLLVM_SUB_LOOP] = config.ollvm.subLoop
+      prefs[Keys.OLLVM_BCF] = config.ollvm.bogusControlFlow
+      prefs[Keys.OLLVM_BCF_LOOP] = config.ollvm.bcfLoop
+      prefs[Keys.OLLVM_BCF_PROB] = config.ollvm.bcfProb
+      prefs[Keys.OLLVM_SPLIT] = config.ollvm.basicBlockSplit
+      prefs[Keys.OLLVM_SPLIT_NUM] = config.ollvm.splitNum
+      prefs[Keys.OLLVM_SOBF] = config.ollvm.stringObfuscation
+      prefs[Keys.OLLVM_16KB_PAGES] = config.ollvm.align16KbPages
+      prefs[Keys.OLLVM_CUSTOM_FLAGS] = config.ollvm.customFlags
     }
   }
 }

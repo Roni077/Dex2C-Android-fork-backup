@@ -25,7 +25,7 @@ import org.junit.Test
 class GitHubCloudWorkflowTest {
 
   @Test
-  fun generateDex2cYaml_includesKirlifD2cAndSigningAndFallback() {
+  fun generateDex2cYaml_includesCodehasanDex2cAndSigningAndFallback() {
     val defaultCfg = TranspilerConfig()
     assertFalse(defaultCfg.forceCustomLoader)
     val defaultYaml = Dex2cWorkflowGenerator.generateDex2cYaml(CloudSettings(), defaultCfg)
@@ -60,19 +60,21 @@ class GitHubCloudWorkflowTest {
     assertFalse(yaml.contains("actions/setup-java@v4"))
     assertTrue(yaml.contains("android-ndk-r26d-linux.zip"))
     assertTrue(yaml.contains("java-version: '21'"))
-    assertTrue(yaml.contains("https://github.com/Kirlif/d2c.git"))
+    assertTrue(yaml.contains("https://github.com/codehasan/dex2c.git"))
     assertTrue(yaml.contains("/tmp/d2c/requirements.txt"))
     assertTrue(yaml.contains("base_cfg = json.load(f)"))
     assertTrue(yaml.contains("working-directory: /tmp/d2c"))
     assertTrue(yaml.contains("set -o pipefail"))
-    assertTrue(yaml.contains("-i /tmp/work/input.apk"))
+    assertTrue(yaml.contains("-a /tmp/work/input.apk"))
     assertTrue(yaml.contains("-o /tmp/work/unsigned_dex2c.apk"))
-    assertTrue(yaml.contains("-f /tmp/d2c/filter.txt"))
-    assertFalse(yaml.contains("-a /tmp/work/input.apk"))
+    assertTrue(yaml.contains("--filter /tmp/d2c/filter.txt"))
     assertTrue(yaml.contains("python3 /tmp/d2c/dcc.py"))
-    assertTrue(yaml.contains("ARGS+=(-a)"))
     assertTrue(yaml.contains("skip_synthetic:"))
     assertTrue(yaml.contains("ARGS+=(--skip-synthetic)"))
+    assertTrue(yaml.contains("enable_ollvm:"))
+    assertTrue(yaml.contains("ollvm_flags:"))
+    assertTrue(yaml.contains("align_16kb:"))
+    assertTrue(yaml.contains("max-page-size=16384"))
     assertTrue(yaml.contains("_dex2c_sanitize_generated_cpp"))
     assertTrue(yaml.contains("-fpermissive -Wno-int-conversion"))
     assertTrue(yaml.contains("writer_py = \"/tmp/d2c/dex2c/writer.py\""))
@@ -84,8 +86,7 @@ class GitHubCloudWorkflowTest {
     assertTrue(yaml.contains("Auto-excluded failing C++ method units"))
     assertTrue(yaml.contains("ARGS+=(-p)"))
     assertTrue(yaml.contains("ARGS+=(-d)"))
-    assertTrue(yaml.contains("ARGS+=(-c"))
-    assertTrue(yaml.contains("ARGS+=(-r)"))
+    assertTrue(yaml.contains("ARGS+=(--custom-loader"))
     assertTrue(yaml.contains("if [ ! -f /tmp/work/unsigned_dex2c.apk ]"))
     assertTrue(yaml.contains("com.custom.LoaderApp"))
     assertTrue(yaml.contains("apksigner"))
@@ -454,7 +455,7 @@ class GitHubCloudWorkflowTest {
       com.dex2c.studio.cloud.CloudBuildNotifier.buildWorkflowProgressNotification(
         runNumber = 19,
         status = "in_progress",
-        activeStepName = "Run Kirlif/d2c Compilation",
+        activeStepName = "Run codehasan/dex2c Compilation",
         completedSteps = 4,
         totalSteps = 10,
       )
@@ -463,7 +464,7 @@ class GitHubCloudWorkflowTest {
     assertEquals(4, building.progressCurrent)
     assertEquals(10, building.progressMax)
     assertTrue(building.body.contains("Step 4/10"))
-    assertTrue(building.body.contains("Run Kirlif/d2c Compilation"))
+    assertTrue(building.body.contains("Run codehasan/dex2c Compilation"))
     assertEquals(
       com.dex2c.studio.R.drawable.ic_cloud_build_status,
       com.dex2c.studio.cloud.CloudBuildNotifier.resolveNotificationSmallIcon(building.phase),

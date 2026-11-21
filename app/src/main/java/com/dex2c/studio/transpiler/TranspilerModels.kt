@@ -24,7 +24,7 @@ enum class LoaderMode(val label: String, val description: String) {
 val ALL_NDK_ABIS = listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
 
 const val LEGACY_DEFAULT_FILTER_RULES =
-  """# Kirlif/d2c & codehasan/dex2c filter.txt rules
+  """# codehasan/dex2c filter.txt rules
 # Lines starting with ! exclude matching classes/methods
 !^L(androidx|android|kotlin|kotlinx|java|javax|com/google)/.*
 !.*->(<clinit>)\(.*
@@ -40,6 +40,107 @@ val MANDATORY_CLOUD_SAFETY_EXCLUSIONS =
 
 const val DEFAULT_FILTER_RULES = ".*"
 
+enum class OllvmPreset(val label: String, val summary: String) {
+  BALANCED("Balanced", "Recommended: Control flow flattening, instruction substitution, basic block split & 16KB alignment"),
+  MAXIMUM("Maximum", "Heavy defense: All passes active with maximum iteration loops & bogus control flow"),
+  FAST("Fast / Zero-Overhead", "Lightweight: String XOR & 16KB alignment without LLVM IR bloat"),
+  CUSTOM("Custom", "Fine-tune individual passes, loop counts, and custom Clang flags"),
+}
+
+data class OllvmConfig(
+  val enabled: Boolean = false,
+  val preset: OllvmPreset = OllvmPreset.BALANCED,
+  val controlFlowFlattening: Boolean = true,     // -mllvm -fla
+  val instructionSubstitution: Boolean = true,  // -mllvm -sub
+  val subLoop: Int = 3,                         // -mllvm -sub_loop=3
+  val bogusControlFlow: Boolean = false,        // -mllvm -bcf
+  val bcfLoop: Int = 3,                         // -mllvm -bcf_loop=3
+  val bcfProb: Int = 50,                        // -mllvm -bcf_prob=50
+  val basicBlockSplit: Boolean = true,          // -mllvm -split
+  val splitNum: Int = 3,                        // -mllvm -split_num=3
+  val stringObfuscation: Boolean = false,       // -mllvm -sobf
+  val align16KbPages: Boolean = true,           // -Wl,-z,max-page-size=16384
+  val customFlags: String = "",
+) {
+  fun buildClangFlags(): String {
+    if (!enabled) return ""
+    val flags = mutableListOf("-fvisibility=hidden")
+    if (controlFlowFlattening) flags += "-mllvm -fla"
+    if (basicBlockSplit) {
+      flags += "-mllvm -split"
+      if (splitNum > 1) flags += "-mllvm -split_num=$splitNum"
+    }
+    if (instructionSubstitution) {
+      flags += "-mllvm -sub"
+      if (subLoop > 1) flags += "-mllvm -sub_loop=$subLoop"
+    }
+    if (stringObfuscation) flags += "-mllvm -sobf"
+    if (bogusControlFlow) {
+      flags += "-mllvm -bcf"
+      if (bcfLoop > 1) flags += "-mllvm -bcf_loop=$bcfLoop"
+      if (bcfProb in 1..100) flags += "-mllvm -bcf_prob=$bcfProb"
+    }
+    if (customFlags.isNotBlank()) flags += customFlags.trim()
+    return flags.joinToString(" ")
+  }
+
+  fun activePassCount(): Int {
+    if (!enabled) return 0
+    var count = 0
+    if (controlFlowFlattening) count++
+    if (instructionSubstitution) count++
+    if (bogusControlFlow) count++
+    if (basicBlockSplit) count++
+    if (stringObfuscation) count++
+    if (align16KbPages) count++
+    if (customFlags.isNotBlank()) count++
+    return count
+  }
+
+  fun applyPreset(newPreset: OllvmPreset): OllvmConfig =
+    when (newPreset) {
+      OllvmPreset.BALANCED -> copy(
+        enabled = true,
+        preset = newPreset,
+        controlFlowFlattening = true,
+        instructionSubstitution = true,
+        subLoop = 3,
+        bogusControlFlow = false,
+        basicBlockSplit = true,
+        splitNum = 3,
+        stringObfuscation = false,
+        align16KbPages = true,
+      )
+      OllvmPreset.MAXIMUM -> copy(
+        enabled = true,
+        preset = newPreset,
+        controlFlowFlattening = true,
+        instructionSubstitution = true,
+        subLoop = 5,
+        bogusControlFlow = true,
+        bcfLoop = 5,
+        bcfProb = 100,
+        basicBlockSplit = true,
+        splitNum = 5,
+        stringObfuscation = true,
+        align16KbPages = true,
+      )
+      OllvmPreset.FAST -> copy(
+        enabled = false,
+        preset = newPreset,
+        controlFlowFlattening = false,
+        instructionSubstitution = false,
+        bogusControlFlow = false,
+        basicBlockSplit = false,
+        stringObfuscation = false,
+        align16KbPages = true,
+      )
+      OllvmPreset.CUSTOM -> copy(
+        preset = newPreset,
+      )
+    }
+}
+
 data class TranspilerConfig(
   val jniStyle: JniBindingStyle = JniBindingStyle.REGISTER_NATIVES,
   val targetLanguage: TargetCLanguage = TargetCLanguage.CPP17,
@@ -54,6 +155,7 @@ data class TranspilerConfig(
   val targetAbis: Set<String> = setOf("arm64-v8a", "armeabi-v7a"),
   val filterRulesText: String = DEFAULT_FILTER_RULES,
   val moduleName: String = "dex2c_native",
+  val ollvm: OllvmConfig = OllvmConfig(),
 )
 
 data class TranspileProgress(

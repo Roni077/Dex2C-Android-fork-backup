@@ -83,7 +83,7 @@ class Dex2cTranspilerTest {
 
     val cfg =
       TranspilerConfig(
-        moduleName = "kirlif_shield",
+        moduleName = "codehasan_shield",
         allowInit = true,
         jniStyle = JniBindingStyle.STATIC_SYMBOLS,
         targetLanguage = TargetCLanguage.C11,
@@ -95,7 +95,7 @@ class Dex2cTranspilerTest {
     val encoded = DccConfigCodec.encodeDccCfg(cfg)
     val decoded = DccConfigCodec.decodeDccCfg(encoded, TranspilerConfig())
 
-    assertEquals("kirlif_shield", decoded.moduleName)
+    assertEquals("codehasan_shield", decoded.moduleName)
     assertTrue(decoded.allowInit)
     assertEquals(JniBindingStyle.STATIC_SYMBOLS, decoded.jniStyle)
     assertEquals(TargetCLanguage.C11, decoded.targetLanguage)
@@ -104,6 +104,73 @@ class Dex2cTranspilerTest {
     assertTrue(decoded.forceCustomLoader)
     assertFalse("x86" in decoded.targetAbis)
     assertTrue("arm64-v8a" in decoded.targetAbis)
+  }
+
+  @Test
+  fun dccConfigCodec_encodesAndDecodesOllvmAnd16KbAlignment() {
+    val ollvmConfig =
+      com.dex2c.studio.transpiler.OllvmConfig(
+        enabled = true,
+        controlFlowFlattening = true,
+        instructionSubstitution = true,
+        subLoop = 4,
+        bogusControlFlow = true,
+        bcfLoop = 3,
+        bcfProb = 80,
+        basicBlockSplit = true,
+        splitNum = 4,
+        stringObfuscation = true,
+        align16KbPages = true,
+        customFlags = "-mllvm -customOpt",
+      )
+    val flags = ollvmConfig.buildClangFlags()
+    assertTrue(flags.contains("-mllvm -fla"))
+    assertTrue(flags.contains("-mllvm -sub"))
+    assertTrue(flags.contains("-mllvm -sub_loop=4"))
+    assertTrue(flags.contains("-mllvm -bcf"))
+    assertTrue(flags.contains("-mllvm -bcf_prob=80"))
+    assertTrue(flags.contains("-mllvm -split"))
+    assertTrue(flags.contains("-mllvm -split_num=4"))
+    assertTrue(flags.contains("-mllvm -sobf"))
+    assertTrue(flags.contains("-mllvm -customOpt"))
+
+    val cfg = TranspilerConfig(moduleName = "ollvm_test_module", ollvm = ollvmConfig)
+    val encoded = DccConfigCodec.encodeDccCfg(cfg)
+    assertTrue(encoded.contains("\"ollvm\":"))
+    assertTrue(encoded.contains("\"enable\": true"))
+    assertTrue(encoded.contains("-mllvm -fla"))
+
+    val decoded = DccConfigCodec.decodeDccCfg(encoded, TranspilerConfig())
+    assertTrue(decoded.ollvm.enabled)
+    assertTrue(decoded.ollvm.controlFlowFlattening)
+    assertTrue(decoded.ollvm.instructionSubstitution)
+    assertTrue(decoded.ollvm.bogusControlFlow)
+    assertTrue(decoded.ollvm.basicBlockSplit)
+    assertTrue(decoded.ollvm.stringObfuscation)
+  }
+
+  @Test
+  fun ollvmPresetProfiles_applyExpectedPassConfigurations() {
+    val defaultCfg = com.dex2c.studio.transpiler.OllvmConfig()
+    val balanced = defaultCfg.applyPreset(com.dex2c.studio.transpiler.OllvmPreset.BALANCED)
+    assertTrue(balanced.enabled)
+    assertTrue(balanced.controlFlowFlattening)
+    assertTrue(balanced.instructionSubstitution)
+    assertFalse(balanced.bogusControlFlow)
+    assertTrue(balanced.align16KbPages)
+
+    val maximum = defaultCfg.applyPreset(com.dex2c.studio.transpiler.OllvmPreset.MAXIMUM)
+    assertTrue(maximum.enabled)
+    assertTrue(maximum.controlFlowFlattening)
+    assertTrue(maximum.instructionSubstitution)
+    assertTrue(maximum.bogusControlFlow)
+    assertEquals(100, maximum.bcfProb)
+    assertTrue(maximum.stringObfuscation)
+
+    val fast = defaultCfg.applyPreset(com.dex2c.studio.transpiler.OllvmPreset.FAST)
+    assertFalse(fast.enabled)
+    assertFalse(fast.controlFlowFlattening)
+    assertTrue(fast.align16KbPages)
   }
 
   @Test

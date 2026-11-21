@@ -117,19 +117,39 @@
     <string name="cloud_stage_setup">Setup</string>
     <string name="cloud_stage_dispatch">Dispatch</string>
     <string name="cloud_stage_monitor">Monitor</string>
-    <string name="config_d2c_flags">Kirlif/d2c &amp; Loader Flags</string>
-    <string name="config_allow_init">Allow &lt;init&gt; Constructors (--allow-init)</string>
-    <string name="config_allow_init_desc">Skip &lt;init&gt; constructors by default for ART safety; enable to transpile constructors too</string>
+    <string name="config_d2c_flags">codehasan/dex2c &amp; Loader Flags</string>
+    <string name="config_allow_init">Allow &lt;init&gt; Constructors</string>
+    <string name="config_allow_init_desc">Include &lt;init&gt; constructors in native transpilation; exclude in filter.txt if needed</string>
     <string name="config_skip_synthetic">Skip Synthetics &amp; Coroutines (--skip-synthetic)</string>
     <string name="config_skip_synthetic_desc">Exclude synthetic lambdas, Compose singletons, and invokeSuspend coroutine state machines to prevent NDK C++ register-type conflicts</string>
     <string name="config_loader_mode">Application Loader Strategy</string>
-    <string name="config_custom_loader">Custom Loader Class (-c / --custom-loader)</string>
-    <string name="config_force_custom_loader">Force Custom Loader (-r)</string>
+    <string name="config_custom_loader">Custom Loader Class (--custom-loader)</string>
+    <string name="config_force_custom_loader">Force Custom Loader</string>
     <string name="config_force_custom_loader_desc">Override existing Application class in APK with custom loader; keep off unless needed</string>
     <string name="config_target_abis">Target NDK ABIs (Application.mk)</string>
     <string name="config_filter_txt_label">filter.txt Rules (! prefix = exclude)</string>
     <string name="config_import_filter">Import filter.txt</string>
     <string name="config_import_dcc_cfg">Import dcc.cfg</string>
+
+    <string name="config_ollvm_title">OLLVM Compiler Hardening</string>
+    <string name="config_ollvm_desc">Native Obfuscator-LLVM passes compiled via NDK r25c-ollvm</string>
+    <string name="config_ollvm_enable">Enable OLLVM Passes</string>
+    <string name="config_ollvm_fla">Control Flow Flattening (-mllvm -fla)</string>
+    <string name="config_ollvm_fla_desc">Transforms basic blocks into a state machine dispatcher switch to obscure flowgraphs</string>
+    <string name="config_ollvm_sub">Instruction Substitution (-mllvm -sub)</string>
+    <string name="config_ollvm_sub_desc">Replaces arithmetic instructions with complex bitwise/boolean expressions</string>
+    <string name="config_ollvm_bcf">Bogus Control Flow (-mllvm -bcf)</string>
+    <string name="config_ollvm_bcf_desc">Injects opaque predicates and dead execution branches</string>
+    <string name="config_ollvm_split">Basic Block Splitting (-mllvm -split)</string>
+    <string name="config_ollvm_split_desc">Splits basic blocks prior to flattening for deeper control flow dispersal</string>
+    <string name="config_ollvm_sobf">LLVM String Obfuscation (-mllvm -sobf)</string>
+    <string name="config_ollvm_sobf_desc">Encrypts literal strings directly at the LLVM IR layer</string>
+    <string name="config_ollvm_16kb">Android 15 16 KB Page Alignment</string>
+    <string name="config_ollvm_16kb_desc">Aligns ELF shared libraries with max-page-size=16384 for Google Play 16 KB page size requirement</string>
+    <string name="config_ollvm_custom_flags">Custom OLLVM / Clang Flags</string>
+    <string name="config_ollvm_custom_flags_desc">Additional compiler arguments appended to LOCAL_CPPFLAGS</string>
+    <string name="engine_codehasan_title">codehasan/dex2c Native Core</string>
+    <string name="engine_codehasan_subtitle">AOT Dalvik-to-C++ compiler with native OLLVM &amp; 16 KB page alignment</string>
 
     <string name="msg_copied_clipboard">Copied to clipboard</string>
     <string name="msg_zip_exported">Exported NDK bundle successfully</string>

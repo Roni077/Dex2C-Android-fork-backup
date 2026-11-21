@@ -85,7 +85,7 @@ object WorkflowDocumentationRepository {
         title = "1. High-Level System Architecture & Data Pipeline",
         userSteps =
           listOf(
-            "Dex2C Studio unifies Dalvik-to-C++17 native method transpilation (Kirlif/d2c & codehasan/dex2c) with Dex-Editor-Android's in-memory Smali editing, Java decompilation, and patched DEX/APK export.",
+            "Dex2C Studio unifies Dalvik-to-C++17 native method transpilation (codehasan/dex2c) with Dex-Editor-Android's in-memory Smali editing, Java decompilation, and patched DEX/APK export.",
             "Every operation runs 100% in memory using streaming ZIP/DEX readers and MemoryDataStore without leaking temporary files."
           ),
         technicalNotes =

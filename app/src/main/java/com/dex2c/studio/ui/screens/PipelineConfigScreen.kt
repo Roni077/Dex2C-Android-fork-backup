@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package com.dex2c.studio.ui.screens
 
 import androidx.compose.animation.AnimatedContent
@@ -31,10 +33,14 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AutoFixHigh
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.material3.AssistChip
@@ -53,6 +59,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -66,8 +73,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import com.dex2c.studio.transpiler.OllvmConfig
+import com.dex2c.studio.transpiler.OllvmPreset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -200,28 +211,29 @@ fun PipelineConfigScreen(
         ) { category ->
           when (category) {
             PipelineCategory.LOADER -> {
-              if (isWide) {
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.spacedBy(12.dp),
-                  verticalAlignment = Alignment.Top,
-                ) {
-                  LoaderFlagsCard(
-                    config = config,
-                    onUpdateConfig = onUpdateConfig,
-                    modifier = Modifier.weight(1.25f),
-                  )
-                  JniBindingCard(
-                    config = config,
-                    onUpdateConfig = onUpdateConfig,
-                    modifier = Modifier.weight(0.75f),
-                  )
-                }
-              } else {
-                Column(
-                  modifier = Modifier.fillMaxWidth(),
-                  verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
+              Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+              ) {
+                CodehasanEngineIdentityCard()
+                if (isWide) {
+                  Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.Top,
+                  ) {
+                    LoaderFlagsCard(
+                      config = config,
+                      onUpdateConfig = onUpdateConfig,
+                      modifier = Modifier.weight(1.25f),
+                    )
+                    JniBindingCard(
+                      config = config,
+                      onUpdateConfig = onUpdateConfig,
+                      modifier = Modifier.weight(0.75f),
+                    )
+                  }
+                } else {
                   LoaderFlagsCard(
                     config = config,
                     onUpdateConfig = onUpdateConfig,
@@ -241,12 +253,20 @@ fun PipelineConfigScreen(
                   horizontalArrangement = Arrangement.spacedBy(12.dp),
                   verticalAlignment = Alignment.Top,
                 ) {
-                  TargetStandardAndAbisCard(
-                    config = config,
-                    onUpdateConfig = onUpdateConfig,
+                  Column(
                     modifier = Modifier.weight(1f),
-                  )
-                  ProtectionPassesCard(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                  ) {
+                    TargetStandardAndAbisCard(
+                      config = config,
+                      onUpdateConfig = onUpdateConfig,
+                    )
+                    ProtectionPassesCard(
+                      config = config,
+                      onUpdateConfig = onUpdateConfig,
+                    )
+                  }
+                  OllvmHardeningStudioCard(
                     config = config,
                     onUpdateConfig = onUpdateConfig,
                     modifier = Modifier.weight(1f),
@@ -262,6 +282,10 @@ fun PipelineConfigScreen(
                     onUpdateConfig = onUpdateConfig,
                   )
                   ProtectionPassesCard(
+                    config = config,
+                    onUpdateConfig = onUpdateConfig,
+                  )
+                  OllvmHardeningStudioCard(
                     config = config,
                     onUpdateConfig = onUpdateConfig,
                   )
@@ -511,6 +535,329 @@ private fun ProtectionPassesCard(
       onCheckedChange = { v -> onUpdateConfig { it.copy(nullCheckGuards = v) } },
       testTag = "switch_null_guards",
     )
+  }
+}
+
+@Composable
+private fun CodehasanEngineIdentityCard(modifier: Modifier = Modifier) {
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = RoundedCornerShape(20.dp),
+    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+    tonalElevation = 2.dp,
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+      ) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+          Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.size(40.dp),
+          ) {
+            Box(contentAlignment = Alignment.Center) {
+              Icon(
+                imageVector = Icons.Rounded.Memory,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(24.dp),
+              )
+            }
+          }
+          Column {
+            Text(
+              text = stringResource(R.string.engine_codehasan_title),
+              style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+              text = stringResource(R.string.engine_codehasan_subtitle),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+      }
+      Spacer(Modifier.height(10.dp))
+      FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+      ) {
+        AssistChip(
+          onClick = {},
+          label = { Text("Android 15 (16 KB Ready)") },
+          leadingIcon = {
+            Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
+          },
+        )
+        AssistChip(
+          onClick = {},
+          label = { Text("NDK r25c / r25c-ollvm") },
+          leadingIcon = {
+            Icon(Icons.Rounded.Tune, contentDescription = null, modifier = Modifier.size(14.dp))
+          },
+        )
+        AssistChip(
+          onClick = {},
+          label = { Text("Native OLLVM Hardening") },
+          leadingIcon = {
+            Icon(Icons.Rounded.Security, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.secondary)
+          },
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun OllvmHardeningStudioCard(
+  config: TranspilerConfig,
+  onUpdateConfig: ((TranspilerConfig) -> TranspilerConfig) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val clipboardManager = LocalClipboardManager.current
+  val ollvm = config.ollvm
+
+  ConfigSectionCard(
+    title = stringResource(R.string.config_ollvm_title),
+    modifier = modifier,
+  ) {
+    Text(
+      text = stringResource(R.string.config_ollvm_desc),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Spacer(Modifier.height(8.dp))
+    ToggleSettingRow(
+      title = stringResource(R.string.config_ollvm_enable),
+      subtitle = if (ollvm.enabled) "${ollvm.activePassCount()} passes active" else "Off (Standard NDK Clang)",
+      checked = ollvm.enabled,
+      onCheckedChange = { v ->
+        onUpdateConfig { it.copy(ollvm = it.ollvm.copy(enabled = v)) }
+      },
+      testTag = "switch_ollvm_enable",
+    )
+
+    if (ollvm.enabled) {
+      Spacer(Modifier.height(8.dp))
+      Text(
+        text = "Security Presets",
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      Spacer(Modifier.height(4.dp))
+      SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        OllvmPreset.entries.forEachIndexed { idx, preset ->
+          val shortLabel = when (preset) {
+            OllvmPreset.BALANCED -> "Balanced"
+            OllvmPreset.MAXIMUM -> "Max"
+            OllvmPreset.FAST -> "Fast"
+            OllvmPreset.CUSTOM -> "Custom"
+          }
+          SegmentedButton(
+            selected = ollvm.preset == preset,
+            onClick = {
+              onUpdateConfig { it.copy(ollvm = it.ollvm.applyPreset(preset)) }
+            },
+            shape = SegmentedButtonDefaults.itemShape(idx, OllvmPreset.entries.size),
+            modifier = Modifier.testTag("ollvm_preset_${preset.name}"),
+          ) {
+            Text(shortLabel, maxLines = 1, overflow = TextOverflow.Ellipsis)
+          }
+        }
+      }
+
+      Spacer(Modifier.height(10.dp))
+
+      // Terminal HUD Preview
+      Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+          ) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.Terminal,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+              )
+              Text(
+                text = "Emitted LOCAL_CPPFLAGS",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+              )
+            }
+            IconButton(
+              onClick = {
+                val fullFlags = ollvm.buildClangFlags()
+                clipboardManager.setText(AnnotatedString(fullFlags))
+              },
+              modifier = Modifier.size(24.dp),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.ContentCopy,
+                contentDescription = "Copy flags",
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+          Spacer(Modifier.height(4.dp))
+          Text(
+            text = ollvm.buildClangFlags().ifBlank { "(no flags active)" },
+            style = MaterialTheme.typography.bodySmall.copy(fontFamily = JetBrainsMonoFontFamily),
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
+      }
+
+      Spacer(Modifier.height(10.dp))
+
+      // Granular Passes
+      ToggleSettingRow(
+        title = stringResource(R.string.config_ollvm_fla),
+        subtitle = stringResource(R.string.config_ollvm_fla_desc),
+        checked = ollvm.controlFlowFlattening,
+        onCheckedChange = { v ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(controlFlowFlattening = v, preset = OllvmPreset.CUSTOM)) }
+        },
+        testTag = "switch_ollvm_fla",
+      )
+
+      ToggleSettingRow(
+        title = stringResource(R.string.config_ollvm_sub),
+        subtitle = stringResource(R.string.config_ollvm_sub_desc) + " (${ollvm.subLoop} iterations)",
+        checked = ollvm.instructionSubstitution,
+        onCheckedChange = { v ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(instructionSubstitution = v, preset = OllvmPreset.CUSTOM)) }
+        },
+        testTag = "switch_ollvm_sub",
+      )
+
+      if (ollvm.instructionSubstitution) {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+          Text("Substitution Loop Count", style = MaterialTheme.typography.bodySmall)
+          Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            IconButton(
+              onClick = {
+                if (ollvm.subLoop > 1) {
+                  onUpdateConfig { it.copy(ollvm = it.ollvm.copy(subLoop = ollvm.subLoop - 1, preset = OllvmPreset.CUSTOM)) }
+                }
+              },
+              modifier = Modifier.size(28.dp),
+            ) {
+              Icon(Icons.Rounded.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+            }
+            Text("${ollvm.subLoop}", style = MaterialTheme.typography.labelLarge)
+            IconButton(
+              onClick = {
+                if (ollvm.subLoop < 5) {
+                  onUpdateConfig { it.copy(ollvm = it.ollvm.copy(subLoop = ollvm.subLoop + 1, preset = OllvmPreset.CUSTOM)) }
+                }
+              },
+              modifier = Modifier.size(28.dp),
+            ) {
+              Icon(Icons.Rounded.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp))
+            }
+          }
+        }
+      }
+
+      ToggleSettingRow(
+        title = stringResource(R.string.config_ollvm_bcf),
+        subtitle = stringResource(R.string.config_ollvm_bcf_desc) + " (${ollvm.bcfProb}% probability)",
+        checked = ollvm.bogusControlFlow,
+        onCheckedChange = { v ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(bogusControlFlow = v, preset = OllvmPreset.CUSTOM)) }
+        },
+        testTag = "switch_ollvm_bcf",
+      )
+
+      if (ollvm.bogusControlFlow) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp)) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+          ) {
+            Text("BCF Probability: ${ollvm.bcfProb}%", style = MaterialTheme.typography.bodySmall)
+          }
+          Slider(
+            value = ollvm.bcfProb.toFloat(),
+            onValueChange = { p ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(bcfProb = p.toInt(), preset = OllvmPreset.CUSTOM)) }
+            },
+            valueRange = 10f..100f,
+            steps = 8,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      }
+
+      ToggleSettingRow(
+        title = stringResource(R.string.config_ollvm_split),
+        subtitle = stringResource(R.string.config_ollvm_split_desc) + " (${ollvm.splitNum} splits)",
+        checked = ollvm.basicBlockSplit,
+        onCheckedChange = { v ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(basicBlockSplit = v, preset = OllvmPreset.CUSTOM)) }
+        },
+        testTag = "switch_ollvm_split",
+      )
+
+      ToggleSettingRow(
+        title = stringResource(R.string.config_ollvm_sobf),
+        subtitle = stringResource(R.string.config_ollvm_sobf_desc),
+        checked = ollvm.stringObfuscation,
+        onCheckedChange = { v ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(stringObfuscation = v, preset = OllvmPreset.CUSTOM)) }
+        },
+        testTag = "switch_ollvm_sobf",
+      )
+
+      ToggleSettingRow(
+        title = stringResource(R.string.config_ollvm_16kb),
+        subtitle = stringResource(R.string.config_ollvm_16kb_desc),
+        checked = ollvm.align16KbPages,
+        onCheckedChange = { v ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(align16KbPages = v, preset = OllvmPreset.CUSTOM)) }
+        },
+        testTag = "switch_ollvm_16kb",
+      )
+
+      Spacer(Modifier.height(6.dp))
+      OutlinedTextField(
+        value = ollvm.customFlags,
+        onValueChange = { flags ->
+          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(customFlags = flags, preset = OllvmPreset.CUSTOM)) }
+        },
+        label = { Text(stringResource(R.string.config_ollvm_custom_flags)) },
+        placeholder = { Text("-mllvm -customPass") },
+        modifier = Modifier.fillMaxWidth(),
+        textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = JetBrainsMonoFontFamily),
+        singleLine = true,
+      )
+    }
   }
 }
 

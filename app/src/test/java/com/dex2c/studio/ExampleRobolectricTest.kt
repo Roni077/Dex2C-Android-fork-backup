@@ -527,7 +527,7 @@ class ExampleRobolectricTest {
               path.contains("/actions/workflows/") && path.endsWith("/runs") ->
                 200 to """{"workflow_runs":[{"id":808,"run_number":12,"status":"completed","conclusion":"failure","html_url":"https://github.com/userio12/dex2c-cloud-workspace/actions/runs/808","created_at":"2026-11-13T04:10:00Z"}]}"""
               path.endsWith("/jobs") ->
-                200 to """{"jobs":[{"name":"dex2c-apk","status":"completed","steps":[{"name":"Run Kirlif/d2c Compilation","status":"completed","conclusion":"failure"}]}]}"""
+                200 to """{"jobs":[{"name":"dex2c-apk","status":"completed","steps":[{"name":"Run codehasan/dex2c Compilation","status":"completed","conclusion":"failure"}]}]}"""
               path.endsWith("/artifacts") ->
                 200 to """{"artifacts":[{"id":91,"name":"dex2c-build-log","size_in_bytes":2048,"archive_download_url":"https://api.github.com/repos/userio12/dex2c-cloud-workspace/actions/artifacts/91/zip","created_at":"2026-11-13T04:11:00Z","expired":false}]}"""
               else -> 200 to "{}"
@@ -628,7 +628,7 @@ class ExampleRobolectricTest {
         conclusion = "success",
         htmlUrl = "https://github.com/userio12/dex2c-cloud-workspace/actions/runs/909",
         artifacts = emptyList(),
-        steps = listOf(GitHubWorkflowStep("Run Kirlif/d2c Compilation", "completed", "success")),
+        steps = listOf(GitHubWorkflowStep("Run codehasan/dex2c Compilation", "completed", "success")),
       )
     runState =
       CloudBuildRunState.SavingArtifact(

@@ -14,11 +14,14 @@ object Dex2cWorkflowGenerator {
     settings: CloudSettings,
     transpilerConfig: TranspilerConfig,
   ): String {
-    val ndkVersion = settings.ndkVersion.ifBlank { "r25b" }
+    val ndkVersion = settings.ndkVersion.ifBlank { "r25c" }
     val jdkVersion = settings.jdkVersion.ifBlank { "17" }
     val defaultLoader = transpilerConfig.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" }
     val defaultObfuscate = transpilerConfig.stringEncryption || transpilerConfig.controlFlowFlattening
     val defaultDynamicReg = transpilerConfig.jniStyle == JniBindingStyle.REGISTER_NATIVES
+    val defaultEnableOllvm = transpilerConfig.ollvm.enabled
+    val defaultOllvmFlags = transpilerConfig.ollvm.buildClangFlags()
+    val defaultAlign16Kb = transpilerConfig.ollvm.align16KbPages
 
     return """
       |name: Dex2C Cloud Build
@@ -39,7 +42,7 @@ object Dex2cWorkflowGenerator {
       |        required: false
       |        default: ''
       |      allow_init:
-      |        description: 'Transpile <init> constructors (-a / --allow-init)'
+      |        description: 'Transpile <init> constructors'
       |        required: false
       |        default: '${transpilerConfig.allowInit}'
       |      skip_synthetic:
@@ -47,21 +50,33 @@ object Dex2cWorkflowGenerator {
       |        required: false
       |        default: '${transpilerConfig.skipSynthetic}'
       |      custom_loader:
-      |        description: 'Application loader class (-c / --custom-loader)'
+      |        description: 'Application loader class (--custom-loader)'
       |        required: false
       |        default: '$defaultLoader'
       |      force_custom_loader:
-      |        description: 'Force replace existing Application class with custom loader (-r)'
+      |        description: 'Force replace existing Application class with custom loader'
       |        required: false
       |        default: '${transpilerConfig.forceCustomLoader}'
       |      obfuscate:
-      |        description: 'Enable Kirlif/d2c obfuscation passes (-p)'
+      |        description: 'Enable codehasan/dex2c string obfuscation passes (-p)'
       |        required: false
       |        default: '$defaultObfuscate'
       |      dynamic_register:
       |        description: 'Use RegisterNatives JNI_OnLoad binding (-d)'
       |        required: false
       |        default: '$defaultDynamicReg'
+      |      enable_ollvm:
+      |        description: 'Enable native Obfuscator-LLVM compiler passes'
+      |        required: false
+      |        default: '$defaultEnableOllvm'
+      |      ollvm_flags:
+      |        description: 'Compiler flags for Obfuscator-LLVM (LOCAL_CPPFLAGS)'
+      |        required: false
+      |        default: '$defaultOllvmFlags'
+      |      align_16kb:
+      |        description: 'Android 15 16 KB ELF Page Alignment (-Wl,-z,max-page-size=16384)'
+      |        required: false
+      |        default: '$defaultAlign16Kb'
       |      signing_mode:
       |        description: 'APK signing mode (DEBUG_AUTO or REPO_KEYSTORE_SECRETS)'
       |        required: false
@@ -94,9 +109,9 @@ object Dex2cWorkflowGenerator {
       |          NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
       |          echo "ANDROID_NDK_HOME=${'$'}NDK_DIR" >> "${'$'}GITHUB_ENV"
       |
-      |      - name: Clone Kirlif/d2c & Patch dcc.cfg + C++ Sanitizer
+      |      - name: Clone codehasan/dex2c & Patch dcc.cfg + C++ Sanitizer
       |        run: |
-      |          git clone --depth 1 https://github.com/Kirlif/d2c.git /tmp/d2c
+      |          git clone --depth 1 https://github.com/codehasan/dex2c.git /tmp/d2c
       |          if [ -f /tmp/d2c/requirements.txt ]; then
       |            pip install -r /tmp/d2c/requirements.txt
       |          fi
@@ -117,15 +132,17 @@ object Dex2cWorkflowGenerator {
       |          with open(upstream_cfg_path, "w", encoding="utf-8") as f:
       |              json.dump(base_cfg, f, indent=2)
       |
-      |          # Patch template Android.mk to permit D8 register reuse casts in Clang++
+      |          # Patch template Android.mk to permit D8 register reuse casts in Clang++ and ensure 16KB alignment
       |          android_mk = "/tmp/d2c/project/jni/Android.mk"
       |          if os.path.exists(android_mk):
       |              with open(android_mk, "r", encoding="utf-8") as f:
       |                  mk_src = f.read()
       |              if "-fpermissive" not in mk_src:
       |                  mk_src += "\nLOCAL_CPPFLAGS += -fpermissive -Wno-int-conversion -Wno-error\nLOCAL_CFLAGS += -Wno-int-conversion -Wno-error\n"
-      |                  with open(android_mk, "w", encoding="utf-8") as f:
-      |                      f.write(mk_src)
+      |              if "max-page-size=16384" not in mk_src:
+      |                  mk_src += "\nLOCAL_LDFLAGS += \"-Wl,-z,max-page-size=16384\"\n"
+      |              with open(android_mk, "w", encoding="utf-8") as f:
+      |                  f.write(mk_src)
       |
       |          # Patch dex2c/writer.py to inject safe intptr_t casts into jvalue args[] union initializers
       |          writer_py = "/tmp/d2c/dex2c/writer.py"
@@ -229,18 +246,17 @@ object Dex2cWorkflowGenerator {
       |          fi
       |          ls -lh /tmp/work/input.apk
       |
-      |      - name: Run Kirlif/d2c Compilation
+      |      - name: Run codehasan/dex2c Compilation
       |        working-directory: /tmp/d2c
       |        run: |
       |          set -o pipefail
       |          ARGS=(
-      |            -i /tmp/work/input.apk
+      |            -a /tmp/work/input.apk
       |            -o /tmp/work/unsigned_dex2c.apk
-      |            -f /tmp/d2c/filter.txt
+      |            --filter /tmp/d2c/filter.txt
+      |            --disable-signing
+      |            --allow-global
       |          )
-      |          if [ "${'$'}{{ github.event.inputs.allow_init }}" = "true" ]; then
-      |            ARGS+=(-a)
-      |          fi
       |          if [ "${'$'}{{ github.event.inputs.skip_synthetic }}" != "false" ]; then
       |            ARGS+=(--skip-synthetic)
       |          fi
@@ -251,18 +267,30 @@ object Dex2cWorkflowGenerator {
       |            ARGS+=(-d)
       |          fi
       |          if [ -n "${'$'}{{ github.event.inputs.custom_loader }}" ]; then
-      |            ARGS+=(-c "${'$'}{{ github.event.inputs.custom_loader }}")
+      |            ARGS+=(--custom-loader "${'$'}{{ github.event.inputs.custom_loader }}")
       |          fi
-      |          if [ "${'$'}{{ github.event.inputs.force_custom_loader }}" = "true" ]; then
-      |            ARGS+=(-r)
+      |          if [ "${'$'}{{ github.event.inputs.enable_ollvm }}" = "true" ] && [ -n "${'$'}{{ github.event.inputs.ollvm_flags }}" ]; then
+      |            python3 - <<'PY'
+      |          import json, os
+      |          cfg_path = "/tmp/d2c/dcc.cfg"
+      |          if os.path.exists(cfg_path):
+      |              with open(cfg_path, "r", encoding="utf-8") as f:
+      |                  cfg = json.load(f)
+      |              cfg["ollvm"] = {
+      |                  "enable": True,
+      |                  "flags": "${'$'}{{ github.event.inputs.ollvm_flags }}"
+      |              }
+      |              with open(cfg_path, "w", encoding="utf-8") as f:
+      |                  json.dump(cfg, f, indent=2)
+      |          PY
       |          fi
       |          MAX_ATTEMPTS=3
       |          for ATTEMPT in ${'$'}(seq 1 ${'$'}MAX_ATTEMPTS); do
-      |            echo "=== Kirlif/d2c compilation attempt ${'$'}ATTEMPT/${'$'}MAX_ATTEMPTS ==="
+      |            echo "=== codehasan/dex2c compilation attempt ${'$'}ATTEMPT/${'$'}MAX_ATTEMPTS ==="
       |            rm -f /tmp/work/unsigned_dex2c.apk
       |            python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log
       |            if [ -f /tmp/work/unsigned_dex2c.apk ]; then
-      |              echo "Kirlif/d2c successfully compiled unsigned_dex2c.apk on attempt ${'$'}ATTEMPT"
+      |              echo "codehasan/dex2c successfully compiled unsigned_dex2c.apk on attempt ${'$'}ATTEMPT"
       |              break
       |            fi
       |            echo "Attempt ${'$'}ATTEMPT failed or unsigned_dex2c.apk not found"
