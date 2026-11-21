@@ -134,7 +134,7 @@ jobs:
       - name: Upload Debug APK artifact
         uses: actions/upload-artifact@v6
         with:
-          name: dex2c-studio-debug-apks
+          name: dex2c-studio-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
@@ -289,11 +289,27 @@ jobs:
       - name: Assemble Release APKs
         run: ./gradlew :app:assembleRelease --stacktrace
 
-      - name: Upload Release APK artifacts (arm64, armv7, universal)
+      - name: Upload Release APK artifact (arm64-v8a)
         uses: actions/upload-artifact@v6
         with:
-          name: dex2c-studio-release-apks
-          path: app/build/outputs/apk/release/*.apk
+          name: dex2c-studio-arm64-v8a-release
+          path: app/build/outputs/apk/release/*arm64-v8a*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Release APK artifact (armeabi-v7a)
+        uses: actions/upload-artifact@v6
+        with:
+          name: dex2c-studio-armeabi-v7a-release
+          path: app/build/outputs/apk/release/*armeabi-v7a*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Release APK artifact (universal)
+        uses: actions/upload-artifact@v6
+        with:
+          name: dex2c-studio-universal-release
+          path: app/build/outputs/apk/release/*universal*.apk
           if-no-files-found: error
           retention-days: 14
 
@@ -306,7 +322,7 @@ jobs:
             echo "- **Gradle**: 9.4.1 (Wrapper)"
             echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, armeabi-v7a) via \`cargo-ndk\`"
             echo "- **Signing Mode**: ${SIGNING_MODE:-Unknown}"
-            echo "- **Release APKs**: \`:app:assembleRelease\` -> artifact \`dex2c-studio-release-apks\`"
+            echo "- **Release APKs**: \`:app:assembleRelease\` -> artifacts: \`dex2c-studio-arm64-v8a-release\`, \`dex2c-studio-armeabi-v7a-release\`, \`dex2c-studio-universal-release\`"
             echo ""
             echo "#### Generated Release APKs & Size Breakdown"
             for apk in app/build/outputs/apk/release/*.apk; do
