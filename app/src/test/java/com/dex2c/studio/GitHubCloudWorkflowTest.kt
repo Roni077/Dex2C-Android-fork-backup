@@ -32,10 +32,12 @@ class GitHubCloudWorkflowTest {
     assertTrue(defaultYaml.contains("force_custom_loader:"))
     assertTrue(defaultYaml.contains("default: 'false'"))
     assertTrue(defaultYaml.contains("android-ndk-r25c-ollvm-aarch64.tar.xz"))
-    assertTrue(defaultYaml.contains("qemu-user-static"))
+    assertTrue(defaultYaml.contains("docker/setup-qemu-action@v3"))
+    assertTrue(defaultYaml.contains("platforms: arm64"))
     assertTrue(defaultYaml.contains("https://github.com/codehasan/dex2c/releases/download/ollvm-termux/"))
     assertTrue(defaultYaml.contains("can_ollvm"))
     assertTrue(defaultYaml.contains("Active NDK compiler does not support OLLVM flags"))
+    assertTrue(defaultYaml.contains("apktool.jar"))
 
     val settings =
       CloudSettings(

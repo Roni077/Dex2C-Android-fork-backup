@@ -104,32 +104,71 @@ object Dex2cWorkflowGenerator {
       |          distribution: 'temurin'
       |          java-version: '$jdkVersion'
       |
+      |      - name: Set up QEMU for AArch64 Emulation
+      |        uses: docker/setup-qemu-action@v3
+      |        with:
+      |          platforms: arm64
+      |
       |      - name: Install Python Dependencies & NDK
       |        run: |
       |          python3 -m pip install --upgrade pip
       |          pip install "lxml>=4.3.0"
+      |          BUILD_TOOLS=${'$'}(find "${'$'}ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+      |          if [ -n "${'$'}BUILD_TOOLS" ]; then
+      |            echo "${'$'}BUILD_TOOLS" >> "${'$'}GITHUB_PATH"
+      |            sudo ln -sf "${'$'}BUILD_TOOLS/zipalign" /usr/local/bin/zipalign || true
+      |            sudo ln -sf "${'$'}BUILD_TOOLS/apksigner" /usr/local/bin/apksigner || true
+      |          fi
       |          NDK_SEL="${'$'}{{ github.event.inputs.ndk_version || '$ndkVersion' }}"
       |          if [ "${'$'}NDK_SEL" = "r25c-ollvm" ]; then
-      |            echo "Setting up QEMU user-static for aarch64 r25c-ollvm toolchain..."
-      |            sudo apt-get update -qq && sudo apt-get install -y -qq qemu-user-static binfmt-support
       |            echo "Downloading codehasan/dex2c r25c-ollvm NDK release..."
       |            wget -q "https://github.com/codehasan/dex2c/releases/download/ollvm-termux/android-ndk-r25c-ollvm-aarch64.tar.xz" -O /tmp/ndk.tar.xz
       |            mkdir -p /opt/android-ndk-r25c-ollvm
       |            tar -xf /tmp/ndk.tar.xz -C /opt/android-ndk-r25c-ollvm --strip-components=1
       |            rm -f /tmp/ndk.tar.xz
       |            NDK_DIR="/opt/android-ndk-r25c-ollvm"
+      |            PY3_DIR=${'$'}(find "${'$'}NDK_DIR/toolchains/llvm/prebuilt" -maxdepth 2 -type d -name "python3" 2>/dev/null | head -n 1)
+      |            if [ -n "${'$'}PY3_DIR" ]; then
+      |              mkdir -p "${'$'}PY3_DIR/bin"
+      |              ln -sf ${'$'}(which python3) "${'$'}PY3_DIR/bin/python3" || true
+      |            fi
+      |            CLANG_PROBE=${'$'}(find "${'$'}NDK_DIR" -type f -name "clang" 2>/dev/null | head -n 1)
+      |            if [ -z "${'$'}CLANG_PROBE" ] || ! "${'$'}CLANG_PROBE" --version >/dev/null 2>&1; then
+      |              echo "::warning::codehasan/dex2c r25c-ollvm requires Android Bionic dynamic linker (/system/bin/linker64) unavailable on standard Linux hosts. Falling back to official Google Android NDK r25c (linux-x86_64)..."
+      |              rm -rf /opt/android-ndk-r25c-ollvm
+      |              wget -q "https://dl.google.com/android/repository/android-ndk-r25c-linux.zip" -O /tmp/ndk.zip
+      |              unzip -q /tmp/ndk.zip -d /opt/
+      |              rm -f /tmp/ndk.zip
+      |              NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
+      |            fi
       |          elif [ "${'$'}NDK_SEL" = "r28c" ]; then
-      |            echo "Setting up QEMU user-static for aarch64 r28c toolchain..."
-      |            sudo apt-get update -qq && sudo apt-get install -y -qq qemu-user-static binfmt-support
       |            echo "Downloading codehasan/dex2c r28c NDK release..."
       |            wget -q "https://github.com/codehasan/dex2c/releases/download/ollvm-termux/android-ndk-r28c.tar.xz" -O /tmp/ndk.tar.xz
       |            mkdir -p /opt/android-ndk-r28c
       |            tar -xf /tmp/ndk.tar.xz -C /opt/android-ndk-r28c --strip-components=1
       |            rm -f /tmp/ndk.tar.xz
       |            NDK_DIR="/opt/android-ndk-r28c"
+      |            PY3_DIR=${'$'}(find "${'$'}NDK_DIR/toolchains/llvm/prebuilt" -maxdepth 2 -type d -name "python3" 2>/dev/null | head -n 1)
+      |            if [ -n "${'$'}PY3_DIR" ]; then
+      |              mkdir -p "${'$'}PY3_DIR/bin"
+      |              ln -sf ${'$'}(which python3) "${'$'}PY3_DIR/bin/python3" || true
+      |            fi
+      |            CLANG_PROBE=${'$'}(find "${'$'}NDK_DIR" -type f -name "clang" 2>/dev/null | head -n 1)
+      |            if [ -z "${'$'}CLANG_PROBE" ] || ! "${'$'}CLANG_PROBE" --version >/dev/null 2>&1; then
+      |              echo "::warning::codehasan/dex2c r28c requires Android Bionic dynamic linker (/system/bin/linker64) unavailable on standard Linux hosts. Falling back to official Google Android NDK r26d (linux-x86_64)..."
+      |              rm -rf /opt/android-ndk-r28c
+      |              wget -q "https://dl.google.com/android/repository/android-ndk-r26d-linux.zip" -O /tmp/ndk.zip
+      |              unzip -q /tmp/ndk.zip -d /opt/
+      |              rm -f /tmp/ndk.zip
+      |              NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
+      |            fi
       |          else
       |            echo "Downloading Google Android NDK $ndkVersion (${'$'}NDK_SEL)..."
-      |            wget -q "https://dl.google.com/android/repository/android-ndk-${ndkVersion}-linux.zip" -O /tmp/ndk.zip || wget -q "https://dl.google.com/android/repository/android-ndk-${'$'}{NDK_SEL}-linux.zip" -O /tmp/ndk.zip
+      |            GOOGLE_VER="${'$'}{NDK_SEL%%-*}"
+      |            wget -q "https://dl.google.com/android/repository/android-ndk-${'$'}{NDK_SEL}-linux.zip" -O /tmp/ndk.zip || \
+      |            wget -q "https://dl.google.com/android/repository/android-ndk-${'$'}{GOOGLE_VER}-linux.zip" -O /tmp/ndk.zip || \
+      |            wget -q "https://dl.google.com/android/repository/android-ndk-${ndkVersion}-linux.zip" -O /tmp/ndk.zip || \
+      |            wget -q "https://dl.google.com/android/repository/android-ndk-r26d-linux.zip" -O /tmp/ndk.zip
       |            unzip -q /tmp/ndk.zip -d /opt/
       |            rm -f /tmp/ndk.zip
       |            NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
@@ -139,6 +178,10 @@ object Dex2cWorkflowGenerator {
       |      - name: Clone codehasan/dex2c & Patch dcc.cfg + C++ Sanitizer
       |        run: |
       |          git clone --depth 1 https://github.com/codehasan/dex2c.git /tmp/d2c
+      |          mkdir -p /tmp/d2c/tools
+      |          wget -q "https://github.com/iBotPeaches/Apktool/releases/download/v2.10.0/apktool_2.10.0.jar" -O /tmp/d2c/tools/apktool.jar || \
+      |          wget -q "https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.10.0.jar" -O /tmp/d2c/tools/apktool.jar
+      |          chmod +r /tmp/d2c/tools/apktool.jar
       |          if [ -f /tmp/d2c/requirements.txt ]; then
       |            pip install -r /tmp/d2c/requirements.txt
       |          fi
@@ -152,7 +195,7 @@ object Dex2cWorkflowGenerator {
       |          with open("dcc.cfg", "r", encoding="utf-8") as f:
       |              workspace_cfg = json.load(f)
       |          for k, v in workspace_cfg.items():
-      |              if k != "ndk_dir":
+      |              if k != "ndk_dir" and k != "ollvm":
       |                  base_cfg[k] = v
       |          base_cfg["ndk_dir"] = os.environ["ANDROID_NDK_HOME"]
       |          base_cfg["filter"] = "/tmp/d2c/filter.txt"
@@ -277,6 +320,8 @@ object Dex2cWorkflowGenerator {
       |        working-directory: /tmp/d2c
       |        run: |
       |          set -o pipefail
+      |          BUILD_TOOLS=${'$'}(find "${'$'}ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+      |          export PATH="${'$'}BUILD_TOOLS:${'$'}PATH"
       |          ARGS=(
       |            -a /tmp/work/input.apk
       |            -o /tmp/work/unsigned_dex2c.apk
@@ -321,6 +366,13 @@ object Dex2cWorkflowGenerator {
       |
       |          if not can_ollvm:
       |              print("::warning::Active NDK compiler does not support OLLVM flags (-fla, -sub, -bcf). Falling back to standard Clang flags to ensure successful compilation.")
+      |              if os.path.exists(cfg_path):
+      |                  with open(cfg_path, "r", encoding="utf-8") as f:
+      |                      cfg = json.load(f)
+      |                  if "ollvm" in cfg:
+      |                      cfg["ollvm"]["enable"] = False
+      |                  with open(cfg_path, "w", encoding="utf-8") as f:
+      |                      json.dump(cfg, f, indent=2)
       |          elif os.path.exists(cfg_path):
       |              with open(cfg_path, "r", encoding="utf-8") as f:
       |                  cfg = json.load(f)
@@ -331,6 +383,18 @@ object Dex2cWorkflowGenerator {
       |              with open(cfg_path, "w", encoding="utf-8") as f:
       |                  json.dump(cfg, f, indent=2)
       |              print("OLLVM compiler flags successfully injected into dcc.cfg")
+      |          PY
+      |          else
+      |            python3 - <<'PY'
+      |          import json, os
+      |          cfg_path = "/tmp/d2c/dcc.cfg"
+      |          if os.path.exists(cfg_path):
+      |              with open(cfg_path, "r", encoding="utf-8") as f:
+      |                  cfg = json.load(f)
+      |              if "ollvm" in cfg:
+      |                  cfg["ollvm"]["enable"] = False
+      |              with open(cfg_path, "w", encoding="utf-8") as f:
+      |                  json.dump(cfg, f, indent=2)
       |          PY
       |          fi
       |          MAX_ATTEMPTS=3
