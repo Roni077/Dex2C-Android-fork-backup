@@ -10,7 +10,7 @@ enum class CloudSigningMode(val label: String, val summary: String) {
   REPO_KEYSTORE_SECRETS("Repo Secrets Keystore", "Uses KEYSTORE_BASE64 / KEYSTORE_PASS secrets with debug fallback"),
 }
 
-val SUPPORTED_NDK_VERSIONS = listOf("r25b", "r26d", "r27c")
+val SUPPORTED_NDK_VERSIONS = listOf("r25c-ollvm", "r25b", "r26d", "r27c", "r28c")
 val SUPPORTED_JDK_VERSIONS = listOf("17", "21")
 
 const val GITHUB_CLI_CLIENT_ID = "178c6fc778ccc68e1d6a"
@@ -25,7 +25,7 @@ data class CloudSettings(
   val defaultBranch: String = "main",
   val privateRepo: Boolean = true,
   val workflowInitialized: Boolean = false,
-  val ndkVersion: String = "r25b",
+  val ndkVersion: String = "r25c-ollvm",
   val jdkVersion: String = "17",
   val signingMode: CloudSigningMode = CloudSigningMode.DEBUG_AUTO,
   val pollIntervalSeconds: Int = 6,

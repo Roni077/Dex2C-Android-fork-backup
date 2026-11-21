@@ -194,7 +194,6 @@ fun CloudBuildScreen(
 
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val isWide = maxWidth >= 680.dp
-    val needsCompactScroll = maxHeight < 480.dp
     val contentMax = if (maxWidth >= 960.dp) 1100.dp else 880.dp
 
     Column(
@@ -265,7 +264,8 @@ fun CloudBuildScreen(
           Modifier
             .weight(1f)
             .fillMaxWidth()
-            .then(if (needsCompactScroll) Modifier.verticalScroll(paneScrollState) else Modifier),
+            .verticalScroll(paneScrollState)
+            .padding(bottom = 24.dp),
       ) {
         AnimatedContent(
           targetState = activeStage,

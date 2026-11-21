@@ -37,6 +37,7 @@ import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FilterAlt
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.Security
@@ -122,7 +123,6 @@ fun PipelineConfigScreen(
 
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val isWide = maxWidth >= 680.dp
-    val needsCompactScroll = maxHeight < 360.dp
     val contentMax = if (maxWidth >= 960.dp) 1100.dp else 880.dp
 
     Column(
@@ -183,7 +183,7 @@ fun PipelineConfigScreen(
           icon = Icons.Rounded.Memory,
           selected = activeCategory == PipelineCategory.NDK_PASSES,
           onClick = { activeCategory = PipelineCategory.NDK_PASSES },
-          modifier = Modifier.weight(1f).testTag("pipeline_tab_NDK_PASSES"),
+          modifier = Modifier.weight(1.3f).testTag("pipeline_tab_NDK_PASSES"),
         )
         PipelineCategoryPill(
           label = stringResource(R.string.pipeline_tab_filters),
@@ -194,13 +194,11 @@ fun PipelineConfigScreen(
         )
       }
 
-      val paneScrollState = rememberScrollState()
       Box(
         modifier =
           Modifier
             .weight(1f)
-            .fillMaxWidth()
-            .then(if (needsCompactScroll) Modifier.verticalScroll(paneScrollState) else Modifier),
+            .fillMaxWidth(),
       ) {
         AnimatedContent(
           targetState = activeCategory,
@@ -211,8 +209,9 @@ fun PipelineConfigScreen(
         ) { category ->
           when (category) {
             PipelineCategory.LOADER -> {
+              val loaderScrollState = rememberScrollState()
               Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().verticalScroll(loaderScrollState).padding(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
               ) {
                 CodehasanEngineIdentityCard()
@@ -247,9 +246,10 @@ fun PipelineConfigScreen(
             }
 
             PipelineCategory.NDK_PASSES -> {
+              val ndkScrollState = rememberScrollState()
               if (isWide) {
                 Row(
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().verticalScroll(ndkScrollState).padding(bottom = 24.dp),
                   horizontalArrangement = Arrangement.spacedBy(12.dp),
                   verticalAlignment = Alignment.Top,
                 ) {
@@ -274,7 +274,7 @@ fun PipelineConfigScreen(
                 }
               } else {
                 Column(
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().verticalScroll(ndkScrollState).padding(bottom = 24.dp),
                   verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                   TargetStandardAndAbisCard(
@@ -301,7 +301,7 @@ fun PipelineConfigScreen(
                 onUpdateConfig = onUpdateConfig,
                 onImportFilterTxt = onImportFilterTxt,
                 onApplyFilterRules = onApplyFilterRules,
-                fillAvailableHeight = !needsCompactScroll,
+                fillAvailableHeight = true,
                 selectedMethodCount = selectedMethodCount,
                 onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
               )
@@ -328,7 +328,7 @@ private fun PipelineCategoryPill(
       Icon(
         imageVector = icon,
         contentDescription = null,
-        modifier = Modifier.size(16.dp),
+        modifier = Modifier.size(14.dp),
       )
     },
     label = {
@@ -337,6 +337,7 @@ private fun PipelineCategoryPill(
         maxLines = 1,
         softWrap = false,
         overflow = TextOverflow.Ellipsis,
+        style = MaterialTheme.typography.labelMedium,
       )
     },
     colors =
@@ -632,7 +633,31 @@ private fun OllvmHardeningStudioCard(
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(6.dp))
+    Surface(
+      shape = RoundedCornerShape(10.dp),
+      color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f),
+      modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+    ) {
+      Row(
+        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        Icon(
+          imageVector = Icons.Rounded.Info,
+          contentDescription = null,
+          tint = MaterialTheme.colorScheme.secondary,
+          modifier = Modifier.size(16.dp),
+        )
+        Text(
+          text = "Cloud builds use r25c-ollvm (codehasan releases). Unpatched NDKs safely fallback to standard Clang.",
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+      }
+    }
+    Spacer(Modifier.height(6.dp))
     ToggleSettingRow(
       title = stringResource(R.string.config_ollvm_enable),
       subtitle = if (ollvm.enabled) "${ollvm.activePassCount()} passes active" else "Off (Standard NDK Clang)",

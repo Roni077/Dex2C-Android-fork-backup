@@ -31,6 +31,11 @@ class GitHubCloudWorkflowTest {
     val defaultYaml = Dex2cWorkflowGenerator.generateDex2cYaml(CloudSettings(), defaultCfg)
     assertTrue(defaultYaml.contains("force_custom_loader:"))
     assertTrue(defaultYaml.contains("default: 'false'"))
+    assertTrue(defaultYaml.contains("android-ndk-r25c-ollvm-aarch64.tar.xz"))
+    assertTrue(defaultYaml.contains("qemu-user-static"))
+    assertTrue(defaultYaml.contains("https://github.com/codehasan/dex2c/releases/download/ollvm-termux/"))
+    assertTrue(defaultYaml.contains("can_ollvm"))
+    assertTrue(defaultYaml.contains("Active NDK compiler does not support OLLVM flags"))
 
     val settings =
       CloudSettings(

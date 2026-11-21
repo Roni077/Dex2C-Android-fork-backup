@@ -1,0 +1,94 @@
+[INFO    ] dcc: Creating .tmp folder
+[WARNING ] dcc: You've enabled ollvm flag, make sure your NDK supports it!
+[INFO    ] dcc: Adjusting Application.mk file using available abis from apk
+[INFO    ] dcc: No lib abis found in apk, using the ones defined in Application.mk file
+make: Entering directory '/tmp/d2c/.tmp/dcc-project-3RoxXeq6'
+[armeabi-v7a] Compile++ thumb: stub <= Dex2C.cpp
+clang (LLVM option parsing): Unknown command line argument '-fla'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-split'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--polly'?
+clang (LLVM option parsing): Unknown command line argument '-split_num=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--print-bfi=5'?
+clang (LLVM option parsing): Unknown command line argument '-sub'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-sub_loop=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=5'?
+clang (LLVM option parsing): Unknown command line argument '-sobf'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--polly'?
+clang (LLVM option parsing): Unknown command line argument '-bcf'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-bcf_loop=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=5'?
+clang (LLVM option parsing): Unknown command line argument '-bcf_prob=100'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=100'?
+make: *** [/opt/android-ndk-r25b/build/core/build-binary.mk:424: obj/local/armeabi-v7a/objs/stub/nc/Dex2C.o] Error 1
+make: Leaving directory '/tmp/d2c/.tmp/dcc-project-3RoxXeq6'
+make: *** Waiting for unfinished jobs....
+make: Entering directory '/tmp/d2c/.tmp/dcc-project-3RoxXeq6'
+[armeabi-v7a] Compile++ thumb: stub <= DynamicRegister.cpp
+clang (LLVM option parsing): Unknown command line argument '-fla'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-split'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--polly'?
+clang (LLVM option parsing): Unknown command line argument '-split_num=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--print-bfi=5'?
+clang (LLVM option parsing): Unknown command line argument '-sub'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-sub_loop=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=5'?
+clang (LLVM option parsing): Unknown command line argument '-sobf'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--polly'?
+clang (LLVM option parsing): Unknown command line argument '-bcf'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-bcf_loop=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=5'?
+clang (LLVM option parsing): Unknown command line argument '-bcf_prob=100'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=100'?
+make: *** [/opt/android-ndk-r25b/build/core/build-binary.mk:424: obj/local/armeabi-v7a/objs/stub/nc/DynamicRegister.o] Error 1
+make: Leaving directory '/tmp/d2c/.tmp/dcc-project-3RoxXeq6'
+[WARNING ] dcc: Parallel build failed, retrying serial build...
+make: Entering directory '/tmp/d2c/.tmp/dcc-project-3RoxXeq6'
+[armeabi-v7a] Compile++ thumb: stub <= Dex2C.cpp
+clang (LLVM option parsing): Unknown command line argument '-fla'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-split'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--polly'?
+clang (LLVM option parsing): Unknown command line argument '-split_num=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--print-bfi=5'?
+clang (LLVM option parsing): Unknown command line argument '-sub'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-sub_loop=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=5'?
+clang (LLVM option parsing): Unknown command line argument '-sobf'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--polly'?
+clang (LLVM option parsing): Unknown command line argument '-bcf'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '-h'?
+clang (LLVM option parsing): Unknown command line argument '-bcf_loop=5'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=5'?
+clang (LLVM option parsing): Unknown command line argument '-bcf_prob=100'.  Try: 'clang (LLVM option parsing) --help'
+clang (LLVM option parsing): Did you mean '--icp-lto=100'?
+make: *** [/opt/android-ndk-r25b/build/core/build-binary.mk:424: obj/local/armeabi-v7a/objs/stub/nc/Dex2C.o] Error 1
+make: Leaving directory '/tmp/d2c/.tmp/dcc-project-3RoxXeq6'
+[ERROR   ] dcc: Compile /tmp/work/input.apk failed!
+Traceback (most recent call last):
+  File "/tmp/d2c/dcc.py", line 316, in build_project
+    check_call(cmd, stderr=STDOUT)
+  File "/opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['/opt/android-ndk-r25b/ndk-build', '-C', '.tmp/dcc-project-3RoxXeq6', '-j2']' returned non-zero exit status 2.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/d2c/dcc.py", line 1235, in <module>
+    dcc_main(
+  File "/tmp/d2c/dcc.py", line 937, in dcc_main
+    build_project(project_dir)
+  File "/tmp/d2c/dcc.py", line 319, in build_project
+    check_call(_cmd, stderr=STDOUT)
+  File "/opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['/opt/android-ndk-r25b/ndk-build', '-C', '.tmp/dcc-project-3RoxXeq6']' returned non-zero exit status 2.
+[INFO    ] dcc: Removing .tmp folder
+Command '['/opt/android-ndk-r25b/ndk-build', '-C', '.tmp/dcc-project-3RoxXeq6']' returned non-zero exit status 2.

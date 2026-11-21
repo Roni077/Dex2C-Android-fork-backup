@@ -14,7 +14,7 @@ object Dex2cWorkflowGenerator {
     settings: CloudSettings,
     transpilerConfig: TranspilerConfig,
   ): String {
-    val ndkVersion = settings.ndkVersion.ifBlank { "r25c" }
+    val ndkVersion = settings.ndkVersion.ifBlank { "r25c-ollvm" }
     val jdkVersion = settings.jdkVersion.ifBlank { "17" }
     val defaultLoader = transpilerConfig.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" }
     val defaultObfuscate = transpilerConfig.stringEncryption || transpilerConfig.controlFlowFlattening
@@ -41,6 +41,10 @@ object Dex2cWorkflowGenerator {
       |        description: 'Optional direct URL fallback for large APKs'
       |        required: false
       |        default: ''
+      |      ndk_version:
+      |        description: 'Android NDK version (e.g. r25c-ollvm, r25b, r26d, r27c, r28c)'
+      |        required: false
+      |        default: '$ndkVersion'
       |      allow_init:
       |        description: 'Transpile <init> constructors'
       |        required: false
@@ -100,13 +104,36 @@ object Dex2cWorkflowGenerator {
       |          distribution: 'temurin'
       |          java-version: '$jdkVersion'
       |
-      |      - name: Install Python Dependencies & NDK $ndkVersion
+      |      - name: Install Python Dependencies & NDK
       |        run: |
       |          python3 -m pip install --upgrade pip
       |          pip install "lxml>=4.3.0"
-      |          wget -q "https://dl.google.com/android/repository/android-ndk-${ndkVersion}-linux.zip" -O /tmp/ndk.zip
-      |          unzip -q /tmp/ndk.zip -d /opt/
-      |          NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
+      |          NDK_SEL="${'$'}{{ github.event.inputs.ndk_version || '$ndkVersion' }}"
+      |          if [ "${'$'}NDK_SEL" = "r25c-ollvm" ]; then
+      |            echo "Setting up QEMU user-static for aarch64 r25c-ollvm toolchain..."
+      |            sudo apt-get update -qq && sudo apt-get install -y -qq qemu-user-static binfmt-support
+      |            echo "Downloading codehasan/dex2c r25c-ollvm NDK release..."
+      |            wget -q "https://github.com/codehasan/dex2c/releases/download/ollvm-termux/android-ndk-r25c-ollvm-aarch64.tar.xz" -O /tmp/ndk.tar.xz
+      |            mkdir -p /opt/android-ndk-r25c-ollvm
+      |            tar -xf /tmp/ndk.tar.xz -C /opt/android-ndk-r25c-ollvm --strip-components=1
+      |            rm -f /tmp/ndk.tar.xz
+      |            NDK_DIR="/opt/android-ndk-r25c-ollvm"
+      |          elif [ "${'$'}NDK_SEL" = "r28c" ]; then
+      |            echo "Setting up QEMU user-static for aarch64 r28c toolchain..."
+      |            sudo apt-get update -qq && sudo apt-get install -y -qq qemu-user-static binfmt-support
+      |            echo "Downloading codehasan/dex2c r28c NDK release..."
+      |            wget -q "https://github.com/codehasan/dex2c/releases/download/ollvm-termux/android-ndk-r28c.tar.xz" -O /tmp/ndk.tar.xz
+      |            mkdir -p /opt/android-ndk-r28c
+      |            tar -xf /tmp/ndk.tar.xz -C /opt/android-ndk-r28c --strip-components=1
+      |            rm -f /tmp/ndk.tar.xz
+      |            NDK_DIR="/opt/android-ndk-r28c"
+      |          else
+      |            echo "Downloading Google Android NDK $ndkVersion (${'$'}NDK_SEL)..."
+      |            wget -q "https://dl.google.com/android/repository/android-ndk-${ndkVersion}-linux.zip" -O /tmp/ndk.zip || wget -q "https://dl.google.com/android/repository/android-ndk-${'$'}{NDK_SEL}-linux.zip" -O /tmp/ndk.zip
+      |            unzip -q /tmp/ndk.zip -d /opt/
+      |            rm -f /tmp/ndk.zip
+      |            NDK_DIR=${'$'}(find /opt -maxdepth 1 -type d -name "android-ndk-*" | head -n 1)
+      |          fi
       |          echo "ANDROID_NDK_HOME=${'$'}NDK_DIR" >> "${'$'}GITHUB_ENV"
       |
       |      - name: Clone codehasan/dex2c & Patch dcc.cfg + C++ Sanitizer
@@ -271,9 +298,30 @@ object Dex2cWorkflowGenerator {
       |          fi
       |          if [ "${'$'}{{ github.event.inputs.enable_ollvm }}" = "true" ] && [ -n "${'$'}{{ github.event.inputs.ollvm_flags }}" ]; then
       |            python3 - <<'PY'
-      |          import json, os
+      |          import json, os, subprocess
       |          cfg_path = "/tmp/d2c/dcc.cfg"
-      |          if os.path.exists(cfg_path):
+      |          ndk_home = os.environ.get("ANDROID_NDK_HOME", "")
+      |          clang_candidates = []
+      |          for root, dirs, files in os.walk(ndk_home):
+      |              if "clang" in files and "bin" in root:
+      |                  clang_candidates.append(os.path.join(root, "clang"))
+      |          clang_bin = clang_candidates[0] if clang_candidates else "clang"
+      |          probe_cmd = [clang_bin, "-mllvm", "-fla", "-x", "c", "-c", "/dev/null", "-o", "/dev/null"]
+      |          can_ollvm = False
+      |          try:
+      |              res = subprocess.run(probe_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+      |              if res.returncode == 0:
+      |                  can_ollvm = True
+      |              else:
+      |                  err = res.stderr.decode("utf-8", errors="ignore")
+      |                  if "Unknown command line argument" not in err:
+      |                      can_ollvm = True
+      |          except Exception:
+      |              pass
+      |
+      |          if not can_ollvm:
+      |              print("::warning::Active NDK compiler does not support OLLVM flags (-fla, -sub, -bcf). Falling back to standard Clang flags to ensure successful compilation.")
+      |          elif os.path.exists(cfg_path):
       |              with open(cfg_path, "r", encoding="utf-8") as f:
       |                  cfg = json.load(f)
       |              cfg["ollvm"] = {
@@ -282,6 +330,7 @@ object Dex2cWorkflowGenerator {
       |              }
       |              with open(cfg_path, "w", encoding="utf-8") as f:
       |                  json.dump(cfg, f, indent=2)
+      |              print("OLLVM compiler flags successfully injected into dcc.cfg")
       |          PY
       |          fi
       |          MAX_ATTEMPTS=3
