@@ -3,6 +3,7 @@
 package com.dex2c.studio.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -36,6 +37,8 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Memory
@@ -135,63 +138,50 @@ fun PipelineConfigScreen(
     ) {
       Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Column(modifier = Modifier.weight(1f)) {
-          Text(
-            text = stringResource(R.string.config_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        Row(
+          modifier = Modifier.weight(1f),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          PipelineCategoryPill(
+            label = stringResource(R.string.pipeline_tab_loader),
+            icon = Icons.Rounded.Tune,
+            selected = activeCategory == PipelineCategory.LOADER,
+            onClick = { activeCategory = PipelineCategory.LOADER },
+            modifier = Modifier.weight(1f).testTag("pipeline_tab_LOADER"),
           )
-          Text(
-            text = stringResource(R.string.config_subtitle),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+          PipelineCategoryPill(
+            label = stringResource(R.string.pipeline_tab_ndk_passes),
+            icon = Icons.Rounded.Memory,
+            selected = activeCategory == PipelineCategory.NDK_PASSES,
+            onClick = { activeCategory = PipelineCategory.NDK_PASSES },
+            modifier = Modifier.weight(1.3f).testTag("pipeline_tab_NDK_PASSES"),
+          )
+          PipelineCategoryPill(
+            label = stringResource(R.string.pipeline_tab_filters),
+            icon = Icons.Rounded.FilterAlt,
+            selected = activeCategory == PipelineCategory.FILTERS,
+            onClick = { activeCategory = PipelineCategory.FILTERS },
+            modifier = Modifier.weight(1f).testTag("pipeline_tab_FILTERS"),
           )
         }
-        Spacer(Modifier.width(8.dp))
         OutlinedButton(
           onClick = onImportDccCfg,
           shape = RoundedCornerShape(20.dp),
-          contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
           modifier = Modifier.testTag("import_dcc_cfg_button"),
         ) {
           Icon(Icons.Rounded.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(6.dp))
-          Text(stringResource(R.string.config_import_dcc_cfg), maxLines = 1, overflow = TextOverflow.Ellipsis)
+          Spacer(Modifier.width(4.dp))
+          Text(
+            text = stringResource(R.string.config_import_dcc_cfg),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.labelSmall,
+          )
         }
-      }
-
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        PipelineCategoryPill(
-          label = stringResource(R.string.pipeline_tab_loader),
-          icon = Icons.Rounded.Tune,
-          selected = activeCategory == PipelineCategory.LOADER,
-          onClick = { activeCategory = PipelineCategory.LOADER },
-          modifier = Modifier.weight(1f).testTag("pipeline_tab_LOADER"),
-        )
-        PipelineCategoryPill(
-          label = stringResource(R.string.pipeline_tab_ndk_passes),
-          icon = Icons.Rounded.Memory,
-          selected = activeCategory == PipelineCategory.NDK_PASSES,
-          onClick = { activeCategory = PipelineCategory.NDK_PASSES },
-          modifier = Modifier.weight(1.3f).testTag("pipeline_tab_NDK_PASSES"),
-        )
-        PipelineCategoryPill(
-          label = stringResource(R.string.pipeline_tab_filters),
-          icon = Icons.Rounded.FilterAlt,
-          selected = activeCategory == PipelineCategory.FILTERS,
-          onClick = { activeCategory = PipelineCategory.FILTERS },
-          modifier = Modifier.weight(1f).testTag("pipeline_tab_FILTERS"),
-        )
       }
 
       Box(
@@ -543,72 +533,43 @@ private fun ProtectionPassesCard(
 private fun CodehasanEngineIdentityCard(modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier.fillMaxWidth(),
-    shape = RoundedCornerShape(20.dp),
+    shape = RoundedCornerShape(16.dp),
     color = MaterialTheme.colorScheme.surfaceContainerHighest,
-    tonalElevation = 2.dp,
+    tonalElevation = 1.dp,
   ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+    Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+      Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.size(32.dp),
       ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-          Surface(
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.size(40.dp),
-          ) {
-            Box(contentAlignment = Alignment.Center) {
-              Icon(
-                imageVector = Icons.Rounded.Memory,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(24.dp),
-              )
-            }
-          }
-          Column {
-            Text(
-              text = stringResource(R.string.engine_codehasan_title),
-              style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-              text = stringResource(R.string.engine_codehasan_subtitle),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
+        Box(contentAlignment = Alignment.Center) {
+          Icon(
+            imageVector = Icons.Rounded.Memory,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(18.dp),
+          )
         }
       }
-      Spacer(Modifier.height(10.dp))
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-      ) {
-        AssistChip(
-          onClick = {},
-          label = { Text("Android 15 (16 KB Ready)") },
-          leadingIcon = {
-            Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
-          },
+      Column(modifier = Modifier.weight(1f)) {
+        Text(
+          text = stringResource(R.string.engine_codehasan_title),
+          style = MaterialTheme.typography.labelLarge,
+          fontWeight = FontWeight.SemiBold,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
         )
-        AssistChip(
-          onClick = {},
-          label = { Text("NDK r25c / r25c-ollvm") },
-          leadingIcon = {
-            Icon(Icons.Rounded.Tune, contentDescription = null, modifier = Modifier.size(14.dp))
-          },
-        )
-        AssistChip(
-          onClick = {},
-          label = { Text("Native OLLVM Hardening") },
-          leadingIcon = {
-            Icon(Icons.Rounded.Security, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.secondary)
-          },
+        Text(
+          text = "Android 15 (16 KB) • NDK r25c-ollvm • OLLVM Native Hardening",
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
         )
       }
     }
@@ -756,132 +717,169 @@ private fun OllvmHardeningStudioCard(
 
       Spacer(Modifier.height(10.dp))
 
-      // Granular Passes
-      ToggleSettingRow(
-        title = stringResource(R.string.config_ollvm_fla),
-        subtitle = stringResource(R.string.config_ollvm_fla_desc),
-        checked = ollvm.controlFlowFlattening,
-        onCheckedChange = { v ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(controlFlowFlattening = v, preset = OllvmPreset.CUSTOM)) }
-        },
-        testTag = "switch_ollvm_fla",
-      )
+      var passesExpanded by rememberSaveable { mutableStateOf(ollvm.preset == OllvmPreset.CUSTOM) }
 
-      ToggleSettingRow(
-        title = stringResource(R.string.config_ollvm_sub),
-        subtitle = stringResource(R.string.config_ollvm_sub_desc) + " (${ollvm.subLoop} iterations)",
-        checked = ollvm.instructionSubstitution,
-        onCheckedChange = { v ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(instructionSubstitution = v, preset = OllvmPreset.CUSTOM)) }
-        },
-        testTag = "switch_ollvm_sub",
-      )
-
-      if (ollvm.instructionSubstitution) {
+      Surface(
+        onClick = { passesExpanded = !passesExpanded },
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f),
+        modifier = Modifier.fillMaxWidth().testTag("toggle_ollvm_passes_accordion"),
+      ) {
         Row(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-          Text("Substitution Loop Count", style = MaterialTheme.typography.bodySmall)
-          Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            IconButton(
-              onClick = {
-                if (ollvm.subLoop > 1) {
-                  onUpdateConfig { it.copy(ollvm = it.ollvm.copy(subLoop = ollvm.subLoop - 1, preset = OllvmPreset.CUSTOM)) }
-                }
-              },
-              modifier = Modifier.size(28.dp),
-            ) {
-              Icon(Icons.Rounded.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
-            }
-            Text("${ollvm.subLoop}", style = MaterialTheme.typography.labelLarge)
-            IconButton(
-              onClick = {
-                if (ollvm.subLoop < 5) {
-                  onUpdateConfig { it.copy(ollvm = it.ollvm.copy(subLoop = ollvm.subLoop + 1, preset = OllvmPreset.CUSTOM)) }
-                }
-              },
-              modifier = Modifier.size(28.dp),
-            ) {
-              Icon(Icons.Rounded.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp))
-            }
+          Column {
+            Text(
+              text = "Granular Pass Options",
+              style = MaterialTheme.typography.labelMedium,
+              fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+              text = "${ollvm.activePassCount()} passes configured • Tap to ${if (passesExpanded) "collapse" else "customize"}",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
           }
-        }
-      }
-
-      ToggleSettingRow(
-        title = stringResource(R.string.config_ollvm_bcf),
-        subtitle = stringResource(R.string.config_ollvm_bcf_desc) + " (${ollvm.bcfProb}% probability)",
-        checked = ollvm.bogusControlFlow,
-        onCheckedChange = { v ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(bogusControlFlow = v, preset = OllvmPreset.CUSTOM)) }
-        },
-        testTag = "switch_ollvm_bcf",
-      )
-
-      if (ollvm.bogusControlFlow) {
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp)) {
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-          ) {
-            Text("BCF Probability: ${ollvm.bcfProb}%", style = MaterialTheme.typography.bodySmall)
-          }
-          Slider(
-            value = ollvm.bcfProb.toFloat(),
-            onValueChange = { p ->
-              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(bcfProb = p.toInt(), preset = OllvmPreset.CUSTOM)) }
-            },
-            valueRange = 10f..100f,
-            steps = 8,
-            modifier = Modifier.fillMaxWidth(),
+          Icon(
+            imageVector = if (passesExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
           )
         }
       }
 
-      ToggleSettingRow(
-        title = stringResource(R.string.config_ollvm_split),
-        subtitle = stringResource(R.string.config_ollvm_split_desc) + " (${ollvm.splitNum} splits)",
-        checked = ollvm.basicBlockSplit,
-        onCheckedChange = { v ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(basicBlockSplit = v, preset = OllvmPreset.CUSTOM)) }
-        },
-        testTag = "switch_ollvm_split",
-      )
+      AnimatedVisibility(visible = passesExpanded) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          // Granular Passes
+          ToggleSettingRow(
+            title = stringResource(R.string.config_ollvm_fla),
+            subtitle = stringResource(R.string.config_ollvm_fla_desc),
+            checked = ollvm.controlFlowFlattening,
+            onCheckedChange = { v ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(controlFlowFlattening = v, preset = OllvmPreset.CUSTOM)) }
+            },
+            testTag = "switch_ollvm_fla",
+          )
 
-      ToggleSettingRow(
-        title = stringResource(R.string.config_ollvm_sobf),
-        subtitle = stringResource(R.string.config_ollvm_sobf_desc),
-        checked = ollvm.stringObfuscation,
-        onCheckedChange = { v ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(stringObfuscation = v, preset = OllvmPreset.CUSTOM)) }
-        },
-        testTag = "switch_ollvm_sobf",
-      )
+          ToggleSettingRow(
+            title = stringResource(R.string.config_ollvm_sub),
+            subtitle = stringResource(R.string.config_ollvm_sub_desc) + " (${ollvm.subLoop} iterations)",
+            checked = ollvm.instructionSubstitution,
+            onCheckedChange = { v ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(instructionSubstitution = v, preset = OllvmPreset.CUSTOM)) }
+            },
+            testTag = "switch_ollvm_sub",
+          )
 
-      ToggleSettingRow(
-        title = stringResource(R.string.config_ollvm_16kb),
-        subtitle = stringResource(R.string.config_ollvm_16kb_desc),
-        checked = ollvm.align16KbPages,
-        onCheckedChange = { v ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(align16KbPages = v, preset = OllvmPreset.CUSTOM)) }
-        },
-        testTag = "switch_ollvm_16kb",
-      )
+          if (ollvm.instructionSubstitution) {
+            Row(
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+              Text("Substitution Loop Count", style = MaterialTheme.typography.bodySmall)
+              Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                IconButton(
+                  onClick = {
+                    if (ollvm.subLoop > 1) {
+                      onUpdateConfig { it.copy(ollvm = it.ollvm.copy(subLoop = ollvm.subLoop - 1, preset = OllvmPreset.CUSTOM)) }
+                    }
+                  },
+                  modifier = Modifier.size(28.dp),
+                ) {
+                  Icon(Icons.Rounded.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+                }
+                Text("${ollvm.subLoop}", style = MaterialTheme.typography.labelLarge)
+                IconButton(
+                  onClick = {
+                    if (ollvm.subLoop < 5) {
+                      onUpdateConfig { it.copy(ollvm = it.ollvm.copy(subLoop = ollvm.subLoop + 1, preset = OllvmPreset.CUSTOM)) }
+                    }
+                  },
+                  modifier = Modifier.size(28.dp),
+                ) {
+                  Icon(Icons.Rounded.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp))
+                }
+              }
+            }
+          }
 
-      Spacer(Modifier.height(6.dp))
-      OutlinedTextField(
-        value = ollvm.customFlags,
-        onValueChange = { flags ->
-          onUpdateConfig { it.copy(ollvm = it.ollvm.copy(customFlags = flags, preset = OllvmPreset.CUSTOM)) }
-        },
-        label = { Text(stringResource(R.string.config_ollvm_custom_flags)) },
-        placeholder = { Text("-mllvm -customPass") },
-        modifier = Modifier.fillMaxWidth(),
-        textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = JetBrainsMonoFontFamily),
-        singleLine = true,
-      )
+          ToggleSettingRow(
+            title = stringResource(R.string.config_ollvm_bcf),
+            subtitle = stringResource(R.string.config_ollvm_bcf_desc) + " (${ollvm.bcfProb}% probability)",
+            checked = ollvm.bogusControlFlow,
+            onCheckedChange = { v ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(bogusControlFlow = v, preset = OllvmPreset.CUSTOM)) }
+            },
+            testTag = "switch_ollvm_bcf",
+          )
+
+          if (ollvm.bogusControlFlow) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp)) {
+              Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+              ) {
+                Text("BCF Probability: ${ollvm.bcfProb}%", style = MaterialTheme.typography.bodySmall)
+              }
+              Slider(
+                value = ollvm.bcfProb.toFloat(),
+                onValueChange = { p ->
+                  onUpdateConfig { it.copy(ollvm = it.ollvm.copy(bcfProb = p.toInt(), preset = OllvmPreset.CUSTOM)) }
+                },
+                valueRange = 10f..100f,
+                steps = 8,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+          }
+
+          ToggleSettingRow(
+            title = stringResource(R.string.config_ollvm_split),
+            subtitle = stringResource(R.string.config_ollvm_split_desc) + " (${ollvm.splitNum} splits)",
+            checked = ollvm.basicBlockSplit,
+            onCheckedChange = { v ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(basicBlockSplit = v, preset = OllvmPreset.CUSTOM)) }
+            },
+            testTag = "switch_ollvm_split",
+          )
+
+          ToggleSettingRow(
+            title = stringResource(R.string.config_ollvm_sobf),
+            subtitle = stringResource(R.string.config_ollvm_sobf_desc),
+            checked = ollvm.stringObfuscation,
+            onCheckedChange = { v ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(stringObfuscation = v, preset = OllvmPreset.CUSTOM)) }
+            },
+            testTag = "switch_ollvm_sobf",
+          )
+
+          ToggleSettingRow(
+            title = stringResource(R.string.config_ollvm_16kb),
+            subtitle = stringResource(R.string.config_ollvm_16kb_desc),
+            checked = ollvm.align16KbPages,
+            onCheckedChange = { v ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(align16KbPages = v, preset = OllvmPreset.CUSTOM)) }
+            },
+            testTag = "switch_ollvm_16kb",
+          )
+
+          Spacer(Modifier.height(6.dp))
+          OutlinedTextField(
+            value = ollvm.customFlags,
+            onValueChange = { flags ->
+              onUpdateConfig { it.copy(ollvm = it.ollvm.copy(customFlags = flags, preset = OllvmPreset.CUSTOM)) }
+            },
+            label = { Text(stringResource(R.string.config_ollvm_custom_flags)) },
+            placeholder = { Text("-mllvm -customPass") },
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = JetBrainsMonoFontFamily),
+            singleLine = true,
+          )
+        }
+      }
     }
   }
 }
@@ -940,7 +938,7 @@ private fun ConfigSectionCard(
     color = MaterialTheme.colorScheme.surfaceContainer,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.55f)),
   ) {
-    Column(modifier = Modifier.padding(14.dp)) {
+    Column(modifier = Modifier.padding(12.dp)) {
       Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,

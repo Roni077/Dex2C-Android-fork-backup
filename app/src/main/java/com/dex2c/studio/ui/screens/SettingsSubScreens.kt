@@ -48,6 +48,7 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.AlertDialog
@@ -96,6 +97,7 @@ import com.dex2c.studio.cloud.SUPPORTED_JDK_VERSIONS
 import com.dex2c.studio.cloud.SUPPORTED_NDK_VERSIONS
 import com.dex2c.studio.data.AppIconManager
 import com.dex2c.studio.data.AppIconStyle
+import com.dex2c.studio.data.AppLanguage
 import com.dex2c.studio.data.AppSettings
 import com.dex2c.studio.data.AppThemeMode
 import com.dex2c.studio.data.CURATED_ACCENT_PRESETS
@@ -118,7 +120,7 @@ fun SettingsAppearanceSubScreen(
   onUpdateAppSettings: ((AppSettings) -> AppSettings) -> Unit,
 ) {
   LazyColumn(
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize().testTag("settings_appearance_list"),
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
@@ -278,6 +280,78 @@ fun SettingsAppearanceSubScreen(
             )
           }
           if (index < AppIconStyle.entries.lastIndex) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+          }
+        }
+      }
+    }
+
+    item {
+      SubScreenCard(
+        title = stringResource(R.string.language_title),
+        icon = Icons.Rounded.Translate,
+      ) {
+        Text(
+          text = stringResource(R.string.language_desc),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(12.dp))
+        AppLanguage.entries.forEachIndexed { index, language ->
+          val isSelected = appSettings.appLanguage == language
+          Row(
+            modifier =
+              Modifier.fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .clickable {
+                  onUpdateAppSettings { it.copy(appLanguage = language) }
+                }
+                .padding(vertical = 8.dp, horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+          ) {
+            Surface(
+              shape = RoundedCornerShape(10.dp),
+              color =
+                if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerHigh,
+              contentColor =
+                if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.size(34.dp),
+            ) {
+              Box(contentAlignment = Alignment.Center) {
+                Icon(
+                  imageVector = Icons.Rounded.Translate,
+                  contentDescription = null,
+                  modifier = Modifier.size(18.dp),
+                )
+              }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+              Text(
+                text = stringResource(language.displayNameRes),
+                style = MaterialTheme.typography.titleSmall,
+              )
+              Text(
+                text =
+                  when (language) {
+                    AppLanguage.SYSTEM -> "Follow Android system language setting"
+                    AppLanguage.ENGLISH -> "Force English interface across all screens"
+                    AppLanguage.CHINESE_SIMPLIFIED -> "应用内完整中文界面（无需更改系统语言）"
+                  },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+            RadioButton(
+              selected = isSelected,
+              onClick = { onUpdateAppSettings { it.copy(appLanguage = language) } },
+              modifier =
+                Modifier.minimumInteractiveComponentSize().testTag("settings_language_${language.name.lowercase()}"),
+            )
+          }
+          if (index < AppLanguage.entries.lastIndex) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
           }
         }

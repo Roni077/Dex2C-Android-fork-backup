@@ -478,7 +478,7 @@ private fun HeroHomeBanner(
           text = stringResource(R.string.hero_title),
           style = if (compact) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineMedium,
           fontWeight = FontWeight.SemiBold,
-          color = Color.White,
+          color = MaterialTheme.colorScheme.onSurface,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
         )
@@ -486,7 +486,7 @@ private fun HeroHomeBanner(
         Text(
           text = stringResource(R.string.hero_subtitle),
           style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
-          color = Color(0xFFBFD0E6),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
           maxLines = if (compact) 2 else 3,
           overflow = TextOverflow.Ellipsis,
         )
@@ -502,7 +502,12 @@ private fun HeroHomeBanner(
             modifier = Modifier.weight(1f).expressivePressScale(openInteraction).testTag("open_dex_apk_button"),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = if (compact) 8.dp else 12.dp),
           ) {
-            Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(
+              imageVector = Icons.Rounded.FolderOpen,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+              tint = MaterialTheme.colorScheme.onPrimary,
+            )
             Spacer(Modifier.width(6.dp))
             Text(stringResource(R.string.action_open_file), maxLines = 1, overflow = TextOverflow.Ellipsis)
           }
@@ -511,11 +516,16 @@ private fun HeroHomeBanner(
             interactionSource = appsInteraction,
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier.weight(1f).expressivePressScale(appsInteraction).testTag("open_installed_apps_button"),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = if (compact) 8.dp else 12.dp),
           ) {
-            Icon(Icons.Rounded.Apps, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(
+              imageVector = Icons.Rounded.Apps,
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+              tint = MaterialTheme.colorScheme.primary,
+            )
             Spacer(Modifier.width(6.dp))
             Text(stringResource(R.string.picker_tab_apps), maxLines = 1, overflow = TextOverflow.Ellipsis)
           }

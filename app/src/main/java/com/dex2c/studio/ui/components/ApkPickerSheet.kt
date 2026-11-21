@@ -132,7 +132,14 @@ fun ApkPickerSheet(
             selected = activeTab == PickerTab.STORAGE,
             onClick = { onSelectTab(PickerTab.STORAGE) },
             text = { Text(stringResource(R.string.picker_tab_storage)) },
-            icon = { Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            icon = {
+              Icon(
+                imageVector = Icons.Rounded.FolderOpen,
+                contentDescription = null,
+                tint = if (activeTab == PickerTab.STORAGE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp),
+              )
+            },
             modifier = Modifier.testTag("picker_tab_storage"),
           )
           Tab(
@@ -252,7 +259,12 @@ private fun StoragePickerTab(
           modifier = Modifier.fillMaxWidth().testTag("picker_launch_saf_button"),
           contentPadding = PaddingValues(vertical = 13.dp),
         ) {
-          Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
+          Icon(
+            imageVector = Icons.Rounded.FolderOpen,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colorScheme.onPrimary,
+          )
           Spacer(Modifier.width(8.dp))
           Text(stringResource(R.string.action_browse_storage))
         }

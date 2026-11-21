@@ -204,26 +204,32 @@ fun CloudBuildScreen(
           .padding(horizontal = 16.dp, vertical = 10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-          text = stringResource(R.string.cloud_title),
-          style = MaterialTheme.typography.titleLarge,
-          fontWeight = FontWeight.SemiBold,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-          text =
-            if (cloudSettings.isAuthenticated) {
-              "@${cloudSettings.githubUsername} • ${cloudSettings.effectiveOwner}/${cloudSettings.repoName}"
-            } else {
-              stringResource(R.string.cloud_subtitle)
-            },
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
+      if (cloudSettings.isAuthenticated) {
+        Surface(
+          shape = RoundedCornerShape(12.dp),
+          color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.CheckCircle,
+              contentDescription = null,
+              modifier = Modifier.size(14.dp),
+              tint = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+              text = "@${cloudSettings.githubUsername} • ${cloudSettings.effectiveOwner}/${cloudSettings.repoName}",
+              style = MaterialTheme.typography.labelMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+            )
+          }
+        }
       }
 
       Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -430,9 +436,14 @@ fun CloudBuildScreen(
                       contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                       modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_pick_apk_btn"),
                     ) {
-                      Icon(Icons.Rounded.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))
+                      Icon(
+                        imageVector = Icons.Rounded.FolderOpen,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                      )
                       Spacer(Modifier.width(6.dp))
-                      Text("Pick APK", maxLines = 1)
+                      Text(stringResource(R.string.cloud_pick_apk), maxLines = 1)
                     }
                     OutlinedButton(
                       onClick = onUseLiveApk,
@@ -440,9 +451,14 @@ fun CloudBuildScreen(
                       contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                       modifier = Modifier.weight(1f).minimumInteractiveComponentSize().testTag("cloud_use_live_apk_btn"),
                     ) {
-                      Icon(Icons.Rounded.Android, contentDescription = null, modifier = Modifier.size(16.dp))
+                      Icon(
+                        imageVector = Icons.Rounded.Android,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                      )
                       Spacer(Modifier.width(6.dp))
-                      Text("Use base.apk", maxLines = 1)
+                      Text(stringResource(R.string.cloud_use_live_apk), maxLines = 1)
                     }
                   }
 

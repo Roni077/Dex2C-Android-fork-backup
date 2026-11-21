@@ -60,6 +60,7 @@ import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -80,6 +81,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -94,6 +96,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -183,27 +186,58 @@ class MainActivity : ComponentActivity() {
         )
         onDispose {}
       }
-      Dex2cTheme(
-        themeMode = appSettings.themeMode,
-        dynamicColor = appSettings.dynamicColor,
-        accentSeedHex = appSettings.accentSeedHex,
-        editorSettings =
-          EditorDisplaySettings(
-            fontSizeSp = appSettings.codeFontSizeSp,
-            showLineNumbers = appSettings.showLineNumbers,
-            maxLinesLimit = appSettings.maxCodePreviewLines,
-            smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
-          ),
+
+      val context = LocalContext.current
+      val currentLocale = remember(appSettings.appLanguage) {
+        when (appSettings.appLanguage) {
+          com.dex2c.studio.data.AppLanguage.ENGLISH -> java.util.Locale.ENGLISH
+          com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED -> java.util.Locale.SIMPLIFIED_CHINESE
+          com.dex2c.studio.data.AppLanguage.SYSTEM -> {
+            androidx.core.os.ConfigurationCompat.getLocales(android.content.res.Resources.getSystem().configuration)[0]
+              ?: java.util.Locale.getDefault()
+          }
+        }
+      }
+
+      val configuration = LocalConfiguration.current
+      val localizedConfiguration = remember(configuration, currentLocale) {
+        android.content.res.Configuration(configuration).apply {
+          setLocale(currentLocale)
+        }
+      }
+      val localizedContext = remember(context, currentLocale) {
+        val config = android.content.res.Configuration(context.resources.configuration).apply {
+          setLocale(currentLocale)
+        }
+        context.createConfigurationContext(config)
+      }
+
+      CompositionLocalProvider(
+        LocalConfiguration provides localizedConfiguration,
+        LocalContext provides localizedContext,
       ) {
-        Dex2cApp(
-          deepLinkTarget = pendingDeepLink,
-          onDeepLinkConsumed = {
-            pendingDeepLink = null
-            intent?.removeExtra(CloudBuildNotifier.EXTRA_NAVIGATE_ROUTE)
-            intent?.removeExtra(CloudBuildNotifier.EXTRA_CLOUD_RUN_ID)
-          },
-          viewModel = appViewModel,
-        )
+        Dex2cTheme(
+          themeMode = appSettings.themeMode,
+          dynamicColor = appSettings.dynamicColor,
+          accentSeedHex = appSettings.accentSeedHex,
+          editorSettings =
+            EditorDisplaySettings(
+              fontSizeSp = appSettings.codeFontSizeSp,
+              showLineNumbers = appSettings.showLineNumbers,
+              maxLinesLimit = appSettings.maxCodePreviewLines,
+              smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
+            ),
+        ) {
+          Dex2cApp(
+            deepLinkTarget = pendingDeepLink,
+            onDeepLinkConsumed = {
+              pendingDeepLink = null
+              intent?.removeExtra(CloudBuildNotifier.EXTRA_NAVIGATE_ROUTE)
+              intent?.removeExtra(CloudBuildNotifier.EXTRA_CLOUD_RUN_ID)
+            },
+            viewModel = appViewModel,
+          )
+        }
       }
     }
   }
@@ -458,12 +492,33 @@ fun Dex2cApp(
         if (showTopBarAndNav) {
           TopAppBar(
             title = {
+              val screenTitle =
+                when (currentRoute) {
+                  ROUTE_HOME -> stringResource(R.string.app_name)
+                  ROUTE_CLASSES -> stringResource(R.string.nav_classes)
+                  ROUTE_BUILD -> stringResource(R.string.config_title)
+                  ROUTE_CLOUD -> stringResource(R.string.cloud_title)
+                  else -> stringResource(R.string.app_name)
+                }
               Text(
-                text = stringResource(R.string.app_name),
+                text = screenTitle,
                 style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
               )
             },
             actions = {
+              if (currentRoute == ROUTE_BUILD) {
+                IconButton(
+                  onClick = { importDccCfgLauncher.launch(arrayOf("application/json", "text/*", "*/*")) },
+                  modifier = Modifier.testTag("topbar_import_dcc_cfg_button"),
+                ) {
+                  Icon(
+                    imageVector = Icons.Rounded.UploadFile,
+                    contentDescription = stringResource(R.string.config_import_dcc_cfg),
+                  )
+                }
+              }
               if (currentRoute == ROUTE_CLASSES) {
                 IconButton(
                   onClick = { viewModel.openClassesFilterSheet() },

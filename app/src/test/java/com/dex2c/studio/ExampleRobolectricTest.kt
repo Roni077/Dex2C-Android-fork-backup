@@ -3104,6 +3104,44 @@ class ExampleRobolectricTest {
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("workflow_raw_markdown_box").assertIsDisplayed()
   }
+
+  @Test
+  fun `appPreferences persists and restores appLanguage`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val appPrefs = com.dex2c.studio.data.AppPreferences(context)
+    kotlinx.coroutines.runBlocking {
+      appPrefs.updateSettings { it.copy(appLanguage = com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED) }
+      val settings = appPrefs.settingsFlow.first()
+      assertEquals(com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED, settings.appLanguage)
+
+      appPrefs.updateSettings { it.copy(appLanguage = com.dex2c.studio.data.AppLanguage.ENGLISH) }
+      val enSettings = appPrefs.settingsFlow.first()
+      assertEquals(com.dex2c.studio.data.AppLanguage.ENGLISH, enSettings.appLanguage)
+    }
+  }
+
+  @Test
+  fun `settingsAppearanceSubScreen renders language options`() {
+    var selectedLanguage = com.dex2c.studio.data.AppLanguage.SYSTEM
+    composeTestRule.setContent {
+      Dex2cTheme {
+        com.dex2c.studio.ui.screens.SettingsAppearanceSubScreen(
+          appSettings = com.dex2c.studio.data.AppSettings(appLanguage = selectedLanguage),
+          onUpdateAppSettings = { transform: (com.dex2c.studio.data.AppSettings) -> com.dex2c.studio.data.AppSettings ->
+            selectedLanguage = transform(com.dex2c.studio.data.AppSettings(appLanguage = selectedLanguage)).appLanguage
+          },
+        )
+      }
+    }
+
+    composeTestRule
+      .onNodeWithTag("settings_appearance_list")
+      .performScrollToNode(hasTestTag("settings_language_chinese_simplified"))
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("settings_language_chinese_simplified").assertIsDisplayed().performClick()
+    composeTestRule.waitForIdle()
+    assertEquals(com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED, selectedLanguage)
+  }
 }
 
 

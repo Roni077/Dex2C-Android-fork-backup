@@ -1982,6 +1982,20 @@ class Dex2cViewModel @JvmOverloads constructor(
     updateAppSettings { it.copy(hasCompletedOnboarding = true) }
   }
 
+  fun setAppLanguage(language: com.dex2c.studio.data.AppLanguage) {
+    updateAppSettings { it.copy(appLanguage = language) }
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+      val localeManager = getApplication<Application>().getSystemService(android.app.LocaleManager::class.java)
+      val localeList =
+        if (language == com.dex2c.studio.data.AppLanguage.SYSTEM) {
+          android.os.LocaleList.getEmptyLocaleList()
+        } else {
+          android.os.LocaleList.forLanguageTags(language.code)
+        }
+      localeManager?.applicationLocales = localeList
+    }
+  }
+
   fun sendTestBuildNotification() {
     val sent = CloudBuildNotifier.sendTestNotification(getApplication(), _appSettings.value)
     _statusBanner.value =

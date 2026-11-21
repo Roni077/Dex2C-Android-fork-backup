@@ -161,4 +161,21 @@
     <string name="onboarding_done">Done</string>
     <string name="onboarding_tour_desc">Dex2C Studio pipeline illustration</string>
     <string name="settings_replay_onboarding">Replay Onboarding &amp; Setup</string>
+
+    <string name="settings_category_language">Language</string>
+    <string name="language_title">App Language</string>
+    <string name="language_desc">Select interface display language</string>
+    <string name="language_system">Follow System</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">Simplified Chinese (简体中文)</string>
+
+    <string name="cloud_pick_apk">Pick APK</string>
+    <string name="cloud_use_live_apk">Use base.apk</string>
+    <string name="action_delete_class">Delete class from DEX?</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="label_collapse">Collapse</string>
+    <string name="label_reset_filters">Reset Filters</string>
+    <string name="label_all_dexes">All Loaded DEXes</string>
+    <string name="recent_apk_dex_title">Recent APK &amp; DEX</string>
 </resources>

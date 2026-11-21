@@ -64,6 +64,7 @@ import android.os.Build
 import com.dex2c.studio.BuildConfig
 import com.dex2c.studio.R
 import com.dex2c.studio.cloud.CloudSettings
+import com.dex2c.studio.data.AppLanguage
 import com.dex2c.studio.data.AppSettings
 import com.dex2c.studio.data.CURATED_ACCENT_PRESETS
 import com.dex2c.studio.data.normalizeHexColor
@@ -540,7 +541,13 @@ private fun sectionSummary(
             it.hex.equals(appSettings.accentSeedHex, ignoreCase = true)
           }?.name ?: normalizeHexColor(appSettings.accentSeedHex)
         }
-      "${appSettings.themeMode.label} • $paletteLabel • ${appSettings.appIconStyle.label}"
+      val langLabel =
+        when (appSettings.appLanguage) {
+          AppLanguage.SYSTEM -> "System"
+          AppLanguage.ENGLISH -> "English"
+          AppLanguage.CHINESE_SIMPLIFIED -> "中文"
+        }
+      "${appSettings.themeMode.label} • $paletteLabel • $langLabel • ${appSettings.appIconStyle.label}"
     }
     SettingsSection.CODE_EDITOR ->
       "${appSettings.codeFontSizeSp}sp • ${appSettings.smaliSyntaxTheme.shortLabel} • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"

@@ -107,10 +107,17 @@ enum class AppIconStyle(
   }
 }
 
+enum class AppLanguage(val code: String, val displayNameRes: Int) {
+  SYSTEM("system", R.string.language_system),
+  ENGLISH("en", R.string.language_english),
+  CHINESE_SIMPLIFIED("zh", R.string.language_chinese),
+}
+
 fun defaultDynamicColorForDevice(sdkInt: Int = Build.VERSION.SDK_INT): Boolean = sdkInt >= Build.VERSION_CODES.S
 
 data class AppSettings(
   val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
+  val appLanguage: AppLanguage = AppLanguage.SYSTEM,
   val appIconStyle: AppIconStyle = AppIconStyle.DEFAULT,
   val dynamicColor: Boolean = defaultDynamicColorForDevice(),
   val accentSeedHex: String = "#2EE59D",
@@ -130,6 +137,7 @@ class AppPreferences(private val context: Context) {
 
   private object Keys {
     val THEME_MODE = stringPreferencesKey("theme_mode")
+    val APP_LANGUAGE = stringPreferencesKey("app_language")
     val APP_ICON_STYLE = stringPreferencesKey("app_icon_style")
     val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
     val ACCENT_SEED_HEX = stringPreferencesKey("accent_seed_hex")
@@ -149,6 +157,9 @@ class AppPreferences(private val context: Context) {
       themeMode =
         prefs[Keys.THEME_MODE]?.let { runCatching { AppThemeMode.valueOf(it) }.getOrNull() }
           ?: defaults.themeMode,
+      appLanguage =
+        prefs[Keys.APP_LANGUAGE]?.let { runCatching { AppLanguage.valueOf(it) }.getOrNull() }
+          ?: defaults.appLanguage,
       appIconStyle =
         prefs[Keys.APP_ICON_STYLE]?.let { runCatching { AppIconStyle.valueOf(it) }.getOrNull() }
           ?: defaults.appIconStyle,
@@ -176,6 +187,7 @@ class AppPreferences(private val context: Context) {
     settings: AppSettings,
   ) {
     prefs[Keys.THEME_MODE] = settings.themeMode.name
+    prefs[Keys.APP_LANGUAGE] = settings.appLanguage.name
     prefs[Keys.APP_ICON_STYLE] = settings.appIconStyle.name
     prefs[Keys.DYNAMIC_COLOR] = settings.dynamicColor
     prefs[Keys.ACCENT_SEED_HEX] =

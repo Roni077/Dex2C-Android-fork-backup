@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dex2C Studio</string>
+    <string name="nav_home">首页</string>
+    <string name="nav_classes">类列表</string>
+    <string name="nav_build">构建</string>
+    <string name="nav_config">流水线</string>
+    <string name="nav_cloud">云端构建</string>
+    <string name="nav_settings">设置</string>
+
+    <string name="cloud_title">GitHub 云端 Dex2C</string>
+    <string name="cloud_subtitle">通过设备流登录，配置私有仓库与 dex2c.yml，并在 GitHub Actions 上构建签名 APK</string>
+    <string name="cloud_step_auth">1. GitHub 设备流登录</string>
+    <string name="cloud_step_repo">2. 私有仓库与 dex2c.yml 配置</string>
+    <string name="cloud_step_build">3. 调度云端 Dex2C 构建</string>
+    <string name="cloud_open_device_url">打开 github.com/login/device</string>
+    <string name="cloud_sign_in_device">继续使用 GitHub 账号</string>
+    <string name="action_continue_with_github">继续使用 GitHub 账号</string>
+    <string name="github_device_url">https://github.com/login/device</string>
+    <string name="github_device_code_label">在 GitHub 上输入此 8 位代码</string>
+    <string name="github_device_open_browser">在浏览器中打开</string>
+    <string name="github_device_waiting">等待 GitHub 授权中…</string>
+    <string name="github_device_cli_badge">gh CLI 设备流</string>
+    <string name="cloud_init_repo_btn">配置私有仓库并初始化 dex2c.yml</string>
+    <string name="cloud_run_build_btn">运行云端 Dex2C 构建</string>
+    <string name="cloud_save_signed_apk">保存已签名 APK</string>
+    <string name="cloud_save_build_log">保存构建日志</string>
+
+    <string name="settings_title">设置</string>
+    <string name="settings_subtitle">主题、编辑器、DEX 解析器与云端 NDK</string>
+
+    <string name="hero_title">Dex2C 原生工作台</string>
+    <string name="hero_subtitle">解析 Dalvik DEX 二进制，检查字节码，并将受保护的方法转译为 JNI C/C++</string>
+    <string name="hero_banner_desc">Dex2C 字节码转 C 原生代码横幅</string>
+
+    <string name="action_open_file">选择 APK / DEX</string>
+    <string name="action_browse_storage">浏览设备存储</string>
+    <string name="action_inspect_self_apk">检查内置 APK</string>
+    <string name="action_select_app_classes">自动选择应用类</string>
+    <string name="action_clear_selection">清除选择</string>
+    <string name="action_copy_code">复制代码</string>
+    <string name="action_back">返回</string>
+
+    <string name="picker_title">选择 APK 或 DEX 二进制文件</string>
+    <string name="picker_tab_storage">文件存储</string>
+    <string name="picker_tab_apps">已安装应用</string>
+    <string name="picker_tab_recent">最近使用</string>
+    <string name="picker_storage_title">从下载与文件中打开</string>
+    <string name="picker_storage_desc">通过 Android 文件选择器选择任意 .apk 文件、单个 .dex 二进制，或多选多个 .dex 文件。</string>
+    <string name="picker_search_apps">按名称或包名过滤已安装应用…</string>
+    <string name="picker_recent_empty">暂无最近打开的 APK 或 DEX 文件。</string>
+    <string name="picker_apps_empty">没有匹配过滤条件的可启动应用。</string>
+    <string name="picker_clear_recent">清空历史</string>
+
+    <string name="preview_title">APK 与 DEX 容器预览</string>
+    <string name="preview_dex_section">选择要加载的 DEX 容器</string>
+    <string name="preview_abis_section">内嵌原生 ABI 架构</string>
+    <string name="preview_load_dex">加载选中的 DEX</string>
+    <string name="preview_staging_loading">正在检查 APK 归档与清单…</string>
+
+    <string name="label_selected_methods">已选择转译为 C</string>
+    <string name="label_search_classes">搜索类、包或方法…</string>
+    <string name="chip_hide_framework">仅应用</string>
+    <string name="chip_has_bytecode">含字节码</string>
+    <string name="chip_selected_only">仅已选</string>
+    <string name="chip_view_tree">树状</string>
+    <string name="chip_view_flat">平铺</string>
+    <string name="label_default_package">(默认包)</string>
+
+    <string name="tab_dalvik">Dalvik IR</string>
+    <string name="tab_smali">Smali</string>
+    <string name="tab_blocks">基本块</string>
+    <string name="tab_transpiled_c">JNI C/C++</string>
+    <string name="tab_dex_meta">DEX 元数据</string>
+
+    <string name="cfg_empty_title">无控制流图 (CFG)</string>
+    <string name="cfg_empty_body">抽象方法、原生方法或接口方法不包含可拆分为基本块的 Dalvik 字节码指令。</string>
+    <string name="cfg_payloads_title">已解码负载</string>
+    <string name="cfg_predecessors_label">前驱块</string>
+    <string name="cfg_outgoing_label">后继块</string>
+
+    <string name="action_view_smali">查看 Smali</string>
+    <string name="action_class_smali">类 Smali 代码</string>
+    <string name="action_export_smali">保存 .smali</string>
+    <string name="action_search_smali">搜索 Smali</string>
+    <string name="smali_search_hint">搜索指令、方法、类型…</string>
+    <string name="smali_no_matches">无匹配项</string>
+    <string name="smali_disassembling">正在使用 dexlib2 与 baksmali 反编译 Smali…</string>
+    <string name="smali_empty_title">无 Smali 输出</string>
+    <string name="smali_empty_body">无法从已加载的 DEX 文件反编译该类。</string>
+    <string name="smali_exported_msg">已保存 Smali 类文件</string>
+    <string name="filter_mode_builder">规则构建器</string>
+    <string name="filter_mode_raw">原始 filter.txt</string>
+    <string name="filter_add_rule">添加规则</string>
+    <string name="filter_sync_selection">将选择同步到通配符规则</string>
+    <string name="filter_whitelist">白名单</string>
+    <string name="filter_blacklist">黑名单 (!)</string>
+
+    <string name="config_title">转译流水线</string>
+    <string name="config_subtitle">配置 JNI 符号绑定、混淆通道与 NDK 构建输出</string>
+    <string name="config_jni_binding">JNI 符号绑定</string>
+    <string name="config_target_lang">目标 C/C++ 标准</string>
+    <string name="config_protection_passes">混淆与安全通道</string>
+    <string name="config_string_xor">字符串 XOR 加密</string>
+    <string name="config_string_xor_desc">将常量字符串字面量编码为 XOR 掩码字节数组并在栈上解密</string>
+    <string name="config_cf_flattening">控制流平坦化</string>
+    <string name="config_cf_flattening_desc">将分支转换为 switch(pc_state) 调度器循环</string>
+    <string name="config_null_guards">JNI 空指针防护</string>
+    <string name="config_null_guards_desc">在字段和方法调用之前插入显式 null 检查</string>
+    <string name="config_filter_rules">类过滤规则 (dcc 格式)</string>
+    <string name="config_module_name">NDK 动态库名称</string>
+    <string name="config_include_regex">包含前缀 / 正则</string>
+    <string name="config_exclude_regex">排除前缀 / 正则</string>
+    <string name="config_apply_filters">应用过滤规则</string>
+    <string name="pipeline_tab_loader">加载器</string>
+    <string name="pipeline_tab_ndk_passes">NDK 与通道</string>
+    <string name="pipeline_tab_filters">过滤规则</string>
+    <string name="cloud_stage_setup">配置</string>
+    <string name="cloud_stage_dispatch">调度</string>
+    <string name="cloud_stage_monitor">监控</string>
+    <string name="config_d2c_flags">codehasan/dex2c 与加载器标志</string>
+    <string name="config_allow_init">允许 &lt;init&gt; 构造函数</string>
+    <string name="config_allow_init_desc">在原生转译中包含 &lt;init&gt; 构造方法；必要时可在 filter.txt 中排除</string>
+    <string name="config_skip_synthetic">跳过合成与协程 (--skip-synthetic)</string>
+    <string name="config_skip_synthetic_desc">排除合成 lambda、Compose 单例与 invokeSuspend 协程状态机，避免 NDK C++ 寄存器类型冲突</string>
+    <string name="config_loader_mode">应用加载器策略</string>
+    <string name="config_custom_loader">自定义加载器类 (--custom-loader)</string>
+    <string name="config_force_custom_loader">强制使用自定义加载器</string>
+    <string name="config_force_custom_loader_desc">覆盖 APK 中现有的 Application 类；除非必要请保持关闭</string>
+    <string name="config_target_abis">目标 NDK ABI (Application.mk)</string>
+    <string name="config_filter_txt_label">filter.txt 规则 (! 前缀表示排除)</string>
+    <string name="config_import_filter">导入 filter.txt</string>
+    <string name="config_import_dcc_cfg">导入 dcc.cfg</string>
+
+    <string name="config_ollvm_title">OLLVM 编译器加固</string>
+    <string name="config_ollvm_desc">通过 NDK r25c-ollvm 编译的原生 Obfuscator-LLVM 通道</string>
+    <string name="config_ollvm_enable">启用 OLLVM 加固通道</string>
+    <string name="config_ollvm_fla">控制流平坦化 (-mllvm -fla)</string>
+    <string name="config_ollvm_fla_desc">将基本块转换为状态机调度 switch 以混淆控制流图</string>
+    <string name="config_ollvm_sub">指令替换 (-mllvm -sub)</string>
+    <string name="config_ollvm_sub_desc">用复杂位运算/布尔表达式替换算术指令</string>
+    <string name="config_ollvm_bcf">虚假控制流 (-mllvm -bcf)</string>
+    <string name="config_ollvm_bcf_desc">注入不透明谓词与无效死代码执行分支</string>
+    <string name="config_ollvm_split">基本块分割 (-mllvm -split)</string>
+    <string name="config_ollvm_split_desc">在平坦化之前拆分基本块以进一步分散控制流</string>
+    <string name="config_ollvm_sobf">LLVM 字符串混淆 (-mllvm -sobf)</string>
+    <string name="config_ollvm_sobf_desc">在 LLVM IR 层直接加密字面量字符串</string>
+    <string name="config_ollvm_16kb">Android 15 16 KB 页面对齐</string>
+    <string name="config_ollvm_16kb_desc">使用 max-page-size=16384 对齐 ELF 共享库，满足 Google Play 16 KB 页面大小要求</string>
+    <string name="config_ollvm_custom_flags">自定义 OLLVM / Clang 标志</string>
+    <string name="config_ollvm_custom_flags_desc">附加到 LOCAL_CPPFLAGS 的额外编译器参数</string>
+    <string name="engine_codehasan_title">codehasan/dex2c 原生核心</string>
+    <string name="engine_codehasan_subtitle">支持原生 OLLVM 与 16 KB 页面对齐的 AOT Dalvik 转 C++ 编译器</string>
+
+    <string name="msg_copied_clipboard">已复制到剪贴板</string>
+    <string name="msg_zip_exported">已成功导出 NDK 代码包</string>
+    <string name="msg_loading_dex">正在解析 DEX 二进制表…</string>
+
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_next">下一步</string>
+    <string name="onboarding_get_started">立即开始</string>
+    <string name="onboarding_done">完成</string>
+    <string name="onboarding_tour_desc">Dex2C Studio 流水线插图</string>
+    <string name="settings_replay_onboarding">重播向导与初始设置</string>
+
+    <string name="settings_category_language">语言</string>
+    <string name="language_title">应用语言</string>
+    <string name="language_desc">选择界面显示语言</string>
+    <string name="language_system">跟随系统</string>
+    <string name="language_english">English (英语)</string>
+    <string name="language_chinese">简体中文 (Simplified Chinese)</string>
+
+    <string name="cloud_pick_apk">选择 APK</string>
+    <string name="cloud_use_live_apk">使用 base.apk</string>
+    <string name="action_delete_class">从 DEX 中删除该类？</string>
+    <string name="action_delete">删除</string>
+    <string name="action_cancel">取消</string>
+    <string name="label_collapse">收起</string>
+    <string name="label_reset_filters">重置过滤条件</string>
+    <string name="label_all_dexes">所有已加载 DEX</string>
+    <string name="recent_apk_dex_title">最近使用的 APK 与 DEX</string>
+</resources>

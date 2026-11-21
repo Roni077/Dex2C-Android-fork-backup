@@ -178,7 +178,7 @@ fun PackageFolderRow(
           isApkRootPackage -> MaterialTheme.colorScheme.primary
           expanded -> MaterialTheme.colorScheme.primary
           isApkBranch || selectedCount > 0 -> MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
-          else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
+          else -> MaterialTheme.colorScheme.secondary
         },
       modifier = Modifier.size(20.dp),
     )
@@ -463,13 +463,20 @@ fun ClassTypeBadge(
     when {
       isInterface -> MaterialTheme.colorScheme.tertiary
       isEnum -> MaterialTheme.colorScheme.secondary
-      else -> Color(0xFF4A76C5)
+      else -> MaterialTheme.colorScheme.primary
+    }
+
+  val badgeContentColor =
+    when {
+      isInterface -> MaterialTheme.colorScheme.onTertiary
+      isEnum -> MaterialTheme.colorScheme.onSecondary
+      else -> MaterialTheme.colorScheme.onPrimary
     }
 
   Surface(
     shape = CircleShape,
     color = badgeColor,
-    contentColor = Color.White,
+    contentColor = badgeContentColor,
     modifier = modifier.size(22.dp),
   ) {
     Box(contentAlignment = Alignment.Center) {
