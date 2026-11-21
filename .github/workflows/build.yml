@@ -163,13 +163,13 @@ jobs:
             echo "### Debug & Test Stage"
             echo "- **JDK**: 21 (Temurin)"
             echo "- **Gradle**: 9.4.1 (Wrapper)"
-            echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, x86_64) via \`cargo-ndk\`"
+            echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, armeabi-v7a) via \`cargo-ndk\`"
             echo "- **Unit Tests**: ${TEST_STATUS}"
             echo "- **Debug APK**: :app:assembleDebug -> dex2c-studio-debug-apk"
           } >> "$GITHUB_STEP_SUMMARY"
 
   release-build:
-    name: Build Release APK & AAB
+    name: Build Release APKs
     needs: verify-and-debug
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.build_release }}
     runs-on: ubuntu-latest
@@ -286,22 +286,14 @@ jobs:
           ls -la ../app/src/main/jniLibs/arm64-v8a/
           ls -la ../app/src/main/jniLibs/armeabi-v7a/
 
-      - name: Assemble Release APK & Bundle AAB
-        run: ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
+      - name: Assemble Release APKs
+        run: ./gradlew :app:assembleRelease --stacktrace
 
       - name: Upload Release APK artifacts (arm64, armv7, universal)
         uses: actions/upload-artifact@v6
         with:
           name: dex2c-studio-release-apks
           path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Upload Release AAB artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: dex2c-studio-release-aab
-          path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 14
 
@@ -315,7 +307,6 @@ jobs:
             echo "- **Rust Native Engine**: \`librust_dex2c.so\` (arm64-v8a, armeabi-v7a) via \`cargo-ndk\`"
             echo "- **Signing Mode**: ${SIGNING_MODE:-Unknown}"
             echo "- **Release APKs**: \`:app:assembleRelease\` -> artifact \`dex2c-studio-release-apks\`"
-            echo "- **Release AAB**: \`:app:bundleRelease\` -> artifact \`dex2c-studio-release-aab\`"
             echo ""
             echo "#### Generated Release APKs & Size Breakdown"
             for apk in app/build/outputs/apk/release/*.apk; do
