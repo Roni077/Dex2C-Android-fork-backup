@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\MainActivity.kt": {
-    "mtime": 1795279871.1916876,
-    "ast_hash": "55f30eaeb0bfc4c261e003d7c8b29631",
+    "mtime": 1795324487.448197,
+    "ast_hash": "280dcdf395544753ee65f38229629e2a",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\ApkMetadataInspector.kt": {
@@ -1507,6 +1507,11 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\qq\\Screenshot_20261121-211307_Dex2C Studio.jpg": {
     "mtime": 1795276078.4320438,
     "ast_hash": "461b3108f623984e9d3f8e672fc2e805",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ui\\MainActivityStartupRobolectricTest.kt": {
+    "mtime": 1795324519.4410403,
+    "ast_hash": "1a8b9752582e841dd464f81137cafede",
     "semantic_hash": ""
   }
 }

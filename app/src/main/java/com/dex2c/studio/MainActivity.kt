@@ -4,15 +4,21 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
+import android.content.res.AssetManager
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -154,6 +160,16 @@ private data class NavDestinationItem(
   val testTag: String,
 )
 
+private class LocalizedActivityContext(
+  private val baseActivity: ComponentActivity,
+  private val configurationContext: Context,
+) : ContextWrapper(baseActivity), ActivityResultRegistryOwner {
+  override fun getResources(): Resources = configurationContext.resources
+  override fun getAssets(): AssetManager = configurationContext.assets
+  override val activityResultRegistry: ActivityResultRegistry
+    get() = baseActivity.activityResultRegistry
+}
+
 class MainActivity : ComponentActivity() {
   private var pendingDeepLink by mutableStateOf<CloudDeepLinkTarget?>(null)
 
@@ -209,12 +225,14 @@ class MainActivity : ComponentActivity() {
         val config = android.content.res.Configuration(context.resources.configuration).apply {
           setLocale(currentLocale)
         }
-        context.createConfigurationContext(config)
+        val configContext = context.createConfigurationContext(config)
+        LocalizedActivityContext(this@MainActivity, configContext)
       }
 
       CompositionLocalProvider(
         LocalConfiguration provides localizedConfiguration,
         LocalContext provides localizedContext,
+        LocalActivityResultRegistryOwner provides this@MainActivity,
       ) {
         Dex2cTheme(
           themeMode = appSettings.themeMode,

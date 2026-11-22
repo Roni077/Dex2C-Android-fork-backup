@@ -655,16 +655,43 @@
       "label": "NavDestinationItem",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L149",
+      "source_location": "L155",
       "id": "studio_mainactivity_navdestinationitem",
       "community": 17,
       "norm_label": "navdestinationitem"
     },
     {
+      "label": "LocalizedActivityContext",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L163",
+      "id": "studio_mainactivity_localizedactivitycontext",
+      "community": 17,
+      "norm_label": "localizedactivitycontext"
+    },
+    {
+      "label": ".getResources()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L167",
+      "id": "studio_mainactivity_localizedactivitycontext_getresources",
+      "community": 17,
+      "norm_label": ".getresources()"
+    },
+    {
+      "label": ".getAssets()",
+      "file_type": "code",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L168",
+      "id": "studio_mainactivity_localizedactivitycontext_getassets",
+      "community": 17,
+      "norm_label": ".getassets()"
+    },
+    {
       "label": "MainActivity",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L157",
+      "source_location": "L173",
       "id": "studio_mainactivity_mainactivity",
       "community": 17,
       "norm_label": "mainactivity"
@@ -673,7 +700,7 @@
       "label": ".onCreate()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L160",
+      "source_location": "L176",
       "id": "studio_mainactivity_mainactivity_oncreate",
       "community": 17,
       "norm_label": ".oncreate()"
@@ -682,7 +709,7 @@
       "label": ".onNewIntent()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L245",
+      "source_location": "L263",
       "id": "studio_mainactivity_mainactivity_onnewintent",
       "community": 17,
       "norm_label": ".onnewintent()"
@@ -691,7 +718,7 @@
       "label": "Dex2cApp()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L252",
+      "source_location": "L270",
       "id": "studio_mainactivity_dex2capp",
       "community": 17,
       "norm_label": "dex2capp()"
@@ -700,7 +727,7 @@
       "label": "Dex2cFloatingBottomBar()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L989",
+      "source_location": "L1007",
       "id": "studio_mainactivity_dex2cfloatingbottombar",
       "community": 17,
       "norm_label": "dex2cfloatingbottombar()"
@@ -709,7 +736,7 @@
       "label": "Dex2cFloatingBottomBarItem()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1042",
+      "source_location": "L1060",
       "id": "studio_mainactivity_dex2cfloatingbottombaritem",
       "community": 17,
       "norm_label": "dex2cfloatingbottombaritem()"
@@ -718,7 +745,7 @@
       "label": "isErrorStatusMessage()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1182",
+      "source_location": "L1200",
       "id": "studio_mainactivity_iserrorstatusmessage",
       "community": 17,
       "norm_label": "iserrorstatusmessage()"
@@ -727,7 +754,7 @@
       "label": "Dex2cThemedSnackbarHost()",
       "file_type": "code",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
-      "source_location": "L1192",
+      "source_location": "L1210",
       "id": "studio_mainactivity_dex2cthemedsnackbarhost",
       "community": 17,
       "norm_label": "dex2cthemedsnackbarhost()"
@@ -1368,7 +1395,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/CloudModels.kt",
       "source_location": "L96",
       "id": "cloud_cloudmodels_githubjobtelemetry",
-      "community": 2,
+      "community": 26,
       "norm_label": "githubjobtelemetry"
     },
     {
@@ -1809,7 +1836,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
       "source_location": "L315",
       "id": "cloud_githubapiclient_githubapiclient_getrunjobtelemetry",
-      "community": 2,
+      "community": 26,
       "norm_label": ".getrunjobtelemetry()"
     },
     {
@@ -1818,7 +1845,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/GitHubApiClient.kt",
       "source_location": "L351",
       "id": "cloud_githubapiclient_githubapiclient_getrunsteps",
-      "community": 2,
+      "community": 26,
       "norm_label": ".getrunsteps()"
     },
     {
@@ -1944,7 +1971,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_cloud_jsonmini_kt",
-      "community": 5,
+      "community": 101,
       "norm_label": "jsonmini.kt"
     },
     {
@@ -1953,7 +1980,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L7",
       "id": "cloud_jsonmini_jsonmini",
-      "community": 5,
+      "community": 101,
       "norm_label": "jsonmini"
     },
     {
@@ -1962,7 +1989,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L9",
       "id": "cloud_jsonmini_jsonmini_parseobject",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parseobject()"
     },
     {
@@ -1971,7 +1998,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L11",
       "id": "cloud_jsonmini_jsonmini_escape",
-      "community": 5,
+      "community": 101,
       "norm_label": ".escape()"
     },
     {
@@ -1980,7 +2007,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L25",
       "id": "cloud_jsonmini_jsonmini_objectjson",
-      "community": 5,
+      "community": 101,
       "norm_label": ".objectjson()"
     },
     {
@@ -1989,7 +2016,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L36",
       "id": "cloud_jsonmini_jsonmini_valuejson",
-      "community": 5,
+      "community": 101,
       "norm_label": ".valuejson()"
     },
     {
@@ -1998,7 +2025,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L48",
       "id": "cloud_jsonmini_parser",
-      "community": 5,
+      "community": 101,
       "norm_label": "parser"
     },
     {
@@ -2007,7 +2034,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L51",
       "id": "cloud_jsonmini_parser_parseobject",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parseobject()"
     },
     {
@@ -2016,7 +2043,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L82",
       "id": "cloud_jsonmini_parser_parsevalue",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parsevalue()"
     },
     {
@@ -2025,7 +2052,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L96",
       "id": "cloud_jsonmini_parser_parsearray",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parsearray()"
     },
     {
@@ -2034,7 +2061,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L120",
       "id": "cloud_jsonmini_parser_parsestring",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parsestring()"
     },
     {
@@ -2043,7 +2070,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L151",
       "id": "cloud_jsonmini_parser_parseliteral",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parseliteral()"
     },
     {
@@ -2052,7 +2079,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L159",
       "id": "cloud_jsonmini_parser_parsenumber",
-      "community": 5,
+      "community": 101,
       "norm_label": ".parsenumber()"
     },
     {
@@ -2061,7 +2088,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L167",
       "id": "cloud_jsonmini_parser_skipwhitespace",
-      "community": 5,
+      "community": 101,
       "norm_label": ".skipwhitespace()"
     },
     {
@@ -2070,7 +2097,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/cloud/JsonMini.kt",
       "source_location": "L171",
       "id": "cloud_jsonmini_parser_peek",
-      "community": 5,
+      "community": 101,
       "norm_label": ".peek()"
     },
     {
@@ -2880,7 +2907,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_dex_dalvikdisassembler_kt",
-      "community": 103,
+      "community": 19,
       "norm_label": "dalvikdisassembler.kt"
     },
     {
@@ -2889,7 +2916,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L6",
       "id": "dex_dalvikdisassembler_dalvikdisassembler",
-      "community": 103,
+      "community": 19,
       "norm_label": "dalvikdisassembler"
     },
     {
@@ -2898,7 +2925,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L8",
       "id": "dex_dalvikdisassembler_refkind",
-      "community": 103,
+      "community": 19,
       "norm_label": "refkind"
     },
     {
@@ -2907,7 +2934,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L16",
       "id": "dex_dalvikdisassembler_fmt",
-      "community": 103,
+      "community": 19,
       "norm_label": "fmt"
     },
     {
@@ -2916,7 +2943,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L46",
       "id": "dex_dalvikdisassembler_opspec",
-      "community": 103,
+      "community": 19,
       "norm_label": "opspec"
     },
     {
@@ -2925,7 +2952,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L55",
       "id": "dex_dalvikdisassembler_reg",
-      "community": 103,
+      "community": 19,
       "norm_label": "reg()"
     },
     {
@@ -2934,7 +2961,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L206",
       "id": "dex_dalvikdisassembler_dalvikdisassembler_disassemble",
-      "community": 103,
+      "community": 19,
       "norm_label": ".disassemble()"
     },
     {
@@ -2943,7 +2970,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L657",
       "id": "dex_dalvikdisassembler_dalvikdisassembler_readwordpairint",
-      "community": 103,
+      "community": 19,
       "norm_label": ".readwordpairint()"
     },
     {
@@ -2952,7 +2979,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L662",
       "id": "dex_dalvikdisassembler_dalvikdisassembler_parsetryblocks",
-      "community": 103,
+      "community": 19,
       "norm_label": ".parsetryblocks()"
     },
     {
@@ -2961,7 +2988,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L701",
       "id": "dex_dalvikdisassembler_dalvikdisassembler_signextend4",
-      "community": 103,
+      "community": 19,
       "norm_label": ".signextend4()"
     },
     {
@@ -2970,7 +2997,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L703",
       "id": "dex_dalvikdisassembler_lebreader",
-      "community": 103,
+      "community": 19,
       "norm_label": "lebreader"
     },
     {
@@ -2979,7 +3006,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L704",
       "id": "dex_dalvikdisassembler_lebreader_readuleb128",
-      "community": 103,
+      "community": 19,
       "norm_label": ".readuleb128()"
     },
     {
@@ -2988,7 +3015,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DalvikDisassembler.kt",
       "source_location": "L716",
       "id": "dex_dalvikdisassembler_lebreader_readsleb128",
-      "community": 103,
+      "community": 19,
       "norm_label": ".readsleb128()"
     },
     {
@@ -3159,7 +3186,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexHelper.kt",
       "source_location": "L14",
       "id": "dex_dexhelper_dexhelper_getmethods",
-      "community": 44,
+      "community": 19,
       "norm_label": ".getmethods()"
     },
     {
@@ -3168,7 +3195,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexHelper.kt",
       "source_location": "L20",
       "id": "dex_dexhelper_dexhelper_getfields",
-      "community": 81,
+      "community": 112,
       "norm_label": ".getfields()"
     },
     {
@@ -3312,7 +3339,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L23",
       "id": "dex_dexmodels_dexheaderinfo",
-      "community": 81,
+      "community": 13,
       "norm_label": "dexheaderinfo"
     },
     {
@@ -3330,7 +3357,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L53",
       "id": "dex_dexmodels_dexmethodhandleinfo",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexmethodhandleinfo"
     },
     {
@@ -3348,7 +3375,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L70",
       "id": "dex_dexmodels_dexhiddenapisummary",
-      "community": 81,
+      "community": 15,
       "norm_label": "dexhiddenapisummary"
     },
     {
@@ -3357,7 +3384,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L76",
       "id": "dex_dexmodels_dexannotationentry",
-      "community": 65,
+      "community": 15,
       "norm_label": "dexannotationentry"
     },
     {
@@ -3366,7 +3393,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L82",
       "id": "dex_dexmodels_dexdebuglineentry",
-      "community": 65,
+      "community": 15,
       "norm_label": "dexdebuglineentry"
     },
     {
@@ -3384,7 +3411,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L101",
       "id": "dex_dexmodels_dexproto",
-      "community": 44,
+      "community": 19,
       "norm_label": "dexproto"
     },
     {
@@ -3393,7 +3420,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L107",
       "id": "dex_dexmodels_dexfieldref",
-      "community": 81,
+      "community": 112,
       "norm_label": "dexfieldref"
     },
     {
@@ -3402,7 +3429,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L113",
       "id": "dex_dexmodels_dexmethodref",
-      "community": 44,
+      "community": 19,
       "norm_label": "dexmethodref"
     },
     {
@@ -3411,7 +3438,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L118",
       "id": "dex_dexmodels_dexmethodref_prettysignature",
-      "community": 65,
+      "community": 15,
       "norm_label": ".prettysignature()"
     },
     {
@@ -3420,7 +3447,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L124",
       "id": "dex_dexmodels_dexmethodref_jnisignature",
-      "community": 44,
+      "community": 19,
       "norm_label": ".jnisignature()"
     },
     {
@@ -3429,7 +3456,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L128",
       "id": "dex_dexmodels_dexmethodref_dalviksignature",
-      "community": 44,
+      "community": 19,
       "norm_label": ".dalviksignature()"
     },
     {
@@ -3438,7 +3465,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L133",
       "id": "dex_dexmodels_dexcatchhandler",
-      "community": 103,
+      "community": 19,
       "norm_label": "dexcatchhandler"
     },
     {
@@ -3447,7 +3474,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L138",
       "id": "dex_dexmodels_dextryblock",
-      "community": 103,
+      "community": 19,
       "norm_label": "dextryblock"
     },
     {
@@ -3510,7 +3537,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L211",
       "id": "dex_dexmodels_dexcodemeta",
-      "community": 44,
+      "community": 19,
       "norm_label": "dexcodemeta"
     },
     {
@@ -3528,7 +3555,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L229",
       "id": "dex_dexmodels_dexencodedmethod",
-      "community": 44,
+      "community": 19,
       "norm_label": "dexencodedmethod"
     },
     {
@@ -3537,7 +3564,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L254",
       "id": "dex_dexmodels_dexclassinfo",
-      "community": 15,
+      "community": 13,
       "norm_label": "dexclassinfo"
     },
     {
@@ -3546,7 +3573,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L297",
       "id": "dex_dexmodels_dexclassinfo_isframeworkorlibraryclass",
-      "community": 15,
+      "community": 13,
       "norm_label": ".isframeworkorlibraryclass()"
     },
     {
@@ -3708,7 +3735,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexModels.kt",
       "source_location": "L550",
       "id": "dex_dexmodels_descriptortosimplename",
-      "community": 65,
+      "community": 15,
       "norm_label": "descriptortosimplename()"
     },
     {
@@ -3753,7 +3780,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_dex_dexparser_kt",
-      "community": 81,
+      "community": 13,
       "norm_label": "dexparser.kt"
     },
     {
@@ -3807,7 +3834,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L87",
       "id": "dex_dexparser_dexparser_parsedex",
-      "community": 81,
+      "community": 13,
       "norm_label": ".parsedex()"
     },
     {
@@ -3834,7 +3861,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L451",
       "id": "dex_dexparser_dexparser_parsemethodhandles",
-      "community": 81,
+      "community": 15,
       "norm_label": ".parsemethodhandles()"
     },
     {
@@ -3843,7 +3870,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L493",
       "id": "dex_dexparser_dexparser_parsecallsites",
-      "community": 81,
+      "community": 13,
       "norm_label": ".parsecallsites()"
     },
     {
@@ -3852,7 +3879,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L551",
       "id": "dex_dexparser_dexparser_parsehiddenapisummary",
-      "community": 81,
+      "community": 15,
       "norm_label": ".parsehiddenapisummary()"
     },
     {
@@ -3861,7 +3888,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L573",
       "id": "dex_dexparser_dexparser_readcodemeta",
-      "community": 81,
+      "community": 13,
       "norm_label": ".readcodemeta()"
     },
     {
@@ -3870,7 +3897,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L593",
       "id": "dex_dexparser_dexparser_readmutf8string",
-      "community": 81,
+      "community": 13,
       "norm_label": ".readmutf8string()"
     },
     {
@@ -3933,7 +3960,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L721",
       "id": "dex_dexparser_ulebreader",
-      "community": 81,
+      "community": 13,
       "norm_label": "ulebreader"
     },
     {
@@ -3942,7 +3969,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/DexParser.kt",
       "source_location": "L722",
       "id": "dex_dexparser_ulebreader_readuleb128",
-      "community": 81,
+      "community": 13,
       "norm_label": ".readuleb128()"
     },
     {
@@ -4005,7 +4032,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L1",
       "id": "app_src_main_java_com_dex2c_studio_dex_smaliclassdisassembler_kt",
-      "community": 5,
+      "community": 44,
       "norm_label": "smaliclassdisassembler.kt"
     },
     {
@@ -4014,7 +4041,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L17",
       "id": "dex_smaliclassdisassembler_smalimethodspan",
-      "community": 5,
+      "community": 44,
       "norm_label": "smalimethodspan"
     },
     {
@@ -4023,7 +4050,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L24",
       "id": "dex_smaliclassdisassembler_smalidisassemblyresult",
-      "community": 5,
+      "community": 44,
       "norm_label": "smalidisassemblyresult"
     },
     {
@@ -4032,7 +4059,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L60",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler",
-      "community": 5,
+      "community": 44,
       "norm_label": "smaliclassdisassembler"
     },
     {
@@ -4041,7 +4068,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L66",
       "id": "dex_smaliclassdisassembler_removeeldestentry",
-      "community": 5,
+      "community": 44,
       "norm_label": "removeeldestentry()"
     },
     {
@@ -4050,7 +4077,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L70",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_clearcache",
-      "community": 5,
+      "community": 44,
       "norm_label": ".clearcache()"
     },
     {
@@ -4059,7 +4086,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L76",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_trimcache",
-      "community": 5,
+      "community": 44,
       "norm_label": ".trimcache()"
     },
     {
@@ -4068,7 +4095,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L90",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_cacheddexcount",
-      "community": 5,
+      "community": 44,
       "norm_label": ".cacheddexcount()"
     },
     {
@@ -4077,7 +4104,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L100",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_indexclasseswithdexlib2",
-      "community": 5,
+      "community": 44,
       "norm_label": ".indexclasseswithdexlib2()"
     },
     {
@@ -4086,7 +4113,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L257",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_todexencodedfield",
-      "community": 5,
+      "community": 44,
       "norm_label": ".todexencodedfield()"
     },
     {
@@ -4095,7 +4122,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L277",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_todexencodedmethod",
-      "community": 5,
+      "community": 44,
       "norm_label": ".todexencodedmethod()"
     },
     {
@@ -4104,7 +4131,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L324",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_buildshorty",
-      "community": 5,
+      "community": 44,
       "norm_label": ".buildshorty()"
     },
     {
@@ -4113,7 +4140,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L333",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_computeparameterregistercount",
-      "community": 5,
+      "community": 44,
       "norm_label": ".computeparameterregistercount()"
     },
     {
@@ -4122,7 +4149,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L341",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_disassembleclass",
-      "community": 5,
+      "community": 44,
       "norm_label": ".disassembleclass()"
     },
     {
@@ -4131,7 +4158,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L378",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_extractmethodspans",
-      "community": 5,
+      "community": 44,
       "norm_label": ".extractmethodspans()"
     },
     {
@@ -4140,7 +4167,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L411",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_disassemblemethod",
-      "community": 5,
+      "community": 44,
       "norm_label": ".disassemblemethod()"
     },
     {
@@ -4149,7 +4176,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L474",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_createdefaultbaksmalioptions",
-      "community": 5,
+      "community": 44,
       "norm_label": ".createdefaultbaksmalioptions()"
     },
     {
@@ -4158,7 +4185,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L486",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_getorparsedexbackedfilestatic",
-      "community": 5,
+      "community": 44,
       "norm_label": ".getorparsedexbackedfilestatic()"
     },
     {
@@ -4167,7 +4194,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L493",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_getorparsedexbackedfile",
-      "community": 5,
+      "community": 44,
       "norm_label": ".getorparsedexbackedfile()"
     },
     {
@@ -4176,7 +4203,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/dex/SmaliClassDisassembler.kt",
       "source_location": "L510",
       "id": "dex_smaliclassdisassembler_smaliclassdisassembler_resolveapilevelfordexversion",
-      "community": 5,
+      "community": 44,
       "norm_label": ".resolveapilevelfordexversion()"
     },
     {
@@ -5004,7 +5031,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/transpiler/Dex2cTranspiler.kt",
       "source_location": "L53",
       "id": "transpiler_dex2ctranspiler_streamedfilebuilder_append",
-      "community": 5,
+      "community": 94,
       "norm_label": ".append()"
     },
     {
@@ -7128,7 +7155,7 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/components/DexExplorerSubTabs.kt",
       "source_location": "L233",
       "id": "components_dexexplorersubtabs_dexstringsexplorertab",
-      "community": 125,
+      "community": 100,
       "norm_label": "dexstringsexplorertab()"
     },
     {
@@ -8901,7 +8928,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_dexdisassemblerandsmalitest_kt",
-      "community": 44,
+      "community": 19,
       "norm_label": "dexdisassemblerandsmalitest.kt"
     },
     {
@@ -8910,7 +8937,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L24",
       "id": "studio_dexdisassemblerandsmalitest_dexdisassemblerandsmalitest",
-      "community": 44,
+      "community": 19,
       "norm_label": "dexdisassemblerandsmalitest"
     },
     {
@@ -8919,7 +8946,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L26",
       "id": "studio_dexdisassemblerandsmalitest_dexdisassemblerandsmalitest_parsedex039maplistdebuginfoannotationsandhandles",
-      "community": 44,
+      "community": 19,
       "norm_label": ".parsedex039maplistdebuginfoannotationsandhandles()"
     },
     {
@@ -8928,7 +8955,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L65",
       "id": "studio_dexdisassemblerandsmalitest_dexdisassemblerandsmalitest_smaliclassdisassemblergeneratesvalidsmaliusingdexlib2andbaksmali",
-      "community": 44,
+      "community": 19,
       "norm_label": ".smaliclassdisassemblergeneratesvalidsmaliusingdexlib2andbaksmali()"
     },
     {
@@ -8937,7 +8964,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L106",
       "id": "studio_dexdisassemblerandsmalitest_dexdisassemblerandsmalitest_dalvikdisassemblerdecodespayloadsandcontrolflowgraphbuildsblocksandedges",
-      "community": 44,
+      "community": 19,
       "norm_label": ".dalvikdisassemblerdecodespayloadsandcontrolflowgraphbuildsblocksandedges()"
     },
     {
@@ -8946,7 +8973,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L178",
       "id": "studio_dexdisassemblerandsmalitest_dexdisassemblerandsmalitest_dalvikdisassemblerdecodessparseswitchandfillarraydatapayloads",
-      "community": 44,
+      "community": 19,
       "norm_label": ".dalvikdisassemblerdecodessparseswitchandfillarraydatapayloads()"
     },
     {
@@ -8955,7 +8982,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/DexDisassemblerAndSmaliTest.kt",
       "source_location": "L247",
       "id": "studio_dexdisassemblerandsmalitest_dexdisassemblerandsmalitest_buildsyntheticdex039",
-      "community": 44,
+      "community": 19,
       "norm_label": ".buildsyntheticdex039()"
     },
     {
@@ -9000,7 +9027,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/ExampleRobolectricTest.kt",
       "source_location": "L101",
       "id": "studio_examplerobolectrictest_examplerobolectrictest_onboarding_github_screen_shows_continue_with_github_account_8_digit_code_15min_timer_and_device_link",
-      "community": 6,
+      "community": 2,
       "norm_label": ".`onboarding github screen shows continue with github account, 8-digit code, 15min timer, and device link`()"
     },
     {
@@ -9009,7 +9036,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/ExampleRobolectricTest.kt",
       "source_location": "L181",
       "id": "studio_examplerobolectrictest_examplerobolectrictest_onboarding_shows_step_header_progress_and_swipes_across_intro_about_github_theme_alerts_in_order",
-      "community": 46,
+      "community": 2,
       "norm_label": ".`onboarding shows step header progress and swipes across intro, about, github, theme, alerts in order`()"
     },
     {
@@ -9621,7 +9648,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_transpiler_clangsyntaxvalidationtest_kt",
-      "community": 120,
+      "community": 19,
       "norm_label": "clangsyntaxvalidationtest.kt"
     },
     {
@@ -9630,7 +9657,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L33",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest",
-      "community": 101,
+      "community": 19,
       "norm_label": "clangsyntaxvalidationtest"
     },
     {
@@ -9639,7 +9666,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L35",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_testpackedandsparseswitchcpluspluscompilation",
-      "community": 101,
+      "community": 19,
       "norm_label": ".testpackedandsparseswitchcpluspluscompilation()"
     },
     {
@@ -9648,7 +9675,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L130",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_testjniexceptionhandlingandguardreturnflowcompilation",
-      "community": 101,
+      "community": 19,
       "norm_label": ".testjniexceptionhandlingandguardreturnflowcompilation()"
     },
     {
@@ -9657,7 +9684,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L174",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_testwidearrayanddirectinvocationcompilation",
-      "community": 101,
+      "community": 19,
       "norm_label": ".testwidearrayanddirectinvocationcompilation()"
     },
     {
@@ -9666,7 +9693,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L223",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_testoverloadedstaticsymbolmanglingcompilation",
-      "community": 101,
+      "community": 19,
       "norm_label": ".testoverloadedstaticsymbolmanglingcompilation()"
     },
     {
@@ -9675,7 +9702,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L253",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_testtargetclanguagec11compilation",
-      "community": 101,
+      "community": 19,
       "norm_label": ".testtargetclanguagec11compilation()"
     },
     {
@@ -9684,7 +9711,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L276",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_validatetranspiledbundlewithclang",
-      "community": 101,
+      "community": 19,
       "norm_label": ".validatetranspiledbundlewithclang()"
     },
     {
@@ -9693,7 +9720,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L327",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_performfallbackstructuralsyntaxcheck",
-      "community": 101,
+      "community": 19,
       "norm_label": ".performfallbackstructuralsyntaxcheck()"
     },
     {
@@ -9702,7 +9729,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L343",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_buildsyntheticmethod",
-      "community": 101,
+      "community": 19,
       "norm_label": ".buildsyntheticmethod()"
     },
     {
@@ -9711,7 +9738,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L373",
       "id": "transpiler_clangsyntaxvalidationtest_clangsyntaxvalidationtest_buildsyntheticdex",
-      "community": 101,
+      "community": 19,
       "norm_label": ".buildsyntheticdex()"
     },
     {
@@ -9720,7 +9747,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L423",
       "id": "transpiler_clangsyntaxvalidationtest_clangtoolchain",
-      "community": 120,
+      "community": 19,
       "norm_label": "clangtoolchain"
     },
     {
@@ -9729,7 +9756,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L429",
       "id": "transpiler_clangsyntaxvalidationtest_clanglocator",
-      "community": 120,
+      "community": 19,
       "norm_label": "clanglocator"
     },
     {
@@ -9738,7 +9765,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L430",
       "id": "transpiler_clangsyntaxvalidationtest_clanglocator_findclangtoolchain",
-      "community": 120,
+      "community": 19,
       "norm_label": ".findclangtoolchain()"
     },
     {
@@ -9747,7 +9774,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L472",
       "id": "transpiler_clangsyntaxvalidationtest_clanglocator_scansdkndk",
-      "community": 120,
+      "community": 19,
       "norm_label": ".scansdkndk()"
     },
     {
@@ -9756,7 +9783,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/ClangSyntaxValidationTest.kt",
       "source_location": "L483",
       "id": "transpiler_clangsyntaxvalidationtest_clanglocator_scanndkdir",
-      "community": 120,
+      "community": 19,
       "norm_label": ".scanndkdir()"
     },
     {
@@ -9765,7 +9792,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/FilterRuleOptimizationTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_transpiler_filterruleoptimizationtest_kt",
-      "community": 13,
+      "community": 19,
       "norm_label": "filterruleoptimizationtest.kt"
     },
     {
@@ -9774,7 +9801,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/FilterRuleOptimizationTest.kt",
       "source_location": "L14",
       "id": "transpiler_filterruleoptimizationtest_filterruleoptimizationtest",
-      "community": 13,
+      "community": 19,
       "norm_label": "filterruleoptimizationtest"
     },
     {
@@ -9783,7 +9810,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/FilterRuleOptimizationTest.kt",
       "source_location": "L16",
       "id": "transpiler_filterruleoptimizationtest_filterruleoptimizationtest_createdummyclass",
-      "community": 13,
+      "community": 19,
       "norm_label": ".createdummyclass()"
     },
     {
@@ -9792,7 +9819,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/FilterRuleOptimizationTest.kt",
       "source_location": "L65",
       "id": "transpiler_filterruleoptimizationtest_filterruleoptimizationtest_createdummydex",
-      "community": 13,
+      "community": 19,
       "norm_label": ".createdummydex()"
     },
     {
@@ -9801,7 +9828,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/FilterRuleOptimizationTest.kt",
       "source_location": "L93",
       "id": "transpiler_filterruleoptimizationtest_filterruleoptimizationtest_testdefaultrulesmatchnonexcludedmethods",
-      "community": 13,
+      "community": 19,
       "norm_label": ".testdefaultrulesmatchnonexcludedmethods()"
     },
     {
@@ -9810,7 +9837,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/transpiler/FilterRuleOptimizationTest.kt",
       "source_location": "L118",
       "id": "transpiler_filterruleoptimizationtest_filterruleoptimizationtest_testlargeclasssetevaluationperformance",
-      "community": 13,
+      "community": 19,
       "norm_label": ".testlargeclasssetevaluationperformance()"
     },
     {
@@ -10075,6 +10102,42 @@
       "norm_label": ".testsymbolquickbarinsertssymbols()"
     },
     {
+      "label": "MainActivityStartupRobolectricTest.kt",
+      "file_type": "code",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L1",
+      "id": "app_src_test_java_com_dex2c_studio_ui_mainactivitystartuprobolectrictest_kt",
+      "community": 103,
+      "norm_label": "mainactivitystartuprobolectrictest.kt"
+    },
+    {
+      "label": "MainActivityStartupRobolectricTest",
+      "file_type": "code",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L14",
+      "id": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest",
+      "community": 103,
+      "norm_label": "mainactivitystartuprobolectrictest"
+    },
+    {
+      "label": ".testMainActivityStartupDoesNotCrash()",
+      "file_type": "code",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L17",
+      "id": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest_testmainactivitystartupdoesnotcrash",
+      "community": 103,
+      "norm_label": ".testmainactivitystartupdoesnotcrash()"
+    },
+    {
+      "label": ".testLocalizedActivityContextPreservesRegistryOwnerAndBaseContext()",
+      "file_type": "code",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L29",
+      "id": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest_testlocalizedactivitycontextpreservesregistryownerandbasecontext",
+      "community": 103,
+      "norm_label": ".testlocalizedactivitycontextpreservesregistryownerandbasecontext()"
+    },
+    {
       "label": "SafetyInterlockRobolectricTest.kt",
       "file_type": "code",
       "source_file": "app/src/test/java/com/dex2c/studio/ui/SafetyInterlockRobolectricTest.kt",
@@ -10197,7 +10260,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L1",
       "id": "app_src_test_java_com_dex2c_studio_verification_phase5verificationtest_kt",
-      "community": 20,
+      "community": 19,
       "norm_label": "phase5verificationtest.kt"
     },
     {
@@ -10206,7 +10269,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L56",
       "id": "verification_phase5verificationtest_phase5verificationtest",
-      "community": 20,
+      "community": 19,
       "norm_label": "phase5verificationtest"
     },
     {
@@ -10215,7 +10278,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L62",
       "id": "verification_phase5verificationtest_phase5verificationtest_testsmalireassemblyroundtripintegrity",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testsmalireassemblyroundtripintegrity()"
     },
     {
@@ -10224,7 +10287,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L117",
       "id": "verification_phase5verificationtest_phase5verificationtest_testsmalireassemblysyntaxerrorsafety",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testsmalireassemblysyntaxerrorsafety()"
     },
     {
@@ -10233,7 +10296,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L139",
       "id": "verification_phase5verificationtest_phase5verificationtest_testbytecodestringreplacementroundtrip",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testbytecodestringreplacementroundtrip()"
     },
     {
@@ -10242,7 +10305,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L170",
       "id": "verification_phase5verificationtest_phase5verificationtest_testcppswitchandjniguardclangcompilationzeroerrorszerowarnings",
-      "community": 103,
+      "community": 19,
       "norm_label": ".testcppswitchandjniguardclangcompilationzeroerrorszerowarnings()"
     },
     {
@@ -10251,7 +10314,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L306",
       "id": "verification_phase5verificationtest_phase5verificationtest_testapkrepackingalignmentandsignaturestrippingwithzipalign",
-      "community": 20,
+      "community": 19,
       "norm_label": ".testapkrepackingalignmentandsignaturestrippingwithzipalign()"
     },
     {
@@ -10260,7 +10323,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L433",
       "id": "verification_phase5verificationtest_phase5verificationtest_buildmulticlassdex",
-      "community": 20,
+      "community": 19,
       "norm_label": ".buildmulticlassdex()"
     },
     {
@@ -10269,7 +10332,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L474",
       "id": "verification_phase5verificationtest_phase5verificationtest_buildsyntheticmethod",
-      "community": 44,
+      "community": 19,
       "norm_label": ".buildsyntheticmethod()"
     },
     {
@@ -10278,7 +10341,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L504",
       "id": "verification_phase5verificationtest_phase5verificationtest_buildsyntheticdex",
-      "community": 15,
+      "community": 13,
       "norm_label": ".buildsyntheticdex()"
     },
     {
@@ -10287,7 +10350,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L552",
       "id": "verification_phase5verificationtest_phase5verificationtest_compilewithandroidndkclang",
-      "community": 103,
+      "community": 19,
       "norm_label": ".compilewithandroidndkclang()"
     },
     {
@@ -10296,7 +10359,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L604",
       "id": "verification_phase5verificationtest_zipalignlocator",
-      "community": 20,
+      "community": 19,
       "norm_label": "zipalignlocator"
     },
     {
@@ -10305,7 +10368,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L605",
       "id": "verification_phase5verificationtest_zipalignlocator_findzipalign",
-      "community": 20,
+      "community": 19,
       "norm_label": ".findzipalign()"
     },
     {
@@ -10314,7 +10377,7 @@
       "source_file": "app/src/test/java/com/dex2c/studio/verification/Phase5VerificationTest.kt",
       "source_location": "L633",
       "id": "verification_phase5verificationtest_zipalignlocator_scanbuildtools",
-      "community": 20,
+      "community": 19,
       "norm_label": ".scanbuildtools()"
     },
     {
@@ -16559,6 +16622,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L163",
+      "weight": 1.0,
+      "source": "app_src_main_java_com_dex2c_studio_mainactivity_kt",
+      "target": "studio_mainactivity_localizedactivitycontext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
       "source_location": "L142",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -16625,6 +16698,37 @@
       "confidence_score": 1.0,
       "source": "studio_mainactivity_dex2capp",
       "target": "studio_mainactivity_navdestinationitem"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L167",
+      "weight": 1.0,
+      "source": "studio_mainactivity_localizedactivitycontext",
+      "target": "studio_mainactivity_localizedactivitycontext_getresources",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L168",
+      "weight": 1.0,
+      "source": "studio_mainactivity_localizedactivitycontext",
+      "target": "studio_mainactivity_localizedactivitycontext_getassets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/main/java/com/dex2c/studio/MainActivity.kt",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "studio_mainactivity_mainactivity_oncreate",
+      "target": "studio_mainactivity_localizedactivitycontext",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -19750,9 +19854,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/data/AppPreferences.kt",
       "source_location": "L110",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_src_main_java_com_dex2c_studio_data_apppreferences_kt",
-      "target": "data_apppreferences_applanguage",
-      "confidence_score": 1.0
+      "target": "data_apppreferences_applanguage"
     },
     {
       "relation": "contains",
@@ -29861,9 +29965,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L1985",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ui_dex2cviewmodel_dex2cviewmodel",
-      "target": "ui_dex2cviewmodel_dex2cviewmodel_setapplanguage",
-      "confidence_score": 1.0
+      "target": "ui_dex2cviewmodel_dex2cviewmodel_setapplanguage"
     },
     {
       "relation": "method",
@@ -30809,9 +30913,9 @@
       "source_file": "app/src/main/java/com/dex2c/studio/ui/Dex2cViewModel.kt",
       "source_location": "L1986",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "ui_dex2cviewmodel_dex2cviewmodel_setapplanguage",
-      "target": "ui_dex2cviewmodel_dex2cviewmodel_updateappsettings",
-      "confidence_score": 1.0
+      "target": "ui_dex2cviewmodel_dex2cviewmodel_updateappsettings"
     },
     {
       "relation": "calls",
@@ -38642,6 +38746,36 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "app_src_test_java_com_dex2c_studio_ui_mainactivitystartuprobolectrictest_kt",
+      "target": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest",
+      "target": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest_testmainactivitystartupdoesnotcrash",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app/src/test/java/com/dex2c/studio/ui/MainActivityStartupRobolectricTest.kt",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest",
+      "target": "ui_mainactivitystartuprobolectrictest_mainactivitystartuprobolectrictest_testlocalizedactivitycontextpreservesregistryownerandbasecontext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/src/test/java/com/dex2c/studio/ui/SafetyInterlockRobolectricTest.kt",
       "source_location": "L25",
       "weight": 1.0,
@@ -46254,5 +46388,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "94402b76da1ceae6dd160d607f5d1a9895783981"
+  "built_at_commit": "54ae7981bd754f56b26361ea88a4a261c19e362e"
 }
