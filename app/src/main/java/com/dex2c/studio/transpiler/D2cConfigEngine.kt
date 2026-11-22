@@ -28,11 +28,19 @@ object FilterRuleEngine {
 
     val includes = mutableListOf<Regex>()
     val excludes = mutableListOf<Regex>()
+    val exactMatches = mutableSetOf<String>()
     val invalid = mutableListOf<String>()
 
     config.filterRulesText.lineSequence().forEach { rawLine ->
       val line = rawLine.trim()
       if (line.isEmpty() || line.startsWith("#")) return@forEach
+      if (line.startsWith("=")) {
+        val exact = line.substring(1).trim()
+        if (exact.isNotEmpty()) {
+          exactMatches += exact
+        }
+        return@forEach
+      }
       val isExclude = line.startsWith("!")
       val pattern = if (isExclude) line.substring(1).trim() else line
       if (pattern.isEmpty()) return@forEach
@@ -47,7 +55,8 @@ object FilterRuleEngine {
       }
     }
 
-    val hasCatchAllInclude = includes.isEmpty() || includes.any { it.pattern == ".*" || it.pattern == "^.*$" }
+    val hasCatchAllInclude =
+      (includes.isEmpty() && exactMatches.isEmpty()) || includes.any { it.pattern == ".*" || it.pattern == "^.*$" }
 
     val matchedIds = linkedSetOf<String>()
     val matchedClasses = linkedSetOf<String>()
@@ -67,7 +76,7 @@ object FilterRuleEngine {
         if (config.skipSynthetic && method.isCoroutineOrSyntheticArtifact) {
           continue
         }
-        if (matchesRules(javaName, classNoSemi, method, includes, excludes, hasCatchAllInclude)) {
+        if (matchesRules(javaName, classNoSemi, method, includes, excludes, exactMatches, hasCatchAllInclude)) {
           matchedIds += method.id
           matchedClasses += cls.uniqueKey
         }
@@ -215,21 +224,32 @@ object FilterRuleEngine {
     method: DexEncodedMethod,
     includes: List<Regex>,
     excludes: List<Regex>,
+    exactMatches: Set<String>,
     hasCatchAllInclude: Boolean,
   ): Boolean {
     val dalvikSig = method.methodRef.dalvikSignature()
+    val dccSig = "${method.methodRef.definingClass}${method.methodRef.name}${method.methodRef.jniSignature()}"
+    val dotSig = "$javaClassName.${method.methodRef.name}"
 
     fun matchesAny(regex: Regex): Boolean {
       if (regex.containsMatchIn(dalvikSig)) return true
       if (regex.containsMatchIn(classNoSemi)) return true
-      val dotSig = "$javaClassName.${method.methodRef.name}"
       if (regex.containsMatchIn(dotSig)) return true
-      val dccSig = "${method.methodRef.definingClass}${method.methodRef.name}${method.methodRef.jniSignature()}"
       return regex.containsMatchIn(dccSig)
     }
 
     if (excludes.isNotEmpty() && excludes.any(::matchesAny)) {
       return false
+    }
+
+    if (exactMatches.isNotEmpty()) {
+      if (exactMatches.contains(dalvikSig) || exactMatches.contains(dccSig) || exactMatches.contains(dotSig)) {
+        return true
+      }
+      val exactMatchPrefixes = exactMatches.filter { it.endsWith("(") || it.endsWith("()") }
+      if (exactMatchPrefixes.any { dalvikSig.contains(it) || dccSig.contains(it) || dotSig.contains(it) }) {
+        return true
+      }
     }
 
     if (hasCatchAllInclude) return true
@@ -321,10 +341,21 @@ object FilterRuleEngine {
       .map { it.trim() }
       .filter { it.isNotEmpty() && !it.startsWith("#") }
       .mapIndexed { idx, line ->
+        val isExact = line.startsWith("=")
         val isBlacklist = line.startsWith("!")
-        val clean = line.removePrefix("!").trim().removePrefix("^")
+        val clean = line.removePrefix("!").removePrefix("=").trim().removePrefix("^")
         val semiIdx = clean.indexOf(';')
-        if (semiIdx > 0) {
+        if (isExact) {
+          StructuredFilterRule(
+            id = "rule_${idx}_${line.hashCode()}",
+            packageName = "",
+            className = "",
+            methodName = "",
+            isBlacklist = false,
+            ruleType = FilterRuleType.EXACT_SIGNATURE,
+            customPattern = clean,
+          )
+        } else if (semiIdx > 0) {
           val classPart = clean.substring(0, semiIdx).removePrefix("L")
           val methodPart =
             clean
@@ -456,6 +487,7 @@ enum class FilterRuleType(val displayName: String, val description: String) {
   PACKAGE_ALL("Package All", "Protect or exclude all classes and methods in a package"),
   METHOD_ALL_CLASSES("Method in All Classes", "Match a method name across all classes"),
   CUSTOM_REGEX("Custom Pattern", "Raw regular expression pattern"),
+  EXACT_SIGNATURE("Exact Signature", "Exact method signature equality (=Lpkg/Class;method(args)Ret)"),
 }
 
 data class FilterPresetItem(
@@ -579,6 +611,10 @@ data class StructuredFilterRule(
   val customPattern: String? = null,
 ) {
   fun toRuleExpression(): String {
+    if (ruleType == FilterRuleType.EXACT_SIGNATURE) {
+      val raw = customPattern?.trim().orEmpty()
+      return if (raw.startsWith("=")) raw.substring(1).trim() else raw
+    }
     if (ruleType == FilterRuleType.CUSTOM_REGEX && !customPattern.isNullOrBlank()) {
       return customPattern.trim()
     }
@@ -604,12 +640,16 @@ data class StructuredFilterRule(
         ".*;$escapedMethod"
       FilterRuleType.CLASS_METHOD ->
         if (normPkg.isNotEmpty()) "$normPkg/$normCls;$escapedMethod" else "$normCls;$escapedMethod"
-      FilterRuleType.CUSTOM_REGEX ->
+      FilterRuleType.CUSTOM_REGEX, FilterRuleType.EXACT_SIGNATURE ->
         customPattern?.trim().orEmpty()
     }
   }
 
   fun toDisplayLabel(): String {
+    if (ruleType == FilterRuleType.EXACT_SIGNATURE) {
+      val raw = customPattern?.trim().orEmpty()
+      return if (raw.startsWith("=")) raw else "=$raw"
+    }
     if (ruleType == FilterRuleType.CUSTOM_REGEX && !customPattern.isNullOrBlank()) {
       return customPattern.trim()
     }
@@ -624,13 +664,18 @@ data class StructuredFilterRule(
       FilterRuleType.CLASS_METHOD ->
         if (normPkg.isNotEmpty()) "$normPkg/$normCls;$normMethod" else "$normCls;$normMethod"
       FilterRuleType.CUSTOM_REGEX -> customPattern.orEmpty()
+      FilterRuleType.EXACT_SIGNATURE -> "=${customPattern.orEmpty()}"
     }
   }
 
   fun toFilterLine(): String {
     val expr = toRuleExpression()
     if (expr.isBlank()) return ""
-    return if (isBlacklist) "!$expr" else expr
+    return when {
+      ruleType == FilterRuleType.EXACT_SIGNATURE -> if (expr.startsWith("=")) expr else "=$expr"
+      isBlacklist -> "!$expr"
+      else -> expr
+    }
   }
 }
 
@@ -650,6 +695,20 @@ object DccConfigCodec {
           "\"${escapeJson(it)}\""
         }
       }
+
+    val sig = config.signature
+    val signatureJson =
+      """
+      |  "signature": {
+      |    "keystore_path": "${escapeJson(sig.keystorePath)}",
+      |    "alias": "${escapeJson(sig.alias)}",
+      |    "keystore_pass": "${escapeJson(sig.keystorePass)}",
+      |    "store_pass": "${escapeJson(sig.storePass)}",
+      |    "v1_enabled": ${sig.v1Enabled},
+      |    "v2_enabled": ${sig.v2Enabled},
+      |    "v3_enabled": ${sig.v3Enabled}
+      |  },
+      """.trimMargin()
 
     val ollvmJson =
       if (config.ollvm.enabled) {
@@ -686,6 +745,7 @@ object DccConfigCodec {
       appendLine("  \"force_custom_loader\": ${config.forceCustomLoader},")
       appendLine("  \"source_lang\": \"${escapeJson(config.targetLanguage.extension)}\",")
       appendLine("  \"filter_file\": \"filter.txt\",")
+      appendLine(signatureJson)
       append(ollvmJson)
       appendLine()
       appendLine("  \"abi_filters\": $abiJson")
@@ -717,6 +777,22 @@ object DccConfigCodec {
     val customLoader =
       ((map["custom_loader"] as? String) ?: base.customLoaderClass).ifBlank {
         base.customLoaderClass
+      }
+
+    val sigMap = map["signature"] as? Map<*, *>
+    val resolvedSig =
+      if (sigMap != null) {
+        DccSignatureConfig(
+          keystorePath = (sigMap["keystore_path"] as? String) ?: base.signature.keystorePath,
+          alias = (sigMap["alias"] as? String) ?: base.signature.alias,
+          keystorePass = (sigMap["keystore_pass"] as? String) ?: base.signature.keystorePass,
+          storePass = (sigMap["store_pass"] as? String) ?: base.signature.storePass,
+          v1Enabled = (sigMap["v1_enabled"] as? Boolean) ?: base.signature.v1Enabled,
+          v2Enabled = (sigMap["v2_enabled"] as? Boolean) ?: base.signature.v2Enabled,
+          v3Enabled = (sigMap["v3_enabled"] as? Boolean) ?: base.signature.v3Enabled,
+        )
+      } else {
+        base.signature
       }
 
     val ollvmMap = map["ollvm"] as? Map<*, *>
@@ -751,6 +827,7 @@ object DccConfigCodec {
       targetLanguage = lang,
       targetAbis = abis,
       ollvm = resolvedOllvm,
+      signature = resolvedSig,
     )
   }
 

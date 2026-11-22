@@ -186,7 +186,7 @@ object Dex2cWorkflowGenerator {
       |            pip install -r /tmp/d2c/requirements.txt
       |          fi
       |          python3 - <<'PY'
-      |          import json, os, re
+      |          import json, os, re, textwrap
       |          base_cfg = {}
       |          upstream_cfg_path = "/tmp/d2c/dcc.cfg"
       |          if os.path.exists(upstream_cfg_path):
@@ -202,17 +202,22 @@ object Dex2cWorkflowGenerator {
       |          with open(upstream_cfg_path, "w", encoding="utf-8") as f:
       |              json.dump(base_cfg, f, indent=2)
       |
-      |          # Patch template Android.mk to permit D8 register reuse casts in Clang++ and ensure 16KB alignment
+      |          # Patch template Android.mk to permit D8 register reuse casts in Clang++, enable short commands, and ensure 16KB alignment
       |          android_mk = "/tmp/d2c/project/jni/Android.mk"
       |          if os.path.exists(android_mk):
       |              with open(android_mk, "r", encoding="utf-8") as f:
       |                  mk_src = f.read()
       |              if "-fpermissive" not in mk_src:
-      |                  flags_block = "LOCAL_CPPFLAGS += -fpermissive -Wno-int-conversion -Wno-null-arithmetic -Wno-error\\nLOCAL_CFLAGS += -Wno-int-conversion -Wno-null-arithmetic -Wno-error\\nLOCAL_LDFLAGS += \\"-Wl,-z,max-page-size=16384\\"\\n"
-      |                  if "include $(BUILD_SHARED_LIBRARY)" in mk_src:
-      |                      mk_src = mk_src.replace("include $(BUILD_SHARED_LIBRARY)", flags_block + "include $(BUILD_SHARED_LIBRARY)")
+      |                  flags_block = textwrap.dedent('''
+      |                      LOCAL_CPPFLAGS += -fpermissive -Wno-int-conversion -Wno-null-arithmetic -Wno-error
+      |                      LOCAL_CFLAGS += -Wno-int-conversion -Wno-null-arithmetic -Wno-error
+      |                      LOCAL_LDFLAGS += -Wl,-z,max-page-size=16384
+      |                      LOCAL_SHORT_COMMANDS := true
+      |                  ''')
+      |                  if "include ${'$'}(BUILD_SHARED_LIBRARY)" in mk_src:
+      |                      mk_src = mk_src.replace("include ${'$'}(BUILD_SHARED_LIBRARY)", flags_block + "include ${'$'}(BUILD_SHARED_LIBRARY)")
       |                  else:
-      |                      mk_src += "\\n" + flags_block
+      |                      mk_src += flags_block
       |              with open(android_mk, "w", encoding="utf-8") as f:
       |                  f.write(mk_src)
       |          app_mk = "/tmp/d2c/project/jni/Application.mk"
@@ -220,7 +225,12 @@ object Dex2cWorkflowGenerator {
       |              with open(app_mk, "r", encoding="utf-8") as f:
       |                  app_src = f.read()
       |              if "-fpermissive" not in app_src:
-      |                  app_src += "\\nAPP_CFLAGS += -Wno-error -Wno-null-arithmetic\\nAPP_CPPFLAGS += -fpermissive -Wno-error -Wno-null-arithmetic\\n"
+      |                  app_src += textwrap.dedent('''
+      |                      APP_CFLAGS += -Wno-error -Wno-null-arithmetic
+      |                      APP_CPPFLAGS += -fpermissive -Wno-error -Wno-null-arithmetic
+      |                      APP_SHORT_COMMANDS := true
+      |                      NDK_APP_SHORT_COMMANDS := true
+      |                  ''')
       |              with open(app_mk, "w", encoding="utf-8") as f:
       |                  f.write(app_src)
       |
@@ -251,16 +261,35 @@ object Dex2cWorkflowGenerator {
       |          if os.path.exists(dcc_py):
       |              with open(dcc_py, "r", encoding="utf-8") as f:
       |                  dcc_src = f.read()
-      |              sanitizer_fn = textwrap.dedent('''
+      |              sanitizer_fn = textwrap.dedent(r'''
       |                  def _dex2c_sanitize_generated_cpp(project_dir):
       |                      import glob, os, re
+      |                      mk_path = os.path.join(project_dir, "jni", "Android.mk")
+      |                      if os.path.exists(mk_path):
+      |                          with open(mk_path, "r", encoding="utf-8") as f:
+      |                              mk_c = f.read()
+      |                          if "LOCAL_SHORT_COMMANDS" not in mk_c:
+      |                              if "include $(BUILD_SHARED_LIBRARY)" in mk_c:
+      |                                  mk_c = mk_c.replace("include $(BUILD_SHARED_LIBRARY)", "LOCAL_SHORT_COMMANDS := true\ninclude $(BUILD_SHARED_LIBRARY)")
+      |                              else:
+      |                                  mk_c += "\nLOCAL_SHORT_COMMANDS := true\n"
+      |                              with open(mk_path, "w", encoding="utf-8") as f:
+      |                                  f.write(mk_c)
+      |                      app_path = os.path.join(project_dir, "jni", "Application.mk")
+      |                      if os.path.exists(app_path):
+      |                          with open(app_path, "r", encoding="utf-8") as f:
+      |                              app_c = f.read()
+      |                          if "APP_SHORT_COMMANDS" not in app_c:
+      |                              app_c += "\nAPP_SHORT_COMMANDS := true\nNDK_APP_SHORT_COMMANDS := true\n"
+      |                              with open(app_path, "w", encoding="utf-8") as f:
+      |                                  f.write(app_c)
       |                      nc_dir = os.path.join(project_dir, "jni", "nc")
       |                      if not os.path.isdir(nc_dir):
       |                          return
-      |                      decl_re = re.compile(r"\\b(jobject|jstring|jclass|jthrowable|jarray|\\w+Array)\\s+(v\\d+)\\b")
-      |                      prim_re = re.compile(r"\\b(jint|jboolean|jbyte|jchar|jshort|jlong|jfloat|jdouble)\\s+(v\\d+)\\b")
-      |                      assign_re = re.compile(r"^(\\s*)(v\\d+)\\s*=\\s*(-?(?:0x[0-9a-fA-F]+|\\d+))[uUlL]*\\s*;(\\s*)$", re.M)
-      |                      arg_re = re.compile(r"(\\{\\s*\\.([a-z])\\s*=\\s*)([^}]+)(\\s*\\})")
+      |                      decl_re = re.compile(r"\b(jobject|jstring|jclass|jthrowable|jarray|\w+Array)\s+(v\d+)\b")
+      |                      prim_re = re.compile(r"\b(jint|jboolean|jbyte|jchar|jshort|jlong|jfloat|jdouble)\s+(v\d+)\b")
+      |                      assign_re = re.compile(r"^(\s*)(v\d+)\s*=\s*(-?(?:0x[0-9a-fA-F]+|\d+))[uUlL]*\s*;(\s*)$", re.M)
+      |                      arg_re = re.compile(r"(\{\s*\.([a-z])\s*=\s*)([^}]+)(\s*\})")
       |                      cast_map = {
       |                          "l": "(jobject)(intptr_t)",
       |                          "i": "(jint)(intptr_t)",
@@ -277,7 +306,7 @@ object Dex2cWorkflowGenerator {
       |                              pfx, fld, val, sfx = em.group(1), em.group(2), em.group(3).strip(), em.group(4)
       |                              if "(intptr_t)" in val or fld not in cast_map:
       |                                  return em.group(0)
-      |                              clean_val = re.sub(r"^\\((?:jboolean|jbyte|jchar|jshort|jint|jlong|jfloat|jdouble|jobject)\\)\\s*", "", val)
+      |                              clean_val = re.sub(r"^\((?:jboolean|jbyte|jchar|jshort|jint|jlong|jfloat|jdouble|jobject)\)\s*", "", val)
       |                              return f"{pfx}{cast_map[fld]}({clean_val}){sfx}"
       |                          return arg_re.sub(_fix_elem, m.group(0))
       |
@@ -296,37 +325,40 @@ object Dex2cWorkflowGenerator {
       |                                          return f"{indent}{reg} = reinterpret_cast<{jtype}>(static_cast<intptr_t>({lit}));{tail}"
       |                                      return m.group(0)
       |                                  code = assign_re.sub(_fix_assign, code)
-      |                              code = re.sub(r"jvalue\\s+args\\[\\]\\s*=\\s*\\{[^\\;]*\\}\\s*;", _fix_args_line, code)
+      |                              code = re.sub(r"jvalue\s+args\[\]\s*=\s*\{[^\;]*\}\s*;", _fix_args_line, code)
       |                              if prim_regs:
       |                                  def _cast_prim_recv(m):
       |                                      pfx, reg, sep = m.group(1), m.group(2), m.group(3)
       |                                      if reg in prim_regs:
       |                                          return f"{pfx}(jobject)(intptr_t)({reg}){sep}"
       |                                      return m.group(0)
-      |                                  code = re.sub(r"(env\\s*->\\s*Call(?:Nonvirtual)?\\w+Method[AV]?\\s*\\(\\s*)(v\\d+)(\\s*,)", _cast_prim_recv, code)
-      |                                  code = re.sub(r"(env\\s*->\\s*(?:Get|Set)\\w+Field\\s*\\(\\s*)(v\\d+)(\\s*,)", _cast_prim_recv, code)
-      |                                  code = re.sub(r"(env\\s*->\\s*(?:GetArrayLength|MonitorEnter|MonitorExit)\\s*\\(\\s*)(v\\d+)(\\s*\\))", _cast_prim_recv, code)
-      |                                  code = re.sub(r"(env\\s*->\\s*(?:GetObjectArrayElement|SetObjectArrayElement)\\s*\\(\\s*)(v\\d+)(\\s*,)", _cast_prim_recv, code)
-      |                                  code = re.sub(r"\\bD2C_NOT_NULL\\s*\\(\\s*(v\\d+)\\s*\\)", lambda m: f"D2C_NOT_NULL((jobject)(intptr_t)({m.group(1)}))" if m.group(1) in prim_regs else m.group(0), code)
+      |                                  code = re.sub(r"(env\s*->\s*Call(?:Nonvirtual)?\w+Method[AV]?\s*\(\s*)(v\d+)(\s*,)", _cast_prim_recv, code)
+      |                                  code = re.sub(r"(env\s*->\s*(?:Get|Set)\w+Field\s*\(\s*)(v\d+)(\s*,)", _cast_prim_recv, code)
+      |                                  code = re.sub(r"(env\s*->\s*(?:GetArrayLength|MonitorEnter|MonitorExit)\s*\(\s*)(v\d+)(\s*\))", _cast_prim_recv, code)
+      |                                  code = re.sub(r"(env\s*->\s*(?:GetObjectArrayElement|SetObjectArrayElement)\s*\(\s*)(v\d+)(\s*,)", _cast_prim_recv, code)
+      |                                  code = re.sub(r"\bD2C_NOT_NULL\s*\(\s*(v\d+)\s*\)", lambda m: f"D2C_NOT_NULL((jobject)(intptr_t)({m.group(1)}))" if m.group(1) in prim_regs else m.group(0), code)
       |                              if code != orig:
       |                                  with open(cpp_path, "w", encoding="utf-8") as cf:
       |                                      cf.write(code)
       |                          except Exception as exc:
       |                              print("Warning: sanitizer skipped", cpp_path, exc)
       |              ''').strip()
-      |              if "subprocess.check_call([NDKBUILD" in dcc_src and "_dex2c_sanitize_generated_cpp" not in dcc_src:
-      |                  dcc_src = sanitizer_fn + "\n\n" + re.sub(
-      |                      r"^(\s*)(subprocess\.check_call\(\[NDKBUILD)",
-      |                      r"\1_dex2c_sanitize_generated_cpp(project_dir)\n\1\2",
-      |                      dcc_src,
-      |                      flags=re.M,
-      |                  )
+      |              if "def build_project(project_dir):" in dcc_src and "_dex2c_sanitize_generated_cpp" not in dcc_src:
+      |                  hook_header = textwrap.dedent(r'''
+      |                      def build_project(project_dir):
+      |                          _dex2c_sanitize_generated_cpp(project_dir)
+      |                  ''').strip()
+      |                  dcc_src = dcc_src.replace("def build_project(project_dir):", sanitizer_fn + "\n\n\n" + hook_header)
       |              if 'print(f"{str(e)}")' in dcc_src and "sys.exit(1)" not in dcc_src:
       |                  dcc_src = dcc_src.replace('print(f"{str(e)}")', 'print(f"{str(e)}"); import sys; sys.exit(1)')
       |              with open(dcc_py, "w", encoding="utf-8") as f:
       |                  f.write(dcc_src)
       |          PY
       |          cp filter.txt /tmp/d2c/filter.txt
+      |          if ! grep -q "^[^#!]" /tmp/d2c/filter.txt 2>/dev/null; then
+      |            echo "Notice: filter.txt contains no inclusion rules. Appending '.*' for full compilation under --allow-global."
+      |            echo ".*" >> /tmp/d2c/filter.txt
+      |          fi
       |
       |      - name: Prepare Target APK
       |        run: |
@@ -334,8 +366,20 @@ object Dex2cWorkflowGenerator {
       |          if [ -n "${'$'}{{ github.event.inputs.apk_url }}" ]; then
       |            echo "Downloading APK from fallback URL..."
       |            curl -fsSL "${'$'}{{ github.event.inputs.apk_url }}" -o /tmp/work/input.apk
-      |          else
+      |          elif [ -f "${'$'}{{ github.event.inputs.apk_path }}" ]; then
       |            cp "${'$'}{{ github.event.inputs.apk_path }}" /tmp/work/input.apk
+      |          elif [ -f "input/target.apk" ]; then
+      |            echo "Specified apk_path not found, using input/target.apk fallback"
+      |            cp "input/target.apk" /tmp/work/input.apk
+      |          else
+      |            FIRST_APK=${'$'}(find input -maxdepth 1 -name "*.apk" | head -n 1)
+      |            if [ -n "${'$'}FIRST_APK" ] && [ -f "${'$'}FIRST_APK" ]; then
+      |              echo "Target APK fallback: using ${'$'}FIRST_APK"
+      |              cp "${'$'}FIRST_APK" /tmp/work/input.apk
+      |            else
+      |              echo "Error: No APK file found in input directory!"
+      |              exit 1
+      |            fi
       |          fi
       |          ls -lh /tmp/work/input.apk
       |
@@ -349,6 +393,7 @@ object Dex2cWorkflowGenerator {
       |            -a /tmp/work/input.apk
       |            -o /tmp/work/unsigned_dex2c.apk
       |            --filter /tmp/d2c/filter.txt
+      |            --force-keep-libs
       |            --disable-signing
       |            --allow-global
       |          )

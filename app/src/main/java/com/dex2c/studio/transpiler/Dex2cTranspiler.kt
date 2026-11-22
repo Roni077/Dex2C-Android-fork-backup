@@ -424,6 +424,7 @@ object Dex2cTranspiler {
     val dccCfg = DccConfigCodec.encodeDccCfg(config)
     val filterTxt = config.filterRulesText.trimEnd() + "\n"
     val loaderStubFile = streamLoaderStubFile(bundleDir, config, moduleName, filteredEntries)
+    val loaderSmaliFile = streamLoaderSmaliStubFile(bundleDir, config, moduleName)
 
     return GeneratedBundle(
       sourceFile = generatedSourceFiles.first(),
@@ -438,6 +439,7 @@ object Dex2cTranspiler {
       instructionCount = totalInstructions,
       warnings = warnings,
       sourceFiles = generatedSourceFiles,
+      loaderSmaliFile = loaderSmaliFile,
     )
   }
 
@@ -1401,8 +1403,8 @@ object Dex2cTranspiler {
       else "-O2"
     val ollvmFlags = if (config.ollvm.enabled) " " + config.ollvm.buildClangFlags() else ""
     val flagsLine =
-      if (config.targetLanguage == TargetCLanguage.CPP17) "LOCAL_CPPFLAGS  := -std=c++17 $visibilityFlag$ollvmFlags"
-      else "LOCAL_CFLAGS    := -std=c11 $visibilityFlag$ollvmFlags"
+      if (config.targetLanguage == TargetCLanguage.CPP17) "LOCAL_CPPFLAGS  := -std=c++17 -fpermissive -Wno-int-conversion -Wno-null-arithmetic -Wno-error $visibilityFlag$ollvmFlags"
+      else "LOCAL_CFLAGS    := -std=c11 -Wno-int-conversion -Wno-null-arithmetic -Wno-error $visibilityFlag$ollvmFlags"
     val align16KbLine =
       if (config.ollvm.align16KbPages) "\nLOCAL_LDFLAGS   += \"-Wl,-z,max-page-size=16384\""
       else ""
@@ -1417,6 +1419,7 @@ object Dex2cTranspiler {
       |LOCAL_SRC_FILES := $srcFilesJoined
       |$flagsLine$align16KbLine
       |LOCAL_LDLIBS    := -llog -lm
+      |LOCAL_SHORT_COMMANDS := true
       |
       |include $(BUILD_SHARED_LIBRARY)
       """.trimMargin() + "\n"
@@ -1435,7 +1438,50 @@ object Dex2cTranspiler {
       |APP_PLATFORM := android-21
       |APP_STL      := $stl
       |APP_OPTIM    := release
+      |APP_SHORT_COMMANDS := true
+      |NDK_APP_SHORT_COMMANDS := true
       """.trimMargin() + "\n"
+  }
+
+  private fun streamLoaderSmaliStubFile(
+    bundleDir: File,
+    config: TranspilerConfig,
+    moduleName: String,
+  ): GeneratedFile {
+    val loaderFull = config.customLoaderClass.ifBlank { "amimo.dcc.DccApplication" }
+    val lastDot = loaderFull.lastIndexOf('.')
+    val clsName = if (lastDot > 0) loaderFull.substring(lastDot + 1) else loaderFull
+    val slashClass = loaderFull.replace('.', '/')
+
+    val builder =
+      StreamedFileBuilder(
+        backingFile = File(bundleDir, "$clsName.smali"),
+        fileName = "$clsName.smali",
+        zipPath = "loader/$clsName.smali",
+        description = "codehasan/dex2c companion DccApplication loader smali stub",
+      )
+    builder.use { out ->
+      out.appendLine(".class public L$slashClass;")
+      out.appendLine(".super Landroid/app/Application;")
+      out.appendLine()
+      out.appendLine("# direct methods")
+      out.appendLine(".method static final constructor <clinit>()V")
+      out.appendLine("    .registers 1")
+      out.appendLine()
+      out.appendLine("    const-string v0, \"$moduleName\"")
+      out.appendLine()
+      out.appendLine("    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V")
+      out.appendLine()
+      out.appendLine("    return-void")
+      out.appendLine(".end method")
+      out.appendLine()
+      out.appendLine(".method public native constructor <init>()V")
+      out.appendLine(".end method")
+      out.appendLine()
+      out.appendLine(".method public static final native initDcc()V")
+      out.appendLine(".end method")
+    }
+    return builder.finish()
   }
 
   private fun streamLoaderStubFile(

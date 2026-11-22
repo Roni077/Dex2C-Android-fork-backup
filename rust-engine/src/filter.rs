@@ -3,8 +3,10 @@
 
 use crate::dex::{DexFile, ClassMethodSummary};
 use regex::RegexSet;
+use std::collections::HashSet;
 
 pub struct CompiledFilter {
+    pub exact_matches: HashSet<String>,
     pub includes: Option<RegexSet>,
     pub excludes: Option<RegexSet>,
     pub allow_init: bool,
@@ -13,6 +15,7 @@ pub struct CompiledFilter {
 
 impl CompiledFilter {
     pub fn new(rules: &[&str], allow_init: bool, skip_synthetic: bool) -> Self {
+        let mut exact_matches = HashSet::new();
         let mut include_patterns = Vec::new();
         let mut exclude_patterns = Vec::new();
 
@@ -25,6 +28,11 @@ impl CompiledFilter {
                 let pattern = stripped.trim();
                 if !pattern.is_empty() {
                     exclude_patterns.push(pattern);
+                }
+            } else if let Some(stripped) = line.strip_prefix('=') {
+                let pattern = stripped.trim();
+                if !pattern.is_empty() {
+                    exact_matches.insert(pattern.to_string());
                 }
             } else {
                 include_patterns.push(line);
@@ -44,6 +52,7 @@ impl CompiledFilter {
         };
 
         CompiledFilter {
+            exact_matches,
             includes,
             excludes,
             allow_init,
@@ -63,46 +72,52 @@ impl CompiledFilter {
             return false;
         }
 
-        // Format candidate target for regex matching:
-        // E.g.: "Lcom/example/MyClass;->myMethod(" or "com.example.MyClass.myMethod"
-        // Build a zero-allocation or small-buffer search string
+        // 1. Smali arrow target: "Lcom/example/MyClass;->myMethod("
         let mut target = String::with_capacity(class_desc.len() + method_name.len() + 3);
         target.push_str(class_desc);
         target.push_str("->");
         target.push_str(method_name);
         target.push('(');
 
+        // 2. DCC target (upstream dcc.py format): "Lcom/example/MyClass;myMethod("
+        let mut dcc_target = String::with_capacity(class_desc.len() + method_name.len() + 1);
+        dcc_target.push_str(class_desc);
+        dcc_target.push_str(method_name);
+        dcc_target.push('(');
+
+        // 3. Java form: "com.example.MyClass.myMethod"
+        let java_form = to_java_name(class_desc);
+        let mut java_target = String::with_capacity(java_form.len() + method_name.len() + 2);
+        java_target.push_str(&java_form);
+        java_target.push('.');
+        java_target.push_str(method_name);
+
         // Check exclusions first (faster rejection)
         if let Some(ref exc) = self.excludes {
-            if exc.is_match(&target) {
+            if exc.is_match(&target) || exc.is_match(&dcc_target) || exc.is_match(&java_target) {
                 return false;
             }
-            // Also test simplified java form: com.example.MyClass.methodName
-            let java_form = to_java_name(class_desc);
-            let mut java_target = String::with_capacity(java_form.len() + method_name.len() + 2);
-            java_target.push_str(&java_form);
-            java_target.push('.');
-            java_target.push_str(method_name);
-            if exc.is_match(&java_target) {
-                return false;
+        }
+
+        // Check exact full-match set
+        if !self.exact_matches.is_empty() {
+            if self.exact_matches.contains(&target)
+                || self.exact_matches.contains(&dcc_target)
+                || self.exact_matches.contains(&java_target)
+                || self.exact_matches.iter().any(|m| {
+                    target.starts_with(m) || dcc_target.starts_with(m) || m.starts_with(&dcc_target) || m.starts_with(&target)
+                })
+            {
+                return true;
             }
         }
 
         // Check inclusions
         if let Some(ref inc) = self.includes {
-            if inc.is_match(&target) {
-                return true;
-            }
-            let java_form = to_java_name(class_desc);
-            let mut java_target = String::with_capacity(java_form.len() + method_name.len() + 2);
-            java_target.push_str(&java_form);
-            java_target.push('.');
-            java_target.push_str(method_name);
-            return inc.is_match(&java_target);
+            inc.is_match(&target) || inc.is_match(&dcc_target) || inc.is_match(&java_target)
+        } else {
+            self.exact_matches.is_empty()
         }
-
-        // If no explicit inclusion rules were defined, default match is true
-        true
     }
 }
 

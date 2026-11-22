@@ -52,15 +52,20 @@ class Dex2cTranspilerTest {
     val bundle = Dex2cTranspiler.transpileBundle(parsed, listOf(method), cfg)
 
     assertEquals(1, bundle.transpiledMethodCount)
-    assertEquals(8, bundle.allFiles.size)
+    assertEquals(9, bundle.allFiles.size)
     assertTrue(bundle.sourceFile.content.contains("JNI_OnLoad"))
     assertTrue(bundle.sourceFile.content.contains("RegisterNatives"))
     assertTrue(bundle.sourceFile.content.contains("switch (__cf_pc)"))
     assertTrue(bundle.sourceFile.content.contains("v[0].i = v[1].i + v[2].i;"))
     assertTrue(bundle.applicationMkFile.content.contains("APP_ABI      := arm64-v8a x86_64"))
+    assertTrue(bundle.applicationMkFile.content.contains("APP_SHORT_COMMANDS := true"))
     assertTrue(bundle.androidMkFile.content.contains("-fvisibility=hidden"))
+    assertTrue(bundle.androidMkFile.content.contains("LOCAL_SHORT_COMMANDS := true"))
     assertTrue(bundle.dccCfgFile.content.contains("\"allow_init\": false"))
+    assertTrue(bundle.dccCfgFile.content.contains("\"signature\":"))
     assertTrue(bundle.loaderStubFile.content.contains("class CustomDccApp extends Application"))
+    assertTrue(bundle.loaderSmaliFile != null)
+    assertTrue(bundle.loaderSmaliFile!!.content.contains(".class public Lamimo/dcc/CustomDccApp;"))
   }
 
   @Test

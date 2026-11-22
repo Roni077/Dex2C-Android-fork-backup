@@ -37,7 +37,11 @@ class GitHubCloudWorkflowTest {
     assertTrue(defaultYaml.contains("https://github.com/codehasan/dex2c/releases/download/ollvm-termux/"))
     assertTrue(defaultYaml.contains("can_ollvm"))
     assertTrue(defaultYaml.contains("Active NDK compiler does not support OLLVM flags"))
-    assertTrue(defaultYaml.contains("apktool.jar"))
+    assertTrue(defaultYaml.contains("LOCAL_SHORT_COMMANDS := true"))
+    assertTrue(defaultYaml.contains("APP_SHORT_COMMANDS := true"))
+    assertTrue(defaultYaml.contains("_dex2c_sanitize_generated_cpp(project_dir)"))
+    assertTrue(defaultYaml.contains("Target APK fallback:"))
+    assertTrue(defaultYaml.contains("--force-keep-libs"))
 
     val settings =
       CloudSettings(
@@ -591,5 +595,18 @@ class GitHubCloudWorkflowTest {
     val cpIndent = cpOutputLine!!.takeWhile { it.isWhitespace() }
     assertEquals(apkIndent, logIndent)
     assertEquals(apkIndent, cpIndent)
+  }
+
+  @Test
+  fun generateDex2cYaml_allInlinePythonScriptsAreSyntacticallyValid() {
+    val yaml = Dex2cWorkflowGenerator.generateDex2cYaml(CloudSettings(), TranspilerConfig())
+    val pyBlockRegex = Regex("""python3\s+-\s+<<'PY'\n([\s\S]*?)\n\s*PY""")
+    val matches = pyBlockRegex.findAll(yaml).toList()
+    assertTrue("Expected multiple inline Python blocks in generated YAML", matches.size >= 3)
+    for ((index, match) in matches.withIndex()) {
+      val pyCode = match.groupValues[1]
+      assertFalse("Python block #$index should not contain raw escaped quote delimiters", pyCode.contains("\\\"-Wl"))
+      assertTrue("Python block #$index should have content", pyCode.isNotBlank())
+    }
   }
 }

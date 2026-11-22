@@ -295,7 +295,11 @@ fun StructuredRuleItemCard(
             modifier = Modifier.size(12.dp),
           )
           Text(
-            text = if (rule.isBlacklist) "BLACKLIST" else "WHITELIST",
+            text = when {
+              rule.ruleType == FilterRuleType.EXACT_SIGNATURE -> "EXACT (=)"
+              rule.isBlacklist -> "BLACKLIST"
+              else -> "WHITELIST"
+            },
             style = MaterialTheme.typography.labelSmall,
             fontFamily = JetBrainsMonoFontFamily,
             fontWeight = FontWeight.Bold,
@@ -359,6 +363,7 @@ fun FilterRuleDialogSheet(
         FilterRuleType.ALL_CLASS_METHODS,
         FilterRuleType.PACKAGE_ALL,
         FilterRuleType.METHOD_ALL_CLASSES,
+        FilterRuleType.EXACT_SIGNATURE,
       )
     }
   var ruleType by remember {
@@ -370,16 +375,24 @@ fun FilterRuleDialogSheet(
   var packageName by remember { mutableStateOf(initialRule?.packageName ?: "com/example") }
   var className by remember { mutableStateOf(initialRule?.className ?: "MainActivity") }
   var methodName by remember { mutableStateOf(initialRule?.methodName ?: "onCreate(") }
+  var exactPattern by remember {
+    mutableStateOf(
+      initialRule?.customPattern
+        ?: if (initialRule?.ruleType == FilterRuleType.EXACT_SIGNATURE) initialRule.toRuleExpression()
+        else "=Lcom/example/MainActivity;onCreate(Landroid/os/Bundle;)V"
+    )
+  }
   var isBlacklist by remember { mutableStateOf(initialRule?.isBlacklist ?: false) }
 
   val previewRule =
     StructuredFilterRule(
       id = initialRule?.id ?: "rule_${System.nanoTime()}",
-      packageName = packageName,
-      className = className,
-      methodName = methodName,
+      packageName = if (ruleType == FilterRuleType.EXACT_SIGNATURE) "" else packageName,
+      className = if (ruleType == FilterRuleType.EXACT_SIGNATURE) "" else className,
+      methodName = if (ruleType == FilterRuleType.EXACT_SIGNATURE) "" else methodName,
       isBlacklist = isBlacklist,
       ruleType = ruleType,
+      customPattern = if (ruleType == FilterRuleType.EXACT_SIGNATURE) exactPattern else null,
     )
 
   val canSave =
@@ -389,6 +402,7 @@ fun FilterRuleDialogSheet(
       FilterRuleType.PACKAGE_ALL -> packageName.isNotBlank()
       FilterRuleType.METHOD_ALL_CLASSES -> methodName.isNotBlank()
       FilterRuleType.CUSTOM_REGEX -> true
+      FilterRuleType.EXACT_SIGNATURE -> exactPattern.isNotBlank()
     }
 
   ModalBottomSheet(
@@ -440,52 +454,63 @@ fun FilterRuleDialogSheet(
         }
       }
 
-      if (ruleType != FilterRuleType.METHOD_ALL_CLASSES) {
+      if (ruleType == FilterRuleType.EXACT_SIGNATURE) {
         OutlinedTextField(
-          value = packageName,
-          onValueChange = { packageName = it },
-          label = { Text("Package Name (slash or dot format)") },
-          placeholder = { Text("com/example/app") },
+          value = exactPattern,
+          onValueChange = { exactPattern = it },
+          label = { Text("Exact Signature (=Lpkg/Class;method(proto)Ret)") },
+          placeholder = { Text("=Lcom/example/MainActivity;onCreate(Landroid/os/Bundle;)V") },
           singleLine = true,
-          modifier = Modifier.fillMaxWidth().testTag("rule_input_package"),
+          modifier = Modifier.fillMaxWidth().testTag("rule_input_exact"),
         )
-      }
+      } else {
+        if (ruleType != FilterRuleType.METHOD_ALL_CLASSES) {
+          OutlinedTextField(
+            value = packageName,
+            onValueChange = { packageName = it },
+            label = { Text("Package Name (slash or dot format)") },
+            placeholder = { Text("com/example/app") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().testTag("rule_input_package"),
+          )
+        }
 
-      if (ruleType == FilterRuleType.CLASS_METHOD || ruleType == FilterRuleType.ALL_CLASS_METHODS) {
-        OutlinedTextField(
-          value = className,
-          onValueChange = { className = it },
-          label = { Text("Class Name") },
-          placeholder = { Text("MainActivity") },
-          singleLine = true,
-          modifier = Modifier.fillMaxWidth().testTag("rule_input_class"),
-        )
-      }
+        if (ruleType == FilterRuleType.CLASS_METHOD || ruleType == FilterRuleType.ALL_CLASS_METHODS) {
+          OutlinedTextField(
+            value = className,
+            onValueChange = { className = it },
+            label = { Text("Class Name") },
+            placeholder = { Text("MainActivity") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().testTag("rule_input_class"),
+          )
+        }
 
-      if (ruleType == FilterRuleType.CLASS_METHOD || ruleType == FilterRuleType.METHOD_ALL_CLASSES) {
-        OutlinedTextField(
-          value = methodName,
-          onValueChange = { methodName = it },
-          label = { Text("Method Name") },
-          placeholder = { Text("onCreate(") },
-          singleLine = true,
-          modifier = Modifier.fillMaxWidth().testTag("rule_input_method"),
-        )
-        Text(
-          text = "Common Android & Security Methods:",
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        FlowRow(
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-          COMMON_ANDROID_METHODS.forEach { method ->
-            AssistChip(
-              onClick = { methodName = "$method(" },
-              label = { Text(method, style = MaterialTheme.typography.labelSmall) },
-              modifier = Modifier.testTag("preset_method_$method"),
-            )
+        if (ruleType == FilterRuleType.CLASS_METHOD || ruleType == FilterRuleType.METHOD_ALL_CLASSES) {
+          OutlinedTextField(
+            value = methodName,
+            onValueChange = { methodName = it },
+            label = { Text("Method Name") },
+            placeholder = { Text("onCreate(") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().testTag("rule_input_method"),
+          )
+          Text(
+            text = "Common Android & Security Methods:",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+          FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+          ) {
+            COMMON_ANDROID_METHODS.forEach { method ->
+              AssistChip(
+                onClick = { methodName = "$method(" },
+                label = { Text(method, style = MaterialTheme.typography.labelSmall) },
+                modifier = Modifier.testTag("preset_method_$method"),
+              )
+            }
           }
         }
       }

@@ -185,4 +185,24 @@ class FilterRuleOptimizationTest {
     val afterUpsert = FilterRuleEngine.upsertStructuredRule(afterRemove, ruleToUpsert)
     assertTrue(afterUpsert.contains("NewActivity"))
   }
+
+  @Test
+  fun testExactMatchFilterRuleParityWithUpstream() {
+    val mainClass = createDummyClass("com/example", "MainActivity", 4)
+    val dex = createDummyDex(listOf(mainClass))
+
+    val config = TranspilerConfig(
+      filterRulesText = "=Lcom/example/MainActivity;method1()V",
+      allowInit = false,
+    )
+
+    val summary = FilterRuleEngine.evaluateAll(listOf(dex), config)
+    assertEquals(1, summary.matchedMethodIds.size)
+    assertEquals(1, summary.matchedClassCount)
+
+    val rules = FilterRuleEngine.parseStructuredRules("=Lcom/example/MainActivity;method1()V")
+    assertEquals(1, rules.size)
+    assertEquals(FilterRuleType.EXACT_SIGNATURE, rules[0].ruleType)
+    assertEquals("=Lcom/example/MainActivity;method1()V", rules[0].toFilterLine())
+  }
 }

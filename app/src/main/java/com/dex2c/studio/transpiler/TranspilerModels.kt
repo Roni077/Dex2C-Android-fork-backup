@@ -141,6 +141,16 @@ data class OllvmConfig(
     }
 }
 
+data class DccSignatureConfig(
+  val keystorePath: String = "keystore/debug.keystore",
+  val alias: String = "androiddebugkey",
+  val keystorePass: String = "android",
+  val storePass: String = "android",
+  val v1Enabled: Boolean = true,
+  val v2Enabled: Boolean = true,
+  val v3Enabled: Boolean = true,
+)
+
 data class TranspilerConfig(
   val jniStyle: JniBindingStyle = JniBindingStyle.REGISTER_NATIVES,
   val targetLanguage: TargetCLanguage = TargetCLanguage.CPP17,
@@ -156,6 +166,7 @@ data class TranspilerConfig(
   val filterRulesText: String = DEFAULT_FILTER_RULES,
   val moduleName: String = "dex2c_native",
   val ollvm: OllvmConfig = OllvmConfig(),
+  val signature: DccSignatureConfig = DccSignatureConfig(),
 )
 
 data class TranspileProgress(
@@ -203,6 +214,7 @@ data class GeneratedBundle(
   val instructionCount: Int,
   val warnings: List<String>,
   val sourceFiles: List<GeneratedFile> = listOf(sourceFile),
+  val loaderSmaliFile: GeneratedFile? = null,
 ) {
   val allFiles: List<GeneratedFile>
     get() =
@@ -215,5 +227,6 @@ data class GeneratedBundle(
         add(dccCfgFile)
         add(filterTxtFile)
         add(loaderStubFile)
+        if (loaderSmaliFile != null) add(loaderSmaliFile)
       }
 }
