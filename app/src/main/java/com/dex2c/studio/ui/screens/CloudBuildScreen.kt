@@ -370,7 +370,7 @@ fun CloudBuildScreen(
                         onClick = { activeStage = CloudStage.SETUP },
                         modifier = Modifier.testTag("cloud_go_to_setup_btn"),
                       ) {
-                        Text("Open Setup")
+                        Text(stringResource(R.string.cloud_open_setup))
                       }
                     }
                   }
@@ -764,7 +764,7 @@ private fun SetupRepoCard(
               ) {
                 Icon(Icons.Rounded.Sync, contentDescription = null, modifier = Modifier.size(15.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Re-sync", maxLines = 1)
+                Text(stringResource(R.string.cloud_resync), maxLines = 1)
               }
               OutlinedButton(
                 onClick = { onOpenBrowserUrl(repoSetupState.htmlUrl) },
@@ -774,13 +774,13 @@ private fun SetupRepoCard(
               ) {
                 Icon(Icons.Rounded.OpenInBrowser, contentDescription = null, modifier = Modifier.size(15.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Open Repo", maxLines = 1)
+                Text(stringResource(R.string.cloud_open_repo), maxLines = 1)
               }
               TextButton(
                 onClick = onVerifyRepo,
                 modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_verify_repo_btn"),
               ) {
-                Text("Verify", maxLines = 1)
+                Text(stringResource(R.string.cloud_verify), maxLines = 1)
               }
             }
           }
@@ -831,7 +831,7 @@ private fun SetupRepoCard(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize().testTag("cloud_next_dispatch_btn"),
       ) {
-        Text("Continue to Dispatch", maxLines = 1)
+        Text(stringResource(R.string.cloud_continue_dispatch), maxLines = 1)
         Spacer(Modifier.width(6.dp))
         Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
       }
@@ -848,7 +848,7 @@ private fun RecentCloudRunsCard(
   modifier: Modifier = Modifier,
 ) {
   CloudStepCard(
-    title = "Recent Cloud Runs",
+    title = stringResource(R.string.cloud_recent_runs),
     modifier = modifier,
     trailingBadge = {
       if (cloudSettings.isRepoConfigured) {
@@ -858,7 +858,7 @@ private fun RecentCloudRunsCard(
         ) {
           Icon(Icons.Rounded.Refresh, contentDescription = "Refresh Runs", modifier = Modifier.size(15.dp))
           Spacer(Modifier.width(4.dp))
-          Text("Refresh", maxLines = 1)
+          Text(stringResource(R.string.cloud_refresh), maxLines = 1)
         }
       }
     },

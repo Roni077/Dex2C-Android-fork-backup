@@ -37,8 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dex2c.studio.R
 import com.dex2c.studio.ui.ClassFilterState
 import com.dex2c.studio.ui.ClassSortOrder
 import com.dex2c.studio.ui.ClassTypeFilter
@@ -91,7 +93,7 @@ fun ClassesFilterTray(
               FilterChip(
                 selected = filterState.hideFramework,
                 onClick = onToggleHideFramework,
-                label = { Text("App Only") },
+                label = { Text(stringResource(R.string.chip_hide_framework)) },
                 modifier = Modifier.testTag("chip_hide_framework"),
               )
             }
@@ -99,7 +101,7 @@ fun ClassesFilterTray(
               FilterChip(
                 selected = filterState.onlyWithBytecode,
                 onClick = onToggleOnlyBytecode,
-                label = { Text("Has Bytecode") },
+                label = { Text(stringResource(R.string.chip_has_bytecode)) },
                 modifier = Modifier.testTag("chip_has_bytecode"),
               )
             }
@@ -107,7 +109,7 @@ fun ClassesFilterTray(
               FilterChip(
                 selected = filterState.onlyMatchingFilterRules,
                 onClick = onToggleOnlyMatchingFilterRules,
-                label = { Text("Match Rules") },
+                label = { Text(stringResource(R.string.filter_match_rules)) },
                 modifier = Modifier.testTag("chip_match_filter_rules"),
               )
             }
@@ -115,7 +117,7 @@ fun ClassesFilterTray(
               FilterChip(
                 selected = filterState.onlySelected,
                 onClick = onToggleOnlySelected,
-                label = { Text("Selected Only") },
+                label = { Text(stringResource(R.string.filter_selected_only)) },
                 modifier = Modifier.testTag("chip_selected_only"),
               )
             }
@@ -123,7 +125,7 @@ fun ClassesFilterTray(
               FilterChip(
                 selected = compactMiddlePackages,
                 onClick = onToggleCompactPackages,
-                label = { Text("Compact Levels") },
+                label = { Text(stringResource(R.string.filter_compact_levels)) },
                 modifier = Modifier.testTag("chip_folder_levels_toggle"),
               )
             }
@@ -147,13 +149,13 @@ fun ClassesFilterTray(
           FilterChip(
             selected = filterState.hideInnerClasses,
             onClick = onToggleHideInnerClasses,
-            label = { Text("Hide \$Inner") },
+            label = { Text(stringResource(R.string.filter_hide_inner)) },
             modifier = Modifier.testTag("filter_hide_inner"),
           )
           FilterChip(
             selected = filterState.nonEmptyPackagesOnly,
             onClick = onToggleNonEmptyPackages,
-            label = { Text("Non-Empty Pkgs") },
+            label = { Text(stringResource(R.string.filter_non_empty_pkgs)) },
             modifier = Modifier.testTag("filter_non_empty_pkgs"),
           )
         }
@@ -186,7 +188,7 @@ fun ClassesFilterTray(
               modifier =
                 Modifier.defaultMinSize(minHeight = 32.dp).testTag("filter_reset_extra_btn"),
             ) {
-              Text("Reset", style = MaterialTheme.typography.labelSmall)
+              Text(stringResource(R.string.filter_reset_all), style = MaterialTheme.typography.labelSmall)
             }
           }
         }
@@ -263,21 +265,21 @@ fun ActiveFilterSummaryStrip(
 
       if (filterState.hideInnerClasses) {
         ActiveFilterPill(
-          label = "No \$Inner",
+          label = stringResource(R.string.filter_hide_inner),
           onDismiss = onClearInnerClasses,
         )
       }
 
       if (filterState.nonEmptyPackagesOnly) {
         ActiveFilterPill(
-          label = "Non-Empty",
+          label = stringResource(R.string.filter_non_empty_pkgs),
           onDismiss = onClearNonEmpty,
         )
       }
 
       if (filterState.onlyMatchingFilterRules) {
         ActiveFilterPill(
-          label = "Match Rules",
+          label = stringResource(R.string.filter_match_rules),
           onDismiss = onClearMatchRules,
         )
       }
@@ -446,25 +448,25 @@ fun ClassesFilterSheet(
           FilterChip(
             selected = filterState.hideFramework,
             onClick = onToggleHideFramework,
-            label = { Text("App Only") },
+            label = { Text(stringResource(R.string.chip_hide_framework)) },
             modifier = Modifier.testTag("chip_hide_framework"),
           )
           FilterChip(
             selected = filterState.onlyWithBytecode,
             onClick = onToggleOnlyBytecode,
-            label = { Text("Has Bytecode") },
+            label = { Text(stringResource(R.string.chip_has_bytecode)) },
             modifier = Modifier.testTag("chip_has_bytecode"),
           )
           FilterChip(
             selected = filterState.onlyMatchingFilterRules,
             onClick = onToggleOnlyMatchingFilterRules,
-            label = { Text("Match Rules") },
+            label = { Text(stringResource(R.string.filter_match_rules)) },
             modifier = Modifier.testTag("chip_match_filter_rules"),
           )
           FilterChip(
             selected = filterState.onlySelected,
             onClick = onToggleOnlySelected,
-            label = { Text("Selected Only") },
+            label = { Text(stringResource(R.string.filter_selected_only)) },
             modifier = Modifier.testTag("chip_selected_only"),
           )
         }
@@ -485,20 +487,20 @@ fun ClassesFilterSheet(
             FilterChip(
               selected = compactMiddlePackages,
               onClick = onToggleCompactPackages,
-              label = { Text("Compact Levels") },
+              label = { Text(stringResource(R.string.filter_compact_levels)) },
               modifier = Modifier.testTag("chip_folder_levels_toggle"),
             )
           }
           FilterChip(
             selected = filterState.hideInnerClasses,
             onClick = onToggleHideInnerClasses,
-            label = { Text("Hide \$Inner") },
+            label = { Text(stringResource(R.string.filter_hide_inner)) },
             modifier = Modifier.testTag("filter_hide_inner"),
           )
           FilterChip(
             selected = filterState.nonEmptyPackagesOnly,
             onClick = onToggleNonEmptyPackages,
-            label = { Text("Non-Empty Pkgs") },
+            label = { Text(stringResource(R.string.filter_non_empty_pkgs)) },
             modifier = Modifier.testTag("filter_non_empty_pkgs"),
           )
         }

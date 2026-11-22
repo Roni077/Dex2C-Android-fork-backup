@@ -129,7 +129,7 @@ fun SettingsAppearanceSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Theme Posture", icon = Icons.Rounded.Palette) {
+      SubScreenCard(title = stringResource(R.string.settings_card_theme_posture), icon = Icons.Rounded.Palette) {
         AppThemeMode.entries.forEachIndexed { index, mode ->
           val modeIcon =
             when (mode) {
@@ -162,9 +162,9 @@ fun SettingsAppearanceSubScreen(
               }
             }
             Column(modifier = Modifier.weight(1f)) {
-              Text(mode.label, style = MaterialTheme.typography.titleSmall)
+              Text(stringResource(mode.labelRes), style = MaterialTheme.typography.titleSmall)
               Text(
-                text = mode.summary,
+                text = stringResource(mode.summaryRes),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
@@ -183,12 +183,12 @@ fun SettingsAppearanceSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Dynamic Wallpaper Colors", icon = Icons.Rounded.AutoAwesome) {
+      SubScreenCard(title = stringResource(R.string.settings_card_dynamic_colors), icon = Icons.Rounded.AutoAwesome) {
         val supportsDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         SettingsToggleRow(
-          title = "Wallpaper-Based Palette",
+          title = stringResource(R.string.settings_dynamic_palette),
           subtitle =
-            if (supportsDynamic) "Extract personalized Material 3 tonal roles from your Android wallpaper (works with AMOLED Black too)"
+            if (supportsDynamic) stringResource(R.string.settings_dynamic_palette_desc)
             else "Available on Android 12+ (custom accent seed used below)",
           checked = appSettings.dynamicColor,
           enabled = supportsDynamic,
@@ -199,7 +199,7 @@ fun SettingsAppearanceSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Custom Accent Color", icon = Icons.Rounded.ColorLens) {
+      SubScreenCard(title = stringResource(R.string.settings_card_custom_accent), icon = Icons.Rounded.ColorLens) {
         AccentColorPickerSection(
           selectedHex = appSettings.accentSeedHex,
           enabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S,
@@ -210,9 +210,9 @@ fun SettingsAppearanceSubScreen(
 
     item {
       val context = LocalContext.current
-      SubScreenCard(title = "App Launcher Icon", icon = Icons.Rounded.AutoAwesome) {
+      SubScreenCard(title = stringResource(R.string.settings_card_launcher_icon), icon = Icons.Rounded.AutoAwesome) {
         Text(
-          text = "Select your preferred calligraphic launcher icon. Changes are applied dynamically to your device home screen.",
+          text = stringResource(R.string.settings_launcher_icon_desc),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -244,7 +244,7 @@ fun SettingsAppearanceSubScreen(
             ) {
               Image(
                 painter = painterResource(id = style.previewRes),
-                contentDescription = style.label,
+                contentDescription = stringResource(style.labelRes),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
               )
@@ -254,7 +254,7 @@ fun SettingsAppearanceSubScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
               ) {
-                Text(style.label, style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(style.labelRes), style = MaterialTheme.typography.titleSmall)
                 if (style == AppIconStyle.DEFAULT) {
                   TagPill(
                     text = "Default",
@@ -264,7 +264,7 @@ fun SettingsAppearanceSubScreen(
                 }
               }
               Text(
-                text = style.description,
+                text = stringResource(style.descriptionRes),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
@@ -501,13 +501,13 @@ fun SettingsCodeEditorSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Typography & Line Gutter", icon = Icons.Rounded.FormatSize) {
+      SubScreenCard(title = stringResource(R.string.settings_card_typography), icon = Icons.Rounded.FormatSize) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          Text("Monospace Font Size", style = MaterialTheme.typography.titleSmall)
+          Text(stringResource(R.string.settings_font_size), style = MaterialTheme.typography.titleSmall)
           TagPill(text = "${appSettings.codeFontSizeSp} sp")
         }
         Slider(
@@ -519,8 +519,8 @@ fun SettingsCodeEditorSubScreen(
         )
         Spacer(Modifier.height(6.dp))
         SettingsToggleRow(
-          title = "Show Line Numbers & Hex Offsets",
-          subtitle = "Display left gutter line indices in C/C++ and Dalvik instruction viewers",
+          title = stringResource(R.string.settings_show_line_numbers),
+          subtitle = stringResource(R.string.settings_show_line_numbers_desc),
           checked = appSettings.showLineNumbers,
           onCheckedChange = { show -> onUpdateAppSettings { it.copy(showLineNumbers = show) } },
           testTag = "settings_show_line_numbers_switch",
@@ -546,9 +546,9 @@ fun SettingsCodeEditorSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Smali Syntax Theme", icon = Icons.Rounded.Palette) {
+      SubScreenCard(title = stringResource(R.string.settings_card_smali_theme), icon = Icons.Rounded.Palette) {
         Text(
-          text = "Select the syntax coloring palette used by the Smali Class Viewer, or enable Bytecode High-Contrast for semantic opcode-family and v/p register coloring.",
+          text = stringResource(R.string.settings_smali_theme_desc),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -561,7 +561,7 @@ fun SettingsCodeEditorSubScreen(
             FilterChip(
               selected = appSettings.smaliSyntaxTheme == theme,
               onClick = { onUpdateAppSettings { it.copy(smaliSyntaxTheme = theme) } },
-              label = { Text(theme.label) },
+              label = { Text(stringResource(theme.labelRes)) },
               modifier = Modifier.testTag("settings_smali_theme_${theme.tagSuffix}"),
             )
           }
@@ -586,7 +586,7 @@ fun SettingsCodeEditorSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Live Code Preview", icon = Icons.Rounded.Code) {
+      SubScreenCard(title = stringResource(R.string.settings_live_code_preview), icon = Icons.Rounded.Code) {
         SyntaxCodeViewer(
           code = sampleSnippet,
           modifier = Modifier.fillMaxWidth().height(160.dp),
@@ -610,18 +610,18 @@ fun SettingsDexParserSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Default Class Explorer Filters", icon = Icons.Rounded.Tune) {
+      SubScreenCard(title = stringResource(R.string.settings_card_class_filters), icon = Icons.Rounded.Tune) {
         SettingsToggleRow(
-          title = "Hide Android & Support Frameworks",
-          subtitle = "Automatically filter androidx.*, android.*, java.* packages on DEX load",
+          title = stringResource(R.string.settings_hide_frameworks),
+          subtitle = stringResource(R.string.settings_hide_frameworks_desc),
           checked = appSettings.defaultHideFramework,
           onCheckedChange = { hide -> onUpdateAppSettings { it.copy(defaultHideFramework = hide) } },
           testTag = "settings_default_hide_framework_switch",
         )
         Spacer(Modifier.height(8.dp))
         SettingsToggleRow(
-          title = "Only Methods with Dalvik Bytecode",
-          subtitle = "Hide abstract and native stubs lacking DEX code_item payloads",
+          title = stringResource(R.string.settings_only_bytecode),
+          subtitle = stringResource(R.string.settings_only_bytecode_desc),
           checked = appSettings.defaultOnlyBytecode,
           onCheckedChange = { only -> onUpdateAppSettings { it.copy(defaultOnlyBytecode = only) } },
           testTag = "settings_default_only_bytecode_switch",
@@ -700,7 +700,7 @@ fun SettingsGitHubCloudSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "GitHub OAuth Device Flow (github.com/login/device)", icon = Icons.Rounded.Key) {
+      SubScreenCard(title = stringResource(R.string.settings_card_github_oauth), icon = Icons.Rounded.Key) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -783,7 +783,7 @@ fun SettingsGitHubCloudSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Private Workspace Repository & dex2c.yml", icon = Icons.Rounded.CloudQueue) {
+      SubScreenCard(title = stringResource(R.string.settings_card_workspace_repo), icon = Icons.Rounded.CloudQueue) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -791,7 +791,7 @@ fun SettingsGitHubCloudSubScreen(
           OutlinedTextField(
             value = cloudSettings.repoOwner,
             onValueChange = { v -> onUpdateCloudSettings { it.copy(repoOwner = v.trim()) } },
-            label = { Text("Owner") },
+            label = { Text(stringResource(R.string.settings_repo_owner)) },
             placeholder = { Text(cloudSettings.githubUsername.ifBlank { "username" }) },
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
@@ -800,7 +800,7 @@ fun SettingsGitHubCloudSubScreen(
           OutlinedTextField(
             value = cloudSettings.repoName,
             onValueChange = { v -> onUpdateCloudSettings { it.copy(repoName = v.trim()) } },
-            label = { Text("Repository") },
+            label = { Text(stringResource(R.string.settings_repo_name)) },
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
             modifier = Modifier.weight(1.4f).testTag("settings_repo_name_input"),
@@ -810,15 +810,15 @@ fun SettingsGitHubCloudSubScreen(
         OutlinedTextField(
           value = cloudSettings.defaultBranch,
           onValueChange = { v -> onUpdateCloudSettings { it.copy(defaultBranch = v.trim()) } },
-          label = { Text("Workflow Target Branch") },
+          label = { Text(stringResource(R.string.settings_target_branch)) },
           singleLine = true,
           textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = JetBrainsMonoFontFamily),
           modifier = Modifier.fillMaxWidth().testTag("settings_repo_branch_input"),
         )
         Spacer(Modifier.height(10.dp))
         SettingsToggleRow(
-          title = "Create as Private Repository",
-          subtitle = "Keeps uploaded APKs, dcc.cfg, and filter.txt private to your account",
+          title = stringResource(R.string.settings_private_repo_toggle),
+          subtitle = stringResource(R.string.settings_private_repo_desc),
           checked = cloudSettings.privateRepo,
           onCheckedChange = { priv -> onUpdateCloudSettings { it.copy(privateRepo = priv) } },
           testTag = "settings_private_repo_switch",
@@ -835,7 +835,7 @@ fun SettingsGitHubCloudSubScreen(
           ) {
             Icon(Icons.Rounded.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Init / Sync dex2c.yml")
+            Text(stringResource(R.string.settings_init_sync_yaml))
           }
           OutlinedButton(
             onClick = { showYamlPreview = !showYamlPreview },
@@ -850,7 +850,7 @@ fun SettingsGitHubCloudSubScreen(
               onClick = { onCopyText(generatedYaml) },
               modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_copy_yaml_btn"),
             ) {
-              Text("Copy YAML")
+              Text(stringResource(R.string.settings_copy_yaml))
             }
           }
         }
@@ -865,10 +865,10 @@ fun SettingsGitHubCloudSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Network & DNS Resilience", icon = Icons.Rounded.CloudQueue) {
+      SubScreenCard(title = stringResource(R.string.settings_card_network_resilience), icon = Icons.Rounded.CloudQueue) {
         SettingsToggleRow(
-          title = "DNS-over-HTTPS (DoH) Fallback",
-          subtitle = "Query Cloudflare (1.1.1.1) and Google (8.8.8.8) if system DNS resolution fails. Keep disabled when using corporate or private VPNs.",
+          title = stringResource(R.string.settings_doh_fallback),
+          subtitle = stringResource(R.string.settings_doh_desc),
           checked = cloudSettings.dohFallbackEnabled,
           onCheckedChange = { enabled -> onUpdateCloudSettings { it.copy(dohFallbackEnabled = enabled) } },
           testTag = "settings_doh_fallback_switch",
@@ -890,7 +890,7 @@ fun SettingsNdkSigningSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Android NDK & JDK Runners", icon = Icons.Rounded.Build) {
+      SubScreenCard(title = stringResource(R.string.settings_card_ndk_jdk), icon = Icons.Rounded.Build) {
         Text(
           text = "Android NDK Revision (ubuntu-latest)",
           style = MaterialTheme.typography.labelLarge,
@@ -928,7 +928,7 @@ fun SettingsNdkSigningSubScreen(
     }
 
     item {
-      SubScreenCard(title = "APK Signing & Upload Policy", icon = Icons.Rounded.Lock) {
+      SubScreenCard(title = stringResource(R.string.settings_card_apk_signing), icon = Icons.Rounded.Lock) {
         CloudSigningMode.entries.forEach { mode ->
           Row(
             modifier =
@@ -943,9 +943,9 @@ fun SettingsNdkSigningSubScreen(
               modifier = Modifier.minimumInteractiveComponentSize().testTag("settings_signing_${mode.name}"),
             )
             Column(modifier = Modifier.weight(1f)) {
-              Text(mode.label, style = MaterialTheme.typography.titleSmall)
+              Text(stringResource(mode.labelRes), style = MaterialTheme.typography.titleSmall)
               Text(
-                text = mode.summary,
+                text = stringResource(mode.summaryRes),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
@@ -1027,7 +1027,7 @@ fun SettingsNotificationsSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Background Cloud Build Push Alerts", icon = Icons.Rounded.Notifications) {
+      SubScreenCard(title = stringResource(R.string.settings_card_push_alerts), icon = Icons.Rounded.Notifications) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -1038,7 +1038,7 @@ fun SettingsNotificationsSubScreen(
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-              Text("Build Completion Alerts", style = MaterialTheme.typography.titleSmall)
+              Text(stringResource(R.string.settings_completion_alerts), style = MaterialTheme.typography.titleSmall)
               TagPill(
                 text = if (hasNotificationPermission) "Allowed" else "Permission Needed",
                 containerColor =
@@ -1075,7 +1075,7 @@ fun SettingsNotificationsSubScreen(
             ) {
               Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
               Spacer(Modifier.width(6.dp))
-              Text("Allow Permission")
+              Text(stringResource(R.string.settings_allow_permission))
             }
           }
           OutlinedButton(
@@ -1085,14 +1085,14 @@ fun SettingsNotificationsSubScreen(
           ) {
             Icon(Icons.Rounded.Notifications, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Send Test Alert")
+            Text(stringResource(R.string.settings_send_test_alert))
           }
         }
       }
     }
 
     item {
-      SubScreenCard(title = "Notification & Banner Theme Preview", icon = Icons.Rounded.Palette) {
+      SubScreenCard(title = stringResource(R.string.settings_notification_preview), icon = Icons.Rounded.Palette) {
         Column(
           modifier = Modifier.fillMaxWidth().testTag("settings_notification_theme_preview_card"),
           verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -1222,14 +1222,14 @@ fun SettingsStorageResetSubScreen(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     item {
-      SubScreenCard(title = "Workspace History & Binary Cache", icon = Icons.Rounded.Storage) {
+      SubScreenCard(title = stringResource(R.string.settings_card_workspace_history), icon = Icons.Rounded.Storage) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Column(modifier = Modifier.weight(1f)) {
-            Text("Recent APK & DEX Entries", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.settings_recent_entries_count), style = MaterialTheme.typography.titleSmall)
             Text(
               text = "$recentHistoryCount saved quick-open entries in local DataStore",
               style = MaterialTheme.typography.bodySmall,
@@ -1246,13 +1246,13 @@ fun SettingsStorageResetSubScreen(
         ) {
           Icon(Icons.Rounded.DeleteSweep, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
-          Text("Clear Recent File History")
+          Text(stringResource(R.string.settings_clear_recent_history))
         }
       }
     }
 
     item {
-      SubScreenCard(title = "Restore Defaults", icon = Icons.Rounded.RestartAlt) {
+      SubScreenCard(title = stringResource(R.string.settings_restore_defaults), icon = Icons.Rounded.RestartAlt) {
         Text(
           text = "Reset Appearance, Code Editor formatting, DEX Parser defaults, Transpiler Pipeline options, and NDK/Signing settings.",
           style = MaterialTheme.typography.bodySmall,
@@ -1273,7 +1273,7 @@ fun SettingsStorageResetSubScreen(
         ) {
           Icon(Icons.Rounded.RestartAlt, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
-          Text("Reset All Settings to Defaults")
+          Text(stringResource(R.string.settings_reset_all))
         }
       }
     }
@@ -1283,9 +1283,9 @@ fun SettingsStorageResetSubScreen(
     AlertDialog(
       onDismissRequest = { showClearHistoryDialog = false },
       shape = RoundedCornerShape(28.dp),
-      title = { Text("Clear Recent File History?") },
+      title = { Text(stringResource(R.string.settings_clear_history_dialog_title)) },
       text = {
-        Text("Removes all $recentHistoryCount recent APK/DEX shortcuts from Dex2C Studio. Your APK files on device storage remain untouched.")
+        Text(stringResource(R.string.settings_clear_history_dialog_desc, recentHistoryCount))
       },
       confirmButton = {
         Button(
@@ -1308,14 +1308,14 @@ fun SettingsStorageResetSubScreen(
     AlertDialog(
       onDismissRequest = { showResetDialog = false },
       shape = RoundedCornerShape(28.dp),
-      title = { Text("Reset All Settings?") },
+      title = { Text(stringResource(R.string.settings_reset_all_dialog_title)) },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-          Text("Restores theme, code viewer, DEX parser, transpiler pipeline, and NDK settings to factory defaults.")
+          Text(stringResource(R.string.settings_reset_all_dialog_desc))
           if (isGitHubSignedIn) {
             SettingsToggleRow(
-              title = "Also sign out of GitHub",
-              subtitle = "Clears saved OAuth token & workspace repo link",
+              title = stringResource(R.string.settings_also_sign_out_github),
+              subtitle = stringResource(R.string.settings_sign_out_desc),
               checked = alsoSignOutOnReset,
               onCheckedChange = { alsoSignOutOnReset = it },
               testTag = "reset_also_sign_out_switch",
@@ -1419,7 +1419,7 @@ fun SettingsAboutSubScreen(
     }
 
     item {
-      SubScreenCard(title = "App Workflow & Architecture (WORKFLOW.md)", icon = Icons.Rounded.AccountTree) {
+      SubScreenCard(title = stringResource(R.string.settings_about_workflow_guide), icon = Icons.Rounded.AccountTree) {
         Text(
           text = "Explore the end-to-end user guide, ASCII pipeline diagrams, multi-DEX streaming, Smali editor & Java decompiler, C++17 transpiler, and memory optimization architecture.",
           style = MaterialTheme.typography.bodySmall,
@@ -1432,7 +1432,7 @@ fun SettingsAboutSubScreen(
         ) {
           Icon(Icons.Rounded.AccountTree, contentDescription = null, modifier = Modifier.size(18.dp))
           Spacer(Modifier.width(8.dp))
-          Text("Open Workflow & Architecture Guide")
+          Text(stringResource(R.string.settings_open_workflow_guide))
         }
       }
     }
@@ -1457,7 +1457,7 @@ fun SettingsAboutSubScreen(
     }
 
     item {
-      SubScreenCard(title = "Bundled Toolchains & Integrations", icon = Icons.Rounded.Build) {
+      SubScreenCard(title = stringResource(R.string.settings_bundled_toolchains), icon = Icons.Rounded.Build) {
         Text(
           text = "• codehasan/dex2c native transpiler with OLLVM & 16KB alignment (dcc.cfg, filter.txt)\n" +
             "• Google smali-dexlib2 & smali-baksmali class disassembly + Kotlin CFG/payload analysis\n" +

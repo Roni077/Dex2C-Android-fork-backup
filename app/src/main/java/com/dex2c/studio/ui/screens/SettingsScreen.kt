@@ -75,18 +75,68 @@ import com.dex2c.studio.ui.components.TagPill
 import com.dex2c.studio.ui.components.expressivePressScale
 
 enum class SettingsSection(
+  val titleRes: Int,
+  val groupNameRes: Int,
+  val icon: ImageVector,
   val title: String,
   val groupName: String,
-  val icon: ImageVector,
 ) {
-  APPEARANCE("Appearance & Theme", "General & Editor", Icons.Rounded.Palette),
-  CODE_EDITOR("Code Editor & Viewer", "General & Editor", Icons.Rounded.Code),
-  DEX_PARSER("DEX Parser & Home", "Analysis & Pipeline", Icons.Rounded.Memory),
-  GITHUB_CLOUD("GitHub Cloud & Workspace Repo", "Cloud Build & Alerts", Icons.Rounded.CloudQueue),
-  NDK_SIGNING("NDK Toolchain & APK Signing", "Cloud Build & Alerts", Icons.Rounded.Build),
-  NOTIFICATIONS("Notifications & Alerts", "Cloud Build & Alerts", Icons.Rounded.NotificationsActive),
-  STORAGE_RESET("Storage, Cache & Reset", "Maintenance & Info", Icons.Rounded.Storage),
-  ABOUT("About & Diagnostics", "Maintenance & Info", Icons.Rounded.Info),
+  APPEARANCE(
+    titleRes = R.string.settings_section_appearance,
+    groupNameRes = R.string.settings_group_general_editor,
+    icon = Icons.Rounded.Palette,
+    title = "Appearance & Theme",
+    groupName = "General & Editor",
+  ),
+  CODE_EDITOR(
+    titleRes = R.string.settings_section_code_editor,
+    groupNameRes = R.string.settings_group_general_editor,
+    icon = Icons.Rounded.Code,
+    title = "Code Editor & Viewer",
+    groupName = "General & Editor",
+  ),
+  DEX_PARSER(
+    titleRes = R.string.settings_section_dex_parser,
+    groupNameRes = R.string.settings_group_analysis_pipeline,
+    icon = Icons.Rounded.Memory,
+    title = "DEX Parser & Home",
+    groupName = "Analysis & Pipeline",
+  ),
+  GITHUB_CLOUD(
+    titleRes = R.string.settings_section_github_cloud,
+    groupNameRes = R.string.settings_group_cloud_alerts,
+    icon = Icons.Rounded.CloudQueue,
+    title = "GitHub Cloud & Workspace Repo",
+    groupName = "Cloud Build & Alerts",
+  ),
+  NDK_SIGNING(
+    titleRes = R.string.settings_section_ndk_signing,
+    groupNameRes = R.string.settings_group_cloud_alerts,
+    icon = Icons.Rounded.Build,
+    title = "NDK Toolchain & APK Signing",
+    groupName = "Cloud Build & Alerts",
+  ),
+  NOTIFICATIONS(
+    titleRes = R.string.settings_section_notifications,
+    groupNameRes = R.string.settings_group_cloud_alerts,
+    icon = Icons.Rounded.NotificationsActive,
+    title = "Notifications & Alerts",
+    groupName = "Cloud Build & Alerts",
+  ),
+  STORAGE_RESET(
+    titleRes = R.string.settings_section_storage_reset,
+    groupNameRes = R.string.settings_group_maintenance_info,
+    icon = Icons.Rounded.Storage,
+    title = "Storage, Cache & Reset",
+    groupName = "Maintenance & Info",
+  ),
+  ABOUT(
+    titleRes = R.string.settings_section_about,
+    groupNameRes = R.string.settings_group_maintenance_info,
+    icon = Icons.Rounded.Info,
+    title = "About & Diagnostics",
+    groupName = "Maintenance & Info",
+  ),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -293,18 +343,18 @@ private fun SettingsHubList(
   onSelectSection: (SettingsSection) -> Unit,
   onGoToPipelineConfig: () -> Unit,
 ) {
-  val groupedSections = SettingsSection.entries.groupBy { it.groupName }
+  val groupedSections = SettingsSection.entries.groupBy { it.groupNameRes }
 
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    groupedSections.forEach { (groupTitle, sections) ->
-      item(key = groupTitle) {
+    groupedSections.forEach { (groupTitleRes, sections) ->
+      item(key = groupTitleRes) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
-            text = groupTitle,
+            text = stringResource(groupTitleRes),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(horizontal = 4.dp),
@@ -327,7 +377,7 @@ private fun SettingsHubList(
                     hasNotificationPermission = hasNotificationPermission,
                   )
                 SettingsHubRow(
-                  title = section.title,
+                  title = stringResource(section.titleRes),
                   icon = section.icon,
                   summary = summary,
                   badgeText = sectionBadge(section, cloudSettings, hasNotificationPermission),
@@ -335,20 +385,20 @@ private fun SettingsHubList(
                   testTag = "settings_hub_row_${section.name.lowercase()}",
                   onClick = { onSelectSection(section) },
                 )
-                if (idx < sections.lastIndex || groupTitle == "Analysis & Pipeline") {
+                if (idx < sections.lastIndex || groupTitleRes == R.string.settings_group_analysis_pipeline) {
                   HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
                     modifier = Modifier.padding(horizontal = 18.dp),
                   )
                 }
               }
-              if (groupTitle == "Analysis & Pipeline") {
+              if (groupTitleRes == R.string.settings_group_analysis_pipeline) {
                 val jniLabel =
                   if (transpilerConfig.jniStyle == JniBindingStyle.REGISTER_NATIVES) "RegisterNatives"
                   else "Java_* Exports"
                 val langLabel = transpilerConfig.targetLanguage.label
                 SettingsHubRow(
-                  title = "Transpiler Pipeline Shortcut",
+                  title = stringResource(R.string.settings_card_pipeline_shortcut),
                   icon = Icons.Rounded.Tune,
                   summary = "${transpilerConfig.moduleName} • $jniLabel • $langLabel",
                   badgeText = "Open",
@@ -524,6 +574,7 @@ private fun SettingsDetailHost(
   }
 }
 
+@Composable
 private fun sectionSummary(
   section: SettingsSection,
   appSettings: AppSettings,
@@ -535,7 +586,7 @@ private fun sectionSummary(
     SettingsSection.APPEARANCE -> {
       val paletteLabel =
         if (appSettings.dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-          "Dynamic"
+          stringResource(R.string.onboarding_dynamic_wallpaper)
         } else {
           CURATED_ACCENT_PRESETS.firstOrNull {
             it.hex.equals(appSettings.accentSeedHex, ignoreCase = true)
@@ -543,29 +594,27 @@ private fun sectionSummary(
         }
       val langLabel =
         when (appSettings.appLanguage) {
-          AppLanguage.SYSTEM -> "System"
-          AppLanguage.ENGLISH -> "English"
-          AppLanguage.CHINESE_SIMPLIFIED -> "中文"
+          AppLanguage.SYSTEM -> stringResource(R.string.language_system)
+          AppLanguage.ENGLISH -> stringResource(R.string.language_english)
+          AppLanguage.CHINESE_SIMPLIFIED -> stringResource(R.string.language_chinese)
         }
-      "${appSettings.themeMode.label} • $paletteLabel • $langLabel • ${appSettings.appIconStyle.label}"
+      "${stringResource(appSettings.themeMode.labelRes)} • $paletteLabel • $langLabel • ${stringResource(appSettings.appIconStyle.labelRes)}"
     }
     SettingsSection.CODE_EDITOR ->
-      "${appSettings.codeFontSizeSp}sp • ${appSettings.smaliSyntaxTheme.shortLabel} • ${if (appSettings.showLineNumbers) "Line numbers on" else "Line numbers off"} • ${appSettings.maxCodePreviewLines} lines"
+      "${appSettings.codeFontSizeSp}sp • ${stringResource(appSettings.smaliSyntaxTheme.shortLabelRes)} • ${if (appSettings.showLineNumbers) stringResource(R.string.settings_show_line_numbers) else "..."} • ${appSettings.maxCodePreviewLines} lines"
     SettingsSection.DEX_PARSER ->
-      "${if (appSettings.defaultHideFramework) "App-only default" else "All classes"} • Auto-select ${appSettings.autoSelectMethodLimit}"
+      "${if (appSettings.defaultHideFramework) stringResource(R.string.chip_hide_framework) else stringResource(R.string.picker_tab_recent)} • ${stringResource(R.string.settings_auto_select_limit)} ${appSettings.autoSelectMethodLimit}"
     SettingsSection.GITHUB_CLOUD ->
       if (cloudSettings.isAuthenticated) "@${cloudSettings.githubUsername} • ${cloudSettings.repoName}"
-      else "Device Flow OAuth & private dex2c.yml workspace"
+      else stringResource(R.string.settings_card_github_oauth)
     SettingsSection.NDK_SIGNING ->
-      "NDK ${cloudSettings.ndkVersion} • JDK ${cloudSettings.jdkVersion} • ${cloudSettings.signingMode.label}"
+      "NDK ${cloudSettings.ndkVersion} • JDK ${cloudSettings.jdkVersion} • ${stringResource(cloudSettings.signingMode.labelRes)}"
     SettingsSection.NOTIFICATIONS ->
-      if (!cloudSettings.notificationsEnabled) "Build alerts disabled"
-      else if (hasNotificationPermission) "Enabled • ${cloudSettings.pollIntervalSeconds}s background poll"
-      else "Enabled • Notification permission needed"
-    SettingsSection.STORAGE_RESET -> {
-      val entryWord = if (recentHistoryCount == 1) "entry" else "entries"
-      "$recentHistoryCount recent $entryWord • Clear cache & reset"
-    }
+      if (!cloudSettings.notificationsEnabled) stringResource(R.string.settings_card_push_alerts)
+      else if (hasNotificationPermission) "Enabled • ${cloudSettings.pollIntervalSeconds}s"
+      else stringResource(R.string.settings_allow_permission)
+    SettingsSection.STORAGE_RESET ->
+      "$recentHistoryCount • ${stringResource(R.string.settings_card_workspace_history)}"
     SettingsSection.ABOUT ->
       "v${BuildConfig.VERSION_NAME} • DEX 035–041 • codehasan/dex2c Cloud"
   }

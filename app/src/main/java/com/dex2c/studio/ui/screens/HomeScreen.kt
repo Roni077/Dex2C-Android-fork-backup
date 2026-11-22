@@ -274,7 +274,7 @@ fun HomeScreen(
                         tint = MaterialTheme.colorScheme.error,
                       )
                       Column(modifier = Modifier.weight(1f)) {
-                        Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.home_dex_parse_error), style = MaterialTheme.typography.titleMedium)
                         Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
                       }
                     }
@@ -356,7 +356,7 @@ fun HomeScreen(
                       tint = MaterialTheme.colorScheme.error,
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                      Text("DEX Parse Error", style = MaterialTheme.typography.titleMedium)
+                      Text(stringResource(R.string.home_dex_parse_error), style = MaterialTheme.typography.titleMedium)
                       Text(loadState.message, style = MaterialTheme.typography.bodyMedium)
                     }
                   }
@@ -552,14 +552,14 @@ private fun RecentQuickStrip(
     ) {
       Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
-        Text("Recent APKs & DEX", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.home_recent_apks_dex), style = MaterialTheme.typography.titleMedium)
       }
       if (recentFiles.size > 2) {
         TextButton(
           onClick = { showAllRecent = !showAllRecent },
           modifier = Modifier.testTag("recent_view_all_button"),
         ) {
-          Text(if (showAllRecent) "Show Less" else "View All")
+          Text(if (showAllRecent) stringResource(R.string.home_show_less) else stringResource(R.string.home_view_all))
         }
       }
     }
@@ -640,7 +640,7 @@ private fun TranspileActionBanner(
             overflow = TextOverflow.Ellipsis,
           )
           Text(
-            text = "$entryName • $selectedMethodCount methods queued for C",
+            text = stringResource(R.string.home_methods_queued, entryName, selectedMethodCount),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
@@ -649,7 +649,7 @@ private fun TranspileActionBanner(
         }
         Spacer(Modifier.width(8.dp))
         TagPill(
-          text = "$selectedMethodCount SELECTED",
+          text = stringResource(R.string.home_methods_selected_tag, selectedMethodCount),
           containerColor =
             if (selectedMethodCount > 0) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surfaceContainer,
@@ -690,7 +690,7 @@ private fun TranspileActionBanner(
           contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
           modifier = Modifier.weight(1f).testTag("browse_classes_button"),
         ) {
-          Text("Browse Classes", maxLines = 1, overflow = TextOverflow.Ellipsis)
+          Text(stringResource(R.string.home_browse_classes), maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
       }
     }

@@ -40,10 +40,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dex2c.studio.R
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.SmaliMethodSpan
@@ -164,7 +166,7 @@ fun ClassMethodsSelectorSheet(
         value = searchQuery,
         onValueChange = { searchQuery = it },
         singleLine = true,
-        placeholder = { Text("Filter methods by name or signature...", style = MaterialTheme.typography.bodySmall) },
+        placeholder = { Text(stringResource(R.string.selector_search_hint), style = MaterialTheme.typography.bodySmall) },
         leadingIcon = {
           Icon(Icons.Rounded.Search, contentDescription = null, modifier = Modifier.size(18.dp))
         },
@@ -193,21 +195,21 @@ fun ClassMethodsSelectorSheet(
           contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
           modifier = Modifier.height(28.dp),
         ) {
-          Text("Select All", style = MaterialTheme.typography.labelSmall)
+          Text(stringResource(R.string.selector_select_all), style = MaterialTheme.typography.labelSmall)
         }
         TextButton(
           onClick = onDeselectAllMethods,
           contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
           modifier = Modifier.height(28.dp),
         ) {
-          Text("Deselect All", style = MaterialTheme.typography.labelSmall)
+          Text(stringResource(R.string.selector_deselect_all), style = MaterialTheme.typography.labelSmall)
         }
         TextButton(
           onClick = onInvertMethodSelection,
           contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
           modifier = Modifier.height(28.dp),
         ) {
-          Text("Invert Selection", style = MaterialTheme.typography.labelSmall)
+          Text(stringResource(R.string.selector_invert_selection), style = MaterialTheme.typography.labelSmall)
         }
       }
 
@@ -290,7 +292,7 @@ fun ClassMethodsSelectorSheet(
                   .height(28.dp)
                   .testTag("method_jump_btn_$idx"),
               ) {
-                Text("Jump", style = MaterialTheme.typography.labelSmall)
+                Text(stringResource(R.string.selector_jump), style = MaterialTheme.typography.labelSmall)
               }
             }
           }

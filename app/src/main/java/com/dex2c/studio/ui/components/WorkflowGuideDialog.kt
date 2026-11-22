@@ -53,18 +53,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.dex2c.studio.R
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 
 data class WorkflowSection(
   val id: String,
   val shortLabel: String,
   val title: String,
+  val titleRes: Int? = null,
   val userSteps: List<String>,
   val technicalNotes: List<String>,
   val diagramOrCode: String? = null,
@@ -83,6 +86,7 @@ object WorkflowDocumentationRepository {
         id = "architecture",
         shortLabel = "1. Architecture",
         title = "1. High-Level System Architecture & Data Pipeline",
+        titleRes = R.string.guide_phase1_title,
         userSteps =
           listOf(
             "Dex2C Studio unifies Dalvik-to-C++17 native method transpilation (codehasan/dex2c) with Dex-Editor-Android's in-memory Smali editing, Java decompilation, and patched DEX/APK export.",
@@ -107,6 +111,7 @@ object WorkflowDocumentationRepository {
         id = "ingestion",
         shortLabel = "2. Ingestion",
         title = "2. Phase 1: Binary Ingestion & Multi-DEX Streaming",
+        titleRes = R.string.guide_phase2_title,
         userSteps =
           listOf(
             "Open the Home screen and load an APK or DEX via Device Storage (SAF), Installed Apps, Self-APK Inspection, or Recent Binary History.",
@@ -124,6 +129,7 @@ object WorkflowDocumentationRepository {
         id = "explorer",
         shortLabel = "3. Explorer",
         title = "3. Phase 2: DEX Explorer (Classes, Methods, Fields, Strings & Rules)",
+        titleRes = R.string.guide_phase3_title,
         userSteps =
           listOf(
             "CLASSES Tab: Browse Package Tree or Flat List, toggle Select Mode for batch C++ selection, apply +W / !B filter rules, or delete classes from the active DEX.",
@@ -141,6 +147,7 @@ object WorkflowDocumentationRepository {
         id = "smali_java",
         shortLabel = "4. Smali & Java",
         title = "4. Phase 3: Interactive Smali Editor, Java Decompiler & DEX Assembly",
+        titleRes = R.string.guide_phase4_title,
         userSteps =
           listOf(
             "View Mode: Inspect syntax-highlighted Smali with collapsible method spans, register/label highlighting, and one-tap Label Jump (:cond_*, :goto_*, :try_start_*).",
@@ -157,6 +164,7 @@ object WorkflowDocumentationRepository {
         id = "transpiler",
         shortLabel = "5. C++17 & CFG",
         title = "5. Phase 4: Method Inspection, Control Flow Graph (CFG) & C++17 Transpiler",
+        titleRes = R.string.guide_phase5_title,
         userSteps =
           listOf(
             "C++17 / JNI Tab: Inspect generated JNIEXPORT functions, RegisterNatives tables, register variables, and exception checks.",
@@ -173,6 +181,7 @@ object WorkflowDocumentationRepository {
         id = "export_cloud",
         shortLabel = "6. Export & CI",
         title = "6. Phase 5 & 6: Filter Rules, Patched DEX/APK Export & GitHub Cloud CI",
+        titleRes = R.string.guide_phase6_title,
         userSteps =
           listOf(
             "Export Patched DEX / APK: Use the Classes top bar menu to save patched_classes.dex or repackage patched_app.apk via Android SAF.",
@@ -321,7 +330,7 @@ fun WorkflowGuideDialog(
               shape = SegmentedButtonDefaults.itemShape(0, 2),
               modifier = Modifier.testTag("workflow_mode_interactive_btn"),
             ) {
-              Text("Interactive Guide", style = MaterialTheme.typography.labelMedium, maxLines = 1)
+              Text(stringResource(R.string.guide_interactive_guide), style = MaterialTheme.typography.labelMedium, maxLines = 1)
             }
             SegmentedButton(
               selected = viewMode == WorkflowViewMode.RAW_MARKDOWN,
@@ -343,7 +352,7 @@ fun WorkflowGuideDialog(
           ) {
             Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
-            Text("Copy .md", style = MaterialTheme.typography.labelMedium)
+            Text(stringResource(R.string.guide_copy_md), style = MaterialTheme.typography.labelMedium)
           }
         }
 
@@ -361,7 +370,7 @@ fun WorkflowGuideDialog(
                 OutlinedTextField(
                   value = searchQuery,
                   onValueChange = { searchQuery = it },
-                  placeholder = { Text("Search workflow steps, Smali, C++17, CFG, or rules...") },
+                  placeholder = { Text(stringResource(R.string.guide_search_hint)) },
                   leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                   singleLine = true,
                   shape = RoundedCornerShape(16.dp),
@@ -377,7 +386,7 @@ fun WorkflowGuideDialog(
                   FilterChip(
                     selected = selectedSectionId == "ALL",
                     onClick = { selectedSectionId = "ALL" },
-                    label = { Text("All Phases (${WorkflowDocumentationRepository.sections.size})") },
+                    label = { Text(stringResource(R.string.guide_all_phases, WorkflowDocumentationRepository.sections.size)) },
                     modifier = Modifier.testTag("workflow_chip_ALL"),
                   )
                   WorkflowDocumentationRepository.sections.forEach { section ->
@@ -441,7 +450,7 @@ fun WorkflowGuideDialog(
             shape = RoundedCornerShape(18.dp),
             modifier = Modifier.minimumInteractiveComponentSize().testTag("workflow_done_btn"),
           ) {
-            Text("Done")
+            Text(stringResource(R.string.onboarding_done))
           }
         }
       }
@@ -467,7 +476,7 @@ private fun WorkflowSectionCard(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
-          text = section.title,
+          text = section.titleRes?.let { stringResource(it) } ?: section.title,
           style = MaterialTheme.typography.titleSmall,
           fontWeight = FontWeight.Bold,
           color = MaterialTheme.colorScheme.primary,

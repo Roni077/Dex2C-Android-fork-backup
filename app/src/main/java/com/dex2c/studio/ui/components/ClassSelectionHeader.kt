@@ -36,11 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dex2c.studio.R
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 
@@ -199,7 +201,7 @@ fun ClassSelectionHeader(
             .height(28.dp)
             .testTag("class_select_all_btn"),
         ) {
-          Text("Select All", style = MaterialTheme.typography.labelSmall)
+          Text(stringResource(R.string.selector_select_all), style = MaterialTheme.typography.labelSmall)
         }
 
         TextButton(
@@ -209,7 +211,7 @@ fun ClassSelectionHeader(
             .height(28.dp)
             .testTag("class_deselect_all_btn"),
         ) {
-          Text("Deselect All", style = MaterialTheme.typography.labelSmall)
+          Text(stringResource(R.string.selector_deselect_all), style = MaterialTheme.typography.labelSmall)
         }
 
         TextButton(
@@ -225,7 +227,7 @@ fun ClassSelectionHeader(
             modifier = Modifier.size(13.dp),
           )
           Spacer(Modifier.width(3.dp))
-          Text("Invert", style = MaterialTheme.typography.labelSmall)
+          Text(stringResource(R.string.selector_invert_selection), style = MaterialTheme.typography.labelSmall)
         }
       }
     }

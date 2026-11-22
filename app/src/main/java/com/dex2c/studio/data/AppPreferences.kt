@@ -12,42 +12,82 @@ import com.dex2c.studio.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-enum class AppThemeMode(val label: String, val summary: String) {
-  SYSTEM("Follow System", "Automatically match Android system appearance"),
-  LIGHT("Light", "Crisp daylight Material 3 tonal surfaces"),
-  DARK("Dark", "Deep obsidian tonal surfaces for low-light focus"),
-  AMOLED("AMOLED Black", "Pure #000000 canvas for OLED contrast and power savings"),
+enum class AppThemeMode(
+  val labelRes: Int,
+  val summaryRes: Int,
+  val label: String,
+  val summary: String,
+) {
+  SYSTEM(
+    labelRes = R.string.theme_mode_system,
+    summaryRes = R.string.theme_mode_system_desc,
+    label = "Follow System",
+    summary = "Automatically match Android system appearance",
+  ),
+  LIGHT(
+    labelRes = R.string.theme_mode_light,
+    summaryRes = R.string.theme_mode_light_desc,
+    label = "Light",
+    summary = "Crisp daylight Material 3 tonal surfaces",
+  ),
+  DARK(
+    labelRes = R.string.theme_mode_dark,
+    summaryRes = R.string.theme_mode_dark_desc,
+    label = "Dark",
+    summary = "Deep obsidian tonal surfaces for low-light focus",
+  ),
+  AMOLED(
+    labelRes = R.string.theme_mode_amoled,
+    summaryRes = R.string.theme_mode_amoled_desc,
+    label = "AMOLED Black",
+    summary = "Pure #000000 canvas for OLED contrast and power savings",
+  ),
 }
 
 enum class SmaliSyntaxTheme(
+  val labelRes: Int,
+  val shortLabelRes: Int,
+  val summaryRes: Int,
+  val tagSuffix: String,
   val label: String,
   val shortLabel: String,
   val summary: String,
-  val tagSuffix: String,
 ) {
   APP_DEFAULT(
+    labelRes = R.string.syntax_theme_default,
+    shortLabelRes = R.string.syntax_theme_default_short,
+    summaryRes = R.string.syntax_theme_default_desc,
+    tagSuffix = "default",
     label = "App Default",
     shortLabel = "Default",
     summary = "Automatically match the active app appearance",
-    tagSuffix = "default",
   ),
   LIGHT(
+    labelRes = R.string.syntax_theme_light,
+    shortLabelRes = R.string.syntax_theme_light_short,
+    summaryRes = R.string.syntax_theme_light_desc,
+    tagSuffix = "light",
     label = "Light",
     shortLabel = "Light",
     summary = "High-legibility daylight canvas for bright environments",
-    tagSuffix = "light",
   ),
   DARK(
+    labelRes = R.string.syntax_theme_dark,
+    shortLabelRes = R.string.syntax_theme_dark_short,
+    summaryRes = R.string.syntax_theme_dark_desc,
+    tagSuffix = "dark",
     label = "Dark",
     shortLabel = "Dark",
     summary = "Deep obsidian canvas with balanced syntax contrast",
-    tagSuffix = "dark",
   ),
   BYTECODE_HIGH_CONTRAST(
+    labelRes = R.string.syntax_theme_high_contrast,
+    shortLabelRes = R.string.syntax_theme_high_contrast_short,
+    summaryRes = R.string.syntax_theme_high_contrast_desc,
+    tagSuffix = "high_contrast",
     label = "Bytecode High-Contrast",
     shortLabel = "High-Contrast",
     summary = "Color-coded opcode families, distinct v/p registers, and call targets",
-    tagSuffix = "high_contrast",
   ),
 }
 
@@ -68,38 +108,48 @@ val CURATED_ACCENT_PRESETS =
 
 enum class AppIconStyle(
   val id: String,
-  val label: String,
-  val description: String,
+  val labelRes: Int,
+  val descriptionRes: Int,
   val aliasName: String,
   @param:DrawableRes val previewRes: Int,
+  val label: String,
+  val description: String,
 ) {
   CYBER_SHODO(
     id = "cyber_shodo",
-    label = "Cyber Shodo",
-    description = "Expressive dry-brush Japanese calligraphy D2C with cyan/mint neon energy",
+    labelRes = R.string.icon_style_cyber_shodo,
+    descriptionRes = R.string.icon_style_cyber_shodo_desc,
     aliasName = "MainActivityShodo",
     previewRes = R.drawable.ic_dex2c_shodo_src,
+    label = "Cyber Shodo",
+    description = "Expressive dry-brush Japanese calligraphy D2C with cyan/mint neon energy",
   ),
   CURSIVE_NEON(
     id = "cursive_neon",
-    label = "Cursive Neon",
-    description = "Fluid continuous handwritten script dex2c with cyan-to-mint gradient",
+    labelRes = R.string.icon_style_cursive_neon,
+    descriptionRes = R.string.icon_style_cursive_neon_desc,
     aliasName = "MainActivityCursive",
     previewRes = R.drawable.ic_dex2c_cursive_src,
+    label = "Cursive Neon",
+    description = "Fluid continuous handwritten script dex2c with cyan-to-mint gradient",
   ),
   MONOGRAM_LIGATURE(
     id = "monogram_ligature",
-    label = "Monogram Ligature",
-    description = "Interlocking calligraphic D2C ligature with metallic chisel sheen",
+    labelRes = R.string.icon_style_monogram_ligature,
+    descriptionRes = R.string.icon_style_monogram_ligature_desc,
     aliasName = "MainActivityMonogram",
     previewRes = R.drawable.ic_dex2c_monogram_src,
+    label = "Monogram Ligature",
+    description = "Interlocking calligraphic D2C ligature with metallic chisel sheen",
   ),
   CLASSIC_TECH(
     id = "classic_tech",
-    label = "Classic Tech",
-    description = "Original geometric hexagon circuit badge and DEX blocks",
+    labelRes = R.string.icon_style_classic_tech,
+    descriptionRes = R.string.icon_style_classic_tech_desc,
     aliasName = "MainActivityClassic",
     previewRes = R.drawable.ic_dex2c_classic_src,
+    label = "Classic Tech",
+    description = "Original geometric hexagon circuit badge and DEX blocks",
   );
 
   companion object {

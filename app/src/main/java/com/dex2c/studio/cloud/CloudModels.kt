@@ -1,13 +1,29 @@
 package com.dex2c.studio.cloud
 
+import com.dex2c.studio.R
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.Locale
 import java.util.TimeZone
 
-enum class CloudSigningMode(val label: String, val summary: String) {
-  DEBUG_AUTO("Auto Debug Keystore", "Generates and signs output APK with androiddebugkey in workflow"),
-  REPO_KEYSTORE_SECRETS("Repo Secrets Keystore", "Uses KEYSTORE_BASE64 / KEYSTORE_PASS secrets with debug fallback"),
+enum class CloudSigningMode(
+  val labelRes: Int,
+  val summaryRes: Int,
+  val label: String,
+  val summary: String,
+) {
+  DEBUG_AUTO(
+    labelRes = R.string.cloud_signing_auto_debug,
+    summaryRes = R.string.cloud_signing_auto_debug_desc,
+    label = "Auto Debug Keystore",
+    summary = "Generates and signs output APK with androiddebugkey in workflow",
+  ),
+  REPO_KEYSTORE_SECRETS(
+    labelRes = R.string.cloud_signing_repo_secrets,
+    summaryRes = R.string.cloud_signing_repo_secrets_desc,
+    label = "Repo Secrets Keystore",
+    summary = "Uses KEYSTORE_BASE64 / KEYSTORE_PASS secrets with debug fallback",
+  ),
 }
 
 val SUPPORTED_NDK_VERSIONS = listOf("r25c-ollvm", "r25b", "r26d", "r27c", "r28c")

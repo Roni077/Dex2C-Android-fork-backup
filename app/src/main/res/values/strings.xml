@@ -178,4 +178,206 @@
     <string name="label_reset_filters">Reset Filters</string>
     <string name="label_all_dexes">All Loaded DEXes</string>
     <string name="recent_apk_dex_title">Recent APK &amp; DEX</string>
+
+    <!-- SettingsSection Titles & Group Names -->
+    <string name="settings_section_appearance">Appearance &amp; Theme</string>
+    <string name="settings_section_code_editor">Code Editor &amp; Viewer</string>
+    <string name="settings_section_dex_parser">DEX Parser &amp; Home</string>
+    <string name="settings_section_github_cloud">GitHub Cloud &amp; Workspace Repo</string>
+    <string name="settings_section_ndk_signing">NDK Toolchain &amp; APK Signing</string>
+    <string name="settings_section_notifications">Notifications &amp; Alerts</string>
+    <string name="settings_section_storage_reset">Storage, Cache &amp; Reset</string>
+    <string name="settings_section_about">About &amp; Diagnostics</string>
+    <string name="settings_group_general_editor">General &amp; Editor</string>
+    <string name="settings_group_analysis_pipeline">Analysis &amp; Pipeline</string>
+    <string name="settings_group_cloud_alerts">Cloud Build &amp; Alerts</string>
+    <string name="settings_group_maintenance_info">Maintenance &amp; Info</string>
+
+    <!-- AppThemeMode Enums -->
+    <string name="theme_mode_system">Follow System</string>
+    <string name="theme_mode_system_desc">Automatically match Android system appearance</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_light_desc">Crisp daylight Material 3 tonal surfaces</string>
+    <string name="theme_mode_dark">Dark</string>
+    <string name="theme_mode_dark_desc">Deep obsidian tonal surfaces for low-light focus</string>
+    <string name="theme_mode_amoled">AMOLED Black</string>
+    <string name="theme_mode_amoled_desc">Pure #000000 canvas for OLED contrast and power savings</string>
+
+    <!-- SmaliSyntaxTheme Enums -->
+    <string name="syntax_theme_default">App Default</string>
+    <string name="syntax_theme_default_short">Default</string>
+    <string name="syntax_theme_default_desc">Automatically match the active app appearance</string>
+    <string name="syntax_theme_light">Light</string>
+    <string name="syntax_theme_light_short">Light</string>
+    <string name="syntax_theme_light_desc">High-legibility daylight canvas for bright environments</string>
+    <string name="syntax_theme_dark">Dark</string>
+    <string name="syntax_theme_dark_short">Dark</string>
+    <string name="syntax_theme_dark_desc">Deep obsidian canvas with balanced syntax contrast</string>
+    <string name="syntax_theme_high_contrast">Bytecode High-Contrast</string>
+    <string name="syntax_theme_high_contrast_short">High-Contrast</string>
+    <string name="syntax_theme_high_contrast_desc">Color-coded opcode families, distinct v/p registers, and call targets</string>
+
+    <!-- AppIconStyle Enums -->
+    <string name="icon_style_cyber_shodo">Cyber Shodo</string>
+    <string name="icon_style_cyber_shodo_desc">Expressive dry-brush Japanese calligraphy D2C with cyan/mint neon energy</string>
+    <string name="icon_style_cursive_neon">Cursive Neon</string>
+    <string name="icon_style_cursive_neon_desc">Fluid continuous handwritten script dex2c with cyan-to-mint gradient</string>
+    <string name="icon_style_monogram_ligature">Monogram Ligature</string>
+    <string name="icon_style_monogram_ligature_desc">Interlocking calligraphic D2C ligature with metallic chisel sheen</string>
+    <string name="icon_style_classic_tech">Classic Tech</string>
+    <string name="icon_style_classic_tech_desc">Original geometric hexagon circuit badge and DEX blocks</string>
+
+    <!-- CloudSigningMode Enums -->
+    <string name="cloud_signing_auto_debug">Auto Debug Keystore</string>
+    <string name="cloud_signing_auto_debug_desc">Generates and signs output APK with androiddebugkey in workflow</string>
+    <string name="cloud_signing_repo_secrets">Repo Secrets Keystore</string>
+    <string name="cloud_signing_repo_secrets_desc">Uses KEYSTORE_BASE64 / KEYSTORE_PASS secrets with debug fallback</string>
+
+    <!-- Settings Sub-Screens & Cards -->
+    <string name="settings_card_theme_posture">Theme Posture</string>
+    <string name="settings_card_dynamic_colors">Dynamic Wallpaper Colors</string>
+    <string name="settings_dynamic_palette">Wallpaper-Based Palette</string>
+    <string name="settings_dynamic_palette_desc">Harmonize buttons, surfaces, and navigation with Material You colors extracted from system wallpaper</string>
+    <string name="settings_card_custom_accent">Custom Accent Color</string>
+    <string name="settings_card_launcher_icon">App Launcher Icon</string>
+    <string name="settings_launcher_icon_desc">Select your preferred calligraphic launcher icon. Changes are applied dynamically to your device home screen.</string>
+    <string name="settings_live_theme_preview">Live Theme Preview</string>
+    <string name="settings_card_typography">Typography &amp; Line Gutter</string>
+    <string name="settings_font_size">Monospace Font Size</string>
+    <string name="settings_show_line_numbers">Show Line Numbers &amp; Hex Offsets</string>
+    <string name="settings_show_line_numbers_desc">Display left gutter line indices in C/C++ and Dalvik instruction viewers</string>
+    <string name="settings_max_preview_lines">Max Code Preview Lines</string>
+    <string name="settings_card_smali_theme">Smali Syntax Theme</string>
+    <string name="settings_smali_theme_desc">Select the syntax coloring palette used by the Smali Class Viewer, or enable Bytecode High-Contrast for semantic opcode-family and v/p register coloring.</string>
+    <string name="settings_live_code_preview">Live Code Preview</string>
+    <string name="settings_card_class_filters">Default Class Explorer Filters</string>
+    <string name="settings_hide_frameworks">Hide Android &amp; Support Frameworks</string>
+    <string name="settings_hide_frameworks_desc">Automatically filter androidx.*, android.*, java.* packages on DEX load</string>
+    <string name="settings_only_bytecode">Only Methods with Dalvik Bytecode</string>
+    <string name="settings_only_bytecode_desc">Hide abstract and native stubs lacking DEX code_item payloads</string>
+    <string name="settings_auto_select_limit">Auto-Select Method Limit</string>
+    <string name="settings_card_pipeline_shortcut">Pipeline Config</string>
+    <string name="settings_card_github_oauth">GitHub OAuth Device Flow (github.com/login/device)</string>
+    <string name="settings_oauth_client_id_label">Custom GitHub OAuth Client ID (optional)</string>
+    <string name="settings_oauth_client_id_desc">Leave blank to use the built-in gh CLI client ID. Overriding is only needed for private enterprise GitHub accounts.</string>
+    <string name="settings_sign_out">Sign Out</string>
+    <string name="settings_card_workspace_repo">Private Workspace Repository &amp; dex2c.yml</string>
+    <string name="settings_repo_owner">Owner</string>
+    <string name="settings_repo_name">Repository</string>
+    <string name="settings_target_branch">Workflow Target Branch</string>
+    <string name="settings_private_repo_toggle">Create as Private Repository</string>
+    <string name="settings_private_repo_desc">Keeps uploaded APKs, dcc.cfg, and filter.txt private to your account</string>
+    <string name="settings_init_sync_yaml">Init / Sync dex2c.yml</string>
+    <string name="settings_copy_yaml">Copy YAML</string>
+    <string name="settings_card_network_resilience">Network &amp; DNS Resilience</string>
+    <string name="settings_doh_fallback">DNS-over-HTTPS (DoH) Fallback</string>
+    <string name="settings_doh_desc">Query Cloudflare (1.1.1.1) and Google (8.8.8.8) if system DNS resolution fails. Keep disabled when using corporate or private VPNs.</string>
+    <string name="settings_card_ndk_jdk">Android NDK &amp; JDK Runners</string>
+    <string name="settings_card_apk_signing">APK Signing &amp; Upload Policy</string>
+    <string name="settings_max_upload_size">Direct Upload APK Size Limit</string>
+    <string name="settings_poll_interval">Cloud Run Status Polling Interval</string>
+    <string name="settings_card_push_alerts">Background Cloud Build Push Alerts</string>
+    <string name="settings_completion_alerts">Build Completion Alerts</string>
+    <string name="settings_completion_alerts_desc">Receive instant Android push notifications when cloud NDK builds finish or encounter compiler errors</string>
+    <string name="settings_allow_permission">Allow Permission</string>
+    <string name="settings_send_test_alert">Send Test Alert</string>
+    <string name="settings_notification_preview">Notification &amp; Banner Theme Preview</string>
+    <string name="settings_card_workspace_history">Workspace History &amp; Binary Cache</string>
+    <string name="settings_recent_entries_count">Recent APK &amp; DEX Entries</string>
+    <string name="settings_clear_recent_history">Clear Recent File History</string>
+    <string name="settings_restore_defaults">Restore Defaults</string>
+    <string name="settings_reset_all">Reset All Settings to Defaults</string>
+    <string name="settings_clear_history_dialog_title">Clear Recent File History?</string>
+    <string name="settings_clear_history_dialog_desc">Removes all %1$d recent APK/DEX shortcuts from Dex2C Studio. Your APK files on device storage remain untouched.</string>
+    <string name="settings_reset_all_dialog_title">Reset All Settings?</string>
+    <string name="settings_reset_all_dialog_desc">Restores theme, code viewer, DEX parser, transpiler pipeline, and NDK settings to factory defaults.</string>
+    <string name="settings_also_sign_out_github">Also sign out of GitHub</string>
+    <string name="settings_sign_out_desc">Clears saved OAuth token &amp; workspace repo link</string>
+    <string name="settings_about_workflow_guide">App Workflow &amp; Architecture (WORKFLOW.md)</string>
+    <string name="settings_open_workflow_guide">Open Workflow &amp; Architecture Guide</string>
+    <string name="settings_bundled_toolchains">Bundled Toolchains &amp; Integrations</string>
+
+    <!-- Home Screen & Recents -->
+    <string name="home_dex_parse_error">DEX Parse Error</string>
+    <string name="home_recent_apks_dex">Recent APKs &amp; DEX</string>
+    <string name="home_show_less">Show Less</string>
+    <string name="home_view_all">View All</string>
+    <string name="home_browse_classes">Browse Classes</string>
+    <string name="home_methods_queued">%1$s • %2$d methods queued for C</string>
+    <string name="home_methods_selected_tag">%1$d SELECTED</string>
+    <string name="home_stat_classes">Classes</string>
+    <string name="home_stat_methods">Methods</string>
+    <string name="home_stat_strings">Strings</string>
+    <string name="home_stat_size">Binary Size</string>
+
+    <!-- Classes Screen & Filter Tray -->
+    <string name="filter_compact_levels">Compact Levels</string>
+    <string name="filter_hide_inner">Hide $Inner</string>
+    <string name="filter_non_empty_pkgs">Non-Empty Pkgs</string>
+    <string name="filter_reset_all">Reset All</string>
+    <string name="filter_match_rules">Match Rules</string>
+    <string name="filter_selected_only">Selected Only</string>
+    <string name="selector_search_hint">Filter methods by name or signature...</string>
+    <string name="selector_select_all">Select All</string>
+    <string name="selector_deselect_all">Deselect All</string>
+    <string name="selector_invert_selection">Invert Selection</string>
+    <string name="selector_jump">Jump</string>
+    <string name="picker_search_classes">Search classes...</string>
+    <string name="picker_all_classes">All Classes (%1$d)</string>
+    <string name="picker_selected_d2c">Selected for Dex2C</string>
+
+    <!-- DEX Explorer & Dialogs -->
+    <string name="dialog_replace_string_title">Confirm String Replacement</string>
+    <string name="dialog_replace_string_message">Replace all occurrences of \"%1$s\" with \"%2$s\" across all string IDs in this DEX binary?</string>
+    <string name="dialog_replace_btn">Replace</string>
+    <string name="dialog_search_strings_hint">Search string literals…</string>
+    <string name="dialog_replace_query_hint">Replace search query with…</string>
+    <string name="meta_parameter_names">Parameter Names</string>
+    <string name="dialog_accent_seed_title">Custom Accent Seed</string>
+    <string name="dialog_accent_hue">Hue</string>
+    <string name="dialog_accent_vividness">Vividness</string>
+    <string name="dialog_accent_hex">Hex Color (#RRGGBB)</string>
+    <string name="dialog_accent_apply">Apply Accent</string>
+
+    <!-- Cloud Build Screen -->
+    <string name="cloud_open_setup">Open Setup</string>
+    <string name="cloud_apk_url_fallback">APK URL Fallback (optional)</string>
+    <string name="cloud_repo_name_label">Private Workspace Repository Name</string>
+    <string name="cloud_resync">Re-sync</string>
+    <string name="cloud_open_repo">Open Repo</string>
+    <string name="cloud_verify">Verify</string>
+    <string name="cloud_continue_dispatch">Continue to Dispatch</string>
+    <string name="cloud_recent_runs">Recent Cloud Runs</string>
+    <string name="cloud_refresh">Refresh</string>
+    <string name="cloud_copy_code">Copy Code</string>
+    <string name="cloud_sync_now">Sync Now</string>
+    <string name="cloud_retry">Retry</string>
+
+    <!-- Onboarding & Guided Setup -->
+    <string name="onboarding_about_title">About Dex2C Studio</string>
+    <string name="onboarding_about_desc">Three focused tools in one mobile reverse-engineering and native build studio.</string>
+    <string name="onboarding_dex_inspector">DEX Inspector</string>
+    <string name="onboarding_jni_transpiler">JNI Transpiler</string>
+    <string name="onboarding_cloud_ndk">Cloud NDK</string>
+    <string name="onboarding_cloud_ci_title">GitHub Cloud CI</string>
+    <string name="onboarding_cloud_ci_desc">Optional remote NDK compilation via GitHub Actions, or stay local.</string>
+    <string name="onboarding_theme_palette">Theme &amp; Palette</string>
+    <string name="onboarding_theme_palette_desc">Choose your studio contrast and accent color. Applies immediately.</string>
+    <string name="onboarding_dynamic_wallpaper">Dynamic Wallpaper Color</string>
+    <string name="onboarding_accent_seed">Accent Seed</string>
+    <string name="onboarding_build_alerts">Build Alerts</string>
+    <string name="onboarding_build_alerts_desc">Receive instant notifications when remote NDK builds complete or fail.</string>
+    <string name="onboarding_allow_permission">Allow Notification Permission</string>
+
+    <!-- Workflow Guide Dialog -->
+    <string name="guide_phase1_title">1. High-Level System Architecture &amp; Data Pipeline</string>
+    <string name="guide_phase2_title">2. Phase 1: Binary Ingestion &amp; Multi-DEX Streaming</string>
+    <string name="guide_phase3_title">3. Phase 2: DEX Explorer (Classes, Methods, Fields, Strings &amp; Rules)</string>
+    <string name="guide_phase4_title">4. Phase 3: Interactive Smali Editor, Java Decompiler &amp; DEX Assembly</string>
+    <string name="guide_phase5_title">5. Phase 4: Method Inspection, Control Flow Graph (CFG) &amp; C++17 Transpiler</string>
+    <string name="guide_phase6_title">6. Phase 5 &amp; 6: Filter Rules, Patched DEX/APK Export &amp; GitHub Cloud CI</string>
+    <string name="guide_interactive_guide">Interactive Guide</string>
+    <string name="guide_copy_md">Copy .md</string>
+    <string name="guide_search_hint">Search workflow steps, Smali, C++17, CFG, or rules...</string>
+    <string name="guide_all_phases">All Phases (%1$d)</string>
 </resources>

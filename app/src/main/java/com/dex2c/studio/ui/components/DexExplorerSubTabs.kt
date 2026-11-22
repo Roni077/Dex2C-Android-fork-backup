@@ -17,10 +17,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dex2c.studio.BuildConfig
+import com.dex2c.studio.R
 import com.dex2c.studio.dex.DexClassInfo
 import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.DexParsedFile
@@ -251,9 +253,9 @@ fun DexStringsExplorerTab(
   if (showReplaceConfirmation) {
     AlertDialog(
       onDismissRequest = { showReplaceConfirmation = false },
-      title = { Text("Confirm String Replacement") },
+      title = { Text(stringResource(R.string.dialog_replace_string_title)) },
       text = {
-        Text("Replace all occurrences of \"$searchQuery\" with \"$replaceQuery\" in active DEX? (${filteredStrings.size} matching constants found)")
+        Text(stringResource(R.string.dialog_replace_string_message, searchQuery, replaceQuery))
       },
       confirmButton = {
         Button(
@@ -263,7 +265,7 @@ fun DexStringsExplorerTab(
           },
           modifier = Modifier.testTag("strings_replace_confirm_btn"),
         ) {
-          Text("Replace")
+          Text(stringResource(R.string.dialog_replace_btn))
         }
       },
       dismissButton = {
@@ -271,7 +273,7 @@ fun DexStringsExplorerTab(
           onClick = { showReplaceConfirmation = false },
           modifier = Modifier.testTag("strings_replace_cancel_btn"),
         ) {
-          Text("Cancel")
+          Text(stringResource(R.string.action_cancel))
         }
       },
       modifier = Modifier.testTag("strings_replace_confirm_dialog"),
@@ -289,7 +291,7 @@ fun DexStringsExplorerTab(
         value = searchQuery,
         onValueChange = { searchQuery = it },
         singleLine = true,
-        placeholder = { Text("Search string literals…") },
+        placeholder = { Text(stringResource(R.string.dialog_search_strings_hint)) },
         leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, modifier = Modifier.size(18.dp)) },
         shape = RoundedCornerShape(14.dp),
         modifier = Modifier.fillMaxWidth().testTag("strings_explorer_search"),
@@ -304,7 +306,7 @@ fun DexStringsExplorerTab(
           value = replaceQuery,
           onValueChange = { replaceQuery = it },
           singleLine = true,
-          placeholder = { Text("Replace search query with…") },
+          placeholder = { Text(stringResource(R.string.dialog_replace_query_hint)) },
           shape = RoundedCornerShape(14.dp),
           modifier = Modifier.weight(1f).testTag("strings_replace_input"),
         )
@@ -318,7 +320,7 @@ fun DexStringsExplorerTab(
           shape = RoundedCornerShape(12.dp),
           modifier = Modifier.testTag("strings_replace_btn"),
         ) {
-          Text("Replace")
+          Text(stringResource(R.string.dialog_replace_btn))
         }
       }
       if (!dexEditingEnabled) {

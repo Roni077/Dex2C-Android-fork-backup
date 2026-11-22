@@ -436,7 +436,7 @@ private fun DeviceAuthStateBody(
                 ) {
                   Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
                   Spacer(Modifier.width(6.dp))
-                  Text("Copy Code")
+                  Text(stringResource(R.string.cloud_copy_code))
                 }
                 Button(
                   onClick = { onOpenBrowserUrl(targetUri) },
@@ -604,7 +604,7 @@ private fun InlineRepoSetupStatusRow(
               onClick = onRetryRepoSetup,
               modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_repo_sync_now_btn"),
             ) {
-              Text("Sync Now")
+              Text(stringResource(R.string.cloud_sync_now))
             }
           }
         }
@@ -644,7 +644,7 @@ private fun InlineRepoSetupStatusRow(
               onClick = onRetryRepoSetup,
               modifier = Modifier.minimumInteractiveComponentSize().testTag("${tagPrefix}_repo_retry_btn"),
             ) {
-              Text("Retry")
+              Text(stringResource(R.string.cloud_retry))
             }
           }
         }

@@ -49,12 +49,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.dex2c.studio.R
 import com.dex2c.studio.cloud.CloudSettings
 import com.dex2c.studio.data.AppSettings
 import com.dex2c.studio.data.CURATED_ACCENT_PRESETS
@@ -557,8 +559,8 @@ fun OnboardingSetupChecklistCard(
 
       ChecklistReviewRow(
         icon = Icons.Rounded.Tune,
-        label = "Theme & Palette",
-        value = "${appSettings.themeMode.label} · $paletteLabel",
+        label = stringResource(R.string.onboarding_theme_palette),
+        value = "${stringResource(appSettings.themeMode.labelRes)} · $paletteLabel",
         actionLabel = "Edit",
         actionTag = "onboarding_review_theme_btn",
         onAction = onJumpToThemeStep,
@@ -566,7 +568,7 @@ fun OnboardingSetupChecklistCard(
       HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
       ChecklistReviewRow(
         icon = if (cloudSettings.isAuthenticated) Icons.Rounded.CloudDone else Icons.Rounded.CloudQueue,
-        label = "Cloud NDK",
+        label = stringResource(R.string.onboarding_cloud_ndk),
         value =
           if (cloudSettings.isAuthenticated) "@${cloudSettings.githubUsername} connected"
           else "Local offline mode",

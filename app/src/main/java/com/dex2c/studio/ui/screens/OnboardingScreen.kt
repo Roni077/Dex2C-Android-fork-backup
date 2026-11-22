@@ -303,23 +303,23 @@ private fun OnboardingAboutPage() {
   OnboardingBalancedPage(verticalSpacing = 12.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.Info,
-      title = "About Dex2C Studio",
-      subtitle = "Three focused tools in one mobile reverse-engineering and native build studio.",
+      title = stringResource(R.string.onboarding_about_title),
+      subtitle = stringResource(R.string.onboarding_about_desc),
     )
 
     OnboardingHighlightCard(
       icon = Icons.Rounded.DataObject,
-      title = "DEX Inspector",
+      title = stringResource(R.string.onboarding_dex_inspector),
       description = "Browse multi-dex classes, Dalvik opcodes, debug info, and binary map tables.",
     )
     OnboardingHighlightCard(
       icon = Icons.Rounded.Code,
-      title = "JNI Transpiler",
+      title = stringResource(R.string.onboarding_jni_transpiler),
       description = "Convert methods into C/C++ with dcc.cfg rules, XOR strings, and CMake/Android.mk export.",
     )
     OnboardingHighlightCard(
       icon = Icons.Rounded.CloudQueue,
-      title = "Cloud NDK",
+      title = stringResource(R.string.onboarding_cloud_ndk),
       description = "Dispatch remote GitHub Actions native builds and receive instant completion alerts.",
     )
 
@@ -345,8 +345,8 @@ private fun OnboardingGitHubPage(
   OnboardingBalancedPage(verticalSpacing = 16.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.CloudQueue,
-      title = "GitHub Cloud CI",
-      subtitle = "Optional remote NDK compilation via GitHub Actions, or stay local.",
+      title = stringResource(R.string.onboarding_cloud_ci_title),
+      subtitle = stringResource(R.string.onboarding_cloud_ci_desc),
     )
 
     GitHubDeviceAuthCard(
@@ -450,8 +450,8 @@ private fun OnboardingThemePage(
   OnboardingBalancedPage(verticalSpacing = 14.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.Palette,
-      title = "Theme & Palette",
-      subtitle = "Choose your studio contrast and accent color. Applies immediately.",
+      title = stringResource(R.string.onboarding_theme_palette),
+      subtitle = stringResource(R.string.onboarding_theme_palette_desc),
     )
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -521,7 +521,7 @@ private fun OnboardingThemePage(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-            Text("Dynamic Wallpaper Color", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.onboarding_dynamic_wallpaper), style = MaterialTheme.typography.titleSmall)
             Text(
               text = "Match your Android Material You palette",
               style = MaterialTheme.typography.bodySmall,
@@ -537,7 +537,7 @@ private fun OnboardingThemePage(
         Spacer(Modifier.height(12.dp))
       }
 
-      Text("Accent Seed", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+      Text(stringResource(R.string.onboarding_accent_seed), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
       Spacer(Modifier.height(10.dp))
       val swatchesEnabled = !appSettings.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S
       Row(
@@ -621,8 +621,8 @@ private fun OnboardingAlertsPage(
   OnboardingBalancedPage(verticalSpacing = 14.dp) {
     OnboardingPageHeader(
       icon = Icons.Rounded.NotificationsActive,
-      title = "Build Alerts",
-      subtitle = "Receive instant notifications when remote NDK builds complete or fail.",
+      title = stringResource(R.string.onboarding_build_alerts),
+      subtitle = stringResource(R.string.onboarding_build_alerts_desc),
     )
 
     OnboardingSectionSurface {
@@ -635,7 +635,7 @@ private fun OnboardingAlertsPage(
           modifier = Modifier.weight(1f).padding(end = 12.dp),
           verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-          Text("Build Completion Alerts", style = MaterialTheme.typography.titleSmall)
+          Text(stringResource(R.string.settings_completion_alerts), style = MaterialTheme.typography.titleSmall)
           TagPill(
             text = if (hasNotificationPermission) "Allowed" else "Permission Needed",
             containerColor =
@@ -667,7 +667,7 @@ private fun OnboardingAlertsPage(
         ) {
           Icon(Icons.Rounded.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
           Spacer(Modifier.width(8.dp))
-          Text("Allow Notification Permission")
+          Text(stringResource(R.string.onboarding_allow_permission))
         }
       }
     }
