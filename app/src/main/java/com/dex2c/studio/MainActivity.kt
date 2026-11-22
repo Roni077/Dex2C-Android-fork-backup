@@ -120,12 +120,14 @@ import androidx.navigation.compose.rememberNavController
 import com.dex2c.studio.apk.PickerTab
 import com.dex2c.studio.cloud.CloudBuildNotifier
 import com.dex2c.studio.cloud.CloudDeepLinkTarget
+import com.dex2c.studio.cloud.WorkflowLogViewerState
 import com.dex2c.studio.data.AppThemeMode
 import com.dex2c.studio.ui.Dex2cViewModel
 import com.dex2c.studio.ui.DexLoadState
 import com.dex2c.studio.ui.components.ApkPickerSheet
 import com.dex2c.studio.ui.components.ApkPreviewSheet
 import com.dex2c.studio.ui.components.ExpressiveMotion
+import com.dex2c.studio.ui.components.WorkflowLogDialog
 import com.dex2c.studio.ui.screens.ClassesScreen
 import com.dex2c.studio.ui.screens.CloudBuildScreen
 import com.dex2c.studio.ui.screens.HomeScreen
@@ -338,6 +340,7 @@ fun Dex2cApp(
   val cloudApkChoice by viewModel.cloudApkChoice.collectAsStateWithLifecycle()
   val cloudApkUrl by viewModel.cloudApkUrl.collectAsStateWithLifecycle()
   val pendingCloudApkSave by viewModel.pendingCloudApkSave.collectAsStateWithLifecycle()
+  val workflowLogState by viewModel.workflowLogState.collectAsStateWithLifecycle()
 
   val openDocLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -820,6 +823,7 @@ fun Dex2cApp(
                 onRefreshRuns = { viewModel.refreshCloudRuns() },
                 onAttachToRun = { viewModel.attachToCloudRun(it) },
                 onDownloadArtifact = { viewModel.downloadArtifactAndPromptSave(it) },
+                onInspectLogs = { runId -> viewModel.inspectWorkflowLog(runId) },
               )
             }
 
@@ -1000,6 +1004,15 @@ fun Dex2cApp(
       onSelectPrimaryDexEntry = { viewModel.selectPrimaryStagedDexEntry() },
       onConfirmLoad = { viewModel.commitStagedDex() },
       onDismiss = { viewModel.dismissStagingPreview() },
+    )
+  }
+
+  val activeWorkflowLog = workflowLogState
+  if (activeWorkflowLog != null) {
+    WorkflowLogDialog(
+      state = activeWorkflowLog,
+      onDismiss = { viewModel.dismissWorkflowLog() },
+      onCopyLog = { copyText(it) },
     )
   }
 }

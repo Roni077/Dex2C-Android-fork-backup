@@ -208,11 +208,21 @@ object Dex2cWorkflowGenerator {
       |              with open(android_mk, "r", encoding="utf-8") as f:
       |                  mk_src = f.read()
       |              if "-fpermissive" not in mk_src:
-      |                  mk_src += "\nLOCAL_CPPFLAGS += -fpermissive -Wno-int-conversion -Wno-error\nLOCAL_CFLAGS += -Wno-int-conversion -Wno-error\n"
-      |              if "max-page-size=16384" not in mk_src:
-      |                  mk_src += "\nLOCAL_LDFLAGS += \"-Wl,-z,max-page-size=16384\"\n"
+      |                  flags_block = "LOCAL_CPPFLAGS += -fpermissive -Wno-int-conversion -Wno-null-arithmetic -Wno-error\\nLOCAL_CFLAGS += -Wno-int-conversion -Wno-null-arithmetic -Wno-error\\nLOCAL_LDFLAGS += \\"-Wl,-z,max-page-size=16384\\"\\n"
+      |                  if "include $(BUILD_SHARED_LIBRARY)" in mk_src:
+      |                      mk_src = mk_src.replace("include $(BUILD_SHARED_LIBRARY)", flags_block + "include $(BUILD_SHARED_LIBRARY)")
+      |                  else:
+      |                      mk_src += "\\n" + flags_block
       |              with open(android_mk, "w", encoding="utf-8") as f:
       |                  f.write(mk_src)
+      |          app_mk = "/tmp/d2c/project/jni/Application.mk"
+      |          if os.path.exists(app_mk):
+      |              with open(app_mk, "r", encoding="utf-8") as f:
+      |                  app_src = f.read()
+      |              if "-fpermissive" not in app_src:
+      |                  app_src += "\\nAPP_CFLAGS += -Wno-error -Wno-null-arithmetic\\nAPP_CPPFLAGS += -fpermissive -Wno-error -Wno-null-arithmetic\\n"
+      |              with open(app_mk, "w", encoding="utf-8") as f:
+      |                  f.write(app_src)
       |
       |          # Patch dex2c/writer.py to inject safe intptr_t casts into jvalue args[] union initializers
       |          writer_py = "/tmp/d2c/dex2c/writer.py"
@@ -248,6 +258,7 @@ object Dex2cWorkflowGenerator {
       |                      if not os.path.isdir(nc_dir):
       |                          return
       |                      decl_re = re.compile(r"\\b(jobject|jstring|jclass|jthrowable|jarray|\\w+Array)\\s+(v\\d+)\\b")
+      |                      prim_re = re.compile(r"\\b(jint|jboolean|jbyte|jchar|jshort|jlong|jfloat|jdouble)\\s+(v\\d+)\\b")
       |                      assign_re = re.compile(r"^(\\s*)(v\\d+)\\s*=\\s*(-?(?:0x[0-9a-fA-F]+|\\d+))[uUlL]*\\s*;(\\s*)$", re.M)
       |                      arg_re = re.compile(r"(\\{\\s*\\.([a-z])\\s*=\\s*)([^}]+)(\\s*\\})")
       |                      cast_map = {
@@ -276,6 +287,7 @@ object Dex2cWorkflowGenerator {
       |                                  code = cf.read()
       |                              orig = code
       |                              obj_regs = {m.group(2): m.group(1) for m in decl_re.finditer(code)}
+      |                              prim_regs = {m.group(2) for m in prim_re.finditer(code)}
       |                              if obj_regs:
       |                                  def _fix_assign(m):
       |                                      indent, reg, lit, tail = m.group(1), m.group(2), m.group(3), m.group(4)
@@ -285,6 +297,17 @@ object Dex2cWorkflowGenerator {
       |                                      return m.group(0)
       |                                  code = assign_re.sub(_fix_assign, code)
       |                              code = re.sub(r"jvalue\\s+args\\[\\]\\s*=\\s*\\{[^\\;]*\\}\\s*;", _fix_args_line, code)
+      |                              if prim_regs:
+      |                                  def _cast_prim_recv(m):
+      |                                      pfx, reg, sep = m.group(1), m.group(2), m.group(3)
+      |                                      if reg in prim_regs:
+      |                                          return f"{pfx}(jobject)(intptr_t)({reg}){sep}"
+      |                                      return m.group(0)
+      |                                  code = re.sub(r"(env\\s*->\\s*Call(?:Nonvirtual)?\\w+Method[AV]?\\s*\\(\\s*)(v\\d+)(\\s*,)", _cast_prim_recv, code)
+      |                                  code = re.sub(r"(env\\s*->\\s*(?:Get|Set)\\w+Field\\s*\\(\\s*)(v\\d+)(\\s*,)", _cast_prim_recv, code)
+      |                                  code = re.sub(r"(env\\s*->\\s*(?:GetArrayLength|MonitorEnter|MonitorExit)\\s*\\(\\s*)(v\\d+)(\\s*\\))", _cast_prim_recv, code)
+      |                                  code = re.sub(r"(env\\s*->\\s*(?:GetObjectArrayElement|SetObjectArrayElement)\\s*\\(\\s*)(v\\d+)(\\s*,)", _cast_prim_recv, code)
+      |                                  code = re.sub(r"\\bD2C_NOT_NULL\\s*\\(\\s*(v\\d+)\\s*\\)", lambda m: f"D2C_NOT_NULL((jobject)(intptr_t)({m.group(1)}))" if m.group(1) in prim_regs else m.group(0), code)
       |                              if code != orig:
       |                                  with open(cpp_path, "w", encoding="utf-8") as cf:
       |                                      cf.write(code)
@@ -401,20 +424,24 @@ object Dex2cWorkflowGenerator {
       |          for ATTEMPT in ${'$'}(seq 1 ${'$'}MAX_ATTEMPTS); do
       |            echo "=== codehasan/dex2c compilation attempt ${'$'}ATTEMPT/${'$'}MAX_ATTEMPTS ==="
       |            rm -f /tmp/work/unsigned_dex2c.apk
+      |            set +e
       |            python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log
+      |            DCC_EXIT=${'$'}?
+      |            set -e
       |            if [ -f /tmp/work/unsigned_dex2c.apk ]; then
       |              echo "codehasan/dex2c successfully compiled unsigned_dex2c.apk on attempt ${'$'}ATTEMPT"
       |              break
       |            fi
-      |            echo "Attempt ${'$'}ATTEMPT failed or unsigned_dex2c.apk not found"
+      |            echo "Attempt ${'$'}ATTEMPT failed (exit code ${'$'}DCC_EXIT) or unsigned_dex2c.apk not found"
       |            if [ "${'$'}ATTEMPT" -lt "${'$'}MAX_ATTEMPTS" ]; then
-      |              python3 - <<'PY' || break
+      |              python3 - <<'PY' || true
       |          import re, sys
       |          with open("/tmp/work/dex2c_build.log", "r", encoding="utf-8", errors="ignore") as f:
       |              log_text = f.read()
       |          failed_cpp = sorted(set(re.findall(r"jni/nc/([A-Za-z0-9_]+)\.cpp:\d+:\d+:\s*error:", log_text)))
       |          if not failed_cpp:
-      |              sys.exit(1)
+      |              print("No specific C++ compilation errors matched in log.")
+      |              sys.exit(0)
       |          def jni_unescape(s):
       |              s = re.sub(r"_0([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), s)
       |              return s.replace("_1", "_")
@@ -427,10 +454,15 @@ object Dex2cWorkflowGenerator {
       |              if len(parts) >= 2:
       |                  method_part = jni_unescape(parts[-1])
       |                  cls_part = "/".join(jni_unescape(p) for p in parts[:-1])
+      |                  new_excludes.append(f"!^L{re.escape(cls_part)};->{re.escape(method_part)}.*")
+      |                  new_excludes.append(f"!^L{re.escape(cls_part)};.*{re.escape(method_part)}.*")
       |                  new_excludes.append(f"!^L{re.escape(cls_part)};{re.escape(method_part)}.*")
+      |                  new_excludes.append(f"!.*->{re.escape(method_part)}\\(.*")
       |                  new_excludes.append(f"!.*;{re.escape(method_part)}\\(.*")
+      |                  new_excludes.append(f"!.*{re.escape(method_part)}\\(.*")
       |          if not new_excludes:
-      |              sys.exit(1)
+      |              print("No new exclusion patterns formed.")
+      |              sys.exit(0)
       |          with open("/tmp/d2c/filter.txt", "r", encoding="utf-8") as f:
       |              existing = f.read()
       |          prepended = "# Auto-excluded failing C++ method units\n" + "\n".join(dict.fromkeys(new_excludes)) + "\n" + existing
@@ -488,8 +520,8 @@ object Dex2cWorkflowGenerator {
       |              /tmp/work/aligned_dex2c.apk
       |          fi
       |          echo "ARTIFACT_APK_NAME=${'$'}{APP_NAME}-signed-apk" >> "${'$'}GITHUB_ENV"
-          echo "ARTIFACT_LOG_NAME=${'$'}{APP_NAME}-build-log" >> "${'$'}GITHUB_ENV"
-          cp "${'$'}OUTPUT_APK" /tmp/work/dex2c-signed-output.apk || true
+      |          echo "ARTIFACT_LOG_NAME=${'$'}{APP_NAME}-build-log" >> "${'$'}GITHUB_ENV"
+      |          cp "${'$'}OUTPUT_APK" /tmp/work/dex2c-signed-output.apk || true
       |
       |      - name: Upload Signed Dex2C APK Artifact
       |        if: success()

@@ -110,6 +110,7 @@ data class GitHubWorkflowStep(
 )
 
 data class GitHubJobTelemetry(
+  val jobId: Long? = null,
   val jobName: String = "dex2c-apk",
   val jobStatus: String = "queued",
   val startedAtMillis: Long? = null,
@@ -186,6 +187,15 @@ sealed interface CloudBuildRunState {
     val failedRunId: Long? = null,
   ) : CloudBuildRunState
 }
+
+data class WorkflowLogViewerState(
+  val runId: Long,
+  val runNumber: Int? = null,
+  val conclusion: String? = null,
+  val logText: String = "",
+  val isLoading: Boolean = false,
+  val error: String? = null,
+)
 
 data class CloudDownloadedApk(
   val fileName: String,

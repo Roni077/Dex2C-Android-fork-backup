@@ -31,6 +31,7 @@ import com.dex2c.studio.cloud.GitHubWorkflowRunSummary
 import com.dex2c.studio.cloud.NetworkResilience
 import com.dex2c.studio.cloud.RepoSetupState
 import com.dex2c.studio.cloud.TokenPollResult
+import com.dex2c.studio.cloud.WorkflowLogViewerState
 import com.dex2c.studio.data.AppPreferences
 import com.dex2c.studio.data.AppSettings
 import com.dex2c.studio.data.CloudPreferences
@@ -362,6 +363,9 @@ class Dex2cViewModel @JvmOverloads constructor(
 
   private val _recentCloudRuns = MutableStateFlow<List<GitHubWorkflowRunSummary>>(emptyList())
   val recentCloudRuns: StateFlow<List<GitHubWorkflowRunSummary>> = _recentCloudRuns.asStateFlow()
+
+  private val _workflowLogState = MutableStateFlow<WorkflowLogViewerState?>(null)
+  val workflowLogState: StateFlow<WorkflowLogViewerState?> = _workflowLogState.asStateFlow()
 
   private val _cloudApkChoice = MutableStateFlow<CloudApkChoice?>(null)
   val cloudApkChoice: StateFlow<CloudApkChoice?> = _cloudApkChoice.asStateFlow()
@@ -3089,6 +3093,54 @@ class Dex2cViewModel @JvmOverloads constructor(
         )
       }
     }
+  }
+
+  fun inspectWorkflowLog(runId: Long, runNumber: Int? = null, conclusion: String? = null) {
+    val settings = _cloudSettings.value
+    if (!settings.isAuthenticated) {
+      _statusBanner.value = "GitHub authentication required to inspect logs."
+      return
+    }
+    _workflowLogState.value = WorkflowLogViewerState(
+      runId = runId,
+      runNumber = runNumber,
+      conclusion = conclusion,
+      isLoading = true,
+    )
+    viewModelScope.launch {
+      val logContent = withContext(Dispatchers.IO) {
+        runCatching {
+          gitHubClient.getRunLogs(
+            token = settings.accessToken,
+            owner = settings.effectiveOwner,
+            repo = settings.repoName,
+            runId = runId,
+          )
+        }.getOrNull()
+      }
+      if (!logContent.isNullOrBlank()) {
+        _workflowLogState.value = WorkflowLogViewerState(
+          runId = runId,
+          runNumber = runNumber,
+          conclusion = conclusion,
+          logText = logContent,
+          isLoading = false,
+        )
+      } else {
+        _workflowLogState.value = WorkflowLogViewerState(
+          runId = runId,
+          runNumber = runNumber,
+          conclusion = conclusion,
+          logText = "",
+          isLoading = false,
+          error = "No build logs could be fetched for Run #$runId. Open Logs in browser or wait for job completion.",
+        )
+      }
+    }
+  }
+
+  fun dismissWorkflowLog() {
+    _workflowLogState.value = null
   }
 
   fun savePendingCloudApkToUri(uri: Uri) {

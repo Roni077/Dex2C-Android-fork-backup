@@ -120,6 +120,7 @@ fun CloudBuildScreen(
   onDownloadArtifact: (GitHubArtifactItem) -> Unit,
   modifier: Modifier = Modifier,
   onRetryMonitor: (() -> Unit)? = null,
+  onInspectLogs: ((Long) -> Unit)? = null,
 ) {
   var lastAutoOpenedUserCode by rememberSaveable { mutableStateOf<String?>(null) }
   var activeStage by rememberSaveable {
@@ -543,6 +544,7 @@ fun CloudBuildScreen(
                     onRetryError = onRetryMonitor ?: onRefreshMonitor,
                     onOpenBrowserUrl = onOpenBrowserUrl,
                     onDownloadArtifact = onDownloadArtifact,
+                    onInspectLogs = onInspectLogs,
                     modifier = Modifier.weight(1.15f),
                   )
                   RecentCloudRunsCard(
@@ -567,6 +569,7 @@ fun CloudBuildScreen(
                     onRetryError = onRetryMonitor ?: onRefreshMonitor,
                     onOpenBrowserUrl = onOpenBrowserUrl,
                     onDownloadArtifact = onDownloadArtifact,
+                    onInspectLogs = onInspectLogs,
                   )
                   RecentCloudRunsCard(
                     cloudSettings = cloudSettings,

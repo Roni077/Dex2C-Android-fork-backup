@@ -339,6 +339,7 @@ class GitHubApiClient(
           )
         }
       return GitHubJobTelemetry(
+        jobId = (firstJob["id"] as? Number)?.toLong(),
         jobName = (firstJob["name"] as? String) ?: "dex2c-apk",
         jobStatus = (firstJob["status"] as? String) ?: "queued",
         startedAtMillis = CloudTimeUtil.parseIsoUtcMillis(firstJob["started_at"] as? String),
@@ -346,6 +347,53 @@ class GitHubApiClient(
         steps = steps,
       )
     }
+  }
+
+  fun getJobLogs(
+    token: String,
+    owner: String,
+    repo: String,
+    jobId: Long,
+  ): String {
+    val req = apiRequest(token, "$apiBaseUrl/repos/$owner/$repo/actions/jobs/$jobId/logs").get().build()
+    httpClient.newCall(req).execute().use { resp ->
+      if (resp.code == 302 || resp.code == 307) {
+        val location = resp.header("Location")
+        if (!location.isNullOrBlank()) {
+          val redirectReq = Request.Builder().url(location).get().build()
+          httpClient.newCall(redirectReq).execute().use { rResp ->
+            return rResp.body?.string().orEmpty()
+          }
+        }
+      }
+      return resp.body?.string().orEmpty()
+    }
+  }
+
+  fun getRunLogs(
+    token: String,
+    owner: String,
+    repo: String,
+    runId: Long,
+  ): String {
+    val telemetry = runCatching { getRunJobTelemetry(token, owner, repo, runId) }.getOrNull()
+    val jId = telemetry?.jobId
+    if (jId != null && jId > 0) {
+      val logText = runCatching { getJobLogs(token, owner, repo, jId) }.getOrNull()
+      if (!logText.isNullOrBlank()) return logText
+    }
+    val artifacts = runCatching { listRunArtifacts(token, owner, repo, runId) }.getOrNull().orEmpty()
+    val logArtifact = artifacts.firstOrNull { it.name.contains("log", ignoreCase = true) }
+    if (logArtifact != null && logArtifact.archiveDownloadUrl.isNotBlank()) {
+      val downloaded = runCatching {
+        val zipBytes = downloadArtifactZip(token, logArtifact.archiveDownloadUrl)
+        extractArtifactPayload(zipBytes, logArtifact.name, "dex2c-build-log")
+      }.getOrNull()
+      if (downloaded != null && downloaded.bytes.isNotEmpty()) {
+        return downloaded.bytes.decodeToString()
+      }
+    }
+    return ""
   }
 
   fun getRunSteps(

@@ -30,6 +30,7 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
@@ -80,6 +81,7 @@ fun BuildMonitorCard(
   onDownloadArtifact: (GitHubArtifactItem) -> Unit,
   modifier: Modifier = Modifier,
   onRetryError: (() -> Unit)? = null,
+  onInspectLogs: ((runId: Long) -> Unit)? = null,
 ) {
   var tickerNowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
@@ -249,6 +251,7 @@ fun BuildMonitorCard(
             statusPillText = if (fraction != null) pct else "FETCHING",
             htmlUrl = snap?.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
+            onInspectLogs = snap?.runId?.let { rId -> { onInspectLogs?.invoke(rId) } },
           )
           Spacer(Modifier.height(10.dp))
           TransferProgressPanel(
@@ -294,6 +297,7 @@ fun BuildMonitorCard(
             statusPillText = if (isReconnecting) "RECONNECTING" else cloudRunState.status.uppercase(Locale.US),
             htmlUrl = cloudRunState.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
+            onInspectLogs = { onInspectLogs?.invoke(cloudRunState.runId) },
           )
 
           if (cloudRunState.steps.isNotEmpty()) {
@@ -328,6 +332,7 @@ fun BuildMonitorCard(
             statusPillText = cloudRunState.conclusion.uppercase(Locale.US),
             htmlUrl = cloudRunState.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
+            onInspectLogs = { onInspectLogs?.invoke(cloudRunState.runId) },
           )
 
           if (cloudRunState.steps.isNotEmpty()) {
@@ -421,6 +426,7 @@ fun BuildMonitorCard(
             statusPillText = "ERROR",
             htmlUrl = null,
             onOpenBrowserUrl = onOpenBrowserUrl,
+            onInspectLogs = cloudRunState.failedRunId?.let { rId -> { onInspectLogs?.invoke(rId) } },
           )
           Spacer(Modifier.height(10.dp))
           Button(
@@ -452,6 +458,7 @@ private fun MonitorGaugeBlock(
   statusPillText: String,
   htmlUrl: String?,
   onOpenBrowserUrl: (String) -> Unit,
+  onInspectLogs: (() -> Unit)? = null,
 ) {
   val animatedProgress by
     animateFloatAsState(
@@ -565,6 +572,16 @@ private fun MonitorGaugeBlock(
               color = MaterialTheme.colorScheme.onSurface,
               modifier = Modifier.testTag("build_monitor_duration"),
             )
+          }
+          if (onInspectLogs != null) {
+            TextButton(
+              onClick = onInspectLogs,
+              modifier = Modifier.testTag("build_monitor_inspect_logs_btn"),
+            ) {
+              Icon(Icons.Rounded.Terminal, contentDescription = null, modifier = Modifier.size(14.dp))
+              Spacer(Modifier.width(4.dp))
+              Text("Inspect", style = MaterialTheme.typography.labelMedium)
+            }
           }
           if (!htmlUrl.isNullOrBlank()) {
             TextButton(

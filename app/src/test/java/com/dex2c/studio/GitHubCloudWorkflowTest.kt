@@ -72,6 +72,8 @@ class GitHubCloudWorkflowTest {
     assertTrue(yaml.contains("base_cfg = json.load(f)"))
     assertTrue(yaml.contains("working-directory: /tmp/d2c"))
     assertTrue(yaml.contains("set -o pipefail"))
+    assertTrue(yaml.contains("set +e"))
+    assertTrue(yaml.contains("DCC_EXIT="))
     assertTrue(yaml.contains("-a /tmp/work/input.apk"))
     assertTrue(yaml.contains("-o /tmp/work/unsigned_dex2c.apk"))
     assertTrue(yaml.contains("--filter /tmp/d2c/filter.txt"))
@@ -84,9 +86,12 @@ class GitHubCloudWorkflowTest {
     assertTrue(yaml.contains("max-page-size=16384"))
     assertTrue(yaml.contains("_dex2c_sanitize_generated_cpp"))
     assertTrue(yaml.contains("-fpermissive -Wno-int-conversion"))
+    assertTrue(yaml.contains("APP_CPPFLAGS += -fpermissive"))
     assertTrue(yaml.contains("writer_py = \"/tmp/d2c/dex2c/writer.py\""))
     assertTrue(yaml.contains("{.i = (jint)(intptr_t)(%s)}"))
     assertTrue(yaml.contains("{.l = (jobject)(intptr_t)(%s)}"))
+    assertTrue(yaml.contains("D2C_NOT_NULL((jobject)(intptr_t)"))
+    assertTrue(yaml.contains("!^L{re.escape(cls_part)};->{re.escape(method_part)}.*"))
     assertTrue(yaml.contains("sys.exit(1)"))
     assertTrue(yaml.contains("if [ -f /tmp/work/unsigned_dex2c.apk ]; then"))
     assertTrue(yaml.contains("MAX_ATTEMPTS=3"))
@@ -571,5 +576,20 @@ class GitHubCloudWorkflowTest {
     assertEquals(0L, downloadEvents.first().first)
     assertEquals(downloadPayload.size.toLong(), downloadEvents.last().first)
     assertEquals(downloadPayload.size.toLong(), downloadEvents.last().second)
+  }
+
+  @Test
+  fun generateDex2cYaml_hasConsistentIndentationOnArtifactEnvLines() {
+    val yaml = Dex2cWorkflowGenerator.generateDex2cYaml(CloudSettings(), TranspilerConfig())
+    val lines = yaml.lines()
+    val apkNameLine = lines.firstOrNull { it.contains("ARTIFACT_APK_NAME=") }
+    val logNameLine = lines.firstOrNull { it.contains("ARTIFACT_LOG_NAME=") }
+    val cpOutputLine = lines.firstOrNull { it.contains("dex2c-signed-output.apk") && it.trimStart().startsWith("cp") }
+    assertTrue(apkNameLine != null && logNameLine != null && cpOutputLine != null)
+    val apkIndent = apkNameLine!!.takeWhile { it.isWhitespace() }
+    val logIndent = logNameLine!!.takeWhile { it.isWhitespace() }
+    val cpIndent = cpOutputLine!!.takeWhile { it.isWhitespace() }
+    assertEquals(apkIndent, logIndent)
+    assertEquals(apkIndent, cpIndent)
   }
 }
