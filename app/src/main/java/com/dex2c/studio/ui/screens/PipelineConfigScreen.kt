@@ -141,47 +141,27 @@ fun PipelineConfigScreen(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Row(
-          modifier = Modifier.weight(1f),
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-          PipelineCategoryPill(
-            label = stringResource(R.string.pipeline_tab_loader),
-            icon = Icons.Rounded.Tune,
-            selected = activeCategory == PipelineCategory.LOADER,
-            onClick = { activeCategory = PipelineCategory.LOADER },
-            modifier = Modifier.weight(1f).testTag("pipeline_tab_LOADER"),
-          )
-          PipelineCategoryPill(
-            label = stringResource(R.string.pipeline_tab_ndk_passes),
-            icon = Icons.Rounded.Memory,
-            selected = activeCategory == PipelineCategory.NDK_PASSES,
-            onClick = { activeCategory = PipelineCategory.NDK_PASSES },
-            modifier = Modifier.weight(1.3f).testTag("pipeline_tab_NDK_PASSES"),
-          )
-          PipelineCategoryPill(
-            label = stringResource(R.string.pipeline_tab_filters),
-            icon = Icons.Rounded.FilterAlt,
-            selected = activeCategory == PipelineCategory.FILTERS,
-            onClick = { activeCategory = PipelineCategory.FILTERS },
-            modifier = Modifier.weight(1f).testTag("pipeline_tab_FILTERS"),
-          )
-        }
-        OutlinedButton(
-          onClick = onImportDccCfg,
-          shape = RoundedCornerShape(20.dp),
-          contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
-          modifier = Modifier.testTag("import_dcc_cfg_button"),
-        ) {
-          Icon(Icons.Rounded.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
-          Spacer(Modifier.width(4.dp))
-          Text(
-            text = stringResource(R.string.config_import_dcc_cfg),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelSmall,
-          )
-        }
+        PipelineCategoryPill(
+          label = stringResource(R.string.pipeline_tab_loader),
+          icon = Icons.Rounded.Tune,
+          selected = activeCategory == PipelineCategory.LOADER,
+          onClick = { activeCategory = PipelineCategory.LOADER },
+          modifier = Modifier.weight(1f).testTag("pipeline_tab_LOADER"),
+        )
+        PipelineCategoryPill(
+          label = stringResource(R.string.pipeline_tab_ndk_passes),
+          icon = Icons.Rounded.Memory,
+          selected = activeCategory == PipelineCategory.NDK_PASSES,
+          onClick = { activeCategory = PipelineCategory.NDK_PASSES },
+          modifier = Modifier.weight(1.25f).testTag("pipeline_tab_NDK_PASSES"),
+        )
+        PipelineCategoryPill(
+          label = stringResource(R.string.pipeline_tab_filters),
+          icon = Icons.Rounded.FilterAlt,
+          selected = activeCategory == PipelineCategory.FILTERS,
+          onClick = { activeCategory = PipelineCategory.FILTERS },
+          modifier = Modifier.weight(1f).testTag("pipeline_tab_FILTERS"),
+        )
       }
 
       Box(

@@ -240,23 +240,6 @@ fun PackageFolderRow(
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
       )
     }
-
-    Spacer(Modifier.width(6.dp))
-
-    // Class count badge
-    Surface(
-      shape = RoundedCornerShape(6.dp),
-      color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
-    ) {
-      Text(
-        text = "${group.subtreeClasses.size} cls",
-        style = MaterialTheme.typography.labelSmall,
-        fontFamily = JetBrainsMonoFontFamily,
-        fontSize = 11.sp,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
-      )
-    }
   }
 }
 

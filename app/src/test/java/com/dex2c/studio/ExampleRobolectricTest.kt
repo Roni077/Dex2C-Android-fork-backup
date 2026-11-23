@@ -1090,8 +1090,8 @@ class ExampleRobolectricTest {
       }
     }
 
-    // Pipeline content renders directly
-    composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertIsDisplayed()
+    // Pipeline content renders directly with full-width category tabs
+    composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertDoesNotExist()
     composeTestRule.onNodeWithTag("pipeline_tab_LOADER").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pipeline_tab_NDK_PASSES").assertIsDisplayed()
     composeTestRule.onNodeWithTag("pipeline_tab_FILTERS").assertIsDisplayed().performClick()
@@ -1129,7 +1129,9 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("nav_build").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("pipeline_tab_LOADER").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pipeline_tab_NDK_PASSES").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("pipeline_tab_FILTERS").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("import_dcc_cfg_button").assertDoesNotExist()
   }
 
   @Test
@@ -1311,7 +1313,7 @@ class ExampleRobolectricTest {
     }
 
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("chip_dex_source").assertIsDisplayed().assertTextContains("DEX: All (2)")
+    composeTestRule.onNodeWithTag("chip_dex_source").assertDoesNotExist()
 
     // Expand merged com.app package -> contains classes from BOTH DEXes (Main + Helper)
     composeTestRule.onNodeWithTag("pkg_row_com.app").performClick()
@@ -1320,11 +1322,8 @@ class ExampleRobolectricTest {
     composeTestRule.onNodeWithTag("class_row_classes2.dex_0").assertIsDisplayed()
 
     // Filter to classes2.dex only -> keeps Helper, hides Main
-    composeTestRule.onNodeWithTag("chip_dex_source").performClick()
+    filterState = filterState.copy(dexSourceFilter = "classes2.dex")
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("dex_source_classes2.dex").performClick()
-    composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("chip_dex_source").assertTextContains("DEX: classes2.dex")
     composeTestRule.onNodeWithTag("class_row_classes2.dex_0").assertIsDisplayed()
     composeTestRule.onNodeWithTag("class_row_0").assertDoesNotExist()
   }

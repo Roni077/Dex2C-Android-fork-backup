@@ -1,16 +1,16 @@
-# Graph Report - Dex2c-Android  (2026-11-22)
+# Graph Report - Dex2c-Android  (2026-11-23)
 
 ## Corpus Check
-- 161 files · ~820,024 words
+- 161 files · ~859,692 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1796 nodes · 2945 edges · 139 communities (98 shown, 41 thin omitted)
+- 1796 nodes · 2945 edges · 138 communities (98 shown, 40 thin omitted)
 - Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 455 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `70605a52`
+- Built from commit: `f0750015`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -141,7 +141,6 @@
 - [[_COMMUNITY_Community 130|Community 130]]
 - [[_COMMUNITY_Community 136|Community 136]]
 - [[_COMMUNITY_Community 137|Community 137]]
-- [[_COMMUNITY_Community 138|Community 138]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Dex2cViewModel` - 120 edges
@@ -167,7 +166,7 @@
 - `Dex2cApp()` --calls--> `ClassesScreen()`  [INFERRED]
   app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt
 
-## Communities (139 total, 41 thin omitted)
+## Communities (138 total, 40 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.11
@@ -516,12 +515,12 @@ Nodes (15): buildBytecodeOverviewSummary(), BytecodeOverviewSummary, ClassDefini
 ## Knowledge Gaps
 - **394 isolated node(s):** `name`, `description`, `requestFramePermissions`, `majorCapabilities`, `lineComment` (+389 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **40 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Dex2cViewModel` connect `Community 1` to `Community 5`, `Community 39`, `Community 136`, `Community 73`, `Community 138`, `Community 11`, `Community 45`, `Community 46`, `Community 23`, `Community 24`, `Community 27`, `Community 30`?**
+- **Why does `Dex2cViewModel` connect `Community 1` to `Community 5`, `Community 39`, `Community 136`, `Community 73`, `Community 11`, `Community 45`, `Community 46`, `Community 23`, `Community 24`, `Community 27`, `Community 30`?**
   _High betweenness centrality (0.092) - this node is a cross-community bridge._
 - **Why does `TranspilerConfig` connect `Community 19` to `Community 64`, `Community 44`, `Community 46`, `Community 16`, `Community 117`, `Community 120`, `Community 121`?**
   _High betweenness centrality (0.054) - this node is a cross-community bridge._

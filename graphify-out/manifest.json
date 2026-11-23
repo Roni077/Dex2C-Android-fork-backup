@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\MainActivity.kt": {
-    "mtime": 1795334286.8207178,
-    "ast_hash": "cb17f9e158f2c7670b3a07f7b89ef029",
+    "mtime": 1795413152.9325821,
+    "ast_hash": "6fe3e5b816c6e0f8f777b6933c4ff6b5",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\ApkMetadataInspector.kt": {
@@ -170,13 +170,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ApkPreviewSheet.kt": {
-    "mtime": 1794987658.1548152,
-    "ast_hash": "e41d1946fad733e4040057c9d2f09a64",
+    "mtime": 1795413332.5159347,
+    "ast_hash": "92bbee70f7f4bd3013712a0738b6d327",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\BuildMonitorCard.kt": {
-    "mtime": 1795334265.7027628,
-    "ast_hash": "0c572cfd7b9723369515bcaefc4bbcee",
+    "mtime": 1795413199.0469177,
+    "ast_hash": "bf101a5136d036436fcfdddb19096e9f",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\CfgViewer.kt": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\ClassesScreen.kt": {
-    "mtime": 1795181934.054126,
-    "ast_hash": "fbf7ff1dc3454282c3ddd9df5b69c3b2",
+    "mtime": 1795413086.6423697,
+    "ast_hash": "952c016c8dfdd980f9c4b54223afd34e",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\CloudBuildScreen.kt": {
@@ -265,8 +265,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\PipelineConfigScreen.kt": {
-    "mtime": 1795278528.146728,
-    "ast_hash": "9efcd8b4cd5a62b68860039d28131ce7",
+    "mtime": 1795413172.9273527,
+    "ast_hash": "86580844dbe0913510419538837991a6",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsScreen.kt": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleRobolectricTest.kt": {
-    "mtime": 1795280935.128069,
-    "ast_hash": "d23cc23ce2a9ce0d2188be1e0a7a42a6",
+    "mtime": 1795413513.7752178,
+    "ast_hash": "d52135509aece6fc7f042cb83507707e",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\ExampleUnitTest.kt": {
@@ -855,8 +855,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\ClassesTreeComponents.kt": {
-    "mtime": 1795279639.9530246,
-    "ast_hash": "ff9ef524c94954ce407af7c043087f28",
+    "mtime": 1795413102.7737734,
+    "ast_hash": "c1a1fc491ab35b6501fdd3b211bb82b3",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\assets\\textmate\\smali\\language-configuration.json": {
@@ -1522,6 +1522,36 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\WorkflowLogDialog.kt": {
     "mtime": 1795333869.7536225,
     "ast_hash": "2fef88ff3eab71823f1dd094d5133683",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261121-211307_Dex2C Studio (2).jpg": {
+    "mtime": 1795408491.2058787,
+    "ast_hash": "461b3108f623984e9d3f8e672fc2e805",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261122-125426_Dex2C Studio.jpg": {
+    "mtime": 1795408491.8080268,
+    "ast_hash": "8c5466488f95d3bc299c38b7c16c9acb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261122-125435_Dex2C Studio.jpg": {
+    "mtime": 1795408490.776315,
+    "ast_hash": "1468ca2fe72e6077d23796bbe0085c0f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261122-125444_Dex2C Studio.jpg": {
+    "mtime": 1795408490.170936,
+    "ast_hash": "4da4e5265b2c456007c0c864784d8615",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261122-174230_Dex2C Studio.jpg": {
+    "mtime": 1795408490.8070357,
+    "ast_hash": "a1bf7c52e642d4d307ebc6e505f5a70b",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261122-181543_Dex2C Studio.jpg": {
+    "mtime": 1795408489.3705683,
+    "ast_hash": "c06c54b497c1ec520d3b2cc556c84a8d",
     "semantic_hash": ""
   }
 }

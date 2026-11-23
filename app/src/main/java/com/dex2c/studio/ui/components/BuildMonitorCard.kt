@@ -609,34 +609,11 @@ private fun MonitorGaugeBlock(
 
 @Composable
 private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
-  var isExpanded by rememberSaveable { mutableStateOf(false) }
-
-  val isCleanupStep: (GitHubWorkflowStep) -> Boolean = { step ->
-    step.name.startsWith("Post ") || step.name.equals("Complete job", ignoreCase = true)
-  }
-
-  val activeIdx = steps.indexOfFirst { it.status == "in_progress" || it.conclusion == "failure" }
-
-  val visibleSteps = when {
-    isExpanded || steps.size <= 5 -> steps
-    activeIdx >= 0 -> {
-      val start = (activeIdx - 2).coerceIn(0, (steps.size - 5).coerceAtLeast(0))
-      steps.subList(start, (start + 5).coerceAtMost(steps.size))
-    }
-    else -> {
-      val meaningfulSteps = steps.filterNot(isCleanupStep)
-      if (meaningfulSteps.size >= 5) meaningfulSteps.takeLast(5)
-      else if (meaningfulSteps.isNotEmpty()) meaningfulSteps
-      else steps.takeLast(5)
-    }
-  }
-  val hiddenCount = (steps.size - visibleSteps.size).coerceAtLeast(0)
-
   Column(
     modifier = Modifier.animateContentSize(),
     verticalArrangement = Arrangement.spacedBy(3.dp),
   ) {
-    visibleSteps.forEach { step ->
+    steps.forEach { step ->
       Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -680,37 +657,6 @@ private fun StepProgressList(steps: List<GitHubWorkflowStep>) {
           style = MaterialTheme.typography.labelSmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-      }
-    }
-    if (steps.size > 5) {
-      Surface(
-        onClick = { isExpanded = !isExpanded },
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f),
-        modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-      ) {
-        Row(
-          modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-          Text(
-            text =
-              if (isExpanded) {
-                "Collapse earlier workflow steps (${steps.size} total)"
-              } else {
-                "+$hiddenCount earlier workflow steps (tap to inspect)"
-              },
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary,
-          )
-          Icon(
-            imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-            contentDescription = if (isExpanded) "Collapse" else "Expand",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(16.dp),
-          )
-        }
       }
     }
   }

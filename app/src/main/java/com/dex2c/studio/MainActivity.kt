@@ -529,17 +529,6 @@ fun Dex2cApp(
               )
             },
             actions = {
-              if (currentRoute == ROUTE_BUILD) {
-                IconButton(
-                  onClick = { importDccCfgLauncher.launch(arrayOf("application/json", "text/*", "*/*")) },
-                  modifier = Modifier.testTag("topbar_import_dcc_cfg_button"),
-                ) {
-                  Icon(
-                    imageVector = Icons.Rounded.UploadFile,
-                    contentDescription = stringResource(R.string.config_import_dcc_cfg),
-                  )
-                }
-              }
               if (currentRoute == ROUTE_CLASSES) {
                 IconButton(
                   onClick = { viewModel.openClassesFilterSheet() },
@@ -1002,7 +991,10 @@ fun Dex2cApp(
       onSelectDexEntry = { viewModel.toggleStagedDexEntry(it) },
       onSelectAllDexEntries = { viewModel.selectAllStagedDexEntries() },
       onSelectPrimaryDexEntry = { viewModel.selectPrimaryStagedDexEntry() },
-      onConfirmLoad = { viewModel.commitStagedDex() },
+      onConfirmLoad = {
+        viewModel.commitStagedDex()
+        navigateTopLevel(ROUTE_CLASSES)
+      },
       onDismiss = { viewModel.dismissStagingPreview() },
     )
   }

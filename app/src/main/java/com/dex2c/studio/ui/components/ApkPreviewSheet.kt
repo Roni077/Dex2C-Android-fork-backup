@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -346,23 +347,24 @@ private fun ColumnScope.PreviewReadyContent(
   }
 
   Row(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
     horizontalArrangement = Arrangement.spacedBy(10.dp),
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     OutlinedButton(
       onClick = onDismiss,
       shape = RoundedCornerShape(20.dp),
-      modifier = Modifier.weight(1f),
-      contentPadding = PaddingValues(vertical = 12.dp),
+      modifier = Modifier.weight(1f).defaultMinSize(minHeight = 48.dp),
+      contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
     ) {
-      Text("Cancel")
+      Text(stringResource(R.string.action_cancel))
     }
     Button(
       onClick = onConfirmLoad,
       enabled = selectedEntries.isNotEmpty(),
       shape = RoundedCornerShape(20.dp),
-      modifier = Modifier.weight(1.4f).testTag("preview_load_dex_button"),
-      contentPadding = PaddingValues(vertical = 12.dp),
+      modifier = Modifier.weight(1.3f).defaultMinSize(minHeight = 48.dp).testTag("preview_load_dex_button"),
+      contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
     ) {
       val buttonText =
         when (selectedEntries.size) {

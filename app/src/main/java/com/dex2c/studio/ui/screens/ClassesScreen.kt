@@ -390,7 +390,7 @@ fun ClassesScreen(
 ) {
   var compactMiddlePackages by rememberSaveable { mutableStateOf(false) }
   var showSelectionCheckboxes by rememberSaveable { mutableStateOf(false) }
-  var showDexMenu by remember { mutableStateOf(false) }
+
   var showExtraFilters by remember { mutableStateOf(false) }
   val filterSheetVisible = (isFilterSheetOpen == true) || showExtraFilters
   var showSelectedClassesDialog by remember { mutableStateOf(false) }
@@ -494,8 +494,7 @@ fun ClassesScreen(
       }
     }
 
-  val hasAnyExpandedPackage =
-    visibleRows.any { it is ExplorerRowItem.PackageRow && it.expanded }
+
 
   var pendingDeleteClass by remember { mutableStateOf<DexClassInfo?>(null) }
 
@@ -603,98 +602,7 @@ fun ClassesScreen(
 
           Spacer(Modifier.height(6.dp))
 
-          // Scrollable Control Toolbar
-          Row(
-            modifier =
-              Modifier.fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            if (loadState is DexLoadState.Ready && classes.isNotEmpty() && hasAnyExpandedPackage) {
-              FilterChip(
-                selected = false,
-                onClick = {
-                  packageGroups.forEach { top -> manualExpandedPackages[top.packageName] = false }
-                  manualExpandedPackages.keys.toList().forEach { key ->
-                    manualExpandedPackages[key] = false
-                  }
-                  expansionMutationMarker++
-                },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.Rounded.UnfoldLess,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                  )
-                },
-                label = { Text("Collapse") },
-                modifier = Modifier.testTag("classes_collapse_all_btn"),
-              )
-            }
-
-
-            val loadedDexNames =
-              (loadState as? DexLoadState.Ready)?.loadedEntryNames ?: emptyList()
-            if (loadedDexNames.size > 1) {
-              val activeDex = filterState.dexSourceFilter?.takeIf { it in loadedDexNames }
-              Box {
-                FilterChip(
-                  selected = activeDex != null,
-                  onClick = { showDexMenu = true },
-                  label = {
-                    Text(
-                      if (activeDex == null) "DEX: All (${loadedDexNames.size})"
-                      else "DEX: $activeDex"
-                    )
-                  },
-                  modifier = Modifier.testTag("chip_dex_source"),
-                )
-                DropdownMenu(
-                  expanded = showDexMenu,
-                  onDismissRequest = { showDexMenu = false },
-                ) {
-                  DropdownMenuItem(
-                    text = { Text("All Loaded DEXes (${loadedDexNames.size})") },
-                    trailingIcon = {
-                      if (activeDex == null) {
-                        Icon(
-                          imageVector = Icons.Rounded.Check,
-                          contentDescription = null,
-                          modifier = Modifier.size(16.dp),
-                        )
-                      }
-                    },
-                    onClick = {
-                      onDexSourceFilterChange(null)
-                      showDexMenu = false
-                    },
-                    modifier = Modifier.testTag("dex_source_all"),
-                  )
-                  loadedDexNames.forEach { entryName ->
-                    DropdownMenuItem(
-                      text = { Text(entryName, fontFamily = JetBrainsMonoFontFamily) },
-                      trailingIcon = {
-                        if (activeDex == entryName) {
-                          Icon(
-                            imageVector = Icons.Rounded.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                          )
-                        }
-                      },
-                      onClick = {
-                        onDexSourceFilterChange(entryName)
-                        showDexMenu = false
-                      },
-                      modifier = Modifier.testTag("dex_source_$entryName"),
-                    )
-                  }
-                }
-              }
-            }
-          }
+          Spacer(Modifier.height(4.dp))
 
           // Modal Bottom Sheet Filter UI
           ClassesFilterSheet(
