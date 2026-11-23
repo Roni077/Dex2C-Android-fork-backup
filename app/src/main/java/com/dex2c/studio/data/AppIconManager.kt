@@ -8,9 +8,30 @@ import android.util.Log
 object AppIconManager {
   private const val TAG = "AppIconManager"
 
+  private val DEPRECATED_ALIASES = listOf(
+    "MainActivityShodo",
+    "MainActivityCursive",
+    "MainActivityMonogram",
+    "MainActivityClassic",
+  )
+
   fun setAppIcon(context: Context, style: AppIconStyle) {
     val pm = context.packageManager
     val packageName = context.packageName
+
+    // Clean up any deprecated aliases from previous versions
+    for (deprecated in DEPRECATED_ALIASES) {
+      try {
+        val comp = ComponentName(packageName, "$packageName.$deprecated")
+        if (pm.getComponentEnabledSetting(comp) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+          pm.setComponentEnabledSetting(
+            comp,
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP,
+          )
+        }
+      } catch (_: Exception) {}
+    }
 
     for (candidate in AppIconStyle.entries) {
       val componentName = ComponentName(packageName, "$packageName.${candidate.aliasName}")

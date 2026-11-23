@@ -218,14 +218,10 @@
     <string name="syntax_theme_high_contrast_desc">Color-coded opcode families, distinct v/p registers, and call targets</string>
 
     <!-- AppIconStyle Enums -->
-    <string name="icon_style_cyber_shodo">Cyber Shodo</string>
-    <string name="icon_style_cyber_shodo_desc">Expressive dry-brush Japanese calligraphy D2C with cyan/mint neon energy</string>
-    <string name="icon_style_cursive_neon">Cursive Neon</string>
-    <string name="icon_style_cursive_neon_desc">Fluid continuous handwritten script dex2c with cyan-to-mint gradient</string>
-    <string name="icon_style_monogram_ligature">Monogram Ligature</string>
-    <string name="icon_style_monogram_ligature_desc">Interlocking calligraphic D2C ligature with metallic chisel sheen</string>
-    <string name="icon_style_classic_tech">Classic Tech</string>
-    <string name="icon_style_classic_tech_desc">Original geometric hexagon circuit badge and DEX blocks</string>
+    <string name="icon_style_dark">DC Ribbon Dark</string>
+    <string name="icon_style_dark_desc">Obsidian glass tile with radiant cyan neon rim and luminous ribbon</string>
+    <string name="icon_style_light">DC Ribbon Light</string>
+    <string name="icon_style_light_desc">Sleek dark emerald squircle with crisp mint &amp; ice-white folding ribbon</string>
 
     <!-- CloudSigningMode Enums -->
     <string name="cloud_signing_auto_debug">Auto Debug Keystore</string>

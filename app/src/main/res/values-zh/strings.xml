@@ -218,14 +218,10 @@
     <string name="syntax_theme_high_contrast_desc">按字节码操作码族、v/p 寄存器及调用目标着色</string>
 
     <!-- AppIconStyle Enums -->
-    <string name="icon_style_cyber_shodo">赛博书道</string>
-    <string name="icon_style_cyber_shodo_desc">兼具青柠霓虹力量与飞白运笔的草书书道风格</string>
-    <string name="icon_style_cursive_neon">连笔霓虹</string>
-    <string name="icon_style_cursive_neon_desc">青绿渐变流线型手写连体英文风格</string>
-    <string name="icon_style_monogram_ligature">花体连字</string>
-    <string name="icon_style_monogram_ligature_desc">具有金属凿刻光泽与交错连结的花体花押字</string>
-    <string name="icon_style_classic_tech">经典硬核</string>
-    <string name="icon_style_classic_tech_desc">经典几何六边形电路徽标与 DEX 方块设计</string>
+    <string name="icon_style_dark">DC 缎带暗色</string>
+    <string name="icon_style_dark_desc">曜石玻璃质感搭配璀璨青光霓虹边框与发光缎带</string>
+    <string name="icon_style_light">DC 缎带亮色</string>
+    <string name="icon_style_light_desc">深邃翡翠圆角方块搭配清透薄荷白交织折叠缎带</string>
 
     <!-- CloudSigningMode Enums -->
     <string name="cloud_signing_auto_debug">自动生成调试证书</string>

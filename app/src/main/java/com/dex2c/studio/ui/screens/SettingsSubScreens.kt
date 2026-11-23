@@ -1409,8 +1409,9 @@ fun SettingsAboutSubScreen(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             modifier = Modifier.size(56.dp),
           ) {
+            val isDark = androidx.compose.foundation.isSystemInDarkTheme()
             Image(
-              painter = painterResource(id = R.drawable.ic_dex2c_icon_src),
+              painter = painterResource(id = if (isDark) R.drawable.ic_dex2c_dark_src else R.drawable.ic_dex2c_light_src),
               contentDescription = stringResource(R.string.app_name),
               contentScale = ContentScale.Crop,
               modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),

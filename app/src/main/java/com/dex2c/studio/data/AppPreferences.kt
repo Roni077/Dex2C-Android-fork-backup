@@ -115,45 +115,27 @@ enum class AppIconStyle(
   val label: String,
   val description: String,
 ) {
-  CYBER_SHODO(
-    id = "cyber_shodo",
-    labelRes = R.string.icon_style_cyber_shodo,
-    descriptionRes = R.string.icon_style_cyber_shodo_desc,
-    aliasName = "MainActivityShodo",
-    previewRes = R.drawable.ic_dex2c_shodo_src,
-    label = "Cyber Shodo",
-    description = "Expressive dry-brush Japanese calligraphy D2C with cyan/mint neon energy",
+  DARK(
+    id = "dark",
+    labelRes = R.string.icon_style_dark,
+    descriptionRes = R.string.icon_style_dark_desc,
+    aliasName = "MainActivityDark",
+    previewRes = R.drawable.ic_dex2c_dark_src,
+    label = "DC Ribbon Dark",
+    description = "Obsidian glass tile with radiant cyan neon rim and luminous ribbon",
   ),
-  CURSIVE_NEON(
-    id = "cursive_neon",
-    labelRes = R.string.icon_style_cursive_neon,
-    descriptionRes = R.string.icon_style_cursive_neon_desc,
-    aliasName = "MainActivityCursive",
-    previewRes = R.drawable.ic_dex2c_cursive_src,
-    label = "Cursive Neon",
-    description = "Fluid continuous handwritten script dex2c with cyan-to-mint gradient",
-  ),
-  MONOGRAM_LIGATURE(
-    id = "monogram_ligature",
-    labelRes = R.string.icon_style_monogram_ligature,
-    descriptionRes = R.string.icon_style_monogram_ligature_desc,
-    aliasName = "MainActivityMonogram",
-    previewRes = R.drawable.ic_dex2c_monogram_src,
-    label = "Monogram Ligature",
-    description = "Interlocking calligraphic D2C ligature with metallic chisel sheen",
-  ),
-  CLASSIC_TECH(
-    id = "classic_tech",
-    labelRes = R.string.icon_style_classic_tech,
-    descriptionRes = R.string.icon_style_classic_tech_desc,
-    aliasName = "MainActivityClassic",
-    previewRes = R.drawable.ic_dex2c_classic_src,
-    label = "Classic Tech",
-    description = "Original geometric hexagon circuit badge and DEX blocks",
+  LIGHT(
+    id = "light",
+    labelRes = R.string.icon_style_light,
+    descriptionRes = R.string.icon_style_light_desc,
+    aliasName = "MainActivityLight",
+    previewRes = R.drawable.ic_dex2c_light_src,
+    label = "DC Ribbon Light",
+    description = "Sleek dark emerald squircle with crisp mint & ice-white folding ribbon",
   );
 
   companion object {
-    val DEFAULT = CYBER_SHODO
+    val DEFAULT = DARK
   }
 }
 
