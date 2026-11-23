@@ -1,0 +1,11 @@
+[package]
+name = "dex2c-editor"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dex2C Studio Team"]
+description = "High-performance text buffer, Smali tokenizer, and jump indexer"
+
+[dependencies]
+ropey = "1.6"
+regex = { version = "1.10", default-features = false, features = ["std", "perf"] }
+serde = { version = "1.0", features = ["derive"] }

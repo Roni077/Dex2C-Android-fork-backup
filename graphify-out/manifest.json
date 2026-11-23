@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\MainActivity.kt": {
-    "mtime": 1795413152.9325821,
-    "ast_hash": "6fe3e5b816c6e0f8f777b6933c4ff6b5",
+    "mtime": 1795415953.6607265,
+    "ast_hash": "cca35dedc9c88f5b3b7a5fcc99b48785",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\apk\\ApkMetadataInspector.kt": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\AppPreferences.kt": {
-    "mtime": 1795327530.502772,
-    "ast_hash": "1114699f9365197a4552a2723f161875",
+    "mtime": 1795416119.8493037,
+    "ast_hash": "2886ec50f4e71eb53408e9261069b44c",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\data\\CloudPreferences.kt": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\ClassesScreen.kt": {
-    "mtime": 1795413086.6423697,
-    "ast_hash": "952c016c8dfdd980f9c4b54223afd34e",
+    "mtime": 1795416007.3295336,
+    "ast_hash": "81d6e84b77e134f2025f0a81417c98be",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\CloudBuildScreen.kt": {
@@ -275,13 +275,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsSubScreens.kt": {
-    "mtime": 1795328422.348946,
-    "ast_hash": "ba864ba1c239a6ddad564d778fe8ec17",
+    "mtime": 1795415892.719514,
+    "ast_hash": "bff43e71d23bc2e2f92a610bcecf3d83",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SmaliClassScreen.kt": {
-    "mtime": 1795018035.618043,
-    "ast_hash": "a73d3108d8fc1855eb9d0352aef16d46",
+    "mtime": 1795415985.785906,
+    "ast_hash": "52eadc1b013d6f41573028f10edd1574",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\theme\\Color.kt": {
@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\theme\\Theme.kt": {
-    "mtime": 1794824497.3046093,
-    "ast_hash": "31927bd9999632a0c733e514a3baccb8",
+    "mtime": 1795415948.0258038,
+    "ast_hash": "8ff1296eb3cd2235996cfd813a6ff7df",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\theme\\Type.kt": {
@@ -1070,8 +1070,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\lib.rs": {
-    "mtime": 1795245316.9206064,
-    "ast_hash": "df85aceb05ec1bea51257863f6bf3932",
+    "mtime": 1795415583.7649722,
+    "ast_hash": "bb0286775409b879514d222aa6665e04",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\phases.md": {
@@ -1552,6 +1552,56 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\nn\\Screenshot_20261122-181543_Dex2C Studio.jpg": {
     "mtime": 1795408489.3705683,
     "ast_hash": "c06c54b497c1ec520d3b2cc556c84a8d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\nativeengine\\EditorNativeEngine.kt": {
+    "mtime": 1795415718.617764,
+    "ast_hash": "abd58a706d272623b1fcaeb044db0444",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\SmaliRustEditor.kt": {
+    "mtime": 1795416133.5414057,
+    "ast_hash": "99312aecdedfe9572aa8a3e0a3138c13",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\nativeengine\\EditorNativeEngineTest.kt": {
+    "mtime": 1795416022.7071998,
+    "ast_hash": "a78a3eba5c523c1f74b4f411dc2e1202",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-editor\\src\\buffer.rs": {
+    "mtime": 1795415436.7127323,
+    "ast_hash": "fe03d83b75661e62183b024f34bb3772",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-editor\\src\\history.rs": {
+    "mtime": 1795415464.2111313,
+    "ast_hash": "ece4d7b6affabdfd4f709e2d7f747f83",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-editor\\src\\indexer.rs": {
+    "mtime": 1795415436.7915397,
+    "ast_hash": "c5178e152d79754008b0f941dfda7474",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-editor\\src\\lib.rs": {
+    "mtime": 1795415525.8006327,
+    "ast_hash": "6bf9095ea79f085daec257a1575b95fa",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-editor\\src\\search.rs": {
+    "mtime": 1795415464.2448761,
+    "ast_hash": "9738d30de4db8c2c7f7c7cb1939110ea",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\crates\\dex2c-editor\\src\\tokenizer.rs": {
+    "mtime": 1795415436.7512221,
+    "ast_hash": "52767bcf61b0f74024075c669fd1ff11",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\editor.rs": {
+    "mtime": 1795415662.347926,
+    "ast_hash": "479120ecd994e7ba1b9cd94b4d80eff3",
     "semantic_hash": ""
   }
 }

@@ -101,6 +101,7 @@ import com.dex2c.studio.data.AppLanguage
 import com.dex2c.studio.data.AppSettings
 import com.dex2c.studio.data.AppThemeMode
 import com.dex2c.studio.data.CURATED_ACCENT_PRESETS
+import com.dex2c.studio.data.EditorEngineType
 import com.dex2c.studio.data.SmaliSyntaxTheme
 import com.dex2c.studio.data.normalizeHexColor
 import com.dex2c.studio.transpiler.TranspilerConfig
@@ -500,6 +501,30 @@ fun SettingsCodeEditorSubScreen(
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
+    item {
+      SubScreenCard(title = stringResource(R.string.settings_card_editor_engine), icon = Icons.Rounded.Code) {
+        Text(
+          text = stringResource(R.string.settings_editor_engine_desc),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(8.dp))
+        FlowRow(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+          EditorEngineType.entries.forEach { engine ->
+            FilterChip(
+              selected = appSettings.editorEngine == engine,
+              onClick = { onUpdateAppSettings { it.copy(editorEngine = engine) } },
+              label = { Text(stringResource(engine.titleRes)) },
+              modifier = Modifier.testTag("settings_editor_engine_${engine.name.lowercase()}"),
+            )
+          }
+        }
+      }
+    }
+
     item {
       SubScreenCard(title = stringResource(R.string.settings_card_typography), icon = Icons.Rounded.FormatSize) {
         Row(

@@ -242,6 +242,10 @@
     <string name="settings_card_launcher_icon">桌面启动器图标</string>
     <string name="settings_launcher_icon_desc">选择您喜欢的艺术启动器图标。更改后会动态更新至桌面。</string>
     <string name="settings_live_theme_preview">实时主题预览</string>
+    <string name="settings_card_editor_engine">代码编辑器引擎</string>
+    <string name="settings_editor_engine_desc">在基于 Rust B-Tree Rope 的原生混合引擎与传统 Sora 编辑器之间切换。</string>
+    <string name="editor_engine_rust_hybrid">Rust 原生引擎 (超高速)</string>
+    <string name="editor_engine_sora_legacy">Sora 编辑器 (传统)</string>
     <string name="settings_card_typography">字体与行号排版</string>
     <string name="settings_font_size">等宽字体字号</string>
     <string name="settings_show_line_numbers">显示代码行号与十六进制偏移</string>

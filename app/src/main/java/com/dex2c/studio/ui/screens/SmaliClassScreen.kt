@@ -38,9 +38,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dex2c.studio.R
+import com.dex2c.studio.data.EditorEngineType
 import com.dex2c.studio.data.SmaliSyntaxTheme
 import com.dex2c.studio.dex.formatAccessFlags
 import com.dex2c.studio.ui.SmaliClassUiState
+import com.dex2c.studio.ui.components.SmaliRustEditor
 import com.dex2c.studio.ui.components.SmaliSoraEditor
 import com.dex2c.studio.ui.components.TagPill
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
@@ -206,17 +208,31 @@ fun SmaliClassScreen(
 
         is SmaliClassUiState.Ready -> {
           Box(modifier = Modifier.fillMaxSize()) {
-            SmaliSoraEditor(
-              text = state.smaliText,
-              isReadOnly = !dexEditingEnabled,
-              activeLineIndex = null,
-              onLineClick = {},
-              onLabelJump = {},
-              syntaxTheme = activeSyntaxTheme,
-              fontSizeSp = editorSettings.fontSizeSp,
-              showLineNumbers = editorSettings.showLineNumbers,
-              modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
-            )
+            if (editorSettings.editorEngine == EditorEngineType.RUST_HYBRID) {
+              SmaliRustEditor(
+                text = state.smaliText,
+                isReadOnly = !dexEditingEnabled,
+                activeLineIndex = null,
+                onLineClick = {},
+                onLabelJump = {},
+                syntaxTheme = activeSyntaxTheme,
+                fontSizeSp = editorSettings.fontSizeSp,
+                showLineNumbers = editorSettings.showLineNumbers,
+                modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
+              )
+            } else {
+              SmaliSoraEditor(
+                text = state.smaliText,
+                isReadOnly = !dexEditingEnabled,
+                activeLineIndex = null,
+                onLineClick = {},
+                onLabelJump = {},
+                syntaxTheme = activeSyntaxTheme,
+                fontSizeSp = editorSettings.fontSizeSp,
+                showLineNumbers = editorSettings.showLineNumbers,
+                modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
+              )
+            }
           }
         }
       }

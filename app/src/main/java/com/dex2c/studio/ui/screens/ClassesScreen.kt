@@ -92,9 +92,11 @@ import com.dex2c.studio.ui.components.QuickRuleBadgeButton
 import com.dex2c.studio.ui.components.SelectedClassesFilterDialog
 import com.dex2c.studio.data.SmaliSyntaxTheme
 import com.dex2c.studio.dex.formatAccessFlags
+import com.dex2c.studio.data.EditorEngineType
 import com.dex2c.studio.ui.theme.LocalEditorSettings
 import com.dex2c.studio.ui.SmaliClassUiState
 import com.dex2c.studio.ui.components.ClassSelectionHeader
+import com.dex2c.studio.ui.components.SmaliRustEditor
 import com.dex2c.studio.ui.components.SmaliSoraEditor
 import com.dex2c.studio.ui.components.TagPill
 import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
@@ -1033,17 +1035,31 @@ private fun ClassesDetailPane(
           Spacer(Modifier.height(4.dp))
 
           Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            SmaliSoraEditor(
-              text = state.smaliText,
-              isReadOnly = true,
-              activeLineIndex = null,
-              onLineClick = {},
-              onLabelJump = {},
-              syntaxTheme = activeSyntaxTheme,
-              fontSizeSp = editorSettings.fontSizeSp,
-              showLineNumbers = editorSettings.showLineNumbers,
-              modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
-            )
+            if (editorSettings.editorEngine == EditorEngineType.RUST_HYBRID) {
+              SmaliRustEditor(
+                text = state.smaliText,
+                isReadOnly = true,
+                activeLineIndex = null,
+                onLineClick = {},
+                onLabelJump = {},
+                syntaxTheme = activeSyntaxTheme,
+                fontSizeSp = editorSettings.fontSizeSp,
+                showLineNumbers = editorSettings.showLineNumbers,
+                modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
+              )
+            } else {
+              SmaliSoraEditor(
+                text = state.smaliText,
+                isReadOnly = true,
+                activeLineIndex = null,
+                onLineClick = {},
+                onLabelJump = {},
+                syntaxTheme = activeSyntaxTheme,
+                fontSizeSp = editorSettings.fontSizeSp,
+                showLineNumbers = editorSettings.showLineNumbers,
+                modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
+              )
+            }
           }
         }
       }

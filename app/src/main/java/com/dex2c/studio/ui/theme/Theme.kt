@@ -15,6 +15,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.dex2c.studio.data.AppThemeMode
+import com.dex2c.studio.data.EditorEngineType
 import com.dex2c.studio.data.SmaliSyntaxTheme
 
 /**
@@ -36,6 +37,7 @@ data class EditorDisplaySettings(
   val showLineNumbers: Boolean = true,
   val maxLinesLimit: Int = 2500,
   val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
+  val editorEngine: EditorEngineType = EditorEngineType.RUST_HYBRID,
 )
 
 fun resolveSmaliSyntaxPalette(

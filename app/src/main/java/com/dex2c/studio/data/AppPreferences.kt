@@ -157,6 +157,11 @@ enum class AppIconStyle(
   }
 }
 
+enum class EditorEngineType(val titleRes: Int) {
+  RUST_HYBRID(R.string.editor_engine_rust_hybrid),
+  SORA_LEGACY(R.string.editor_engine_sora_legacy),
+}
+
 enum class AppLanguage(val code: String, val displayNameRes: Int) {
   SYSTEM("system", R.string.language_system),
   ENGLISH("en", R.string.language_english),
@@ -175,6 +180,7 @@ data class AppSettings(
   val showLineNumbers: Boolean = true,
   val maxCodePreviewLines: Int = 2500,
   val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
+  val editorEngine: EditorEngineType = EditorEngineType.RUST_HYBRID,
   val defaultHideFramework: Boolean = false,
   val defaultOnlyBytecode: Boolean = true,
   val autoSelectMethodLimit: Int = 32,
@@ -195,6 +201,7 @@ class AppPreferences(private val context: Context) {
     val SHOW_LINE_NUMBERS = booleanPreferencesKey("show_line_numbers")
     val MAX_CODE_PREVIEW_LINES = intPreferencesKey("max_code_preview_lines")
     val SMALI_SYNTAX_THEME = stringPreferencesKey("smali_syntax_theme")
+    val EDITOR_ENGINE = stringPreferencesKey("editor_engine")
     val DEFAULT_HIDE_FRAMEWORK = booleanPreferencesKey("default_hide_framework")
     val DEFAULT_ONLY_BYTECODE = booleanPreferencesKey("default_only_bytecode")
     val AUTO_SELECT_METHOD_LIMIT = intPreferencesKey("auto_select_method_limit")
@@ -224,6 +231,10 @@ class AppPreferences(private val context: Context) {
         prefs[Keys.SMALI_SYNTAX_THEME]?.let {
           runCatching { SmaliSyntaxTheme.valueOf(it) }.getOrNull()
         } ?: defaults.smaliSyntaxTheme,
+      editorEngine =
+        prefs[Keys.EDITOR_ENGINE]?.let {
+          runCatching { EditorEngineType.valueOf(it) }.getOrNull()
+        } ?: defaults.editorEngine,
       defaultHideFramework = prefs[Keys.DEFAULT_HIDE_FRAMEWORK] ?: defaults.defaultHideFramework,
       defaultOnlyBytecode = prefs[Keys.DEFAULT_ONLY_BYTECODE] ?: defaults.defaultOnlyBytecode,
       autoSelectMethodLimit =
@@ -247,6 +258,7 @@ class AppPreferences(private val context: Context) {
     prefs[Keys.SHOW_LINE_NUMBERS] = settings.showLineNumbers
     prefs[Keys.MAX_CODE_PREVIEW_LINES] = settings.maxCodePreviewLines
     prefs[Keys.SMALI_SYNTAX_THEME] = settings.smaliSyntaxTheme.name
+    prefs[Keys.EDITOR_ENGINE] = settings.editorEngine.name
     prefs[Keys.DEFAULT_HIDE_FRAMEWORK] = settings.defaultHideFramework
     prefs[Keys.DEFAULT_ONLY_BYTECODE] = settings.defaultOnlyBytecode
     prefs[Keys.AUTO_SELECT_METHOD_LIMIT] = settings.autoSelectMethodLimit

@@ -246,6 +246,7 @@ class MainActivity : ComponentActivity() {
               showLineNumbers = appSettings.showLineNumbers,
               maxLinesLimit = appSettings.maxCodePreviewLines,
               smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
+              editorEngine = appSettings.editorEngine,
             ),
         ) {
           Dex2cApp(

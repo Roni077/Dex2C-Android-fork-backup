@@ -2,6 +2,7 @@
 //! Provides panic-guarded, zero-copy native acceleration to the Kotlin Android layer.
 
 pub mod dex;
+pub mod editor;
 pub mod filter;
 
 use dex::DexFile;

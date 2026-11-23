@@ -242,6 +242,10 @@
     <string name="settings_card_launcher_icon">App Launcher Icon</string>
     <string name="settings_launcher_icon_desc">Select your preferred calligraphic launcher icon. Changes are applied dynamically to your device home screen.</string>
     <string name="settings_live_theme_preview">Live Theme Preview</string>
+    <string name="settings_card_editor_engine">Code Editor Engine</string>
+    <string name="settings_editor_engine_desc">Choose between the high-performance Rust Native Hybrid engine (backed by B-tree ropes) and the legacy Sora Editor.</string>
+    <string name="editor_engine_rust_hybrid">Rust Native Engine (Ultra-Fast)</string>
+    <string name="editor_engine_sora_legacy">Sora Editor (Legacy)</string>
     <string name="settings_card_typography">Typography &amp; Line Gutter</string>
     <string name="settings_font_size">Monospace Font Size</string>
     <string name="settings_show_line_numbers">Show Line Numbers &amp; Hex Offsets</string>
