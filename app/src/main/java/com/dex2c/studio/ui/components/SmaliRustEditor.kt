@@ -167,13 +167,15 @@ fun SmaliRustEditor(
       )
   ) {
     SelectionContainer {
+      val columnModifier = Modifier
+        .fillMaxSize()
+        .then(if (!wordWrap) Modifier.horizontalScroll(hScroll) else Modifier)
+        .padding(horizontal = 8.dp, vertical = 8.dp)
+        .testTag("smali_rust_code_list")
+
       LazyColumn(
         state = listState,
-        modifier = Modifier
-          .fillMaxSize()
-          .horizontalScroll(hScroll)
-          .padding(horizontal = 8.dp, vertical = 8.dp)
-          .testTag("smali_rust_code_list"),
+        modifier = columnModifier,
       ) {
         items(
           count = lineCount,
@@ -213,7 +215,7 @@ fun SmaliRustEditor(
                 }
               }
               .padding(vertical = 1.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
           ) {
             if (showLineNumbers) {
               Text(
@@ -234,6 +236,8 @@ fun SmaliRustEditor(
               fontSize = fontSp,
               lineHeight = lineHeightSp,
               fontFamily = JetBrainsMonoFontFamily,
+              softWrap = wordWrap,
+              modifier = if (wordWrap) Modifier.weight(1f) else Modifier,
             )
           }
         }

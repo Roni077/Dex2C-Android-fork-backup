@@ -35,6 +35,7 @@ val ExpressiveShapes =
 data class EditorDisplaySettings(
   val fontSizeSp: Int = 12,
   val showLineNumbers: Boolean = true,
+  val wordWrap: Boolean = false,
   val maxLinesLimit: Int = 2500,
   val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
   val editorEngine: EditorEngineType = EditorEngineType.RUST_HYBRID,

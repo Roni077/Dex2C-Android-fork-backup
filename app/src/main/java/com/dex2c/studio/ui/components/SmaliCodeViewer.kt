@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -146,7 +147,7 @@ fun SmaliSyntaxCodeViewer(
         state = listState,
         modifier =
           Modifier.fillMaxSize()
-            .horizontalScroll(hScroll)
+            .then(if (!editorSettings.wordWrap) Modifier.horizontalScroll(hScroll) else Modifier)
             .padding(horizontal = 12.dp, vertical = 10.dp)
             .testTag("smali_code_list"),
       ) {
@@ -206,7 +207,10 @@ fun SmaliSyntaxCodeViewer(
               .padding(vertical = 1.dp, horizontal = 2.dp)
               .testTag("smali_code_line_$index")
 
-          Row(modifier = rowModifier) {
+          Row(
+            modifier = rowModifier,
+            verticalAlignment = Alignment.Top,
+          ) {
             if (editorSettings.showLineNumbers) {
               Text(
                 text = (index + 1).toString().padStart(lineDigits, ' '),
@@ -228,6 +232,8 @@ fun SmaliSyntaxCodeViewer(
               fontFamily = JetBrainsMonoFontFamily,
               fontSize = codeFontSp,
               lineHeight = lineHeightSp,
+              softWrap = editorSettings.wordWrap,
+              modifier = if (editorSettings.wordWrap) Modifier.weight(1f) else Modifier,
             )
           }
         }

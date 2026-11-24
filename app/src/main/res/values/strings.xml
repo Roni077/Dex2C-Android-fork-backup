@@ -180,7 +180,7 @@
     <string name="recent_apk_dex_title">Recent APK &amp; DEX</string>
 
     <!-- SettingsSection Titles & Group Names -->
-    <string name="settings_section_appearance">Appearance &amp; Theme</string>
+    <string name="settings_section_appearance">Appearance</string>
     <string name="settings_section_code_editor">Code Editor &amp; Viewer</string>
     <string name="settings_section_dex_parser">DEX Parser &amp; Home</string>
     <string name="settings_section_github_cloud">GitHub Cloud &amp; Workspace Repo</string>
@@ -380,4 +380,48 @@
     <string name="guide_copy_md">Copy .md</string>
     <string name="guide_search_hint">Search workflow steps, Smali, C++17, CFG, or rules...</string>
     <string name="guide_all_phases">All Phases (%1$d)</string>
+
+    <!-- Settings Navigation Rows & Sub-screens -->
+    <string name="settings_nav_theme">Theme &amp; Colors</string>
+    <string name="settings_nav_theme_desc">Theme mode, dynamic colors, and accent palette</string>
+    <string name="settings_nav_app_icon">App Launcher Icon</string>
+    <string name="settings_nav_app_icon_desc">Customize desktop launcher icon style</string>
+    <string name="settings_nav_language">Application Language</string>
+    <string name="settings_nav_language_desc">Switch interface display language</string>
+    <string name="settings_nav_editor_engine">Editor Engine</string>
+    <string name="settings_nav_editor_engine_desc">Rust Native Hybrid vs Sora Editor</string>
+    <string name="settings_nav_typography">Typography &amp; Formatting</string>
+    <string name="settings_nav_typography_desc">Font size, line numbers, word wrap, and line limits</string>
+    <string name="settings_nav_syntax_themes">Syntax Themes</string>
+    <string name="settings_nav_syntax_themes_desc">Color themes for Smali bytecode highlighting</string>
+    <string name="settings_code_word_wrap">Code Soft Wrap</string>
+    <string name="settings_code_word_wrap_desc">Wrap long code lines without horizontal scrolling in editor</string>
+    <string name="settings_nav_class_filters">Class Filters &amp; Search</string>
+    <string name="settings_nav_class_filters_desc">Framework class visibility and bytecode filters</string>
+    <string name="settings_nav_pipeline_config">Pipeline &amp; Transpilation</string>
+    <string name="settings_nav_pipeline_config_desc">Module naming, JNI binding style, and pipeline rules</string>
+    <string name="settings_nav_github_account">Account &amp; OAuth Session</string>
+    <string name="settings_nav_github_account_desc">GitHub login state and client identification</string>
+    <string name="settings_nav_workspace_repo">Workspace Repository</string>
+    <string name="settings_nav_workspace_repo_desc">Target repository, default branch, and workflow sync</string>
+    <string name="settings_nav_network_resilience">Network Resilience</string>
+    <string name="settings_nav_network_resilience_desc">DNS-over-HTTPS fallback resolution</string>
+    <string name="settings_nav_toolchains">Toolchains &amp; Versions</string>
+    <string name="settings_nav_toolchains_desc">Ubuntu runner NDK revision and JDK runtime</string>
+    <string name="settings_nav_signing">APK Signing Configuration</string>
+    <string name="settings_nav_signing_desc">Debug keystore vs custom release keystore</string>
+    <string name="settings_nav_limits">Artifact &amp; Polling Limits</string>
+    <string name="settings_nav_limits_desc">Upload size cap and status polling interval</string>
+    <string name="settings_nav_memory_management">Memory &amp; Cache Management</string>
+    <string name="settings_nav_memory_management_desc">Real-time heap metrics, object pool trim, and disk cache</string>
+    <string name="settings_nav_history">Workspace Recent History</string>
+    <string name="settings_nav_history_desc">Manage quick-open file history entries</string>
+    <string name="settings_nav_reset">Restore Default Settings</string>
+    <string name="settings_nav_reset_desc">Reset all configurations to factory defaults</string>
+    <string name="settings_trim_memory">Trim Memory &amp; DEX Pools</string>
+    <string name="settings_clear_disk_cache">Clear App Disk Cache</string>
+    <string name="settings_memory_heap_label">JVM Heap Usage</string>
+    <string name="settings_disk_cache_label">Disk Cache Size</string>
+    <string name="settings_memory_trimmed_toast">Memory trimmed &amp; DEX object pools released.</string>
+    <string name="settings_disk_cache_cleared_toast">App disk cache cleared successfully.</string>
 </resources>

@@ -160,6 +160,7 @@ data class AppSettings(
   val accentSeedHex: String = "#2EE59D",
   val codeFontSizeSp: Int = 12,
   val showLineNumbers: Boolean = true,
+  val codeWordWrap: Boolean = false,
   val maxCodePreviewLines: Int = 2500,
   val smaliSyntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
   val editorEngine: EditorEngineType = EditorEngineType.RUST_HYBRID,
@@ -181,6 +182,7 @@ class AppPreferences(private val context: Context) {
     val ACCENT_SEED_HEX = stringPreferencesKey("accent_seed_hex")
     val CODE_FONT_SIZE_SP = intPreferencesKey("code_font_size_sp")
     val SHOW_LINE_NUMBERS = booleanPreferencesKey("show_line_numbers")
+    val CODE_WORD_WRAP = booleanPreferencesKey("code_word_wrap")
     val MAX_CODE_PREVIEW_LINES = intPreferencesKey("max_code_preview_lines")
     val SMALI_SYNTAX_THEME = stringPreferencesKey("smali_syntax_theme")
     val EDITOR_ENGINE = stringPreferencesKey("editor_engine")
@@ -207,6 +209,7 @@ class AppPreferences(private val context: Context) {
         prefs[Keys.ACCENT_SEED_HEX]?.takeIf { isValidHexColor(it) } ?: defaults.accentSeedHex,
       codeFontSizeSp = (prefs[Keys.CODE_FONT_SIZE_SP] ?: defaults.codeFontSizeSp).coerceIn(10, 18),
       showLineNumbers = prefs[Keys.SHOW_LINE_NUMBERS] ?: defaults.showLineNumbers,
+      codeWordWrap = prefs[Keys.CODE_WORD_WRAP] ?: defaults.codeWordWrap,
       maxCodePreviewLines =
         (prefs[Keys.MAX_CODE_PREVIEW_LINES] ?: defaults.maxCodePreviewLines).coerceIn(500, 10000),
       smaliSyntaxTheme =
@@ -238,6 +241,7 @@ class AppPreferences(private val context: Context) {
       else "#2EE59D"
     prefs[Keys.CODE_FONT_SIZE_SP] = settings.codeFontSizeSp
     prefs[Keys.SHOW_LINE_NUMBERS] = settings.showLineNumbers
+    prefs[Keys.CODE_WORD_WRAP] = settings.codeWordWrap
     prefs[Keys.MAX_CODE_PREVIEW_LINES] = settings.maxCodePreviewLines
     prefs[Keys.SMALI_SYNTAX_THEME] = settings.smaliSyntaxTheme.name
     prefs[Keys.EDITOR_ENGINE] = settings.editorEngine.name

@@ -180,7 +180,7 @@
     <string name="recent_apk_dex_title">最近打开的 APK 与 DEX</string>
 
     <!-- SettingsSection Titles & Group Names -->
-    <string name="settings_section_appearance">外观与主题</string>
+    <string name="settings_section_appearance">外观</string>
     <string name="settings_section_code_editor">代码编辑器与查看器</string>
     <string name="settings_section_dex_parser">DEX 解析器与主页</string>
     <string name="settings_section_github_cloud">GitHub 云端构建与仓库</string>
@@ -380,4 +380,48 @@
     <string name="guide_copy_md">复制 Markdown</string>
     <string name="guide_search_hint">搜索工作流步骤、Smali、C++17、控制流图或规则…</string>
     <string name="guide_all_phases">全部阶段 (%1$d)</string>
+
+    <!-- Settings Navigation Rows & Sub-screens -->
+    <string name="settings_nav_theme">主题与配色</string>
+    <string name="settings_nav_theme_desc">主题模式、动态色彩与强调色调板</string>
+    <string name="settings_nav_app_icon">应用启动图标</string>
+    <string name="settings_nav_app_icon_desc">自定义桌面启动图标风格</string>
+    <string name="settings_nav_language">界面语言</string>
+    <string name="settings_nav_language_desc">切换应用程序显示语言</string>
+    <string name="settings_nav_editor_engine">编辑器引擎</string>
+    <string name="settings_nav_editor_engine_desc">Rust 原生混合引擎与 Sora Editor</string>
+    <string name="settings_nav_typography">排版与格式化</string>
+    <string name="settings_nav_typography_desc">字号大小、行号显示、自动折行与行数限制</string>
+    <string name="settings_nav_syntax_themes">语法高亮主题</string>
+    <string name="settings_nav_syntax_themes_desc">Smali 字节码语法色彩主题</string>
+    <string name="settings_code_word_wrap">代码自动折行</string>
+    <string name="settings_code_word_wrap_desc">在编辑器中自动换行长代码行，无需横向滚动</string>
+    <string name="settings_nav_class_filters">类过滤器与搜索</string>
+    <string name="settings_nav_class_filters_desc">系统框架类过滤与纯字节码显示</string>
+    <string name="settings_nav_pipeline_config">流水线与转译配置</string>
+    <string name="settings_nav_pipeline_config_desc">模块名称、JNI 绑定风格与转译规则</string>
+    <string name="settings_nav_github_account">账户与 OAuth 凭证</string>
+    <string name="settings_nav_github_account_desc">GitHub 登录状态与客户端标识</string>
+    <string name="settings_nav_workspace_repo">工作区代码仓库</string>
+    <string name="settings_nav_workspace_repo_desc">目标仓库、默认分支与工作流同步</string>
+    <string name="settings_nav_network_resilience">网络容灾弹性</string>
+    <string name="settings_nav_network_resilience_desc">DNS-over-HTTPS 加密域名解析容灾</string>
+    <string name="settings_nav_toolchains">编译工具链与版本</string>
+    <string name="settings_nav_toolchains_desc">Ubuntu 构建机 NDK 版本与 JDK 运行时</string>
+    <string name="settings_nav_signing">APK 签名配置</string>
+    <string name="settings_nav_signing_desc">默认 Debug 密钥库与自定义 Release 密钥库</string>
+    <string name="settings_nav_limits">产物与轮询限制</string>
+    <string name="settings_nav_limits_desc">工作流产物上传大小上限与状态轮询间隔</string>
+    <string name="settings_nav_memory_management">内存与缓存管理</string>
+    <string name="settings_nav_memory_management_desc">实时堆内存指标、对象池回收与磁盘缓存</string>
+    <string name="settings_nav_history">工作区历史记录</string>
+    <string name="settings_nav_history_desc">管理快速打开的文件历史记录项</string>
+    <string name="settings_nav_reset">恢复默认设置</string>
+    <string name="settings_nav_reset_desc">将所有应用配置恢复为初始默认值</string>
+    <string name="settings_trim_memory">回收内存与 DEX 对象池</string>
+    <string name="settings_clear_disk_cache">清除应用磁盘缓存</string>
+    <string name="settings_memory_heap_label">JVM 堆内存占用</string>
+    <string name="settings_disk_cache_label">磁盘缓存大小</string>
+    <string name="settings_memory_trimmed_toast">已回收内存并释放 DEX 对象池。</string>
+    <string name="settings_disk_cache_cleared_toast">已成功清除应用磁盘缓存。</string>
 </resources>

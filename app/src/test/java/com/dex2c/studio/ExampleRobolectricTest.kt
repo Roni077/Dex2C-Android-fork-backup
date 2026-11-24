@@ -1345,7 +1345,6 @@ class ExampleRobolectricTest {
           onUpdateCloudSettings = {},
           onToggleNotifications = {},
           onRequestNotificationPermission = {},
-          onSendTestNotification = {},
           onSyncWorkflowToRepo = {},
           onStartDeviceLogin = {},
           onSignOutGitHub = {},
@@ -1353,7 +1352,6 @@ class ExampleRobolectricTest {
           onGoToPipelineConfig = { pipelineShortcutClicked = true },
           onClearRecentHistory = {},
           onResetAllSettings = {},
-          onReplayOnboarding = {},
           onCopyText = {},
           onBack = {},
         )
@@ -1378,11 +1376,16 @@ class ExampleRobolectricTest {
     composeTestRule.waitForIdle()
     assertTrue(pipelineShortcutClicked)
 
-    // Open Appearance subscreen, check Live Theme Preview + Theme Posture, and return via back button
+    // Open Appearance subscreen, click Theme Nav Row to enter nested Theme screen, verify Theme Posture, and return via back button
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("theme_live_preview_card").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_nav_theme").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_nav_theme").performClick()
+    composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("settings_theme_DARK").performScrollTo().assertIsDisplayed()
+    composeTestRule.onNodeWithTag("nested_back_btn").performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithTag("settings_nav_theme").assertIsDisplayed()
     composeTestRule.onNodeWithTag("settings_back_btn").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("settings_hub_row_appearance").assertIsDisplayed()
@@ -2750,7 +2753,7 @@ class ExampleRobolectricTest {
     assertNotNull(posted)
     assertEquals(amberColors.accentArgb, posted.color)
 
-    // Verify SettingsNotificationsSubScreen displays the live Notification & Banner Theme Preview card
+    // Verify SettingsNotificationsSubScreen displays the push alerts card
     composeTestRule.setContent {
       Dex2cTheme(
         themeMode = blueDarkSettings.themeMode,
@@ -2762,15 +2765,12 @@ class ExampleRobolectricTest {
           hasNotificationPermission = true,
           onToggleNotifications = {},
           onRequestPermission = {},
-          onSendTestNotification = {},
           appSettings = blueDarkSettings,
         )
       }
     }
 
-    composeTestRule.onNodeWithTag("settings_notification_theme_preview_card").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("settings_system_notif_preview").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("settings_inapp_banner_preview").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("settings_notifications_switch").assertIsDisplayed()
   }
 
   @Test
@@ -3133,9 +3133,7 @@ class ExampleRobolectricTest {
       }
     }
 
-    composeTestRule
-      .onNodeWithTag("settings_appearance_list")
-      .performScrollToNode(hasTestTag("settings_language_chinese_simplified"))
+    composeTestRule.onNodeWithTag("settings_nav_language").performClick()
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithTag("settings_language_chinese_simplified").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()

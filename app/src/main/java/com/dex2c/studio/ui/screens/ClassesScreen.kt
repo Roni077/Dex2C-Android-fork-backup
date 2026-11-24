@@ -1045,6 +1045,7 @@ private fun ClassesDetailPane(
                 syntaxTheme = activeSyntaxTheme,
                 fontSizeSp = editorSettings.fontSizeSp,
                 showLineNumbers = editorSettings.showLineNumbers,
+                wordWrap = editorSettings.wordWrap,
                 modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
               )
             } else {
@@ -1057,6 +1058,7 @@ private fun ClassesDetailPane(
                 syntaxTheme = activeSyntaxTheme,
                 fontSizeSp = editorSettings.fontSizeSp,
                 showLineNumbers = editorSettings.showLineNumbers,
+                wordWrap = editorSettings.wordWrap,
                 modifier = Modifier.fillMaxSize().testTag("smali_syntax_code_viewer"),
               )
             }

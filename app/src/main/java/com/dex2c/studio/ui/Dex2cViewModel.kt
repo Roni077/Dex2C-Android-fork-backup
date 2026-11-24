@@ -1,6 +1,7 @@
 package com.dex2c.studio.ui
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -1723,6 +1724,19 @@ class Dex2cViewModel @JvmOverloads constructor(
         dexByteCache = dexByteCache.filterKeys { it in current.loadedDexes }
       }
     }
+    System.gc()
+  }
+
+  fun clearAppDiskCache(context: Context) {
+    runCatching {
+      context.cacheDir?.listFiles()?.forEach { file ->
+        file.deleteRecursively()
+      }
+      context.codeCacheDir?.listFiles()?.forEach { file ->
+        file.deleteRecursively()
+      }
+    }
+    _statusBanner.value = "App disk cache cleared."
   }
 
   override fun onCleared() {

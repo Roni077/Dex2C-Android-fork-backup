@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -54,9 +55,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -442,6 +445,7 @@ private fun HeroHomeBanner(
 ) {
   val openInteraction = remember { MutableInteractionSource() }
   val appsInteraction = remember { MutableInteractionSource() }
+  val isLight = !isSystemInDarkTheme() && MaterialTheme.colorScheme.surface.luminance() > 0.5f
   Surface(
     modifier = Modifier.fillMaxWidth(),
     shape = RoundedCornerShape(24.dp),
@@ -452,7 +456,7 @@ private fun HeroHomeBanner(
         painter = painterResource(id = R.drawable.img_dex2c_hero),
         contentDescription = stringResource(R.string.hero_banner_desc),
         contentScale = ContentScale.Crop,
-        modifier = Modifier.matchParentSize(),
+        modifier = Modifier.matchParentSize().then(if (isLight) Modifier.alpha(0.18f) else Modifier),
       )
       Box(
         modifier =
@@ -460,10 +464,17 @@ private fun HeroHomeBanner(
             .background(
               Brush.verticalGradient(
                 colors =
-                  listOf(
-                    Color(0xBB070C14),
-                    Color(0xEE09111D),
-                  )
+                  if (isLight) {
+                    listOf(
+                      MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.86f),
+                      MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.96f),
+                    )
+                  } else {
+                    listOf(
+                      Color(0xBB070C14),
+                      Color(0xEE09111D),
+                    )
+                  }
               )
             )
       )

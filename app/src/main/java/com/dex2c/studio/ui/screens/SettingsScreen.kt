@@ -85,7 +85,7 @@ enum class SettingsSection(
     titleRes = R.string.settings_section_appearance,
     groupNameRes = R.string.settings_group_general_editor,
     icon = Icons.Rounded.Palette,
-    title = "Appearance & Theme",
+    title = "Appearance",
     groupName = "General & Editor",
   ),
   CODE_EDITOR(
@@ -151,7 +151,6 @@ fun SettingsScreen(
   onUpdateCloudSettings: ((CloudSettings) -> CloudSettings) -> Unit,
   onToggleNotifications: (Boolean) -> Unit,
   onRequestNotificationPermission: () -> Unit,
-  onSendTestNotification: () -> Unit,
   onSyncWorkflowToRepo: () -> Unit,
   onStartDeviceLogin: () -> Unit,
   onSignOutGitHub: () -> Unit,
@@ -159,7 +158,8 @@ fun SettingsScreen(
   onGoToPipelineConfig: () -> Unit,
   onClearRecentHistory: () -> Unit,
   onResetAllSettings: (clearGitHubSession: Boolean) -> Unit,
-  onReplayOnboarding: () -> Unit,
+  onTrimMemory: () -> Unit = {},
+  onClearDiskCache: () -> Unit = {},
   onCopyText: (String) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
@@ -262,7 +262,6 @@ fun SettingsScreen(
                 onUpdateCloudSettings = onUpdateCloudSettings,
                 onToggleNotifications = onToggleNotifications,
                 onRequestNotificationPermission = onRequestNotificationPermission,
-                onSendTestNotification = onSendTestNotification,
                 onSyncWorkflowToRepo = onSyncWorkflowToRepo,
                 onStartDeviceLogin = onStartDeviceLogin,
                 onSignOutGitHub = onSignOutGitHub,
@@ -270,7 +269,8 @@ fun SettingsScreen(
                 onGoToPipelineConfig = onGoToPipelineConfig,
                 onClearRecentHistory = onClearRecentHistory,
                 onResetAllSettings = onResetAllSettings,
-                onReplayOnboarding = onReplayOnboarding,
+                onTrimMemory = onTrimMemory,
+                onClearDiskCache = onClearDiskCache,
                 onCopyText = onCopyText,
               )
             }
@@ -311,7 +311,6 @@ fun SettingsScreen(
                   onUpdateCloudSettings = onUpdateCloudSettings,
                   onToggleNotifications = onToggleNotifications,
                   onRequestNotificationPermission = onRequestNotificationPermission,
-                  onSendTestNotification = onSendTestNotification,
                   onSyncWorkflowToRepo = onSyncWorkflowToRepo,
                   onStartDeviceLogin = onStartDeviceLogin,
                   onSignOutGitHub = onSignOutGitHub,
@@ -319,7 +318,8 @@ fun SettingsScreen(
                   onGoToPipelineConfig = onGoToPipelineConfig,
                   onClearRecentHistory = onClearRecentHistory,
                   onResetAllSettings = onResetAllSettings,
-                  onReplayOnboarding = onReplayOnboarding,
+                  onTrimMemory = onTrimMemory,
+                  onClearDiskCache = onClearDiskCache,
                   onCopyText = onCopyText,
                 )
               }
@@ -504,7 +504,6 @@ private fun SettingsDetailHost(
   onUpdateCloudSettings: ((CloudSettings) -> CloudSettings) -> Unit,
   onToggleNotifications: (Boolean) -> Unit,
   onRequestNotificationPermission: () -> Unit,
-  onSendTestNotification: () -> Unit,
   onSyncWorkflowToRepo: () -> Unit,
   onStartDeviceLogin: () -> Unit,
   onSignOutGitHub: () -> Unit,
@@ -512,7 +511,8 @@ private fun SettingsDetailHost(
   onGoToPipelineConfig: () -> Unit,
   onClearRecentHistory: () -> Unit,
   onResetAllSettings: (clearGitHubSession: Boolean) -> Unit,
-  onReplayOnboarding: () -> Unit,
+  onTrimMemory: () -> Unit = {},
+  onClearDiskCache: () -> Unit = {},
   onCopyText: (String) -> Unit,
 ) {
   when (section) {
@@ -551,12 +551,11 @@ private fun SettingsDetailHost(
       )
     SettingsSection.NOTIFICATIONS ->
       SettingsNotificationsSubScreen(
-        appSettings = appSettings,
         cloudSettings = cloudSettings,
         hasNotificationPermission = hasNotificationPermission,
         onToggleNotifications = onToggleNotifications,
         onRequestPermission = onRequestNotificationPermission,
-        onSendTestNotification = onSendTestNotification,
+        appSettings = appSettings,
       )
     SettingsSection.STORAGE_RESET ->
       SettingsStorageResetSubScreen(
@@ -564,11 +563,12 @@ private fun SettingsDetailHost(
         isGitHubSignedIn = cloudSettings.isAuthenticated,
         onClearRecentHistory = onClearRecentHistory,
         onResetAllSettings = onResetAllSettings,
+        onTrimMemory = onTrimMemory,
+        onClearDiskCache = onClearDiskCache,
       )
     SettingsSection.ABOUT ->
       SettingsAboutSubScreen(
         transpilerConfig = transpilerConfig,
-        onReplayOnboarding = onReplayOnboarding,
         onCopyText = onCopyText,
       )
   }

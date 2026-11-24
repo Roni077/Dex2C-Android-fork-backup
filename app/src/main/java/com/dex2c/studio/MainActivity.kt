@@ -244,6 +244,7 @@ class MainActivity : ComponentActivity() {
             EditorDisplaySettings(
               fontSizeSp = appSettings.codeFontSizeSp,
               showLineNumbers = appSettings.showLineNumbers,
+              wordWrap = appSettings.codeWordWrap,
               maxLinesLimit = appSettings.maxCodePreviewLines,
               smaliSyntaxTheme = appSettings.smaliSyntaxTheme,
               editorEngine = appSettings.editorEngine,
@@ -883,7 +884,6 @@ fun Dex2cApp(
                   }
                 },
                 onRequestNotificationPermission = { requestNotificationPermissionIfNeeded() },
-                onSendTestNotification = { viewModel.sendTestBuildNotification() },
                 onSyncWorkflowToRepo = {
                   viewModel.initializePrivateRepoAndWorkflow()
                   navController.popBackStack()
@@ -902,9 +902,8 @@ fun Dex2cApp(
                 },
                 onClearRecentHistory = { viewModel.clearRecentHistory() },
                 onResetAllSettings = { clearGitHub -> viewModel.resetAllSettingsToDefaults(clearGitHub) },
-                onReplayOnboarding = {
-                  navController.navigate(ROUTE_ONBOARDING) { launchSingleTop = true }
-                },
+                onTrimMemory = { viewModel.onTrimMemory() },
+                onClearDiskCache = { viewModel.clearAppDiskCache(context) },
                 onCopyText = { copyText(it) },
                 onBack = { navController.popBackStack() },
               )

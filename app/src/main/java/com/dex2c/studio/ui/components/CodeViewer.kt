@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.AnnotatedString
@@ -59,7 +60,10 @@ fun SyntaxCodeViewer(
   ) {
     SelectionContainer {
       LazyColumn(
-        modifier = Modifier.fillMaxSize().horizontalScroll(hScroll).padding(12.dp)
+        modifier =
+          Modifier.fillMaxSize()
+            .then(if (!editorSettings.wordWrap) Modifier.horizontalScroll(hScroll) else Modifier)
+            .padding(12.dp)
       ) {
         itemsIndexed(
           items = lines,
@@ -67,7 +71,10 @@ fun SyntaxCodeViewer(
           contentType = { _, _ -> 0 },
         ) { index, line ->
           val highlighted = remember(line, palette) { highlightCLine(line, palette) }
-          Row(modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)) {
+          Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp),
+            verticalAlignment = Alignment.Top,
+          ) {
             if (editorSettings.showLineNumbers) {
               Text(
                 text = "%4d".format(index + 1),
@@ -83,6 +90,8 @@ fun SyntaxCodeViewer(
               fontFamily = JetBrainsMonoFontFamily,
               fontSize = codeFontSp,
               lineHeight = lineHeightSp,
+              softWrap = editorSettings.wordWrap,
+              modifier = if (editorSettings.wordWrap) Modifier.weight(1f) else Modifier,
             )
           }
         }
