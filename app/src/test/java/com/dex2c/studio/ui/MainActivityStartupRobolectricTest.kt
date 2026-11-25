@@ -31,7 +31,7 @@ class MainActivityStartupRobolectricTest {
     ActivityScenario.launch(MainActivity::class.java).use { scenario ->
       scenario.onActivity { activity ->
         val config = android.content.res.Configuration(activity.resources.configuration).apply {
-          setLocale(java.util.Locale.SIMPLIFIED_CHINESE)
+          setLocale(java.util.Locale.US)
         }
         val configContext = activity.createConfigurationContext(config)
 

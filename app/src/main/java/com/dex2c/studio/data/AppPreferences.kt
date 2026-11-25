@@ -147,7 +147,6 @@ enum class EditorEngineType(val titleRes: Int) {
 enum class AppLanguage(val code: String, val displayNameRes: Int) {
   SYSTEM("system", R.string.language_system),
   ENGLISH("en", R.string.language_english),
-  CHINESE_SIMPLIFIED("zh", R.string.language_chinese),
 }
 
 fun defaultDynamicColorForDevice(sdkInt: Int = Build.VERSION.SDK_INT): Boolean = sdkInt >= Build.VERSION_CODES.S

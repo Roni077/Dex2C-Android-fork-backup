@@ -1,7 +1,7 @@
 # Graph Report - Dex2c-Android  (2026-11-25)
 
 ## Corpus Check
-- 174 files · ~1,031,068 words
+- 173 files · ~1,030,724 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c3922fe8`
+- Built from commit: `5cd02016`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -339,7 +339,7 @@ Cohesion: 0.09
 Nodes (22): BufferWriter, build_package_tree(), ClassMethodSummary, DexClassDefFull, DexCodeMeta, DexFieldMeta, DexFile, DexFile<'a> (+14 more)
 
 ### Community 65 - "Community 65"
-Cohesion: 0.21
+Cohesion: 0.23
 Nodes (3): DexHelper, LebReader, descriptorToSimpleName()
 
 ### Community 66 - "Community 66"
@@ -379,8 +379,8 @@ Cohesion: 0.47
 Nodes (5): FilterEditorSubMode, FilterRuleDialogSheet(), HomeFilterFocusCard(), InteractiveFilterRuleBuilderPanel(), StructuredRuleItemCard()
 
 ### Community 81 - "Community 81"
-Cohesion: 0.18
-Nodes (6): ApkDexEntry, DexFieldRef, DexHeaderInfo, DexMapItem, DexParser, UlebReader
+Cohesion: 0.15
+Nodes (8): ApkDexEntry, DexFieldRef, DexHeaderInfo, DexHiddenApiSummary, DexMapItem, DexMethodHandleInfo, DexParser, UlebReader
 
 ### Community 84 - "Community 84"
 Cohesion: 0.14
@@ -503,8 +503,8 @@ Cohesion: 0.21
 Nodes (3): GitHubWorkflowStep, ExampleRobolectricTest, Dex2cTheme()
 
 ### Community 136 - "Community 136"
-Cohesion: 0.11
-Nodes (19): buildBytecodeOverviewSummary(), BytecodeOverviewSummary, ClassDefinitionSummary, CompositeMethodList, DalvikPayload, DexAnnotationEntry, DexCallSiteInfo, DexClassInfo (+11 more)
+Cohesion: 0.12
+Nodes (17): buildBytecodeOverviewSummary(), BytecodeOverviewSummary, ClassDefinitionSummary, CompositeMethodList, DalvikPayload, DexAnnotationEntry, DexCallSiteInfo, DexClassInfo (+9 more)
 
 ### Community 137 - "Community 137"
 Cohesion: 0.60
@@ -535,9 +535,9 @@ Nodes (4): ActiveFilterPill(), ActiveFilterSummaryStrip(), ClassesFilterSheet(),
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Dex2cViewModel` connect `Community 1` to `Community 5`, `Community 39`, `Community 136`, `Community 73`, `Community 11`, `Community 76`, `Community 45`, `Community 46`, `Community 23`, `Community 24`, `Community 27`, `Community 125`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
+  _High betweenness centrality (0.104) - this node is a cross-community bridge._
 - **Why does `TranspilerConfig` connect `Community 19` to `Community 64`, `Community 5`, `Community 13`, `Community 46`, `Community 114`, `Community 115`, `Community 117`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **Why does `GitHubApiClient` connect `Community 26` to `Community 34`, `Community 77`, `Community 46`, `Community 51`, `Community 28`, `Community 125`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `Dex2cViewModel` (e.g. with `.`github sign in completion automatically initializes private repo and commits workflow despite transient dns error`()` and `.`build monitor survives transient UnknownHostException during active poll and recovers to completed`()`) actually correct?**

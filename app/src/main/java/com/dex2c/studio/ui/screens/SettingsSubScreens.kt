@@ -491,7 +491,6 @@ fun SettingsAppearanceSubScreen(
         when (it) {
           AppLanguage.SYSTEM -> stringResource(R.string.theme_mode_system_desc)
           AppLanguage.ENGLISH -> "English (United States)"
-          AppLanguage.CHINESE_SIMPLIFIED -> "简体中文 (Simplified Chinese)"
         }
       },
       itemIcon = { Icons.Rounded.Translate },

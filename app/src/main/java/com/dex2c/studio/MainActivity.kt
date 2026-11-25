@@ -209,7 +209,6 @@ class MainActivity : ComponentActivity() {
       val currentLocale = remember(appSettings.appLanguage) {
         when (appSettings.appLanguage) {
           com.dex2c.studio.data.AppLanguage.ENGLISH -> java.util.Locale.ENGLISH
-          com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED -> java.util.Locale.SIMPLIFIED_CHINESE
           com.dex2c.studio.data.AppLanguage.SYSTEM -> {
             androidx.core.os.ConfigurationCompat.getLocales(android.content.res.Resources.getSystem().configuration)[0]
               ?: java.util.Locale.getDefault()

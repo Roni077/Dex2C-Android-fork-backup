@@ -596,7 +596,6 @@ private fun sectionSummary(
         when (appSettings.appLanguage) {
           AppLanguage.SYSTEM -> stringResource(R.string.language_system)
           AppLanguage.ENGLISH -> stringResource(R.string.language_english)
-          AppLanguage.CHINESE_SIMPLIFIED -> stringResource(R.string.language_chinese)
         }
       "${stringResource(appSettings.themeMode.labelRes)} • $paletteLabel • $langLabel • ${stringResource(appSettings.appIconStyle.labelRes)}"
     }

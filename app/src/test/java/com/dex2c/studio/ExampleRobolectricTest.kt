@@ -3117,13 +3117,13 @@ class ExampleRobolectricTest {
     val context = ApplicationProvider.getApplicationContext<Context>()
     val appPrefs = com.dex2c.studio.data.AppPreferences(context)
     kotlinx.coroutines.runBlocking {
-      appPrefs.updateSettings { it.copy(appLanguage = com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED) }
-      val settings = appPrefs.settingsFlow.first()
-      assertEquals(com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED, settings.appLanguage)
-
       appPrefs.updateSettings { it.copy(appLanguage = com.dex2c.studio.data.AppLanguage.ENGLISH) }
       val enSettings = appPrefs.settingsFlow.first()
       assertEquals(com.dex2c.studio.data.AppLanguage.ENGLISH, enSettings.appLanguage)
+
+      appPrefs.updateSettings { it.copy(appLanguage = com.dex2c.studio.data.AppLanguage.SYSTEM) }
+      val sysSettings = appPrefs.settingsFlow.first()
+      assertEquals(com.dex2c.studio.data.AppLanguage.SYSTEM, sysSettings.appLanguage)
     }
   }
 
@@ -3143,9 +3143,9 @@ class ExampleRobolectricTest {
 
     composeTestRule.onNodeWithTag("settings_nav_language").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("settings_language_chinese_simplified").assertIsDisplayed().performClick()
+    composeTestRule.onNodeWithTag("settings_language_english").assertIsDisplayed().performClick()
     composeTestRule.waitForIdle()
-    assertEquals(com.dex2c.studio.data.AppLanguage.CHINESE_SIMPLIFIED, selectedLanguage)
+    assertEquals(com.dex2c.studio.data.AppLanguage.ENGLISH, selectedLanguage)
   }
 }
 

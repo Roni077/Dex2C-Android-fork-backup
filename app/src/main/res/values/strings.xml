@@ -167,7 +167,6 @@
     <string name="language_desc">Select interface display language</string>
     <string name="language_system">Follow System</string>
     <string name="language_english">English</string>
-    <string name="language_chinese">Simplified Chinese (简体中文)</string>
 
     <string name="cloud_pick_apk">Pick APK</string>
     <string name="cloud_use_live_apk">Use base.apk</string>
