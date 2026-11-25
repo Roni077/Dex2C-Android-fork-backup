@@ -443,4 +443,7 @@
     <string name="settings_confirm_reset_title">Restore Factory Defaults?</string>
     <string name="settings_confirm_reset_desc">All preferences will be reset to default values.</string>
     <string name="settings_confirm_reset_clear_github">Also sign out and clear GitHub OAuth session</string>
+    <string name="action_close">Close</string>
+    <string name="recent_bottom_sheet_subtitle">%1$d recent items</string>
+    <string name="recent_empty_title">No recent files recorded</string>
 </resources>

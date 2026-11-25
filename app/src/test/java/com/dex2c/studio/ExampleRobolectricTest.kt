@@ -915,7 +915,9 @@ class ExampleRobolectricTest {
   }
 
   @Test
-  fun `homeScreen recent apks displays two by default and toggles view all`() {
+  fun `homeScreen recent apks displays two by default and opens bottom sheet on view all`() {
+    var removedItemId: String? = null
+    var selectedItem: com.dex2c.studio.apk.RecentBinaryItem? = null
     val items = (1..4).map { i ->
       com.dex2c.studio.apk.RecentBinaryItem(
         id = "rec_$i",
@@ -935,34 +937,40 @@ class ExampleRobolectricTest {
           selectedMethodCount = 0,
           recentFiles = items,
           onOpenPicker = {},
-          onSelectRecent = {},
+          onSelectRecent = { selectedItem = it },
           onAutoSelectAppMethods = {},
           onClearSelection = {},
           onNavigateToClasses = {},
+          onRemoveRecent = { removedItemId = it },
         )
       }
     }
 
-    // Default: 2 items shown
+    // Default: 2 items shown in strip
     composeTestRule.onNodeWithText("App 1.apk").assertIsDisplayed()
     composeTestRule.onNodeWithText("App 2.apk").assertIsDisplayed()
     composeTestRule.onNodeWithTag("recent_view_all_button").assertTextContains("View All")
+    composeTestRule.onNodeWithTag("recent_apks_bottom_sheet").assertDoesNotExist()
 
-    // Click "View All"
+    // Click "View All" to open bottom sheet
     composeTestRule.onNodeWithTag("recent_view_all_button").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("recent_view_all_button").assertTextContains("Show Less")
+    composeTestRule.onNodeWithTag("recent_apks_bottom_sheet").assertIsDisplayed()
 
-    // Scroll LazyRow to reveal App 3
-    composeTestRule.onNodeWithTag("recent_lazy_row")
-      .performScrollToNode(androidx.compose.ui.test.hasText("App 3.apk"))
-    composeTestRule.onNodeWithText("App 3.apk").assertIsDisplayed()
+    // Items are shown in bottom sheet
+    composeTestRule.onNodeWithTag("recent_sheet_item_rec_3").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("recent_sheet_lazy_column")
+      .performScrollToNode(androidx.compose.ui.test.hasTestTag("recent_sheet_item_rec_4"))
+    composeTestRule.onNodeWithTag("recent_sheet_item_rec_4").assertIsDisplayed()
 
-    // Collapse back to 2 items
-    composeTestRule.onNodeWithTag("recent_view_all_button").performClick()
+    // Test item removal action
+    composeTestRule.onNodeWithTag("recent_sheet_delete_rec_3").performClick()
+    assertEquals("rec_3", removedItemId)
+
+    // Dismiss bottom sheet via close button
+    composeTestRule.onNodeWithTag("recent_sheet_close_btn").performClick()
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithTag("recent_view_all_button").assertTextContains("View All")
-    composeTestRule.onNodeWithText("App 3.apk").assertDoesNotExist()
+    composeTestRule.onNodeWithTag("recent_apks_bottom_sheet").assertDoesNotExist()
   }
 
   @Test

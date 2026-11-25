@@ -443,4 +443,7 @@
     <string name="settings_confirm_reset_title">恢复出厂默认设置？</string>
     <string name="settings_confirm_reset_desc">所有应用程序偏好配置将被恢复为出厂默认值。</string>
     <string name="settings_confirm_reset_clear_github">同时退出登录并清除 GitHub 授权凭证</string>
+    <string name="action_close">关闭</string>
+    <string name="recent_bottom_sheet_subtitle">%1$d 个最近项目</string>
+    <string name="recent_empty_title">暂无最近文件记录</string>
 </resources>

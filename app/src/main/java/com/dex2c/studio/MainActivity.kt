@@ -689,6 +689,7 @@ fun Dex2cApp(
                 onNavigateToClasses = {
                   navigateTopLevel(ROUTE_CLASSES)
                 },
+                onRemoveRecent = { viewModel.removeRecentItem(it) },
               )
             }
 

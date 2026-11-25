@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -31,22 +33,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DataObject
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +89,7 @@ import com.dex2c.studio.ui.components.RecentItemIcon
 import com.dex2c.studio.ui.components.TagPill
 import com.dex2c.studio.ui.components.expressivePressScale
 import com.dex2c.studio.ui.components.formatApkSize
+import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 
 @Composable
 fun HomeScreen(
@@ -92,7 +102,10 @@ fun HomeScreen(
   onClearSelection: () -> Unit,
   onNavigateToClasses: () -> Unit,
   modifier: Modifier = Modifier,
+  onRemoveRecent: (String) -> Unit = {},
 ) {
+  var showRecentBottomSheet by rememberSaveable { mutableStateOf(false) }
+
   BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     val adaptiveInfo = rememberWindowAdaptiveInfo(maxWidth, maxHeight)
     val isWide = adaptiveInfo.widthSizeClass != WindowWidthSizeClass.COMPACT
@@ -144,7 +157,7 @@ fun HomeScreen(
                 RecentQuickStrip(
                   recentFiles = recentFiles,
                   onSelectRecent = onSelectRecent,
-                  onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                  onViewAll = { showRecentBottomSheet = true },
                 )
               }
             }
@@ -163,7 +176,7 @@ fun HomeScreen(
                 RecentQuickStrip(
                   recentFiles = recentFiles,
                   onSelectRecent = onSelectRecent,
-                  onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                  onViewAll = { showRecentBottomSheet = true },
                 )
               }
             }
@@ -203,7 +216,7 @@ fun HomeScreen(
               RecentQuickStrip(
                 recentFiles = recentFiles,
                 onSelectRecent = onSelectRecent,
-                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                onViewAll = { showRecentBottomSheet = true },
               )
             }
           }
@@ -294,7 +307,7 @@ fun HomeScreen(
               RecentQuickStrip(
                 recentFiles = recentFiles,
                 onSelectRecent = onSelectRecent,
-                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                onViewAll = { showRecentBottomSheet = true },
               )
             }
           }
@@ -373,12 +386,24 @@ fun HomeScreen(
               RecentQuickStrip(
                 recentFiles = recentFiles,
                 onSelectRecent = onSelectRecent,
-                onViewAll = { onOpenPicker(PickerTab.RECENT) },
+                onViewAll = { showRecentBottomSheet = true },
               )
             }
           }
         }
       }
+    }
+
+    if (showRecentBottomSheet) {
+      RecentApksBottomSheet(
+        recentFiles = recentFiles,
+        onDismissRequest = { showRecentBottomSheet = false },
+        onSelectRecent = { item ->
+          showRecentBottomSheet = false
+          onSelectRecent(item)
+        },
+        onRemoveRecent = onRemoveRecent,
+      )
     }
   }
 }
@@ -552,8 +577,7 @@ private fun RecentQuickStrip(
   onSelectRecent: (RecentBinaryItem) -> Unit,
   onViewAll: () -> Unit,
 ) {
-  var showAllRecent by rememberSaveable { mutableStateOf(false) }
-  val displayedItems = if (showAllRecent) recentFiles else recentFiles.take(2)
+  val displayedItems = recentFiles.take(2)
 
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Row(
@@ -567,10 +591,10 @@ private fun RecentQuickStrip(
       }
       if (recentFiles.size > 2) {
         TextButton(
-          onClick = { showAllRecent = !showAllRecent },
+          onClick = onViewAll,
           modifier = Modifier.testTag("recent_view_all_button"),
         ) {
-          Text(if (showAllRecent) stringResource(R.string.home_show_less) else stringResource(R.string.home_view_all))
+          Text(stringResource(R.string.home_view_all))
         }
       }
     }
@@ -713,5 +737,171 @@ private fun formatBytes(bytes: Int): String {
     bytes >= 1024 * 1024 -> "%.2f MB".format(bytes / (1024f * 1024f))
     bytes >= 1024 -> "%.1f KB".format(bytes / 1024f)
     else -> "$bytes B"
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecentApksBottomSheet(
+  recentFiles: List<RecentBinaryItem>,
+  onDismissRequest: () -> Unit,
+  onSelectRecent: (RecentBinaryItem) -> Unit,
+  onRemoveRecent: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+  ModalBottomSheet(
+    onDismissRequest = onDismissRequest,
+    sheetState = sheetState,
+    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    dragHandle = { BottomSheetDefaults.DragHandle() },
+    modifier = modifier.testTag("recent_apks_bottom_sheet"),
+  ) {
+    Box(
+      modifier = Modifier.fillMaxWidth(),
+      contentAlignment = Alignment.TopCenter,
+    ) {
+      Column(
+        modifier = Modifier.fillMaxWidth().widthIn(max = 640.dp).padding(bottom = 28.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Column(modifier = Modifier.weight(1f)) {
+            Text(
+              text = stringResource(R.string.home_recent_apks_dex),
+              style = MaterialTheme.typography.titleLarge,
+              fontWeight = FontWeight.Bold,
+            )
+            Text(
+              text = stringResource(R.string.recent_bottom_sheet_subtitle, recentFiles.size),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+          IconButton(
+            onClick = onDismissRequest,
+            modifier = Modifier.testTag("recent_sheet_close_btn"),
+          ) {
+            Icon(
+              imageVector = Icons.Rounded.Close,
+              contentDescription = stringResource(R.string.action_close),
+            )
+          }
+        }
+        Spacer(Modifier.height(8.dp))
+
+        if (recentFiles.isEmpty()) {
+          Box(
+            modifier = Modifier.fillMaxWidth().padding(32.dp),
+            contentAlignment = Alignment.Center,
+          ) {
+            Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.History,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+              )
+              Text(
+                text = stringResource(R.string.recent_empty_title),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        } else {
+          LazyColumn(
+            modifier = Modifier
+              .fillMaxWidth()
+              .heightIn(max = 440.dp)
+              .padding(horizontal = 20.dp)
+              .testTag("recent_sheet_lazy_column"),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(vertical = 4.dp),
+          ) {
+            items(recentFiles, key = { it.id }) { item ->
+              Surface(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .testTag("recent_sheet_item_${item.id}")
+                  .clip(RoundedCornerShape(16.dp))
+                  .clickable { onSelectRecent(item) },
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+              ) {
+                Row(
+                  modifier = Modifier.padding(12.dp),
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                  RecentItemIcon(
+                    item = item,
+                    size = 36.dp,
+                  )
+                  Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                      text = item.displayName,
+                      style = MaterialTheme.typography.titleSmall,
+                      fontWeight = FontWeight.SemiBold,
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Row(
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                      TagPill(
+                        text = when (item.sourceType) {
+                          BinarySourceType.SAF_URI -> stringResource(R.string.picker_tab_storage)
+                          BinarySourceType.INSTALLED_APK -> stringResource(R.string.picker_tab_apps)
+                        },
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                      )
+                      Text(
+                        text = formatApkSize(item.byteSize),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      )
+                    }
+                    if (!item.packageName.isNullOrBlank()) {
+                      Spacer(Modifier.height(2.dp))
+                      Text(
+                        text = item.packageName,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontFamily = JetBrainsMonoFontFamily,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                      )
+                    }
+                  }
+                  IconButton(
+                    onClick = { onRemoveRecent(item.id) },
+                    modifier = Modifier.testTag("recent_sheet_delete_${item.id}"),
+                  ) {
+                    Icon(
+                      imageVector = Icons.Rounded.DeleteOutline,
+                      contentDescription = stringResource(R.string.action_delete),
+                      tint = MaterialTheme.colorScheme.error,
+                    )
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
