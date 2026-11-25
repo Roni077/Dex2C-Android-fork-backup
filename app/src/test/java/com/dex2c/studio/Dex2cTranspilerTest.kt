@@ -112,6 +112,40 @@ class Dex2cTranspilerTest {
   }
 
   @Test
+  fun testChineseIdentifierJniManglingAndSanitization() {
+    // 1. Static JNI Symbol Mangling with Chinese Unicode characters
+    // 喵 (\u55b5), 猫 (\u732b), 极 (\u6781)
+    val mangled =
+      Dex2cTranspiler.mangleStaticJniSymbol(
+        clsDesc = "Lcom/dex2c/studio/喵/猫;",
+        methodName = "极",
+      )
+    assertEquals("Java_com_dex2c_studio__055b5__0732b__06781", mangled)
+
+    // 2. Overloaded JNI Symbol Mangling
+    val mangledOverloaded =
+      Dex2cTranspiler.mangleStaticJniSymbol(
+        clsDesc = "Lcom/dex2c/studio/喵;",
+        methodName = "极",
+        paramTypes = listOf("Ljava/lang/String;", "I"),
+        isOverloaded = true,
+      )
+    assertEquals("Java_com_dex2c_studio__055b5__06781__Ljava_lang_String_2I", mangledOverloaded)
+
+    // 3. C Identifier Sanitization (Hex escaping to prevent collisions)
+    val ident1 = Dex2cTranspiler.sanitizeIdent("com.dex2c.studio.喵")
+    val ident2 = Dex2cTranspiler.sanitizeIdent("com.dex2c.studio.猫")
+    assertEquals("com_dex2c_studio__u55b5", ident1)
+    assertEquals("com_dex2c_studio__u732b", ident2)
+    assertFalse("Different Chinese characters must not collide in C identifiers", ident1 == ident2)
+
+    // 4. Package Rule and Filter Generation for com.dex2c.studio
+    val ruleText = com.dex2c.studio.transpiler.buildAppPackageOnlyFilterText("com.dex2c.studio")
+    assertTrue(ruleText.contains("^Lcom/dex2c/studio/.*"))
+    assertTrue(ruleText.contains("!^L(androidx|android|kotlin"))
+  }
+
+  @Test
   fun dccConfigCodec_encodesAndDecodesOllvmAnd16KbAlignment() {
     val ollvmConfig =
       com.dex2c.studio.transpiler.OllvmConfig(

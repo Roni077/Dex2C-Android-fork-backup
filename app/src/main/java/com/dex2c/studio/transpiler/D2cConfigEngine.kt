@@ -498,6 +498,32 @@ data class FilterPresetItem(
   val description: String,
 )
 
+val APP_PACKAGE_PRESETS =
+  listOf(
+    FilterPresetItem(
+      id = "target_studio_package",
+      label = "Target: com.dex2c.studio.*",
+      ruleLine = "^Lcom/dex2c/studio/.*",
+      isBlacklist = false,
+      description = "全量加密 com.dex2c.studio 包名下的所有类，并安全排除外部依赖与合成类",
+    ),
+  )
+
+fun buildAppPackageOnlyFilterText(packageName: String): String {
+  val slashPkg = packageName.trim().replace('.', '/').trim('/')
+  return buildString {
+    appendLine("# ==============================================================================")
+    appendLine("# Dex2C App Package Isolation Rules: $packageName")
+    appendLine("# ==============================================================================")
+    for (exclusion in MANDATORY_CLOUD_SAFETY_EXCLUSIONS) {
+      appendLine(exclusion)
+    }
+    appendLine()
+    appendLine("# Whitelist target app package classes & all")
+    appendLine("^L$slashPkg/.*")
+  }
+}
+
 val LIFECYCLE_SECURITY_PRESETS =
   listOf(
     FilterPresetItem(

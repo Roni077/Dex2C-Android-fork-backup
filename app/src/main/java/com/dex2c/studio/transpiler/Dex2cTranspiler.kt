@@ -1618,14 +1618,25 @@ object Dex2cTranspiler {
       else -> "    return NULL;"
     }
 
-  private fun mangleStaticJniSymbol(
+  private fun mangleJniChar(ch: Char): String =
+    when {
+      ch == '_' -> "_1"
+      ch == ';' -> "_2"
+      ch == '[' -> "_3"
+      ch == '/' -> "_"
+      ch.code in 0x00..0x7F && (ch.isLetterOrDigit() || ch == '_') -> ch.toString()
+      else -> String.format(Locale.US, "_0%04x", ch.code)
+    }
+
+  internal fun mangleStaticJniSymbol(
     clsDesc: String,
     methodName: String,
     paramTypes: List<String> = emptyList(),
     isOverloaded: Boolean = false,
   ): String {
-    val clsPart = clsDesc.removePrefix("L").removeSuffix(";").replace("_", "_1").replace('/', '_')
-    val namePart = methodName.replace("_", "_1").replace("<", "_0003c").replace(">", "_0003e")
+    val cleanCls = clsDesc.removePrefix("L").removeSuffix(";")
+    val clsPart = cleanCls.map { mangleJniChar(it) }.joinToString("")
+    val namePart = methodName.map { mangleJniChar(it) }.joinToString("")
     if (!isOverloaded) {
       return "Java_${clsPart}_$namePart"
     }
@@ -1634,14 +1645,21 @@ object Dex2cTranspiler {
   }
 
   private fun mangleJniType(desc: String): String =
-    desc
-      .replace("_", "_1")
-      .replace(";", "_2")
-      .replace("[", "_3")
-      .replace('/', '_')
+    desc.map { mangleJniChar(it) }.joinToString("")
 
-  private fun sanitizeIdent(raw: String): String =
-    raw.replace(Regex("[^A-Za-z0-9_]"), "_").take(48)
+  internal fun sanitizeIdent(raw: String): String {
+    val sb = StringBuilder()
+    for (ch in raw) {
+      if (ch in 'a'..'z' || ch in 'A'..'Z' || ch in '0'..'9' || ch == '_') {
+        sb.append(ch)
+      } else if (ch.code > 127) {
+        sb.append("_u").append(String.format(Locale.US, "%04x", ch.code))
+      } else {
+        sb.append('_')
+      }
+    }
+    return sb.toString().take(64)
+  }
 
   private fun sanitizeModuleName(raw: String): String =
     raw.trim().replace(Regex("[^A-Za-z0-9_]"), "_").ifEmpty { "dex2c_native" }

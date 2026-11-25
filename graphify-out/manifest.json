@@ -140,13 +140,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\D2cConfigEngine.kt": {
-    "mtime": 1795341751.965831,
-    "ast_hash": "53c8b373c3093c712609693621df1830",
+    "mtime": 1795587974.1859732,
+    "ast_hash": "0478e3701f4290cfb6eea8a7070360d1",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\Dex2cTranspiler.kt": {
-    "mtime": 1795341860.319619,
-    "ast_hash": "c60350cbd401af33f314b6bba46f9c3d",
+    "mtime": 1795587816.9005408,
+    "ast_hash": "8bfb7cb0af8a50bafdfab2954f9a5192",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\transpiler\\TranspilerModels.kt": {
@@ -205,8 +205,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\FilterRuleBuilderComponents.kt": {
-    "mtime": 1795341963.8641324,
-    "ast_hash": "991820c3e7888c0f590de0c6a11125c0",
+    "mtime": 1795587874.4361944,
+    "ast_hash": "d12a5492ea94fc1ddb00b2ef33376036",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\components\\GitHubDeviceAuthCard.kt": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\Dex2cTranspilerTest.kt": {
-    "mtime": 1795342021.305991,
-    "ast_hash": "5c78a58c184d7c15dcb9ae468ea94478",
+    "mtime": 1795587905.0367217,
+    "ast_hash": "b0289b60908702f927696b81fb9de991",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\DexDisassemblerAndSmaliTest.kt": {
@@ -1542,6 +1542,16 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\01\\Screenshot_20261125-093832_Dex2C Studio.jpg": {
     "mtime": 1795579868.3226204,
     "ast_hash": "9d75e9052f185fb9c922e87a048cf803",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\obfuscation-dictionary.txt": {
+    "mtime": 1795587648.753437,
+    "ast_hash": "4e305aee663468ad112231c36aea3494",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\obfuscation-dictionary.txt": {
+    "mtime": 1795587648.7524366,
+    "ast_hash": "4e305aee663468ad112231c36aea3494",
     "semantic_hash": ""
   }
 }

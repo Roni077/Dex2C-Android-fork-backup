@@ -70,6 +70,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dex2c.studio.R
+import com.dex2c.studio.transpiler.APP_PACKAGE_PRESETS
 import com.dex2c.studio.transpiler.COMMON_ANDROID_METHODS
 import com.dex2c.studio.transpiler.FRAMEWORK_BLACKLIST_PRESETS
 import com.dex2c.studio.transpiler.FilterMatchSummary
@@ -192,7 +193,29 @@ fun InteractiveFilterRuleBuilderPanel(
       }
     }
 
-
+    FlowRow(
+      horizontalArrangement = Arrangement.spacedBy(6.dp),
+      verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+      APP_PACKAGE_PRESETS.forEach { preset ->
+        val isActive = config.filterRulesText.contains(preset.ruleLine)
+        FilterChip(
+          selected = isActive,
+          onClick = {
+            onUpdateConfig { cfg ->
+              cfg.copy(filterRulesText = FilterRuleEngine.toggleRuleLine(cfg.filterRulesText, preset.ruleLine))
+            }
+          },
+          leadingIcon = {
+            Icon(Icons.Rounded.AutoFixHigh, contentDescription = null, modifier = Modifier.size(14.dp))
+          },
+          label = {
+            Text(preset.label, style = MaterialTheme.typography.labelSmall)
+          },
+          modifier = Modifier.testTag("preset_${preset.id}"),
+        )
+      }
+    }
 
     OutlinedTextField(
       value = config.filterRulesText,

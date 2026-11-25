@@ -2,6 +2,11 @@
 # Dex2C Studio ProGuard / R8 Optimization & Obfuscation Rules
 # ==============================================================================
 
+# --- 汉字混淆字典配置 (Chinese Character Obfuscation Dictionaries) ---
+-obfuscationdictionary obfuscation-dictionary.txt
+-classobfuscationdictionary obfuscation-dictionary.txt
+-packageobfuscationdictionary obfuscation-dictionary.txt
+
 # Preserve line numbers and source file attributes for actionable crash stack traces
 -keepattributes SourceFile,LineNumberTable
 -keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
