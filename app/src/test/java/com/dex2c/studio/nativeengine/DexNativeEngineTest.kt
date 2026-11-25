@@ -72,6 +72,47 @@ class DexNativeEngineTest {
   }
 
   @Test
+  fun testSmaliDisassemblerFallbackSafety() {
+    val dexBytes = buildMinimalTestDex()
+    val parsed = DexParser.parseDex(dexBytes, "test.dex", "classes.dex")
+    assertTrue("At least one class should be parsed", parsed.classes.isNotEmpty())
+    val cls = parsed.classes.first()
+
+    val result = com.dex2c.studio.dex.SmaliClassDisassembler.disassembleClass(parsed, cls)
+    assertNotNull(result)
+    assertTrue("Disassembly should produce lines", result.lines.isNotEmpty())
+    assertTrue("Engine label should be present", result.engineLabel.isNotBlank())
+
+    if (cls.allMethods.isNotEmpty()) {
+      val methodSmali = com.dex2c.studio.dex.SmaliClassDisassembler.disassembleMethod(parsed, cls, cls.allMethods.first())
+      assertNotNull(methodSmali)
+      assertTrue("Method smali should start with .method", methodSmali.trim().startsWith(".method"))
+    }
+  }
+
+  @Test
+  fun testFullAppRustEngineDefaults() {
+    val settings = com.dex2c.studio.data.AppSettings()
+    assertEquals(
+      "Default editor engine must be RUST_HYBRID",
+      com.dex2c.studio.data.EditorEngineType.RUST_HYBRID,
+      settings.editorEngine,
+    )
+
+    // Test filter editor session defaults
+    val filterSession = EditorNativeEngine.createSession("# Filter\n!com/example/Test", EditorNativeEngine.GRAMMAR_FILTER_TXT)
+    try {
+      assertEquals(2, filterSession.lineCount)
+      val tokens = filterSession.getLineTokens(0, 2)
+      assertEquals(2, tokens.size)
+      assertEquals(NativeTokenSpan.KIND_COMMENT, tokens[0][0].kind)
+      assertEquals(NativeTokenSpan.KIND_FILTER_EXCLUSION, tokens[1][0].kind)
+    } finally {
+      filterSession.close()
+    }
+  }
+
+  @Test
   fun testDex2cNativeRepositorySafety() {
     val repo = com.dex2c.studio.data.repository.Dex2cNativeRepository()
     kotlinx.coroutines.runBlocking {

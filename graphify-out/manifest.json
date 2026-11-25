@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\dex\\SmaliClassDisassembler.kt": {
-    "mtime": 1794824497.2202818,
-    "ast_hash": "902db41c1f29343214e7ec32f1907cfa",
+    "mtime": 1795594961.2486238,
+    "ast_hash": "500a913c12b65403d851590550ec08ae",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\dex\\SmaliDexCompiler.kt": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\HomeScreen.kt": {
-    "mtime": 1795584605.9206066,
-    "ast_hash": "cd4e7f81962db999575e1db250ada122",
+    "mtime": 1795594460.5017688,
+    "ast_hash": "790151bd9b03b2c6dac16dae8a6dd18a",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\MethodDetailScreen.kt": {
@@ -270,13 +270,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsScreen.kt": {
-    "mtime": 1795591389.455676,
-    "ast_hash": "0d8f115b470a98746e17ef56c652997d",
+    "mtime": 1795594574.1129596,
+    "ast_hash": "10f4d415cf02fbb67bef4ae0863cf4d9",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsSubScreens.kt": {
-    "mtime": 1795591401.743221,
-    "ast_hash": "fcb9eb9e4212055603ba8bb764500282",
+    "mtime": 1795594574.0149913,
+    "ast_hash": "de80867c957cf16661ae6727d9d998c5",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SmaliClassScreen.kt": {
@@ -1055,8 +1055,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\test\\java\\com\\dex2c\\studio\\nativeengine\\DexNativeEngineTest.kt": {
-    "mtime": 1795245436.6489794,
-    "ast_hash": "651bf5bf74ee80ffcfee69b54a480e0e",
+    "mtime": 1795594481.9492757,
+    "ast_hash": "d7cf16558e2fb8f88ecf860543dd2b61",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\rust-engine\\src\\dex.rs": {

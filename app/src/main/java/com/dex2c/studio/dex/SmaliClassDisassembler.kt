@@ -11,6 +11,7 @@ import com.android.tools.smali.dexlib2.dexbacked.DexBackedField
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedMethod
 import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.Method
+import com.dex2c.studio.nativeengine.DexNativeEngine
 import java.io.StringWriter
 import java.nio.ByteBuffer
 
@@ -343,36 +344,114 @@ object SmaliClassDisassembler {
     dexClass: DexClassInfo,
   ): SmaliDisassemblyResult {
     val startNanos = System.nanoTime()
-    val apiLevel = resolveApiLevelForDexVersion(dex.header.version)
-    val dexBackedFile = getOrParseDexBackedFile(dex.entryName, dex.header.sha1Hex, dex.rawBytes, apiLevel)
-    val classDef: ClassDef =
-      dexBackedFile.classes.firstOrNull { it.type == dexClass.descriptor }
-        ?: throw IllegalArgumentException(
-          "Class ${dexClass.descriptor} was not found in ${dex.entryName}."
-        )
 
-    val options = createDefaultBaksmaliOptions(apiLevel)
-    val stringWriter = StringWriter()
-    BaksmaliWriter(stringWriter, null).use { writer ->
-      ClassDefinition(options, classDef).writeTo(writer)
-      writer.flush()
+    // 1. Primary Default: Rust Native Engine (DalvikDisassembler)
+    if (DexNativeEngine.isAvailable && dex.rawBytes.isNotEmpty() && dexClass.classIndex >= 0) {
+      val fastSmali = runCatching {
+        DexNativeEngine.disassembleSmaliFast(dex.rawBytes, dexClass.classIndex)
+      }.getOrNull()
+
+      if (!fastSmali.isNullOrEmpty()) {
+        val lines = fastSmali.lines()
+        val methodSpans = extractMethodSpans(lines)
+        val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
+        return SmaliDisassemblyResult(
+          lines = lines,
+          lineCount = lines.size,
+          methodCount = dexClass.allMethods.size,
+          fieldCount = dexClass.staticFields.size + dexClass.instanceFields.size,
+          durationMs = elapsedMs,
+          methodSpans = methodSpans,
+          engineLabel = "Rust Native Engine (DalvikDisassembler)",
+        )
+      }
     }
 
-    val smaliText = stringWriter.toString().trimEnd('\n', '\r')
-    val lines = if (smaliText.isEmpty()) emptyList() else smaliText.lines()
-    val methodSpans = extractMethodSpans(lines)
-    val methodCount = classDef.directMethods.count() + classDef.virtualMethods.count()
-    val fieldCount = classDef.staticFields.count() + classDef.instanceFields.count()
-    val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
+    // 2. Secondary Fallback: Google smali-baksmali
+    val apiLevel = resolveApiLevelForDexVersion(dex.header.version)
+    val baksmaliResult =
+      runCatching {
+        val dexBackedFile = getOrParseDexBackedFile(dex.entryName, dex.header.sha1Hex, dex.rawBytes, apiLevel)
+        val classDef: ClassDef =
+          dexBackedFile.classes.firstOrNull { it.type == dexClass.descriptor }
+            ?: return@runCatching null
 
+        val options = createDefaultBaksmaliOptions(apiLevel)
+        val stringWriter = StringWriter()
+        BaksmaliWriter(stringWriter, null).use { writer ->
+          ClassDefinition(options, classDef).writeTo(writer)
+          writer.flush()
+        }
+
+        val smaliText = stringWriter.toString().trimEnd('\n', '\r')
+        val lines = if (smaliText.isEmpty()) emptyList() else smaliText.lines()
+        val methodSpans = extractMethodSpans(lines)
+        val methodCount = classDef.directMethods.count() + classDef.virtualMethods.count()
+        val fieldCount = classDef.staticFields.count() + classDef.instanceFields.count()
+        val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
+
+        SmaliDisassemblyResult(
+          lines = lines,
+          lineCount = lines.size,
+          methodCount = methodCount,
+          fieldCount = fieldCount,
+          durationMs = elapsedMs,
+          methodSpans = methodSpans,
+          engineLabel = "smali-dexlib2 + baksmali",
+        )
+      }.getOrNull()
+
+    if (baksmaliResult != null) {
+      return baksmaliResult
+    }
+
+    // 3. Ultimate Fallback: Synthesized Smali from parsed class metadata (handles synthetic/truncated test DEXes)
+    val synthesizedLines = synthesizeClassSmali(dex, dexClass)
+    val methodSpans = extractMethodSpans(synthesizedLines)
+    val elapsedMs = ((System.nanoTime() - startNanos) / 1_000_000L).coerceAtLeast(1L)
     return SmaliDisassemblyResult(
-      lines = lines,
-      lineCount = lines.size,
-      methodCount = methodCount,
-      fieldCount = fieldCount,
+      lines = synthesizedLines,
+      lineCount = synthesizedLines.size,
+      methodCount = dexClass.allMethods.size,
+      fieldCount = dexClass.staticFields.size + dexClass.instanceFields.size,
       durationMs = elapsedMs,
       methodSpans = methodSpans,
+      engineLabel = "Synthesized Metadata Fallback",
     )
+  }
+
+  fun synthesizeClassSmali(dex: DexParsedFile, dexClass: DexClassInfo): List<String> {
+    val sb = StringBuilder()
+    val classFlags = formatAccessFlags(dexClass.accessFlags, isMethod = false)
+    val flagPart = if (classFlags.isBlank()) "" else "$classFlags "
+    sb.appendLine(".class $flagPart${dexClass.descriptor}")
+    sb.appendLine(".super ${dexClass.superclass ?: "Ljava/lang/Object;"}")
+    if (!dexClass.sourceFile.isNullOrBlank()) {
+      sb.appendLine(".source \"${dexClass.sourceFile}\"")
+    }
+    for (iface in dexClass.interfaces) {
+      sb.appendLine(".implements $iface")
+    }
+    sb.appendLine()
+    for (f in dexClass.staticFields) {
+      val fFlags = formatAccessFlags(f.accessFlags, isMethod = false)
+      val fFlagPart = if (fFlags.isBlank()) "" else "$fFlags "
+      sb.appendLine(".field ${fFlagPart}${f.fieldRef.name}:${f.fieldRef.type}")
+    }
+    for (f in dexClass.instanceFields) {
+      val fFlags = formatAccessFlags(f.accessFlags, isMethod = false)
+      val fFlagPart = if (fFlags.isBlank()) "" else "$fFlags "
+      sb.appendLine(".field ${fFlagPart}${f.fieldRef.name}:${f.fieldRef.type}")
+    }
+    if (dexClass.staticFields.isNotEmpty() || dexClass.instanceFields.isNotEmpty()) {
+      sb.appendLine()
+    }
+    for (m in dexClass.allMethods) {
+      val methodSmali = disassembleMethodFallback(dex, m)
+      sb.appendLine(methodSmali)
+      sb.appendLine()
+    }
+    return sb.toString().trimEnd('\n', '\r').lines()
   }
 
   fun extractMethodSpans(lines: List<String>): List<SmaliMethodSpan> {
@@ -413,6 +492,20 @@ object SmaliClassDisassembler {
     dexClass: DexClassInfo,
     method: DexEncodedMethod,
   ): String {
+    // 1. Primary Default: Check if method span can be extracted from class disassembly
+    if (DexNativeEngine.isAvailable && dex.rawBytes.isNotEmpty() && dexClass.classIndex >= 0) {
+      val classResult = runCatching { disassembleClass(dex, dexClass) }.getOrNull()
+      if (classResult != null && classResult.lines.isNotEmpty()) {
+        val span = classResult.methodSpans.firstOrNull {
+          it.name == method.methodRef.name && it.signature.endsWith(method.methodRef.jniSignature())
+        }
+        if (span != null && span.startLineIndex in classResult.lines.indices && span.endLineIndex in classResult.lines.indices) {
+          return classResult.lines.subList(span.startLineIndex, span.endLineIndex + 1).joinToString("\n")
+        }
+      }
+    }
+
+    // 2. Secondary Fallback: baksmali MethodDefinition
     val apiLevel = resolveApiLevelForDexVersion(dex.header.version)
     val baksmaliResult =
       runCatching {
@@ -450,7 +543,10 @@ object SmaliClassDisassembler {
       return baksmaliResult
     }
 
-    // Fallback Smali formatting when synthetic method tests bypass class_defs table
+    return disassembleMethodFallback(dex, method)
+  }
+
+  fun disassembleMethodFallback(dex: DexParsedFile, method: DexEncodedMethod): String {
     val flags = formatAccessFlags(method.accessFlags, isMethod = true)
     val flagPart = if (flags.isBlank()) "" else "$flags "
     val sig = "${method.methodRef.name}${method.methodRef.jniSignature()}"

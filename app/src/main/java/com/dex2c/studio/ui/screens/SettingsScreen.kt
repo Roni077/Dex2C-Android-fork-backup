@@ -568,6 +568,7 @@ private fun SettingsDetailHost(
       )
     SettingsSection.ABOUT ->
       SettingsAboutSubScreen(
+        appSettings = appSettings,
         transpilerConfig = transpilerConfig,
         onCopyText = onCopyText,
       )

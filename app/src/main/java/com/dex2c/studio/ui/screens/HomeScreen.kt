@@ -80,6 +80,7 @@ import com.dex2c.studio.R
 import com.dex2c.studio.apk.BinarySourceType
 import com.dex2c.studio.apk.PickerTab
 import com.dex2c.studio.apk.RecentBinaryItem
+import com.dex2c.studio.nativeengine.DexNativeEngine
 import com.dex2c.studio.ui.DexLoadState
 import com.dex2c.studio.ui.WindowWidthSizeClass
 import com.dex2c.studio.ui.rememberWindowAdaptiveInfo
@@ -683,15 +684,24 @@ private fun TranspileActionBanner(
           )
         }
         Spacer(Modifier.width(8.dp))
-        TagPill(
-          text = stringResource(R.string.home_methods_selected_tag, selectedMethodCount),
-          containerColor =
-            if (selectedMethodCount > 0) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.surfaceContainer,
-          contentColor =
-            if (selectedMethodCount > 0) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+          if (DexNativeEngine.isAvailable) {
+            TagPill(
+              text = "⚡ Rust Native",
+              containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+              contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            )
+          }
+          TagPill(
+            text = stringResource(R.string.home_methods_selected_tag, selectedMethodCount),
+            containerColor =
+              if (selectedMethodCount > 0) MaterialTheme.colorScheme.primaryContainer
+              else MaterialTheme.colorScheme.surfaceContainer,
+            contentColor =
+              if (selectedMethodCount > 0) MaterialTheme.colorScheme.onPrimaryContainer
+              else MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
       }
 
       Row(

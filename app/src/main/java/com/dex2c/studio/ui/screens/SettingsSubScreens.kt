@@ -100,6 +100,7 @@ import com.dex2c.studio.data.CURATED_ACCENT_PRESETS
 import com.dex2c.studio.data.EditorEngineType
 import com.dex2c.studio.data.SmaliSyntaxTheme
 import com.dex2c.studio.data.normalizeHexColor
+import com.dex2c.studio.nativeengine.DexNativeEngine
 import com.dex2c.studio.transpiler.TranspilerConfig
 import com.dex2c.studio.ui.components.AccentColorPickerSection
 import com.dex2c.studio.ui.components.ExpressiveMotion
@@ -1415,6 +1416,7 @@ fun SettingsStorageResetSubScreen(
 
 @Composable
 fun SettingsAboutSubScreen(
+  appSettings: AppSettings,
   transpilerConfig: TranspilerConfig,
   onCopyText: (String) -> Unit,
 ) {
@@ -1464,9 +1466,42 @@ fun SettingsAboutSubScreen(
         AboutRow("App Name", stringResource(R.string.app_name))
         AboutRow("Version", "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         AboutRow("Application ID", BuildConfig.APPLICATION_ID)
-        AboutRow("Active DEX Engine", "Kotlin DexFile + smali-dexlib2")
+        AboutRow(
+          "Active DEX Engine",
+          if (DexNativeEngine.isAvailable) "⚡ Rust Native (v${DexNativeEngine.nativeEngineVersion ?: "0.2.0"})"
+          else "Kotlin DexFile + smali-dexlib2",
+        )
         AboutRow("Supported DEX Formats", "035, 037, 038, 039, 040, 041")
         AboutRow("Default Module Name", transpilerConfig.moduleName)
+      }
+    }
+
+    item {
+      SubScreenCard(title = "Rust Native Engine Subsystems", icon = Icons.Rounded.Speed) {
+        AboutRow(
+          "Engine Shared Library",
+          if (DexNativeEngine.isAvailable) "Active ⚡ (librust_dex2c.so)" else "JVM Fallback Mode",
+        )
+        AboutRow(
+          "DEX Class Parser",
+          if (DexNativeEngine.isAvailable) "Rust Zero-Copy Buffer (D2CN)" else "smali-dexlib2 / Kotlin",
+        )
+        AboutRow(
+          "Smali Disassembler",
+          if (DexNativeEngine.isAvailable) "Rust Native (DalvikDisassembler)" else "Google baksmali",
+        )
+        AboutRow(
+          "Filter Evaluation Engine",
+          if (DexNativeEngine.isAvailable) "Rust SIMD RegexSet" else "Kotlin Regex Engine",
+        )
+        AboutRow(
+          "Smali Text Editor",
+          if (appSettings.editorEngine == EditorEngineType.RUST_HYBRID) "Rust B-Tree Rope (dex2c-editor)" else "Sora Editor (Legacy)",
+        )
+        AboutRow(
+          "filter.txt Editor",
+          if (DexNativeEngine.isAvailable) "Rust FilterTokenizer (Active ⚡)" else "Kotlin Fallback Tokenizer",
+        )
       }
     }
 
@@ -1474,8 +1509,9 @@ fun SettingsAboutSubScreen(
       SubScreenCard(title = stringResource(R.string.settings_bundled_toolchains), icon = Icons.Rounded.Build) {
         Text(
           text =
-            "• codehasan/dex2c native transpiler with OLLVM & 16KB alignment (dcc.cfg, filter.txt)\n" +
-              "• Google smali-dexlib2 & smali-baksmali class disassembly + Kotlin CFG/payload analysis\n" +
+            "• High-performance Rust Native Engine (librust_dex2c.so) for zero-copy parsing, SIMD filtering, Dalvik disassembly & B-Tree editing\n" +
+              "• codehasan/dex2c native transpiler with OLLVM & 16KB alignment (dcc.cfg, filter.txt)\n" +
+              "• Google smali-dexlib2 & smali-baksmali class disassembly fallback + Kotlin CFG analysis\n" +
               "• GitHub OAuth Device Flow + Private Workspace dex2c.yml Actions + WorkManager push alerts",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
