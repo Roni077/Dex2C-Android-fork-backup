@@ -25,6 +25,9 @@ data class NativeTokenSpan(
     const val KIND_STRING_LITERAL = 8 // "Hello World"
     const val KIND_COMMENT = 9        // # ...
     const val KIND_NUMBER = 10        // 0x1, 100
+    const val KIND_FILTER_EXCLUSION = 11 // !exclusion rule
+    const val KIND_FILTER_EXACT = 12     // =exact rule
+    const val KIND_FILTER_PATTERN = 13   // pattern or wildcard match rule
   }
 }
 
@@ -44,6 +47,7 @@ interface EditorSessionInterface : AutoCloseable {
   fun canRedo(): Boolean
   fun resolveLabelJump(lineIndex: Int): Int?
   fun getFullText(): String
+  fun setGrammar(grammar: Int)
 }
 
 /**
@@ -123,6 +127,12 @@ class NativeEditorSession(private var handle: Long) : EditorSessionInterface {
     return EditorNativeEngine.nativeGetFullText(handle) ?: ""
   }
 
+  override fun setGrammar(grammar: Int) {
+    if (handle != 0L) {
+      EditorNativeEngine.nativeSetGrammar(handle, grammar)
+    }
+  }
+
   override fun close() {
     if (handle != 0L) {
       EditorNativeEngine.nativeDestroySession(handle)
@@ -134,7 +144,10 @@ class NativeEditorSession(private var handle: Long) : EditorSessionInterface {
 /**
  * Pure Kotlin in-memory fallback session for Robolectric and testing environments.
  */
-class KotlinFallbackEditorSession(initialText: String) : EditorSessionInterface {
+class KotlinFallbackEditorSession(
+  initialText: String,
+  private var grammar: Int = EditorNativeEngine.GRAMMAR_SMALI,
+) : EditorSessionInterface {
   private val lines = initialText.lines().toMutableList()
   private val undoStack = mutableListOf<String>()
   private val redoStack = mutableListOf<String>()
@@ -194,6 +207,10 @@ class KotlinFallbackEditorSession(initialText: String) : EditorSessionInterface 
 
   override fun getFullText(): String = lines.joinToString("\n")
 
+  override fun setGrammar(grammar: Int) {
+    this.grammar = grammar
+  }
+
   override fun close() {
     lines.clear()
     undoStack.clear()
@@ -204,6 +221,27 @@ class KotlinFallbackEditorSession(initialText: String) : EditorSessionInterface 
     val spans = mutableListOf<NativeTokenSpan>()
     val trimmed = line.trimStart()
     val leadingSpaces = line.length - trimmed.length
+    if (trimmed.isEmpty()) return spans
+
+    if (grammar == EditorNativeEngine.GRAMMAR_FILTER_TXT) {
+      val commentIdx = line.indexOf('#')
+      val ruleEnd = if (commentIdx >= 0) commentIdx else line.length
+      if (ruleEnd > leadingSpaces) {
+        val ruleContent = line.substring(leadingSpaces, ruleEnd).trimEnd()
+        if (ruleContent.isNotEmpty() && !trimmed.startsWith("#")) {
+          val kind = when {
+            trimmed.startsWith("!") -> NativeTokenSpan.KIND_FILTER_EXCLUSION
+            trimmed.startsWith("=") -> NativeTokenSpan.KIND_FILTER_EXACT
+            else -> NativeTokenSpan.KIND_FILTER_PATTERN
+          }
+          spans.add(NativeTokenSpan(offset, leadingSpaces, leadingSpaces + ruleContent.length, kind))
+        }
+      }
+      if (commentIdx >= 0) {
+        spans.add(NativeTokenSpan(offset, commentIdx, line.length, NativeTokenSpan.KIND_COMMENT))
+      }
+      return spans
+    }
 
     if (trimmed.startsWith("#")) {
       spans.add(NativeTokenSpan(offset, leadingSpaces, line.length, NativeTokenSpan.KIND_COMMENT))
@@ -229,18 +267,25 @@ object EditorNativeEngine {
 
   private const val TAG = "EditorNativeEngine"
 
-  fun createSession(initialText: String): EditorSessionInterface {
+  const val GRAMMAR_SMALI = 0
+  const val GRAMMAR_FILTER_TXT = 1
+
+  fun createSession(initialText: String, grammar: Int = GRAMMAR_SMALI): EditorSessionInterface {
     if (DexNativeEngine.isAvailable) {
       try {
         val handle = nativeCreateSession(initialText)
         if (handle != 0L) {
-          return NativeEditorSession(handle)
+          val session = NativeEditorSession(handle)
+          if (grammar != GRAMMAR_SMALI) {
+            session.setGrammar(grammar)
+          }
+          return session
         }
       } catch (e: Throwable) {
         Log.w(TAG, "Failed to create native editor session, falling back to Kotlin: ${e.message}")
       }
     }
-    return KotlinFallbackEditorSession(initialText)
+    return KotlinFallbackEditorSession(initialText, grammar)
   }
 
   // --- External JNI Declarations ---
@@ -250,6 +295,9 @@ object EditorNativeEngine {
 
   @JvmStatic
   external fun nativeDestroySession(handle: Long)
+
+  @JvmStatic
+  external fun nativeSetGrammar(handle: Long, grammar: Int)
 
   @JvmStatic
   external fun nativeGetLineCount(handle: Long): Int

@@ -117,4 +117,58 @@ class EditorNativeEngineTest {
     assertEquals(text, annotated.text)
     assertTrue("Styles must be applied", annotated.spanStyles.isNotEmpty())
   }
+
+  @Test
+  fun editorSession_tokenizesFilterTxtGrammar() {
+    val filterText =
+      """
+      |# Dex2C Filter Rules
+      |!com/example/UnwantedClass # skip this
+      |=Lcom/example/MainActivity;onCreate(Landroid/os/Bundle;)V
+      |^Lcom/dex2c/studio/.*
+      """.trimMargin()
+
+    val session = EditorNativeEngine.createSession(filterText, EditorNativeEngine.GRAMMAR_FILTER_TXT)
+    try {
+      assertEquals(4, session.lineCount)
+      val tokens = session.getLineTokens(0, 4)
+      assertEquals(4, tokens.size)
+
+      // Line 0: Comment
+      val line0 = tokens[0]
+      assertEquals(1, line0.size)
+      assertEquals(NativeTokenSpan.KIND_COMMENT, line0[0].kind)
+
+      // Line 1: Exclusion + Inline comment
+      val line1 = tokens[1]
+      assertTrue("Line 1 should have exclusion rule and optional comment", line1.isNotEmpty())
+      assertEquals(NativeTokenSpan.KIND_FILTER_EXCLUSION, line1[0].kind)
+      if (line1.size > 1) {
+        assertEquals(NativeTokenSpan.KIND_COMMENT, line1[1].kind)
+      }
+
+      // Line 2: Exact rule
+      val line2 = tokens[2]
+      assertEquals(1, line2.size)
+      assertEquals(NativeTokenSpan.KIND_FILTER_EXACT, line2[0].kind)
+
+      // Line 3: Pattern rule
+      val line3 = tokens[3]
+      assertEquals(1, line3.size)
+      assertEquals(NativeTokenSpan.KIND_FILTER_PATTERN, line3[0].kind)
+    } finally {
+      session.close()
+    }
+  }
+
+  @Test
+  fun buildAnnotatedFilterLine_appliesFilterStyles() {
+    val line = "!com/example/TargetClass"
+    val spans = listOf(
+      NativeTokenSpan(0, 0, line.length, NativeTokenSpan.KIND_FILTER_EXCLUSION)
+    )
+    val annotated = com.dex2c.studio.ui.components.buildAnnotatedFilterLine(line, spans, DarkSyntaxPalette)
+    assertEquals(line, annotated.text)
+    assertTrue("Styles must be applied", annotated.spanStyles.isNotEmpty())
+  }
 }

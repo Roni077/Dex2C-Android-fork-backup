@@ -283,9 +283,14 @@ internal fun buildAnnotatedLine(
           NativeTokenSpan.KIND_STRING_LITERAL -> palette.stringLiteral
           NativeTokenSpan.KIND_COMMENT -> palette.comment
           NativeTokenSpan.KIND_NUMBER -> palette.numberLiteral
+          NativeTokenSpan.KIND_FILTER_EXCLUSION -> Color(0xFFEF5350)
+          NativeTokenSpan.KIND_FILTER_EXACT -> Color(0xFF26C6DA)
+          NativeTokenSpan.KIND_FILTER_PATTERN -> palette.memberTarget
           else -> palette.defaultText
         }
-        val isBold = span.kind == NativeTokenSpan.KIND_DIRECTIVE || span.kind == NativeTokenSpan.KIND_OPCODE
+        val isBold = span.kind == NativeTokenSpan.KIND_DIRECTIVE ||
+          span.kind == NativeTokenSpan.KIND_OPCODE ||
+          span.kind == NativeTokenSpan.KIND_FILTER_EXCLUSION
         addStyle(
           SpanStyle(
             color = color,

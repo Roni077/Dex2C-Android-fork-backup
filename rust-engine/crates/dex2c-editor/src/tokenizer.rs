@@ -15,6 +15,9 @@ pub enum TokenKind {
     StringLiteral = 8,    // "Hello World"
     Comment = 9,         // # ...
     Number = 10,         // 0x1, 100
+    FilterExclusion = 11,// !exclusion rule
+    FilterExact = 12,    // =exact rule
+    FilterPattern = 13,  // pattern or general match rule
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -333,4 +336,115 @@ fn is_opcode(word: &str) -> bool {
             | "invoke-static/range"
             | "invoke-interface/range"
     )
+}
+
+pub struct FilterTokenizer;
+
+impl FilterTokenizer {
+    pub fn tokenize_lines(buffer: &RopeBuffer, start_line: usize, count: usize) -> Vec<Vec<TokenSpan>> {
+        let lines = buffer.get_lines(start_line, count);
+        lines.into_iter().map(|line| Self::tokenize_line(&line)).collect()
+    }
+
+    pub fn tokenize_line(line: &str) -> Vec<TokenSpan> {
+        let mut spans = Vec::new();
+        let trimmed_start = line.char_indices().find(|(_, c)| !c.is_whitespace());
+        let (start_idx, first_char) = match trimmed_start {
+            Some((idx, c)) => (idx, c),
+            None => return spans,
+        };
+
+        // Find if there is a comment #
+        let mut comment_idx = None;
+        for (idx, c) in line.char_indices() {
+            if c == '#' {
+                comment_idx = Some(idx);
+                break;
+            }
+        }
+
+        let rule_end = comment_idx.unwrap_or(line.len());
+        if rule_end > start_idx {
+            let rule_slice = &line[start_idx..rule_end];
+            let trimmed_rule = rule_slice.trim_end();
+            let rule_len = trimmed_rule.len();
+
+            if rule_len > 0 && first_char != '#' {
+                let end_col = (start_idx + rule_len) as u16;
+                let kind = match first_char {
+                    '!' => TokenKind::FilterExclusion as u8,
+                    '=' => TokenKind::FilterExact as u8,
+                    _ => TokenKind::FilterPattern as u8,
+                };
+
+                spans.push(TokenSpan {
+                    start_col: start_idx as u16,
+                    end_col,
+                    kind,
+                });
+            }
+        }
+
+        if let Some(c_idx) = comment_idx {
+            spans.push(TokenSpan {
+                start_col: c_idx as u16,
+                end_col: line.len() as u16,
+                kind: TokenKind::Comment as u8,
+            });
+        }
+
+        spans
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_filter_tokenizer_comment_only() {
+        let spans = FilterTokenizer::tokenize_line("# This is a comment");
+        assert_eq!(spans.len(), 1);
+        assert_eq!(spans[0].kind, TokenKind::Comment as u8);
+        assert_eq!(spans[0].start_col, 0);
+        assert_eq!(spans[0].end_col, 19);
+    }
+
+    #[test]
+    fn test_filter_tokenizer_exclusion_with_inline_comment() {
+        let line = "!com/example/MyClass # exclude this";
+        let spans = FilterTokenizer::tokenize_line(line);
+        assert_eq!(spans.len(), 2);
+        assert_eq!(spans[0].kind, TokenKind::FilterExclusion as u8);
+        assert_eq!(spans[0].start_col, 0);
+        assert_eq!(spans[0].end_col, 20);
+
+        assert_eq!(spans[1].kind, TokenKind::Comment as u8);
+        assert_eq!(spans[1].start_col, 21);
+        assert_eq!(spans[1].end_col, line.len() as u16);
+    }
+
+    #[test]
+    fn test_filter_tokenizer_exact_rule() {
+        let spans = FilterTokenizer::tokenize_line("=Lcom/example/MainActivity;onCreate(Landroid/os/Bundle;)V");
+        assert_eq!(spans.len(), 1);
+        assert_eq!(spans[0].kind, TokenKind::FilterExact as u8);
+        assert_eq!(spans[0].start_col, 0);
+        assert_eq!(spans[0].end_col, 57);
+    }
+
+    #[test]
+    fn test_filter_tokenizer_pattern_rule() {
+        let spans = FilterTokenizer::tokenize_line("^Lcom/dex2c/studio/.*");
+        assert_eq!(spans.len(), 1);
+        assert_eq!(spans[0].kind, TokenKind::FilterPattern as u8);
+        assert_eq!(spans[0].start_col, 0);
+        assert_eq!(spans[0].end_col, 21);
+    }
+
+    #[test]
+    fn test_filter_tokenizer_empty_and_whitespace() {
+        assert!(FilterTokenizer::tokenize_line("").is_empty());
+        assert!(FilterTokenizer::tokenize_line("   \t  ").is_empty());
+    }
 }

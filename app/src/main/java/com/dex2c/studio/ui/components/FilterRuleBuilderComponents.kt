@@ -217,17 +217,13 @@ fun InteractiveFilterRuleBuilderPanel(
       }
     }
 
-    OutlinedTextField(
-      value = config.filterRulesText,
-      onValueChange = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
-      label = { Text(stringResource(R.string.config_filter_txt_label)) },
-      shape = RoundedCornerShape(14.dp),
-      textStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = JetBrainsMonoFontFamily),
+    FilterRustEditor(
+      filterText = config.filterRulesText,
+      onFilterTextChanged = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
       modifier =
         Modifier
           .fillMaxWidth()
-          .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 140.dp, max = 260.dp))
-          .testTag("input_filter_txt"),
+          .then(if (fillAvailableHeight) Modifier.weight(1f) else Modifier.heightIn(min = 160.dp, max = 280.dp)),
     )
 
 

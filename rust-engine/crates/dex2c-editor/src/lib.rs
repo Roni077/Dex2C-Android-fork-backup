@@ -10,26 +10,52 @@ use buffer::RopeBuffer;
 use history::HistoryManager;
 use indexer::LabelIndexer;
 use search::{SearchEngine, SearchMatch};
-use tokenizer::{SmaliTokenizer, TokenSpan};
+use tokenizer::{FilterTokenizer, SmaliTokenizer, TokenSpan};
+
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EditorGrammar {
+    Smali = 0,
+    FilterTxt = 1,
+}
 
 pub struct EditorSession {
     buffer: RopeBuffer,
     history: HistoryManager,
     indexer: LabelIndexer,
     searcher: SearchEngine,
+    grammar: EditorGrammar,
 }
 
 impl EditorSession {
     pub fn new(initial_text: &str) -> Self {
+        Self::with_grammar(initial_text, EditorGrammar::Smali)
+    }
+
+    pub fn with_grammar(initial_text: &str, grammar: EditorGrammar) -> Self {
         let buffer = RopeBuffer::new(initial_text);
         let mut indexer = LabelIndexer::new();
-        indexer.rebuild(&buffer);
+        if grammar == EditorGrammar::Smali {
+            indexer.rebuild(&buffer);
+        }
         Self {
             buffer,
             history: HistoryManager::new(),
             indexer,
             searcher: SearchEngine::new(),
+            grammar,
         }
+    }
+
+    pub fn set_grammar(&mut self, grammar: EditorGrammar) {
+        self.grammar = grammar;
+        if grammar == EditorGrammar::Smali {
+            self.indexer.rebuild(&self.buffer);
+        }
+    }
+
+    pub fn get_grammar(&self) -> EditorGrammar {
+        self.grammar
     }
 
     pub fn line_count(&self) -> usize {
@@ -49,20 +75,27 @@ impl EditorSession {
     }
 
     pub fn get_line_tokens(&self, start_line: usize, count: usize) -> Vec<Vec<TokenSpan>> {
-        SmaliTokenizer::tokenize_lines(&self.buffer, start_line, count)
+        match self.grammar {
+            EditorGrammar::Smali => SmaliTokenizer::tokenize_lines(&self.buffer, start_line, count),
+            EditorGrammar::FilterTxt => FilterTokenizer::tokenize_lines(&self.buffer, start_line, count),
+        }
     }
 
     pub fn apply_edit(&mut self, start_char: usize, end_char: usize, text: &str) {
         let old_text = self.buffer.slice_to_string(start_char, end_char);
         self.history.record_edit(start_char, old_text, text.to_string());
         self.buffer.replace(start_char, end_char, text);
-        self.indexer.rebuild(&self.buffer);
+        if self.grammar == EditorGrammar::Smali {
+            self.indexer.rebuild(&self.buffer);
+        }
     }
 
     pub fn undo(&mut self) -> Option<usize> {
         if let Some(inv) = self.history.undo() {
             self.buffer.replace(inv.start_char, inv.end_char, &inv.text);
-            self.indexer.rebuild(&self.buffer);
+            if self.grammar == EditorGrammar::Smali {
+                self.indexer.rebuild(&self.buffer);
+            }
             Some(inv.start_char)
         } else {
             None
@@ -72,7 +105,9 @@ impl EditorSession {
     pub fn redo(&mut self) -> Option<usize> {
         if let Some(fwd) = self.history.redo() {
             self.buffer.replace(fwd.start_char, fwd.end_char, &fwd.text);
-            self.indexer.rebuild(&self.buffer);
+            if self.grammar == EditorGrammar::Smali {
+                self.indexer.rebuild(&self.buffer);
+            }
             Some(fwd.start_char)
         } else {
             None
@@ -191,5 +226,27 @@ mod tests {
         let matches = session.search("const/4", false, true, 10);
         assert_eq!(matches.len(), 3);
         assert_eq!(matches[0].line_index, 8);
+    }
+
+    #[test]
+    fn test_filter_txt_grammar() {
+        let sample_filter = "# Dex2C Filter Rules\n!com/example/exclude.*\n=Lcom/example/Main;onCreate()V\n^Lcom/dex2c/studio/.*";
+        let mut session = EditorSession::with_grammar(sample_filter, EditorGrammar::FilterTxt);
+        assert_eq!(session.line_count(), 4);
+
+        let tokens = session.get_line_tokens(0, 4);
+        assert_eq!(tokens.len(), 4);
+        // Line 0: Comment
+        assert_eq!(tokens[0][0].kind, tokenizer::TokenKind::Comment as u8);
+        // Line 1: FilterExclusion
+        assert_eq!(tokens[1][0].kind, tokenizer::TokenKind::FilterExclusion as u8);
+        // Line 2: FilterExact
+        assert_eq!(tokens[2][0].kind, tokenizer::TokenKind::FilterExact as u8);
+        // Line 3: FilterPattern
+        assert_eq!(tokens[3][0].kind, tokenizer::TokenKind::FilterPattern as u8);
+
+        // Test set_grammar switch
+        session.set_grammar(EditorGrammar::Smali);
+        assert_eq!(session.get_grammar(), EditorGrammar::Smali);
     }
 }

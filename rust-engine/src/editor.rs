@@ -319,3 +319,22 @@ pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_EditorNativeEng
 
     result.unwrap_or(std::ptr::null_mut())
 }
+
+#[no_mangle]
+pub unsafe extern "system" fn Java_com_dex2c_studio_nativeengine_EditorNativeEngine_nativeSetGrammar(
+    _env: JNIEnv,
+    _class: JClass,
+    handle: jlong,
+    grammar: jint,
+) {
+    let _ = catch_unwind(AssertUnwindSafe(|| {
+        if handle != 0 {
+            let session = &mut *(handle as *mut EditorSession);
+            let g = match grammar {
+                1 => dex2c_editor::EditorGrammar::FilterTxt,
+                _ => dex2c_editor::EditorGrammar::Smali,
+            };
+            session.set_grammar(g);
+        }
+    }));
+}
