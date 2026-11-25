@@ -4,7 +4,13 @@ package com.dex2c.studio.cloud
  * Pure-Kotlin JSON parser and builder so GitHub REST API models run cleanly on both
  * Android minSdk 24+ and pure JVM unit tests without org.json stub issues.
  */
-object JsonMini {
+object Json迷你解析器 {
+
+  fun 解析对象(rawJson: String): Map<String, Any?> = parseObject(rawJson)
+
+  fun 构建对象Json(entries: List<Pair<String, Any?>>): String = objectJson(entries)
+
+  fun 转义(value: String): String = escape(value)
 
   fun parseObject(rawJson: String): Map<String, Any?> = Parser(rawJson).parseObject()
 
@@ -172,3 +178,5 @@ object JsonMini {
       if (pos < src.length) src[pos] else throw IllegalArgumentException("Unexpected end of JSON")
   }
 }
+
+typealias JsonMini = Json迷你解析器

@@ -5,13 +5,14 @@ import com.dex2c.studio.dex.DexEncodedMethod
 import com.dex2c.studio.dex.DexParsedFile
 import com.dex2c.studio.nativeengine.DexNativeEngine
 
-data class FilterMatchSummary(
+data class 过滤匹配摘要(
   val matchedMethodIds: Set<String>,
   val matchedClassCount: Int,
   val skippedInitCount: Int,
   val invalidRules: List<String>,
   val matchedClassKeys: Set<String> = emptySet(),
 )
+typealias FilterMatchSummary = 过滤匹配摘要
 
 object FilterRuleEngine {
 

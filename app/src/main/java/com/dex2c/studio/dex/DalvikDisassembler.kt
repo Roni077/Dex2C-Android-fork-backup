@@ -3,7 +3,7 @@ package com.dex2c.studio.dex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-object DalvikDisassembler {
+object Dalvik反汇编器 {
 
   private enum class RefKind {
     NONE,
@@ -730,3 +730,5 @@ object DalvikDisassembler {
     }
   }
 }
+
+typealias DalvikDisassembler = Dalvik反汇编器

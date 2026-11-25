@@ -12,7 +12,10 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import java.io.File
 
-object InstalledAppRepository {
+object 已安装应用仓库 {
+
+  fun 查询可启动应用(context: Context): List<已安装应用项> =
+    queryLaunchableApps(context)
 
   private val maxCacheBytes =
     (Runtime.getRuntime().maxMemory() / 16).toInt().coerceIn(4 * 1024 * 1024, 16 * 1024 * 1024)
@@ -178,3 +181,5 @@ object InstalledAppRepository {
     return bitmap
   }
 }
+
+typealias InstalledAppRepository = 已安装应用仓库

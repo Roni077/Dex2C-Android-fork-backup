@@ -14,7 +14,35 @@ import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.util.Locale
 
-object Dex2cTranspiler {
+object Dex2c转译器 {
+
+  fun 转译方法为C代码(
+    dex: com.dex2c.studio.dex.DexParsedFile,
+    method: com.dex2c.studio.dex.DexEncodedMethod,
+    config: 转译器配置 = 转译器配置(),
+  ): String = transpileMethodToC(dex, method, config)
+
+  fun 转译多Dex代码包(
+    entries: List<Pair<com.dex2c.studio.dex.DexParsedFile, com.dex2c.studio.dex.DexEncodedMethod>>,
+    config: 转译器配置,
+    sourceLabelHint: String? = null,
+    outputDir: File? = null,
+    methodsPerChunk: Int = DEFAULT_METHODS_PER_CHUNK,
+    onProgress: ((转译进度) -> Unit)? = null,
+  ): 生成文件包 = transpileBundleMultiDex(entries, config, sourceLabelHint, outputDir, methodsPerChunk, onProgress)
+
+  fun 构建CMakeLists(moduleName: String, sourceFileNames: List<String>): String =
+    buildCMake(moduleName, sourceFileNames)
+
+  fun 构建AndroidMk(
+    moduleName: String,
+    sourceFileNames: List<String>,
+    ext: String,
+    config: 转译器配置,
+  ): String = buildAndroidMk(moduleName, sourceFileNames, ext, config)
+
+  fun 构建ApplicationMk(config: 转译器配置): String =
+    buildApplicationMk(config)
 
   const val DEFAULT_METHODS_PER_CHUNK = 250
   private const val MAX_PREVIEW_LINES = 450
@@ -1683,3 +1711,5 @@ object Dex2cTranspiler {
       .replace("\r", "\\r")
       .replace("\t", "\\t")
 }
+
+typealias Dex2cTranspiler = Dex2c转译器

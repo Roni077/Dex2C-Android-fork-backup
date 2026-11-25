@@ -434,10 +434,11 @@ fun inferDominantDexPackageName(classes: List<DexClassInfo>): String? {
     ?.key
 }
 
-data class ApkDexEntry(
+data class ApkDex条目(
   val entryName: String,
   val byteSize: Int,
 )
+typealias ApkDexEntry = ApkDex条目
 
 data class DexParsedFile(
   val sourceLabel: String,

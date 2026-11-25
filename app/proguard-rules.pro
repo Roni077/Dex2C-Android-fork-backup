@@ -2,11 +2,6 @@
 # Dex2C Studio ProGuard / R8 Optimization & Obfuscation Rules
 # ==============================================================================
 
-# --- 汉字混淆字典配置 (Chinese Character Obfuscation Dictionaries) ---
--obfuscationdictionary obfuscation-dictionary.txt
--classobfuscationdictionary obfuscation-dictionary.txt
--packageobfuscationdictionary obfuscation-dictionary.txt
-
 # Preserve line numbers and source file attributes for actionable crash stack traces
 -keepattributes SourceFile,LineNumberTable
 -keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
@@ -29,15 +24,11 @@
 -keepclasseswithmembernames class * {
     native <methods>;
 }
--keep class com.dex2c.studio.nativebridge.** { *; }
 -keep class com.dex2c.studio.nativeengine.** { *; }
 
-# Preserve Dex2C application models, configurations, data stores and filters
--keep class com.dex2c.studio.apk.** { *; }
--keep class com.dex2c.studio.cloud.** { *; }
--keep class com.dex2c.studio.data.** { *; }
--keep class com.dex2c.studio.dex.** { *; }
--keep class com.dex2c.studio.transpiler.** { *; }
+# Preserve Dex2C application Chinese classes, methods, models, and data stores natively
+-keep class com.dex2c.studio.** { *; }
+-keepclassmembers class com.dex2c.studio.** { *; }
 
 # Preserve standard Enum methods used across transpiler/cloud options
 -keepclassmembers enum * {

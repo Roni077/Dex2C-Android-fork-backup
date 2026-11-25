@@ -32,7 +32,7 @@ val SUPPORTED_JDK_VERSIONS = listOf("17", "21")
 const val GITHUB_CLI_CLIENT_ID = "178c6fc778ccc68e1d6a"
 const val GITHUB_DEVICE_VERIFICATION_URL = "https://github.com/login/device"
 
-data class CloudSettings(
+data class 云端设置(
   val githubClientId: String = "",
   val accessToken: String = "",
   val githubUsername: String = "",
@@ -56,14 +56,16 @@ data class CloudSettings(
   val effectiveClientId: String get() = githubClientId.trim().ifBlank { GITHUB_CLI_CLIENT_ID }
   val usingCustomClientId: Boolean get() = githubClientId.trim().isNotEmpty()
 }
+typealias CloudSettings = 云端设置
 
-data class DeviceCodeResponse(
+data class 设备代码响应(
   val deviceCode: String,
   val userCode: String,
   val verificationUri: String,
   val expiresInSec: Int,
   val intervalSec: Int,
 )
+typealias DeviceCodeResponse = 设备代码响应
 
 sealed interface DeviceAuthState {
   data object Idle : DeviceAuthState

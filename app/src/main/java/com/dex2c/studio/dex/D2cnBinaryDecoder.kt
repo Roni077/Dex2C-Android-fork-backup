@@ -8,7 +8,7 @@ import java.nio.ByteOrder
  * Operates directly on off-heap Direct ByteBuffers from JNI with zero unnecessary
  * intermediate collections or duplicate string allocations.
  */
-object D2cnBinaryDecoder {
+object D2cn二进制解码器 {
 
   private val PRIMITIVE_DESCRIPTOR_MAP = arrayOfNulls<String>(128).apply {
     this['V'.code] = "V"
@@ -363,3 +363,5 @@ object D2cnBinaryDecoder {
     )
   }
 }
+
+typealias D2cnBinaryDecoder = D2cn二进制解码器
