@@ -658,4 +658,18 @@ class GitHubCloudWorkflowTest {
     assertEquals("Manual DEX2C Build", run.displayTitle)
     assertEquals("workflow_dispatch", run.event)
   }
+
+  @Test
+  fun cloudLogSanitizer_stripsAnsiEscapeCodes() {
+    val rawLog = "\u001B[31m[ERROR]\u001B[0m jni/nc/test.cpp:12:3: \u001B[1;33mwarning:\u001B[0m unused variable"
+    val sanitized = com.dex2c.studio.cloud.CloudLogSanitizer.sanitize(rawLog)
+    assertEquals("[ERROR] jni/nc/test.cpp:12:3: warning: unused variable", sanitized)
+  }
+
+  @Test
+  fun generateDex2cYaml_appendsLogWithTeeDashA() {
+    val yaml = Dex2cWorkflowGenerator.generateDex2cYaml(CloudSettings(), TranspilerConfig())
+    assertTrue(yaml.contains("tee -a /tmp/work/dex2c_build.log"))
+    assertTrue(yaml.contains("ARTIFACT_LOG_NAME="))
+  }
 }

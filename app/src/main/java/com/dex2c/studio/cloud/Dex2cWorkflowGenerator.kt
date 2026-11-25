@@ -465,12 +465,22 @@ object Dex2cWorkflowGenerator {
       |                  json.dump(cfg, f, indent=2)
       |          PY
       |          fi
+      |          APP_NAME="${'$'}{{ github.event.inputs.app_name }}"
+      |          if [ -z "${'$'}APP_NAME" ] || [ "${'$'}APP_NAME" = "app" ]; then
+      |            RAW_APK="${'$'}{{ github.event.inputs.apk_path }}"
+      |            APP_NAME=${'$'}(basename "${'$'}RAW_APK" .apk)
+      |          fi
+      |          APP_NAME=${'$'}(echo "${'$'}APP_NAME" | sed 's/[^A-Za-z0-9._-]//g')
+      |          if [ -z "${'$'}APP_NAME" ]; then APP_NAME="dex2c_output"; fi
+      |          echo "ARTIFACT_LOG_NAME=${'$'}{APP_NAME}-build-log" >> "${'$'}GITHUB_ENV"
+      |          mkdir -p /tmp/work
+      |          rm -f /tmp/work/dex2c_build.log
       |          MAX_ATTEMPTS=3
       |          for ATTEMPT in ${'$'}(seq 1 ${'$'}MAX_ATTEMPTS); do
       |            echo "=== codehasan/dex2c compilation attempt ${'$'}ATTEMPT/${'$'}MAX_ATTEMPTS ==="
       |            rm -f /tmp/work/unsigned_dex2c.apk
       |            set +e
-      |            python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee /tmp/work/dex2c_build.log
+      |            python3 /tmp/d2c/dcc.py "${'$'}{ARGS[@]}" 2>&1 | tee -a /tmp/work/dex2c_build.log
       |            DCC_EXIT=${'$'}?
       |            set -e
       |            if [ -f /tmp/work/unsigned_dex2c.apk ]; then

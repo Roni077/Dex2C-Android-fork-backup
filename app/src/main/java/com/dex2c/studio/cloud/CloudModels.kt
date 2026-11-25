@@ -289,3 +289,12 @@ object CloudTimeUtil {
     }
   }
 }
+
+object CloudLogSanitizer {
+  private val ANSI_REGEX = Regex("""\u001B\[[0-9;]*[a-zA-Z]""")
+
+  fun sanitize(rawLog: String): String {
+    if (rawLog.isEmpty()) return ""
+    return rawLog.replace(ANSI_REGEX, "")
+  }
+}

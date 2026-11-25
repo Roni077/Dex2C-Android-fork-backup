@@ -61,6 +61,10 @@ fun WorkflowLogDialog(
   val vertScroll = rememberScrollState()
   val horizScroll = rememberScrollState()
 
+  val totalLineCount = remember(state.logText) {
+    if (state.logText.isBlank()) 0 else state.logText.lineSequence().count()
+  }
+
   val displayLines = remember(state.logText, filterQuery) {
     if (filterQuery.isBlank()) {
       state.logText
@@ -70,6 +74,12 @@ fun WorkflowLogDialog(
         .filter { it.contains(filterQuery, ignoreCase = true) }
         .joinToString("\n")
     }
+  }
+
+  val filteredLineCount = remember(displayLines, filterQuery) {
+    if (filterQuery.isBlank()) totalLineCount
+    else if (displayLines.isBlank()) 0
+    else displayLines.lineSequence().count()
   }
 
   Dialog(
@@ -122,8 +132,24 @@ fun WorkflowLogDialog(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
               )
+              val lineInfo = if (filterQuery.isNotBlank()) {
+                "Matching $filteredLineCount / $totalLineCount lines"
+              } else if (totalLineCount > 0) {
+                "$totalLineCount lines"
+              } else ""
+              val subText = buildString {
+                append("Run ID: ${state.runId}")
+                state.conclusion?.let {
+                  append(" • ")
+                  append(it.uppercase())
+                }
+                if (lineInfo.isNotBlank()) {
+                  append(" • ")
+                  append(lineInfo)
+                }
+              }
               Text(
-                text = "Run ID: ${state.runId}" + (if (state.conclusion != null) " • ${state.conclusion.uppercase()}" else ""),
+                text = subText,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = JetBrainsMonoFontFamily,

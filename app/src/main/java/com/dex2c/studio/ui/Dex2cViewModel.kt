@@ -25,6 +25,7 @@ import com.dex2c.studio.cloud.CloudNamingConvention
 import com.dex2c.studio.cloud.CloudSettings
 import com.dex2c.studio.cloud.CloudTimeUtil
 import com.dex2c.studio.cloud.Dex2cWorkflowGenerator
+import com.dex2c.studio.cloud.CloudLogSanitizer
 import com.dex2c.studio.cloud.DeviceAuthState
 import com.dex2c.studio.cloud.GitHubApiClient
 import com.dex2c.studio.cloud.GitHubArtifactItem
@@ -3136,11 +3137,12 @@ class Dex2cViewModel @JvmOverloads constructor(
         }.getOrNull()
       }
       if (!logContent.isNullOrBlank()) {
+        val sanitized = CloudLogSanitizer.sanitize(logContent)
         _workflowLogState.value = WorkflowLogViewerState(
           runId = runId,
           runNumber = effectiveRunNumber,
           conclusion = effectiveConclusion,
-          logText = logContent,
+          logText = sanitized,
           isLoading = false,
         )
       } else {

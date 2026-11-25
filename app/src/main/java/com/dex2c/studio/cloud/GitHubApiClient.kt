@@ -360,8 +360,8 @@ class GitHubApiClient(
     jobId: Long,
   ): String {
     val req = apiRequest(token, "$apiBaseUrl/repos/$owner/$repo/actions/jobs/$jobId/logs").get().build()
-    httpClient.newCall(req).execute().use { resp ->
-      if (resp.code == 302 || resp.code == 307) {
+    noRedirectClient.newCall(req).execute().use { resp ->
+      if (resp.code in 300..399) {
         val location = resp.header("Location")
         if (!location.isNullOrBlank()) {
           val redirectReq = Request.Builder().url(location).get().build()
