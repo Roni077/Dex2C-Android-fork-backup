@@ -382,8 +382,8 @@
     <string name="guide_all_phases">All Phases (%1$d)</string>
 
     <!-- Settings Navigation Rows & Sub-screens -->
-    <string name="settings_nav_theme">Theme &amp; Colors</string>
-    <string name="settings_nav_theme_desc">Theme mode, dynamic colors, and accent palette</string>
+    <string name="settings_nav_theme">Theme Mode</string>
+    <string name="settings_nav_theme_desc">System, Light, Dark, or AMOLED Black</string>
     <string name="settings_nav_app_icon">App Launcher Icon</string>
     <string name="settings_nav_app_icon_desc">Customize desktop launcher icon style</string>
     <string name="settings_nav_language">Application Language</string>
@@ -424,4 +424,23 @@
     <string name="settings_disk_cache_label">Disk Cache Size</string>
     <string name="settings_memory_trimmed_toast">Memory trimmed &amp; DEX object pools released.</string>
     <string name="settings_disk_cache_cleared_toast">App disk cache cleared successfully.</string>
+    <string name="settings_select_theme">Select Theme</string>
+    <string name="settings_select_icon">Select Launcher Icon</string>
+    <string name="settings_select_language">Select Language</string>
+    <string name="settings_select_engine">Select Editor Engine</string>
+    <string name="settings_select_syntax_theme">Select Syntax Theme</string>
+    <string name="settings_select_auto_select_limit">Select Method Limit</string>
+    <string name="settings_select_jni_style">Select JNI Binding Style</string>
+    <string name="settings_select_ndk_version">Select NDK Version</string>
+    <string name="settings_select_jdk_version">Select JDK Version</string>
+    <string name="settings_select_signing_mode">Select Signing Mode</string>
+    <string name="settings_select_poll_interval">Select Polling Interval</string>
+    <string name="settings_select_upload_cap">Select Upload Cap</string>
+    <string name="settings_confirm_clear_cache_title">Clear App Disk Cache?</string>
+    <string name="settings_confirm_clear_cache_desc">This will delete all cached decompiled DEX classes and temporary artifacts.</string>
+    <string name="settings_confirm_clear_history_title">Clear Workspace History?</string>
+    <string name="settings_confirm_clear_history_desc">This will remove all recent APK entries from the home picker.</string>
+    <string name="settings_confirm_reset_title">Restore Factory Defaults?</string>
+    <string name="settings_confirm_reset_desc">All preferences will be reset to default values.</string>
+    <string name="settings_confirm_reset_clear_github">Also sign out and clear GitHub OAuth session</string>
 </resources>

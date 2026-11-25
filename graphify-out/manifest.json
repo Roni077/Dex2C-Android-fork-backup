@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SettingsSubScreens.kt": {
-    "mtime": 1795494081.6207347,
-    "ast_hash": "5e5b9ba1d9c6d53942c943a84e0dcd20",
+    "mtime": 1795581045.5416093,
+    "ast_hash": "bd453ea67fb1ac0db2cd1eb30981bc35",
     "semantic_hash": ""
   },
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\app\\src\\main\\java\\com\\dex2c\\studio\\ui\\screens\\SmaliClassScreen.kt": {
@@ -1527,6 +1527,21 @@
   "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\icon\\Gemini_Generated_Image_kz4bwjkz4bwjkz4b.png": {
     "mtime": 1795333727.6806514,
     "ast_hash": "3ef4bdc99f179a138eeae4426290f88c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\01\\Screenshot_20261125-093727_Dex2C Studio.jpg": {
+    "mtime": 1795579868.3537407,
+    "ast_hash": "59d36b9f5f956864a5c2799387f90d35",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\01\\Screenshot_20261125-093823_Dex2C Studio.jpg": {
+    "mtime": 1795579867.9776413,
+    "ast_hash": "f7d0a90b8a874c6f356c40ef408206d9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\docs\\01\\Screenshot_20261125-093832_Dex2C Studio.jpg": {
+    "mtime": 1795579868.3226204,
+    "ast_hash": "9d75e9052f185fb9c922e87a048cf803",
     "semantic_hash": ""
   }
 }

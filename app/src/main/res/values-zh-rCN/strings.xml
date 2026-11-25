@@ -382,8 +382,8 @@
     <string name="guide_all_phases">全部阶段 (%1$d)</string>
 
     <!-- Settings Navigation Rows & Sub-screens -->
-    <string name="settings_nav_theme">主题与配色</string>
-    <string name="settings_nav_theme_desc">主题模式、动态色彩与强调色调板</string>
+    <string name="settings_nav_theme">主题模式</string>
+    <string name="settings_nav_theme_desc">跟随系统、浅色、深色或极黑纯黑</string>
     <string name="settings_nav_app_icon">应用启动图标</string>
     <string name="settings_nav_app_icon_desc">自定义桌面启动图标风格</string>
     <string name="settings_nav_language">界面语言</string>
@@ -424,4 +424,23 @@
     <string name="settings_disk_cache_label">磁盘缓存大小</string>
     <string name="settings_memory_trimmed_toast">已回收内存并释放 DEX 对象池。</string>
     <string name="settings_disk_cache_cleared_toast">已成功清除应用磁盘缓存。</string>
+    <string name="settings_select_theme">选择主题模式</string>
+    <string name="settings_select_icon">选择应用启动图标</string>
+    <string name="settings_select_language">选择界面语言</string>
+    <string name="settings_select_engine">选择代码编辑器引擎</string>
+    <string name="settings_select_syntax_theme">选择语法高亮主题</string>
+    <string name="settings_select_auto_select_limit">选择自动勾选方法上限</string>
+    <string name="settings_select_jni_style">选择 JNI 绑定风格</string>
+    <string name="settings_select_ndk_version">选择 NDK 版本</string>
+    <string name="settings_select_jdk_version">选择 JDK 版本</string>
+    <string name="settings_select_signing_mode">选择 APK 签名模式</string>
+    <string name="settings_select_poll_interval">选择状态轮询间隔</string>
+    <string name="settings_select_upload_cap">选择直传文件大小上限</string>
+    <string name="settings_confirm_clear_cache_title">清除应用磁盘缓存？</string>
+    <string name="settings_confirm_clear_cache_desc">这将清除本地所有已反编译的 DEX 缓存文件与临时产物。</string>
+    <string name="settings_confirm_clear_history_title">清除工作区历史记录？</string>
+    <string name="settings_confirm_clear_history_desc">这将清除主页选择器中的所有最近 APK 打开历史。</string>
+    <string name="settings_confirm_reset_title">恢复出厂默认设置？</string>
+    <string name="settings_confirm_reset_desc">所有应用程序偏好配置将被恢复为出厂默认值。</string>
+    <string name="settings_confirm_reset_clear_github">同时退出登录并清除 GitHub 授权凭证</string>
 </resources>
