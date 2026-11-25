@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1992 nodes, 3255 edges, 153 communities. Commit: 1ab37e8</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1999 nodes, 3269 edges, 157 communities. Commit: 0a2adae</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,7 +88,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1622 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>1629 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>57 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -148,7 +148,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>1622</td><td><code>59, 1, 17, 0, 5, 8, 20, 66, 21, 53, 19, 16, 48, 76, 81, 44, 136, 14, 11, 109, 27, 46, 82, 2, 23, 26, 74, 29, 100, 4, 65, 117, 30, 33, 115, 13, 138, 18, 72, 101, 25, 7, 77, 116, 94, 112, 141, 79, 142, 28, 80, 89, 120, 143, 32, 37, 95, 98, 121, 24, 34, 64, 70, 71, 99, 105, 108, 137, 15, 38, 39, 83, 110, 140, 43, 47, 73, 111, 113, 114, 119, 126, 139, 148, 149, 45, 6, 97, 122, 123, 124, 125, 144, 145, 146, 75, 150, 35, 67, 103, 127, 51, 52, 107, 128, 129, 152, 54, 55, 56, 57, 58, 130, 104</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>25</td><td><code>87, 31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>137</td><td><code>22, 10, 50, 86, 40, 88, 106, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>9, 84</code></td></tr><tr><td>Serving API</td><td>5</td><td><code>147</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 102</td><td>12</td><td><code>102</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Community 90</td><td>9</td><td><code>90</code></td></tr><tr><td>Community 93</td><td>9</td><td><code>93</code></td></tr><tr><td>Community 118</td><td>7</td><td><code>118</code></td></tr><tr><td>Other</td><td>18</td><td><code>96, 151, 36, 42, 131, 132, 133, 134, 135, 61, 63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>1629</td><td><code>59, 1, 20, 0, 5, 17, 8, 66, 21, 30, 53, 81, 16, 76, 2, 44, 136, 14, 46, 11, 48, 26, 27, 82, 23, 74, 19, 29, 4, 65, 13, 138, 72, 77, 101, 25, 33, 7, 100, 6, 94, 117, 141, 70, 116, 142, 28, 79, 89, 109, 120, 143, 18, 32, 37, 95, 98, 112, 115, 121, 24, 34, 64, 71, 105, 108, 137, 15, 38, 39, 83, 99, 110, 140, 43, 47, 73, 111, 113, 114, 119, 126, 139, 148, 149, 45, 97, 122, 123, 124, 125, 144, 145, 146, 152, 153, 75, 80, 150, 154, 35, 67, 103, 127, 155, 156, 51, 52, 107, 128, 129, 54, 55, 56, 57, 58, 130, 104</code></td></tr><tr><td>Graph Build</td><td>57</td><td><code>12, 68, 69, 49, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>25</td><td><code>87, 31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>137</td><td><code>22, 10, 50, 86, 40, 88, 106, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>9, 84</code></td></tr><tr><td>Serving API</td><td>5</td><td><code>147</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 102</td><td>12</td><td><code>102</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Community 90</td><td>9</td><td><code>90</code></td></tr><tr><td>Community 93</td><td>9</td><td><code>93</code></td></tr><tr><td>Community 118</td><td>7</td><td><code>118</code></td></tr><tr><td>Other</td><td>18</td><td><code>96, 151, 36, 42, 131, 132, 133, 134, 135, 61, 63</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -160,11 +160,11 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>1992 nodes · 3255 edges · 153 communities (104 shown, 49 thin omitted)</li>
-      <li>Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 476 edges (avg confidence: 0.8)</li>
+      <li>1999 nodes · 3269 edges · 157 communities (103 shown, 54 thin omitted)</li>
+      <li>Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 481 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Dex2cViewModel` - 121 edges</li>
-      <li>2. `TagPill()` - 46 edges</li>
+      <li>2. `TagPill()` - 47 edges</li>
       <li>3. `Dex2cTranspiler` - 37 edges</li>
     </ul>
   </div>
@@ -172,12 +172,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around dex2c, studio, com, app, mostly in studio/ui/Dex2cViewModel.kt, studio/nativeengine/EditorNativeEngine.kt, rust-engine/src/dex.rs. This section covers 1622 nodes and 2921 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around dex2c, studio, com, app, mostly in studio/ui/Dex2cViewModel.kt, studio/nativeengine/EditorNativeEngine.kt, rust-engine/src/dex.rs. This section covers 1629 nodes and 2935 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (1622 nodes, 2921 edges)
+    %% Section: Extraction Pipeline (1629 nodes, 2935 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -210,7 +210,7 @@ flowchart LR
     studio_mainactivity_mainactivity_oncreate_17d29145 -->|calls| studio_mainactivity_dex2capp_fbfa3080
     studio_mainactivity_dex2capp_fbfa3080 -->|calls| studio_mainactivity_dex2cthemedsnackbarhost_5c79ace7
     studio_mainactivity_dex2capp_fbfa3080 -->|calls| studio_mainactivity_dex2cfloatingbottombar_4db61c9e
-    %% Omitted for readability: 1604 nodes, 0 edges
+    %% Omitted for readability: 1611 nodes, 0 edges
     class studio_mainactivity_navdestinationitem_e24ab693 klass;
     class studio_mainactivity_dex2capp_fbfa3080 function;
     class studio_mainactivity_localizedactivitycontext_2b1a1923 klass;
@@ -502,14 +502,14 @@ flowchart LR
 <tr><td><code>rust-engine/src/dex.rs</code></td><td>52 nodes</td></tr>
 <tr><td><code>studio/dex/DexModels.kt</code></td><td>51 nodes</td></tr>
 <tr><td><code>studio/transpiler/Dex2cTranspiler.kt</code></td><td>44 nodes</td></tr>
+<tr><td><code>studio/cloud/GitHubApiClient.kt</code></td><td>38 nodes</td></tr>
 <tr><td><code>studio/cloud/CloudModels.kt</code></td><td>36 nodes</td></tr>
-<tr><td><code>studio/cloud/GitHubApiClient.kt</code></td><td>36 nodes</td></tr>
 <tr><td><code>studio/transpiler/D2cConfigEngine.kt</code></td><td>36 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x968, method x788, contains x689. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x971, method x792, contains x691. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3569,18 +3569,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>1992</td></tr>
-      <tr><td>Edges</td><td>3255</td></tr>
+      <tr><td>Nodes</td><td>1999</td></tr>
+      <tr><td>Edges</td><td>3269</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>153</td></tr>
+      <tr><td>Communities</td><td>157</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>2779</td></tr>
-      <tr><td>INFERRED</td><td>476</td></tr>
+      <tr><td>EXTRACTED</td><td>2788</td></tr>
+      <tr><td>INFERRED</td><td>481</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -3588,7 +3588,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-25 08:29 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-25 09:15 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

@@ -284,9 +284,11 @@ class GitHubApiClient(
     owner: String,
     repo: String,
     workflowFile: String = "dex2c.yml",
+    perPage: Int = 30,
+    page: Int = 1,
   ): List<GitHubWorkflowRunSummary> {
     val req =
-      apiRequest(token, "$apiBaseUrl/repos/$owner/$repo/actions/workflows/$workflowFile/runs?per_page=8")
+      apiRequest(token, "$apiBaseUrl/repos/$owner/$repo/actions/workflows/$workflowFile/runs?per_page=$perPage&page=$page")
         .get()
         .build()
     httpClient.newCall(req).execute().use { resp ->
@@ -307,6 +309,8 @@ class GitHubApiClient(
           createdAt = (obj["created_at"] as? String).orEmpty(),
           runStartedAtMillis = CloudTimeUtil.parseIsoUtcMillis(obj["run_started_at"] as? String),
           updatedAtMillis = CloudTimeUtil.parseIsoUtcMillis(obj["updated_at"] as? String),
+          displayTitle = (obj["display_title"] as? String) ?: (obj["name"] as? String),
+          event = obj["event"] as? String,
         )
       }
     }
@@ -370,6 +374,60 @@ class GitHubApiClient(
     }
   }
 
+  fun downloadRunLogsArchive(
+    token: String,
+    owner: String,
+    repo: String,
+    runId: Long,
+  ): String {
+    val req = apiRequest(token, "$apiBaseUrl/repos/$owner/$repo/actions/runs/$runId/logs").get().build()
+    noRedirectClient.newCall(req).execute().use { resp ->
+      val redirectUrl = if (resp.code in 300..399) resp.header("Location") else null
+      val finalCall = if (!redirectUrl.isNullOrBlank()) {
+        Request.Builder().url(redirectUrl).get().build()
+      } else if (resp.isSuccessful) {
+        null
+      } else {
+        return ""
+      }
+      val bodyBytes = if (finalCall != null) {
+        httpClient.newCall(finalCall).execute().use { rResp ->
+          if (!rResp.isSuccessful) return ""
+          rResp.body?.bytes() ?: return ""
+        }
+      } else {
+        resp.body?.bytes() ?: return ""
+      }
+      return extractPlainTextFromLogZip(bodyBytes)
+    }
+  }
+
+  fun extractPlainTextFromLogZip(zipBytes: ByteArray): String {
+    if (zipBytes.isEmpty()) return ""
+    val entries = mutableListOf<Pair<String, String>>()
+    runCatching {
+      ZipInputStream(ByteArrayInputStream(zipBytes)).use { zis ->
+        while (true) {
+          val entry = zis.nextEntry ?: break
+          if (!entry.isDirectory && (entry.name.endsWith(".txt", ignoreCase = true) || entry.name.endsWith(".log", ignoreCase = true))) {
+            val content = zis.readBytes().decodeToString()
+            entries.add(entry.name to content)
+          }
+          zis.closeEntry()
+        }
+      }
+    }
+    if (entries.isEmpty()) return ""
+    entries.sortBy { it.first }
+    val sb = StringBuilder()
+    for ((name, content) in entries) {
+      if (sb.isNotEmpty()) sb.append("\n\n")
+      sb.append("=== ").append(name.substringAfterLast('/')).append(" ===\n")
+      sb.append(content.trim())
+    }
+    return sb.toString()
+  }
+
   fun getRunLogs(
     token: String,
     owner: String,
@@ -382,6 +440,9 @@ class GitHubApiClient(
       val logText = runCatching { getJobLogs(token, owner, repo, jId) }.getOrNull()
       if (!logText.isNullOrBlank()) return logText
     }
+    val archiveLog = runCatching { downloadRunLogsArchive(token, owner, repo, runId) }.getOrNull()
+    if (!archiveLog.isNullOrBlank()) return archiveLog
+
     val artifacts = runCatching { listRunArtifacts(token, owner, repo, runId) }.getOrNull().orEmpty()
     val logArtifact = artifacts.firstOrNull { it.name.contains("log", ignoreCase = true) }
     if (logArtifact != null && logArtifact.archiveDownloadUrl.isNotBlank()) {

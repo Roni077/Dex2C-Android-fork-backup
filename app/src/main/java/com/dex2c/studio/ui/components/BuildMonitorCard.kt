@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -197,6 +198,8 @@ fun BuildMonitorCard(
             statusPillText = if (fraction != null) pct else "SYNCING",
             htmlUrl = null,
             onOpenBrowserUrl = onOpenBrowserUrl,
+            showCircularRing = false,
+            iconOverride = Icons.Rounded.CloudUpload,
           )
           Spacer(Modifier.height(10.dp))
           TransferProgressPanel(
@@ -252,6 +255,8 @@ fun BuildMonitorCard(
             htmlUrl = snap?.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
             onInspectLogs = snap?.runId?.let { rId -> { onInspectLogs?.invoke(rId) } },
+            showCircularRing = false,
+            iconOverride = Icons.Rounded.Download,
           )
           Spacer(Modifier.height(10.dp))
           TransferProgressPanel(
@@ -332,7 +337,7 @@ fun BuildMonitorCard(
             statusPillText = cloudRunState.conclusion.uppercase(Locale.US),
             htmlUrl = cloudRunState.htmlUrl,
             onOpenBrowserUrl = onOpenBrowserUrl,
-            onInspectLogs = { onInspectLogs?.invoke(cloudRunState.runId) },
+            onInspectLogs = if (!isSuccess) { { onInspectLogs?.invoke(cloudRunState.runId) } } else null,
           )
 
           if (cloudRunState.steps.isNotEmpty()) {
@@ -459,6 +464,8 @@ private fun MonitorGaugeBlock(
   htmlUrl: String?,
   onOpenBrowserUrl: (String) -> Unit,
   onInspectLogs: (() -> Unit)? = null,
+  showCircularRing: Boolean = true,
+  iconOverride: ImageVector? = null,
 ) {
   val animatedProgress by
     animateFloatAsState(
@@ -485,38 +492,57 @@ private fun MonitorGaugeBlock(
         modifier = Modifier.size(80.dp).testTag("build_monitor_circular_progress"),
         contentAlignment = Alignment.Center,
       ) {
-        if (isIndeterminate) {
-          CircularProgressIndicator(
-            modifier = Modifier.size(76.dp),
-            color = ringColor,
-            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            strokeWidth = 6.dp,
-            strokeCap = StrokeCap.Round,
-          )
+        if (showCircularRing) {
+          if (isIndeterminate) {
+            CircularProgressIndicator(
+              modifier = Modifier.size(76.dp),
+              color = ringColor,
+              trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+              strokeWidth = 6.dp,
+              strokeCap = StrokeCap.Round,
+            )
+          } else {
+            CircularProgressIndicator(
+              progress = { animatedProgress },
+              modifier = Modifier.size(76.dp),
+              color = ringColor,
+              trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+              strokeWidth = 6.dp,
+              strokeCap = StrokeCap.Round,
+            )
+          }
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+              text = centerText,
+              fontFamily = JetBrainsMonoFontFamily,
+              fontSize = 15.sp,
+              fontWeight = FontWeight.Bold,
+              color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+              text = centerSubtext,
+              fontFamily = JetBrainsMonoFontFamily,
+              fontSize = 9.sp,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
         } else {
-          CircularProgressIndicator(
-            progress = { animatedProgress },
+          Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
             modifier = Modifier.size(76.dp),
-            color = ringColor,
-            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            strokeWidth = 6.dp,
-            strokeCap = StrokeCap.Round,
-          )
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(
-            text = centerText,
-            fontFamily = JetBrainsMonoFontFamily,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-          )
-          Text(
-            text = centerSubtext,
-            fontFamily = JetBrainsMonoFontFamily,
-            fontSize = 9.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
+          ) {
+            if (iconOverride != null) {
+              Box(contentAlignment = Alignment.Center) {
+                Icon(
+                  imageVector = iconOverride,
+                  contentDescription = null,
+                  tint = ringColor,
+                  modifier = Modifier.size(32.dp),
+                )
+              }
+            }
+          }
         }
       }
 

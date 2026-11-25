@@ -111,7 +111,7 @@ class GitHubCloudWorkflowTest {
     assertTrue(yaml.contains("dex2c-signed-apk"))
     assertTrue(yaml.contains("dex2c-signed-output.apk"))
     assertTrue(yaml.contains("dex2c-build-log"))
-    assertTrue(yaml.contains("if: always()"))
+    assertTrue(yaml.contains("if: failure()"))
     assertTrue(yaml.contains("app_name:"))
   }
 
@@ -320,7 +320,15 @@ class GitHubCloudWorkflowTest {
         com.dex2c.studio.cloud.GitHubWorkflowStep("Run dcc.py", "in_progress", null),
         com.dex2c.studio.cloud.GitHubWorkflowStep("Sign APK", "queued", null),
       )
-    assertEquals(0.5f, com.dex2c.studio.cloud.CloudTimeUtil.computeStepProgress(steps)!!, 0.001f)
+    assertEquals(0.625f, com.dex2c.studio.cloud.CloudTimeUtil.computeStepProgress(steps)!!, 0.001f)
+    val completedSteps =
+      listOf(
+        com.dex2c.studio.cloud.GitHubWorkflowStep("Checkout", "completed", "success"),
+        com.dex2c.studio.cloud.GitHubWorkflowStep("Setup NDK", "completed", "success"),
+        com.dex2c.studio.cloud.GitHubWorkflowStep("Run dcc.py", "queued", null),
+        com.dex2c.studio.cloud.GitHubWorkflowStep("Sign APK", "queued", null),
+      )
+    assertEquals(0.5f, com.dex2c.studio.cloud.CloudTimeUtil.computeStepProgress(completedSteps)!!, 0.001f)
     assertEquals(null, com.dex2c.studio.cloud.CloudTimeUtil.computeStepProgress(emptyList()))
   }
 
@@ -608,5 +616,46 @@ class GitHubCloudWorkflowTest {
       assertFalse("Python block #$index should not contain raw escaped quote delimiters", pyCode.contains("\\\"-Wl"))
       assertTrue("Python block #$index should have content", pyCode.isNotBlank())
     }
+  }
+
+  @Test
+  fun extractPlainTextFromLogZip_ordersAndExtractsStepLogs() {
+    val client = GitHubApiClient()
+    val baos = ByteArrayOutputStream()
+    ZipOutputStream(baos).use { zos ->
+      zos.putNextEntry(ZipEntry("2_dcc_compile.txt"))
+      zos.write("Compiling C++ to shared library...\nDone.\n".toByteArray(Charsets.UTF_8))
+      zos.closeEntry()
+
+      zos.putNextEntry(ZipEntry("1_setup_ndk.txt"))
+      zos.write("NDK setup r25c ready.\n".toByteArray(Charsets.UTF_8))
+      zos.closeEntry()
+    }
+    val extracted = client.extractPlainTextFromLogZip(baos.toByteArray())
+    assertTrue(extracted.contains("=== 1_setup_ndk.txt ==="))
+    assertTrue(extracted.contains("=== 2_dcc_compile.txt ==="))
+    assertTrue(extracted.indexOf("1_setup_ndk.txt") < extracted.indexOf("2_dcc_compile.txt"))
+    assertTrue(extracted.contains("NDK setup r25c ready."))
+    assertTrue(extracted.contains("Compiling C++ to shared library..."))
+  }
+
+  @Test
+  fun gitHubWorkflowRunSummary_formatsDurationAndEvent() {
+    val run =
+      com.dex2c.studio.cloud.GitHubWorkflowRunSummary(
+        id = 12345L,
+        runNumber = 42,
+        status = "completed",
+        conclusion = "failure",
+        htmlUrl = "https://github.com/test/repo/actions/runs/12345",
+        createdAt = "2026-11-25T12:00:00Z",
+        runStartedAtMillis = 1000L,
+        updatedAtMillis = 135_000L,
+        displayTitle = "Manual DEX2C Build",
+        event = "workflow_dispatch",
+      )
+    assertEquals("02:14", run.durationFormatted)
+    assertEquals("Manual DEX2C Build", run.displayTitle)
+    assertEquals("workflow_dispatch", run.event)
   }
 }

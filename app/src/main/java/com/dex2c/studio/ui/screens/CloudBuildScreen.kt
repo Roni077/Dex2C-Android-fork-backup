@@ -35,9 +35,11 @@ import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -79,6 +81,7 @@ import com.dex2c.studio.ui.components.BuildMonitorCard
 import com.dex2c.studio.ui.components.ExpressiveMotion
 import com.dex2c.studio.ui.components.GitHubDeviceAuthCard
 import com.dex2c.studio.ui.components.TagPill
+import com.dex2c.studio.ui.components.WorkflowRunsHistoryDialog
 import com.dex2c.studio.ui.theme.JetBrainsMonoFontFamily
 import java.util.Locale
 import kotlinx.coroutines.delay
@@ -130,6 +133,18 @@ fun CloudBuildScreen(
         cloudSettings.isAuthenticated && cloudSettings.workflowInitialized -> CloudStage.DISPATCH
         else -> CloudStage.SETUP
       }
+    )
+  }
+
+  var showHistoryDialog by rememberSaveable { mutableStateOf(false) }
+
+  if (showHistoryDialog) {
+    WorkflowRunsHistoryDialog(
+      runs = recentRuns,
+      onDismiss = { showHistoryDialog = false },
+      onInspectLogs = { id, _, _ -> onInspectLogs?.invoke(id) },
+      onAttachToRun = onAttachToRun,
+      onOpenBrowserUrl = onOpenBrowserUrl,
     )
   }
 
@@ -552,6 +567,8 @@ fun CloudBuildScreen(
                     recentRuns = recentRuns,
                     onRefreshRuns = onRefreshRuns,
                     onAttachToRun = onAttachToRun,
+                    onInspectLogs = onInspectLogs,
+                    onOpenHistory = { showHistoryDialog = true },
                     modifier = Modifier.weight(0.85f),
                   )
                 }
@@ -576,6 +593,8 @@ fun CloudBuildScreen(
                     recentRuns = recentRuns,
                     onRefreshRuns = onRefreshRuns,
                     onAttachToRun = onAttachToRun,
+                    onInspectLogs = onInspectLogs,
+                    onOpenHistory = { showHistoryDialog = true },
                   )
                 }
               }
@@ -849,19 +868,33 @@ private fun RecentCloudRunsCard(
   onRefreshRuns: () -> Unit,
   onAttachToRun: (Long) -> Unit,
   modifier: Modifier = Modifier,
+  onInspectLogs: ((Long) -> Unit)? = null,
+  onOpenHistory: (() -> Unit)? = null,
 ) {
   CloudStepCard(
     title = stringResource(R.string.cloud_recent_runs),
     modifier = modifier,
     trailingBadge = {
       if (cloudSettings.isRepoConfigured) {
-        TextButton(
-          onClick = onRefreshRuns,
-          modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_refresh_runs_btn"),
-        ) {
-          Icon(Icons.Rounded.Refresh, contentDescription = "Refresh Runs", modifier = Modifier.size(15.dp))
-          Spacer(Modifier.width(4.dp))
-          Text(stringResource(R.string.cloud_refresh), maxLines = 1)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          if (recentRuns.isNotEmpty() && onOpenHistory != null) {
+            TextButton(
+              onClick = onOpenHistory,
+              modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_history_runs_btn"),
+            ) {
+              Icon(Icons.Rounded.History, contentDescription = "Run History", modifier = Modifier.size(15.dp))
+              Spacer(Modifier.width(4.dp))
+              Text("History", maxLines = 1)
+            }
+          }
+          TextButton(
+            onClick = onRefreshRuns,
+            modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_refresh_runs_btn"),
+          ) {
+            Icon(Icons.Rounded.Refresh, contentDescription = "Refresh Runs", modifier = Modifier.size(15.dp))
+            Spacer(Modifier.width(4.dp))
+            Text(stringResource(R.string.cloud_refresh), maxLines = 1)
+          }
         }
       }
     },
@@ -877,6 +910,7 @@ private fun RecentCloudRunsCard(
     } else {
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         recentRuns.take(3).forEach { run ->
+          val isFailed = run.conclusion == "failure" || run.status == "failure"
           Surface(
             modifier =
               Modifier.fillMaxWidth()
@@ -892,35 +926,75 @@ private fun RecentCloudRunsCard(
             ) {
               Column(modifier = Modifier.weight(1f)) {
                 Text(
-                  text = "Run #${run.runNumber}",
+                  text = "Run #${run.runNumber}" + (if (!run.displayTitle.isNullOrBlank()) " • ${run.displayTitle}" else ""),
                   style = MaterialTheme.typography.titleSmall,
                   fontFamily = JetBrainsMonoFontFamily,
                   maxLines = 1,
+                  overflow = TextOverflow.Ellipsis,
                 )
+                val timeDuration = buildString {
+                  append(run.createdAt)
+                  run.durationFormatted?.let { dur ->
+                    append(" • ")
+                    append(dur)
+                  }
+                }
                 Text(
-                  text = run.createdAt,
+                  text = timeDuration,
                   style = MaterialTheme.typography.bodySmall,
                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis,
                 )
               }
-              TagPill(
-                text = run.conclusion ?: run.status,
-                containerColor =
-                  when (run.conclusion) {
-                    "success" -> MaterialTheme.colorScheme.primaryContainer
-                    "failure" -> MaterialTheme.colorScheme.errorContainer
-                    else -> MaterialTheme.colorScheme.tertiaryContainer
-                  },
-                contentColor =
-                  when (run.conclusion) {
-                    "success" -> MaterialTheme.colorScheme.onPrimaryContainer
-                    "failure" -> MaterialTheme.colorScheme.onErrorContainer
-                    else -> MaterialTheme.colorScheme.onTertiaryContainer
-                  },
-              )
+              Spacer(Modifier.width(6.dp))
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+              ) {
+                if (isFailed && onInspectLogs != null) {
+                  IconButton(
+                    onClick = { onInspectLogs(run.id) },
+                    modifier = Modifier.size(32.dp).testTag("cloud_run_logs_btn_${run.id}"),
+                  ) {
+                    Icon(
+                      imageVector = Icons.Rounded.Terminal,
+                      contentDescription = "View Failure Logs",
+                      tint = MaterialTheme.colorScheme.error,
+                      modifier = Modifier.size(18.dp),
+                    )
+                  }
+                }
+                TagPill(
+                  text = (run.conclusion ?: run.status).uppercase(),
+                  containerColor =
+                    when (run.conclusion) {
+                      "success" -> MaterialTheme.colorScheme.primaryContainer
+                      "failure" -> MaterialTheme.colorScheme.errorContainer
+                      else -> MaterialTheme.colorScheme.tertiaryContainer
+                    },
+                  contentColor =
+                    when (run.conclusion) {
+                      "success" -> MaterialTheme.colorScheme.onPrimaryContainer
+                      "failure" -> MaterialTheme.colorScheme.onErrorContainer
+                      else -> MaterialTheme.colorScheme.onTertiaryContainer
+                    },
+                )
+              }
             }
+          }
+        }
+
+        if (recentRuns.size > 3 && onOpenHistory != null) {
+          Spacer(Modifier.height(4.dp))
+          OutlinedButton(
+            onClick = onOpenHistory,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth().testTag("cloud_view_all_runs_btn"),
+          ) {
+            Icon(Icons.Rounded.History, contentDescription = null, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("View All ${recentRuns.size} Runs")
           }
         }
       }

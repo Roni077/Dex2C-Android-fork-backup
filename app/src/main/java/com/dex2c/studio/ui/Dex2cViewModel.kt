@@ -3115,10 +3115,13 @@ class Dex2cViewModel @JvmOverloads constructor(
       _statusBanner.value = "GitHub authentication required to inspect logs."
       return
     }
+    val cachedRun = _recentCloudRuns.value.firstOrNull { it.id == runId }
+    val effectiveRunNumber = runNumber ?: cachedRun?.runNumber
+    val effectiveConclusion = conclusion ?: cachedRun?.conclusion ?: cachedRun?.status
     _workflowLogState.value = WorkflowLogViewerState(
       runId = runId,
-      runNumber = runNumber,
-      conclusion = conclusion,
+      runNumber = effectiveRunNumber,
+      conclusion = effectiveConclusion,
       isLoading = true,
     )
     viewModelScope.launch {
@@ -3135,19 +3138,19 @@ class Dex2cViewModel @JvmOverloads constructor(
       if (!logContent.isNullOrBlank()) {
         _workflowLogState.value = WorkflowLogViewerState(
           runId = runId,
-          runNumber = runNumber,
-          conclusion = conclusion,
+          runNumber = effectiveRunNumber,
+          conclusion = effectiveConclusion,
           logText = logContent,
           isLoading = false,
         )
       } else {
         _workflowLogState.value = WorkflowLogViewerState(
           runId = runId,
-          runNumber = runNumber,
-          conclusion = conclusion,
+          runNumber = effectiveRunNumber,
+          conclusion = effectiveConclusion,
           logText = "",
           isLoading = false,
-          error = "No build logs could be fetched for Run #$runId. Open Logs in browser or wait for job completion.",
+          error = "No build logs could be fetched for Run #${effectiveRunNumber ?: runId}. Open Logs in browser or wait for job completion.",
         )
       }
     }

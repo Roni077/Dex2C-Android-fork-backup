@@ -127,7 +127,17 @@ data class GitHubWorkflowRunSummary(
   val createdAt: String,
   val runStartedAtMillis: Long? = null,
   val updatedAtMillis: Long? = null,
-)
+  val displayTitle: String? = null,
+  val event: String? = null,
+) {
+  val durationFormatted: String?
+    get() {
+      val start = runStartedAtMillis ?: return null
+      val end = updatedAtMillis ?: return null
+      if (end < start) return null
+      return CloudTimeUtil.formatDurationMmSs(end - start)
+    }
+}
 
 data class GitHubArtifactItem(
   val id: Long,
@@ -263,7 +273,9 @@ object CloudTimeUtil {
   fun computeStepProgress(steps: List<GitHubWorkflowStep>): Float? {
     if (steps.isEmpty()) return null
     val completed = steps.count { it.status == "completed" }
-    return (completed.toFloat() / steps.size.toFloat()).coerceIn(0f, 1f)
+    val inProgress = steps.count { it.status == "in_progress" }
+    val activeScore = completed.toFloat() + (if (inProgress > 0) 0.5f else 0f)
+    return (activeScore / steps.size.toFloat()).coerceIn(0f, 1f)
   }
 
   fun formatTransferBytes(bytes: Long): String {

@@ -579,7 +579,7 @@ object Dex2cWorkflowGenerator {
       |          retention-days: 14
       |
       |      - name: Upload Dex2C Build Log
-      |        if: always()
+      |        if: failure()
       |        uses: actions/upload-artifact@v4
       |        with:
       |          name: ${'$'}{{ env.ARTIFACT_LOG_NAME || 'dex2c-build-log' }}
