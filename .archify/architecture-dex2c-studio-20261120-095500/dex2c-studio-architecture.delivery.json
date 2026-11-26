@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "150912b5-5ed7-4028-8712-5a1168301a0b",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\candidate.json",
+  "output": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\dex2c-studio-architecture.html",
+  "specification": {
+    "sha256": "e4f5536f910a74656afaa6b095a40b66706db1754fe88c50d1d4e9958f8bd166",
+    "bytes": 3922
+  },
+  "artifact": {
+    "sha256": "1b56c18678f8a80f041292d7549f269c94b4d66b96585e5452e543ff2632a4e8",
+    "bytes": 852060
+  }
+}

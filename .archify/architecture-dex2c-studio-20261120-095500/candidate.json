@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Dex2C Studio Architecture",
+    "subtitle": "In-Memory Dalvik Bytecode Analysis, Smali Transpilation & JNI Native Pipeline",
+    "output": "dex2c-studio-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "apk_source", "type": "external", "label": "APK / SAF Source", "sublabel": "Streaming ZipInputStream", "pos": [40, 260], "size": [150, 60] },
+    { "id": "dex_parser", "type": "backend", "label": "DexParser", "sublabel": "112B Header & Pools", "pos": [230, 260], "size": [150, 60], "tag": "Zero-Alloc" },
+    { "id": "mem_store", "type": "database", "label": "MemoryDataStore", "sublabel": "Virtual DEX Buffer", "pos": [420, 260], "size": [160, 60], "tag": "Bounded LRU" },
+    { "id": "dex_session", "type": "backend", "label": "DexEditSession", "sublabel": "State & Transaction Mgr", "pos": [420, 130], "size": [160, 60] },
+    { "id": "baksmali", "type": "backend", "label": "SmaliDisassembler", "sublabel": "Baksmali Bytecode AST", "pos": [630, 130], "size": [160, 60] },
+    { "id": "smali_editor", "type": "frontend", "label": "Smali Editor UI", "sublabel": "Syntax Highlight & Chips", "pos": [840, 130], "size": [160, 60] },
+    { "id": "smali_compiler", "type": "backend", "label": "SmaliDexCompiler", "sublabel": "dexlib2 + DexPool", "pos": [840, 260], "size": [160, 60] },
+    { "id": "cfg_builder", "type": "backend", "label": "MethodCfgBuilder", "sublabel": "Basic Blocks & Flow", "pos": [630, 390], "size": [160, 60] },
+    { "id": "transpiler", "type": "backend", "label": "Dex2cTranspiler", "sublabel": "C++17/C99 JNI Generator", "pos": [840, 390], "size": [160, 60], "tag": "JNI Compiler" },
+    { "id": "dex_exporter", "type": "external", "label": "Patched DEX/APK", "sublabel": "16KB Page Aligned", "pos": [1050, 260], "size": [160, 60] },
+    { "id": "jni_exporter", "type": "external", "label": "NDK Native Package", "sublabel": "CMake & Native Shared Lib", "pos": [1050, 390], "size": [160, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "On-Device In-Memory Engine", "wraps": ["dex_parser", "mem_store", "dex_session", "baksmali", "smali_editor", "smali_compiler", "cfg_builder", "transpiler"] }
+  ],
+  "connections": [
+    { "id": "c1", "from": "apk_source", "to": "dex_parser", "label": "stream bytes", "variant": "emphasis" },
+    { "id": "c2", "from": "dex_parser", "to": "mem_store", "label": "indexed AST" },
+    { "id": "c3", "from": "mem_store", "to": "dex_session", "label": "read/write" },
+    { "id": "c4", "from": "dex_session", "to": "baksmali", "label": "disassemble" },
+    { "id": "c5", "from": "baksmali", "to": "smali_editor", "label": "Smali code" },
+    { "id": "c6", "from": "smali_editor", "to": "smali_compiler", "label": "compile edit" },
+    { "id": "c7", "from": "smali_compiler", "to": "mem_store", "label": "commit patch", "variant": "dashed" },
+    { "id": "c8", "from": "mem_store", "to": "cfg_builder", "label": "bytecode analysis" },
+    { "id": "c9", "from": "cfg_builder", "to": "transpiler", "label": "CFG graph" },
+    { "id": "c10", "from": "smali_compiler", "to": "dex_exporter", "label": "export aligned DEX", "variant": "emphasis" },
+    { "id": "c11", "from": "transpiler", "to": "jni_exporter", "label": "export JNI C++", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "In-Memory Pipeline", "items": ["100% on-device virtual RAM storage via MemoryDataStore", "Zero temporary files written to flash storage during DEX manipulation"] },
+    { "dot": "emerald", "title": "Dex-to-C Transpilation", "items": ["Extracts Method CFG basic blocks", "Generates compliant C++17/C99 JNI code with RegisterNatives binding"] },
+    { "dot": "amber", "title": "Packaging & Verification", "items": ["16KB/4KB page alignment for Android 15+ compatibility", "Pre-flight syntax and opcode validation"] }
+  ]
+}

@@ -1,26 +1,90 @@
+# ==========================================
+# Built Application Files & Dalvik Payloads
+# ==========================================
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# ==========================================
+# Gradle Build Cache & Output
+# ==========================================
+.gradle/
+build/
+**/build/
+captures/
+.kotlin/
+
+# ==========================================
+# Android Studio & IntelliJ IDEA
+# ==========================================
 *.iml
-.gradle
-.kotlin
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+*.ipr
+*.iws
+.idea/
+!.idea/codeStyles/
+!.idea/copyright/
+!.idea/iconLoader.xml
+!.idea/vcs.xml
+
+# ==========================================
+# Local Configuration & Secrets
+# ==========================================
 local.properties
+/local.properties
 .env
+.env.*
+secrets.properties
 debug.keystore
-graphify-out/cache/
-.archify/
-.security-audit/
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+
+# ==========================================
+# Native Build & C++ NDK
+# ==========================================
+.externalNativeBuild/
+**/.externalNativeBuild/
+.cxx/
+**/.cxx/
+*.o
+*.obj
+
+# ==========================================
+# Rust & Cargo Engine
+# ==========================================
 rust-engine/target/
 **/target/
 target/
 rust-engine/.cargo/
+**/*.rs.bk
+
+# ==========================================
+# Python & Scripts Cache
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==========================================
+# Project Tooling Caches & Archives
+# (Note: .archify and .security-audit are tracked)
+# ==========================================
+graphify-out/cache/
 docs/*.zip
+docs/**/*.zip
+!docs/new/dex2c-signed-output_artifact.zip

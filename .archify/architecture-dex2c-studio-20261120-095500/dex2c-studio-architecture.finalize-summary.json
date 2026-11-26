@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\candidate.json",
+    "sha256": "e4f5536f910a74656afaa6b095a40b66706db1754fe88c50d1d4e9958f8bd166",
+    "bytes": 3922
+  },
+  "artifact": {
+    "path": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\dex2c-studio-architecture.html",
+    "sha256": "1b56c18678f8a80f041292d7549f269c94b4d66b96585e5452e543ff2632a4e8",
+    "bytes": 852060
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\dex2c-studio-architecture.finalize.json",
+    "summaryReceipt": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\dex2c-studio-architecture.finalize-summary.json",
+    "browserCheckReceipt": "C:\\Users\\roni2\\Downloads\\Github-Projects\\Dex2c-Android\\.archify\\architecture-dex2c-studio-20261120-095500\\dex2c-studio-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-20T04:25:43.487Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 7494,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "routesOverSuggestedBends": 5,
+      "routesOverSuggestedStretch": 1
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [],
+      "detours": [
+        {
+          "relationship": {
+            "id": "c2",
+            "from": "dex_parser",
+            "to": "mem_store",
+            "label": "indexed AST",
+            "collectionIndex": 1,
+            "artifactIndex": 2
+          },
+          "bends": 3,
+          "stretch": 1.369
+        },
+        {
+          "relationship": {
+            "id": "c4",
+            "from": "dex_session",
+            "to": "baksmali",
+            "label": "disassemble",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "bends": 3,
+          "stretch": 1.329
+        },
+        {
+          "relationship": {
+            "id": "c5",
+            "from": "baksmali",
+            "to": "smali_editor",
+            "label": "Smali code",
+            "collectionIndex": 4,
+            "artifactIndex": 5
+          },
+          "bends": 3,
+          "stretch": 1.3
+        },
+        {
+          "relationship": {
+            "id": "c10",
+            "from": "smali_compiler",
+            "to": "dex_exporter",
+            "label": "export aligned DEX",
+            "collectionIndex": 9,
+            "artifactIndex": 10
+          },
+          "bends": 3,
+          "stretch": 1.331
+        },
+        {
+          "relationship": {
+            "id": "c11",
+            "from": "transpiler",
+            "to": "jni_exporter",
+            "label": "export JNI C++",
+            "collectionIndex": 10,
+            "artifactIndex": 11
+          },
+          "bends": 3,
+          "stretch": 1.3
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "dex_parser → mem_store needs 3 bends: move node dex_parser or mem_store so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "dex_session → baksmali needs 3 bends: move node dex_session or baksmali so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "baksmali → smali_editor needs 3 bends: move node baksmali or smali_editor so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "smali_compiler → dex_exporter needs 3 bends: move node smali_compiler or dex_exporter so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "transpiler → jni_exporter needs 3 bends: move node transpiler or jni_exporter so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

