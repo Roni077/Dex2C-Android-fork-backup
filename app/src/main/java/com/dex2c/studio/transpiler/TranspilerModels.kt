@@ -151,7 +151,7 @@ data class DccSignatureConfig(
   val v3Enabled: Boolean = true,
 )
 
-data class 转译器配置(
+data class TranspilerConfig(
   val jniStyle: JniBindingStyle = JniBindingStyle.REGISTER_NATIVES,
   val targetLanguage: TargetCLanguage = TargetCLanguage.CPP17,
   val stringEncryption: Boolean = true,
@@ -168,9 +168,8 @@ data class 转译器配置(
   val ollvm: OllvmConfig = OllvmConfig(),
   val signature: DccSignatureConfig = DccSignatureConfig(),
 )
-typealias TranspilerConfig = 转译器配置
 
-data class 转译进度(
+data class TranspileProgress(
   val completedMethods: Int = 0,
   val totalMethods: Int = 0,
   val activeChunkIndex: Int = 1,
@@ -181,9 +180,8 @@ data class 转译进度(
       if (totalMethods <= 0) 0f
       else (completedMethods.toFloat() / totalMethods.toFloat()).coerceIn(0f, 1f)
 }
-typealias TranspileProgress = 转译进度
 
-data class 生成文件(
+data class GeneratedFile(
   val fileName: String,
   val zipPath: String,
   val description: String,
@@ -202,24 +200,23 @@ data class 生成文件(
       ByteArrayInputStream(content.toByteArray(Charsets.UTF_8))
     }
 }
-typealias GeneratedFile = 生成文件
 
-data class 生成文件包(
-  val sourceFile: 生成文件,
-  val headerFile: 生成文件,
-  val androidMkFile: 生成文件,
-  val applicationMkFile: 生成文件,
-  val cmakeFile: 生成文件,
-  val dccCfgFile: 生成文件,
-  val filterTxtFile: 生成文件,
-  val loaderStubFile: 生成文件,
+data class GeneratedBundle(
+  val sourceFile: GeneratedFile,
+  val headerFile: GeneratedFile,
+  val androidMkFile: GeneratedFile,
+  val applicationMkFile: GeneratedFile,
+  val cmakeFile: GeneratedFile,
+  val dccCfgFile: GeneratedFile,
+  val filterTxtFile: GeneratedFile,
+  val loaderStubFile: GeneratedFile,
   val transpiledMethodCount: Int,
   val instructionCount: Int,
   val warnings: List<String>,
-  val sourceFiles: List<生成文件> = listOf(sourceFile),
-  val loaderSmaliFile: 生成文件? = null,
+  val sourceFiles: List<GeneratedFile> = listOf(sourceFile),
+  val loaderSmaliFile: GeneratedFile? = null,
 ) {
-  val allFiles: List<生成文件>
+  val allFiles: List<GeneratedFile>
     get() =
       buildList {
         addAll(sourceFiles)
@@ -233,4 +230,3 @@ data class 生成文件包(
         if (loaderSmaliFile != null) add(loaderSmaliFile)
       }
 }
-typealias GeneratedBundle = 生成文件包

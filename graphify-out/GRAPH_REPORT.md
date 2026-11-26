@@ -1,16 +1,16 @@
-# Graph Report - Dex2c-Android  (2026-11-25)
+# Graph Report - Dex2c-Android  (2026-11-26)
 
 ## Corpus Check
-- 178 files · ~1,036,130 words
+- 181 files · ~1,035,297 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2899 nodes · 4818 edges · 217 communities (148 shown, 69 thin omitted)
-- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 749 edges (avg confidence: 0.8)
+- 2940 nodes · 4859 edges · 218 communities (148 shown, 70 thin omitted)
+- Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 749 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `01802706`
+- Built from commit: `d0567bed`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -210,13 +210,14 @@
 - [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 211|Community 211]]
 - [[_COMMUNITY_Community 212|Community 212]]
+- [[_COMMUNITY_Community 217|Community 217]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Dex2cViewModel` - 121 edges
 2. `Dex2cViewModel` - 116 edges
 3. `TagPill()` - 47 edges
-4. `TagPill()` - 37 edges
-5. `Dex2cTranspiler` - 37 edges
+4. `Dex2cTranspiler` - 37 edges
+5. `TagPill()` - 37 edges
 6. `GitHubApiClient` - 31 edges
 7. `GitHubApiClient` - 31 edges
 8. `TranspilerConfig` - 30 edges
@@ -225,33 +226,33 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `Dex2cApp()` --calls--> `rememberWindowAdaptiveInfo()`  [INFERRED]
-  app/src/main/java/com/dex2c/studio/主活动.kt → app/src/main/java/com/dex2c/studio/ui/自适应布局.kt
+  app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/AdaptiveLayout.kt
 - `Dex2cApp()` --calls--> `HomeScreen()`  [INFERRED]
-  app/src/main/java/com/dex2c/studio/主活动.kt → app/src/main/java/com/dex2c/studio/ui/screens/主界面.kt
+  app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/screens/HomeScreen.kt
 - `Dex2cApp()` --calls--> `ClassesScreen()`  [INFERRED]
-  app/src/main/java/com/dex2c/studio/主活动.kt → app/src/main/java/com/dex2c/studio/ui/screens/类列表界面.kt
+  app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/screens/ClassesScreen.kt
 - `Dex2cApp()` --calls--> `PipelineConfigScreen()`  [INFERRED]
-  app/src/main/java/com/dex2c/studio/主活动.kt → app/src/main/java/com/dex2c/studio/ui/screens/流水线配置界面.kt
+  app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/screens/PipelineConfigScreen.kt
 - `Dex2cApp()` --calls--> `CloudBuildScreen()`  [INFERRED]
-  app/src/main/java/com/dex2c/studio/主活动.kt → app/src/main/java/com/dex2c/studio/ui/screens/云端构建界面.kt
+  app/src/main/java/com/dex2c/studio/MainActivity.kt → app/src/main/java/com/dex2c/studio/ui/screens/CloudBuildScreen.kt
 
-## Communities (217 total, 69 thin omitted)
+## Communities (218 total, 70 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.05
-Nodes (46): buildAnnotatedFilterLine(), FilterRustEditor(), buildAnnotatedLine(), RustUndoController, SmaliRustEditor(), SmaliSoraEditor(), SoraUndoController, applySearchHighlights() (+38 more)
+Cohesion: 0.08
+Nodes (28): SmaliSoraEditor(), SoraUndoController, applySearchHighlights(), extractLineInteractiveTokens(), extractQuickMethodTokens(), findCategoryTokenRanges(), findEnclosingMethodName(), findLineMatchRanges() (+20 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.19
-Nodes (4): formatAccessFlags(), SmaliClassDisassembler, SmaliDisassemblyResult, SmaliMethodSpan
+Cohesion: 0.16
+Nodes (6): ClassMethodsSelectorSheet(), MethodSelectorItem, formatAccessFlags(), SmaliClassDisassembler, SmaliDisassemblyResult, SmaliMethodSpan
 
 ### Community 3 - "Community 3"
 Cohesion: 0.10
 Nodes (20): 0. Anti-Pattern: Performative Reasoning, 10. Final Answer Protocol, 1. Problem Extraction, 2. Assumption Firewall, 3. Solution Generation, 4. Verification Layer, 5. Adversarial Attack, 6. Confidence Calibration (+12 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.21
-Nodes (16): applySearchHighlights(), extractLineInteractiveTokens(), extractQuickMethodTokens(), findCategoryTokenRanges(), findEnclosingMethodName(), findLineMatchRanges(), findSmaliCommentStart(), findSmaliSearchMatches() (+8 more)
+Cohesion: 0.06
+Nodes (41): ClassPickerSheet(), ClassViewerTabBar(), applySearchHighlights(), extractLineInteractiveTokens(), extractQuickMethodTokens(), findCategoryTokenRanges(), findEnclosingMethodName(), findLineMatchRanges() (+33 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.07
@@ -266,8 +267,8 @@ Cohesion: 0.28
 Nodes (3): Json, JsonMini, Parser
 
 ### Community 8 - "Community 8"
-Cohesion: 0.08
-Nodes (13): Apk, ApkMetadataInspector, ArchiveMeta, , ApkStagingPreview, AppScopeFilter, BinarySourceType, InstalledAppItem (+5 more)
+Cohesion: 0.06
+Nodes (16): Apk, ApkMetadataInspector, ArchiveMeta, , ApkStagingPreview, AppScopeFilter, BinarySourceType, InstalledAppItem (+8 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.09
@@ -279,15 +280,11 @@ Nodes (22): 1. High-Level System Architecture & Data Pipeline, 2. Phase 1: Binar
 
 ### Community 11 - "Community 11"
 Cohesion: 0.08
-Nodes (22): Authenticated, CloudBuildRunState, CloudErrorAction, CloudLogSanitizer, CloudSigningMode, Completed, DeviceAuthState, DeviceCodeResponse (+14 more)
+Nodes (21): Authenticated, CloudBuildRunState, CloudErrorAction, CloudLogSanitizer, CloudSigningMode, Completed, DeviceAuthState, Dispatching (+13 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.08
 Nodes (25): patterns, patterns, patterns, patterns, patterns, name, patterns, patterns (+17 more)
-
-### Community 13 - "Community 13"
-Cohesion: 0.13
-Nodes (6): DexClassInfo, DexParsedFile, DexClassInfo, parseClassDescriptor(), ParsedClassDescriptor, FilterRuleOptimizationTest
 
 ### Community 14 - "Community 14"
 Cohesion: 0.19
@@ -295,11 +292,11 @@ Nodes (10): DexClassDefFull, DexCodeMeta, DexFieldMeta, DexFile, DexFile<'a>, De
 
 ### Community 15 - "Community 15"
 Cohesion: 0.06
-Nodes (12): descriptorToJavaName(), arrayMeta(), descriptorToJavaType(), Dex2c, Dex2cTranspiler, mangleJniChar(), mangleJniType(), mangleStaticJniSymbol() (+4 more)
+Nodes (12): descriptorToJavaName(), ArrayMeta, descriptorToJavaType(), Dex2c, Dex2cTranspiler, mangleJniChar(), mangleJniType(), mangleStaticJniSymbol() (+4 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.20
-Nodes (16): BuildHubScreen(), BuildHubTab, formatOutputBytes(), OutputExportScreen(), CodehasanEngineIdentityCard(), ConfigSectionCard(), FilterRulesCard(), JniBindingCard() (+8 more)
+Cohesion: 0.36
+Nodes (12): CodehasanEngineIdentityCard(), ConfigSectionCard(), FilterRulesCard(), JniBindingCard(), LoaderFlagsCard(), OllvmHardeningStudioCard(), PipelineCategory, PipelineCategoryPill() (+4 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.18
@@ -318,8 +315,8 @@ Cohesion: 0.05
 Nodes (41): 1. High-Level System Architecture & In-Memory Data Pipeline, 2. User Navigation & Screen State Machine, 3. Deep-Dive Operational Workflows (Step-by-Step), 4. Real-World Practical Usage Recipes, 5. Performance & Memory Safeguards Summary, code:mermaid (flowchart TD), code:mermaid (stateDiagram-v2), code:mermaid (sequenceDiagram) (+33 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.16
-Nodes (4): ClassViewerTab, Error, Loading, Ready
+Cohesion: 0.18
+Nodes (4): CloudApkChoice, Error, Loading, Ready
 
 ### Community 24 - "Community 24"
 Cohesion: 0.20
@@ -328,6 +325,10 @@ Nodes (8): ApkStagingState, ClassSortOrder, ClassTypeFilter, DexLoadState, Empty
 ### Community 25 - "Community 25"
 Cohesion: 0.12
 Nodes (5): DexEditSession, DexEditUndoEntry, DexEditSessionTest, DexEditSession, DexEditUndoEntry
+
+### Community 26 - "Community 26"
+Cohesion: 0.23
+Nodes (4): DeviceCodeResponse, GitHubArtifactItem, GitHubWorkflowRunSummary, GitHubApiClient
 
 ### Community 28 - "Community 28"
 Cohesion: 0.18
@@ -350,12 +351,12 @@ Cohesion: 0.27
 Nodes (6): BasicBlockInfo, BlockTerminatorKind, CfgEdge, CfgEdgeKind, ControlFlowGraphBuilder, MethodControlFlowGraph
 
 ### Community 33 - "Community 33"
-Cohesion: 0.21
-Nodes (13): BytecodeOverviewCard(), OverviewStatBox(), TopClassDefinitionRow(), BasicBlockCard(), CfgEdgePill(), DalvikCfgViewer(), PayloadDetailCard(), AnnotationBadgeRow() (+5 more)
+Cohesion: 0.19
+Nodes (14): BytecodeOverviewCard(), OverviewStatBox(), TopClassDefinitionRow(), BasicBlockCard(), CfgEdgePill(), DalvikCfgViewer(), PayloadDetailCard(), AnnotationBadgeRow() (+6 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.16
-Nodes (9): Denied, Expired, Failure, GitHubRepoInfo, Pending, ProgressByteRequestBody, SlowDown, Success (+1 more)
+Cohesion: 0.24
+Nodes (8): Denied, Expired, Failure, GitHubRepoInfo, Pending, SlowDown, Success, TokenPollResult
 
 ### Community 37 - "Community 37"
 Cohesion: 0.20
@@ -401,6 +402,10 @@ Nodes (29): code:powershell (# 1. Install Rust via winget), code:bash (cargo ndk
 Cohesion: 0.09
 Nodes (22): BufferWriter, build_package_tree(), ClassMethodSummary, DexClassDefFull, DexCodeMeta, DexFieldMeta, DexFile, DexFile<'a> (+14 more)
 
+### Community 65 - "Community 65"
+Cohesion: 0.21
+Nodes (5): DexHelper, LebReader, DexAnnotationEntry, DexDebugLineEntry, DexMethodStructuralMeta
+
 ### Community 66 - "Community 66"
 Cohesion: 0.08
 Nodes (18): CompiledFilter, evaluate_dex_methods_and_classes(), to_java_name(), generate_cmakelists(), CompiledFilter, DexFilterMatchResult, evaluate_dex_methods(), evaluate_dex_methods_and_classes() (+10 more)
@@ -414,7 +419,7 @@ Cohesion: 0.18
 Nodes (10): colors, editor.background, editor.foreground, editor.lineHighlightBackground, editor.selectionBackground, editorLineNumber.activeForeground, editorLineNumber.foreground, name (+2 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.16
+Cohesion: 0.18
 Nodes (11): ApkPreviewSheet(), PreviewReadyContent(), Dex2cApp(), Dex2cFloatingBottomBar(), Dex2cFloatingBottomBarItem(), Dex2cThemedSnackbarHost(), isErrorStatusMessage(), LocalizedActivityContext (+3 more)
 
 ### Community 71 - "Community 71"
@@ -438,12 +443,12 @@ Cohesion: 0.10
 Nodes (19): 1. Package & Class Repackaging Map, 1. Refactor `app/proguard-rules.pro`, 2. Breakdown Across the 259 `com.dex2c.studio` Classes, 2. Update `app/build.gradle.kts`, 3. Concrete Code Decompilation Preview, Authoritative Chinese Identifier Matrix, code:mermaid (flowchart LR), code:`carousel (+11 more)
 
 ### Community 79 - "Community 79"
-Cohesion: 0.22
-Nodes (13): DeviceAuthStateBody(), GitHubDeviceAuthCard(), InlineRepoSetupStatusRow(), RunStatusFilter, WorkflowRunsHistoryDialog(), CloudBuildScreen(), CloudStage, CloudStepCard() (+5 more)
+Cohesion: 0.29
+Nodes (11): DeviceAuthStateBody(), GitHubDeviceAuthCard(), InlineRepoSetupStatusRow(), CloudBuildScreen(), CloudStage, CloudStepCard(), formatFileSize(), RecentCloudRunsCard() (+3 more)
 
 ### Community 81 - "Community 81"
-Cohesion: 0.08
-Nodes (23): ApkDex, ApkDexEntry, CompositeMethodList, DalvikPayload, descriptorToSimpleName(), DexAnnotationEntry, DexCallSiteInfo, DexDebugLineEntry (+15 more)
+Cohesion: 0.16
+Nodes (9): ApkDexEntry, DexCallSiteInfo, DexFieldRef, DexHeaderInfo, DexHiddenApiSummary, DexMapItem, DexProto, DexParser (+1 more)
 
 ### Community 84 - "Community 84"
 Cohesion: 0.14
@@ -502,16 +507,20 @@ Cohesion: 0.29
 Nodes (3): CancellationToken, TaskHandle, test_cancellation_token()
 
 ### Community 99 - "Community 99"
-Cohesion: 0.47
-Nodes (5): FilterEditorSubMode, FilterRuleDialogSheet(), HomeFilterFocusCard(), InteractiveFilterRuleBuilderPanel(), StructuredRuleItemCard()
+Cohesion: 0.31
+Nodes (7): FilterEditorSubMode, FilterRuleDialogSheet(), HomeFilterFocusCard(), InteractiveFilterRuleBuilderPanel(), StructuredRuleItemCard(), buildAnnotatedFilterLine(), FilterRustEditor()
 
 ### Community 100 - "Community 100"
-Cohesion: 0.14
-Nodes (10): DexCatchHandler, DexCodeMeta, DexEncodedMethod, DexMethodRef, DexTryBlock, DexCatchHandler, DexEncodedMethod, DexMethodRef (+2 more)
+Cohesion: 0.16
+Nodes (9): DexCatchHandler, DexCodeMeta, DexEncodedMethod, DexMethodRef, DexTryBlock, DexCatchHandler, DexEncodedMethod, DexTryBlock (+1 more)
 
 ### Community 102 - "Community 102"
 Cohesion: 0.17
 Nodes (11): Adaptive Showcase (Pure Foreground Floating Over Continuous Background), Component 1: Foreground Drawables & Asset Generation, Component 2: Material You Dynamic Theming (Monochrome Vectors), Component 3: Adaptive Icon XML Descriptors in `mipmap-anydpi-v26/`, Component 4: Multi-Density Mipmap Suite (40 PNG files), Dex2C True Adaptive Icon Architecture & Implementation Plan, Goal Description, Proposed Changes (+3 more)
+
+### Community 105 - "Community 105"
+Cohesion: 0.09
+Nodes (22): Automated Tests, code:mermaid (flowchart TD), code:diff (-# Preserve Dex2C application Chinese classes, methods, mode), Component 1: Dictionary & ProGuard Rules, Component 2: Source Code Restoration (`app/src/main/java/com/dex2c/studio`), [DELETE] obfuscation-dictionary.txt, Goal Description, Implementation Plan: Remove Dictionaries & Restore Entire Codebase to English Version (+14 more)
 
 ### Community 106 - "Community 106"
 Cohesion: 0.22
@@ -520,10 +529,6 @@ Nodes (8): 1. Executive Summary, 2.1 Rust Workspace Test Suite (`cargo test --wo
 ### Community 108 - "Community 108"
 Cohesion: 0.42
 Nodes (4): format_access_flags(), format_field_access_flags(), format_method_access_flags(), SmaliDisassembler
-
-### Community 109 - "Community 109"
-Cohesion: 0.07
-Nodes (14): Denied, Expired, Failure, GitHubApiClient, GitHubRepoInfo, Pending, ProgressByteRequestBody, SlowDown (+6 more)
 
 ### Community 110 - "Community 110"
 Cohesion: 0.25
@@ -534,8 +539,8 @@ Cohesion: 0.17
 Nodes (7): DexStringsExplorerTab(), DexStringsExplorerTab(), SmaliClassScreen(), ExampleRobolectricTest, Dex2cTheme(), Dex2cTheme(), SafetyInterlockRobolectricTest
 
 ### Community 114 - "Community 114"
-Cohesion: 0.40
-Nodes (4): rememberWindowAdaptiveInfo(), WindowAdaptiveInfo, WindowHeightSizeClass, WindowWidthSizeClass
+Cohesion: 0.18
+Nodes (16): buildAnnotatedFilterLine(), FilterRustEditor(), FilterEditorSubMode, InteractiveFilterRuleBuilderPanel(), CodehasanEngineIdentityCard(), ConfigSectionCard(), FilterRulesCard(), JniBindingCard() (+8 more)
 
 ### Community 115 - "Community 115"
 Cohesion: 0.31
@@ -543,7 +548,7 @@ Nodes (3): ClangLocator, ClangSyntaxValidationTest, ClangToolchain
 
 ### Community 116 - "Community 116"
 Cohesion: 0.18
-Nodes (8): ClassViewerTabBar(), DalvikInstructionViewer(), highlightCLine(), highlightDalvikOperands(), SyntaxCodeViewer(), WorkflowLogDialog(), MethodDetailScreen(), DccConfigCodec
+Nodes (8): DalvikInstructionViewer(), highlightCLine(), highlightDalvikOperands(), SyntaxCodeViewer(), WorkflowLogDialog(), RunStatusFilter, WorkflowRunsHistoryDialog(), DccConfigCodec
 
 ### Community 117 - "Community 117"
 Cohesion: 0.21
@@ -562,8 +567,8 @@ Cohesion: 0.20
 Nodes (4): current_time_ms(), HistoryManager, UndoDelta, UndoItem
 
 ### Community 121 - "Community 121"
-Cohesion: 0.24
-Nodes (3): RecentBinaryItem, , RecentFilesStore
+Cohesion: 0.18
+Nodes (4): CloudBuildMonitorScheduler, CloudBuildMonitorWorker, CloudPreferences, Keys
 
 ### Community 122 - "Community 122"
 Cohesion: 0.33
@@ -582,8 +587,8 @@ Cohesion: 0.60
 Nodes (5): BuildMonitorCard(), formatArtifactBytes(), MonitorGaugeBlock(), StepProgressList(), TransferProgressPanel()
 
 ### Community 136 - "Community 136"
-Cohesion: 0.27
-Nodes (4): D2cn, D2cnBinaryDecoder, D2cnHeader, DexEncodedField
+Cohesion: 0.09
+Nodes (20): D2cn, D2cnBinaryDecoder, D2cnHeader, ApkDex, buildBytecodeOverviewSummary(), BytecodeOverviewSummary, ClassDefinitionSummary, CompositeMethodList (+12 more)
 
 ### Community 138 - "Community 138"
 Cohesion: 0.20
@@ -606,8 +611,8 @@ Cohesion: 0.60
 Nodes (5): extract_badge(), extract_glyph(), main(), make_round_mask(), make_squircle_mask()
 
 ### Community 149 - "Community 149"
-Cohesion: 0.09
-Nodes (20): ApkDex, CompositeMethodList, DalvikInstruction, DalvikPayload, DexCallSiteInfo, DexCodeMeta, DexEncodedField, DexFieldRef (+12 more)
+Cohesion: 0.08
+Nodes (24): ApkDex, CompositeMethodList, DalvikInstruction, DalvikPayload, DexCallSiteInfo, DexClassInfo, DexCodeMeta, DexEncodedField (+16 more)
 
 ### Community 150 - "Community 150"
 Cohesion: 0.09
@@ -618,8 +623,8 @@ Cohesion: 0.10
 Nodes (7): Phase1DexRemediationTest, CountingOutputStream, DexCompileResult, Error, SmaliDexCompiler, Success, MemoryDataStore
 
 ### Community 153 - "Community 153"
-Cohesion: 0.10
-Nodes (21): SelectedClassesFilterDialog(), BatchActionBar(), ClassTypeBadge(), CompactClassRow(), InlineBadge(), PackageFolderRow(), QuickRuleBadgeButton(), ActiveFilterPill() (+13 more)
+Cohesion: 0.06
+Nodes (31): buildAnnotatedLine(), RustUndoController, SmaliRustEditor(), SelectedClassesFilterDialog(), BatchActionBar(), ClassTypeBadge(), CompactClassRow(), InlineBadge() (+23 more)
 
 ### Community 154 - "Community 154"
 Cohesion: 0.46
@@ -638,8 +643,8 @@ Cohesion: 0.21
 Nodes (5): DexAnnotationEntry, DexDebugLineEntry, DexMethodStructuralMeta, DexHelper, LebReader
 
 ### Community 160 - "Community 160"
-Cohesion: 0.20
-Nodes (15): AnnotationBadgeRow(), DexMethodMetaViewer(), HeaderKeyValueRow(), MetricTile(), TagPill(), RunStatusFilter, WorkflowRunsHistoryDialog(), CloudBuildScreen() (+7 more)
+Cohesion: 0.30
+Nodes (10): RunStatusFilter, WorkflowRunsHistoryDialog(), CloudBuildScreen(), CloudStage, CloudStepCard(), formatFileSize(), RecentCloudRunsCard(), SetupAuthCard() (+2 more)
 
 ### Community 161 - "Community 161"
 Cohesion: 0.30
@@ -651,7 +656,7 @@ Nodes (11): ApkPreviewSheet(), PreviewReadyContent(), WorkflowLogDialog(), Dex2c
 
 ### Community 163 - "Community 163"
 Cohesion: 0.17
-Nodes (13): ClassPickerSheet(), highlightSmaliLine(), SmaliSearchOptions, SmaliLabelJumpSheet(), SymbolQuickBar(), HighContrastLegendDot(), SmaliClassScreen(), SmaliInteractiveEditorPane() (+5 more)
+Nodes (11): 1. 100% Chinese Kotlin Source Filenames (82 Files Renamed via `git mv`), 1. English Source File Audit, 2. Architecture & Symbol Preservation, 2. Unit Tests, 3. Release APK Build, 4. Bytecode & DEX `SourceFile` Inspection, 5. Knowledge Graph Synchronization, Changes Made (+3 more)
 
 ### Community 164 - "Community 164"
 Cohesion: 0.24
@@ -670,24 +675,20 @@ Cohesion: 0.12
 Nodes (15): 1. Transpiler Engine (`app/src/main/java/com/dex2c/studio/transpiler/`), 2. APK Inspection & Management (`app/src/main/java/com/dex2c/studio/apk/`), 3. Cloud CI & GitHub Engine (`app/src/main/java/com/dex2c/studio/cloud/`), 4. Data Stores, Preferences & Repositories (`app/src/main/java/com/dex2c/studio/data/`), 5. DEX, Smali & Bytecode (`app/src/main/java/com/dex2c/studio/dex/`), 6. Native Rust JNI Bridges (`app/src/main/java/com/dex2c/studio/nativeengine/`), 7. UI Screens (`app/src/main/java/com/dex2c/studio/ui/screens/`), 8. UI Components (`app/src/main/java/com/dex2c/studio/ui/components/`) (+7 more)
 
 ### Community 169 - "Community 169"
-Cohesion: 0.18
-Nodes (7): buildAnnotatedFilterLine(), FilterRustEditor(), SmaliSyntaxCodeViewer(), SmaliSoraEditor(), SoraUndoController, resolveSmaliSyntaxPalette(), SmaliSyntaxHighlightingTest
+Cohesion: 0.24
+Nodes (8): Denied, Expired, Failure, GitHubRepoInfo, Pending, SlowDown, Success, TokenPollResult
 
 ### Community 171 - "Community 171"
 Cohesion: 0.14
 Nodes (9): ApkStagingState, ClassSortOrder, ClassTypeFilter, CloudApkChoice, DexLoadState, Empty, MethodInspectionState, MethodScopeFilter (+1 more)
 
 ### Community 172 - "Community 172"
-Cohesion: 0.26
-Nodes (9): DalvikInstructionViewer(), highlightCLine(), highlightDalvikOperands(), SyntaxCodeViewer(), BasicBlockCard(), CfgEdgePill(), DalvikCfgViewer(), PayloadDetailCard() (+1 more)
+Cohesion: 0.25
+Nodes (10): AnnotationBadgeRow(), DexMethodMetaViewer(), HeaderKeyValueRow(), MetricTile(), TagPill(), BasicBlockCard(), CfgEdgePill(), DalvikCfgViewer() (+2 more)
 
 ### Community 173 - "Community 173"
 Cohesion: 0.27
 Nodes (11): ChecklistReviewRow(), CloudStepTimelineRow(), CodePeekToggleChip(), OnboardingCloudStepsCard(), OnboardingDalvikCppPeekCard(), OnboardingLiveThemePreviewCard(), OnboardingPipelineFlowCard(), OnboardingSetupChecklistCard() (+3 more)
-
-### Community 174 - "Community 174"
-Cohesion: 0.20
-Nodes (5): buildBytecodeOverviewSummary(), BytecodeOverviewSummary, ClassDefinitionSummary, inferDominantDexPackageName(), CloudApkChoice
 
 ### Community 175 - "Community 175"
 Cohesion: 0.27
@@ -706,8 +707,8 @@ Cohesion: 0.25
 Nodes (5): CloudDeepLinkTarget, CloudLiveNotificationContent, CloudLivePhase, CloudNotificationContent, NotificationThemeColors
 
 ### Community 184 - "Community 184"
-Cohesion: 0.36
-Nodes (4): LabelJumpTarget, SmaliCompletionSuggestion, SmaliEditorEngine, SmaliReplaceResult
+Cohesion: 0.40
+Nodes (4): BuildHubScreen(), BuildHubTab, formatOutputBytes(), OutputExportScreen()
 
 ### Community 185 - "Community 185"
 Cohesion: 0.36
@@ -717,17 +718,9 @@ Nodes (5): WorkflowDocumentationRepository, WorkflowGuideDialog(), WorkflowSecti
 Cohesion: 0.29
 Nodes (6): , AppScopeFilter, BinarySourceType, PickerSortOrder, PickerTab, RecentSourceFilter
 
-### Community 188 - "Community 188"
-Cohesion: 0.48
-Nodes (3): buildAnnotatedLine(), RustUndoController, SmaliRustEditor()
-
 ### Community 189 - "Community 189"
 Cohesion: 0.48
 Nodes (6): sectionBadge(), sectionSummary(), SettingsHubList(), SettingsHubRow(), SettingsScreen(), SettingsSection
-
-### Community 190 - "Community 190"
-Cohesion: 0.33
-Nodes (4): rememberWindowAdaptiveInfo(), WindowAdaptiveInfo, WindowHeightSizeClass, WindowWidthSizeClass
 
 ### Community 191 - "Community 191"
 Cohesion: 0.60
@@ -741,25 +734,33 @@ Nodes (3): DeviceAuthStateBody(), GitHubDeviceAuthCard(), InlineRepoSetupStatusR
 Cohesion: 0.83
 Nodes (3): OnboardingBalancedFooterLayout(), OnboardingHorizontalPager(), OnboardingPagerDots()
 
+### Community 203 - "Community 203"
+Cohesion: 0.53
+Nodes (5): delete_run(), fetch_workflow_runs(), get_token(), main(), Utility script to delete all workflow runs in userio12/Dex2c-Android. Supports r
+
+### Community 217 - "Community 217"
+Cohesion: 0.60
+Nodes (4): DalvikInstructionViewer(), highlightCLine(), highlightDalvikOperands(), SyntaxCodeViewer()
+
 ## Knowledge Gaps
-- **520 isolated node(s):** `name`, `description`, `requestFramePermissions`, `majorCapabilities`, `lineComment` (+515 more)
+- **544 isolated node(s):** `name`, `description`, `requestFramePermissions`, `majorCapabilities`, `lineComment` (+539 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **69 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **70 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Dex2cViewModel` connect `Community 1` to `Community 5`, `Community 39`, `Community 73`, `Community 11`, `Community 45`, `Community 174`, `Community 46`, `Community 112`, `Community 23`, `Community 24`, `Community 27`?**
-  _High betweenness centrality (0.093) - this node is a cross-community bridge._
-- **Why does `TranspilerConfig` connect `Community 19` to `Community 64`, `Community 100`, `Community 5`, `Community 13`, `Community 46`, `Community 115`, `Community 154`?**
-  _High betweenness centrality (0.072) - this node is a cross-community bridge._
+- **Why does `Dex2cViewModel` connect `Community 1` to `Community 5`, `Community 39`, `Community 136`, `Community 73`, `Community 11`, `Community 45`, `Community 174`, `Community 46`, `Community 112`, `Community 23`, `Community 24`, `Community 27`?**
+  _High betweenness centrality (0.080) - this node is a cross-community bridge._
 - **Why does `Dex2cViewModel` connect `Community 18` to `Community 193`, `Community 194`, `Community 161`, `Community 164`, `Community 168`, `Community 171`, `Community 112`, `Community 181`, `Community 182`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+- **Why does `TranspilerConfig` connect `Community 19` to `Community 64`, `Community 100`, `Community 5`, `Community 46`, `Community 115`, `Community 148`, `Community 154`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `Dex2cViewModel` (e.g. with `.`github sign in completion automatically initializes private repo and commits workflow despite transient dns error`()` and `.`build monitor survives transient UnknownHostException during active poll and recovers to completed`()`) actually correct?**
   _`Dex2cViewModel` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Dex2cViewModel` (e.g. with `.`github sign in completion automatically initializes private repo and commits workflow despite transient dns error`()` and `.`build monitor survives transient UnknownHostException during active poll and recovers to completed`()`) actually correct?**
   _`Dex2cViewModel` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 46 inferred relationships involving `TagPill()` (e.g. with `StoragePickerTab()` and `InstalledAppRow()`) actually correct?**
+- **Are the 46 inferred relationships involving `TagPill()` (e.g. with `StoragePickerTab()` and `RecentBinariesTab()`) actually correct?**
   _`TagPill()` has 46 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 36 inferred relationships involving `TagPill()` (e.g. with `StoragePickerTab()` and `RecentBinariesTab()`) actually correct?**
   _`TagPill()` has 36 INFERRED edges - model-reasoned connections that need verification._

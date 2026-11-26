@@ -20,13 +20,10 @@ import okio.ByteString.Companion.toByteString
  * Interface for encrypting sensitive credentials (e.g. GitHub OAuth personal access tokens)
  * before persisting them to disk.
  */
-interface 令牌加密器 {
-  fun 加密(plainText: String): String = encrypt(plainText)
-  fun 解密(cipherText: String): String = decrypt(cipherText)
+interface TokenEncryptor {
   fun encrypt(plainText: String): String
   fun decrypt(cipherText: String): String
 }
-typealias TokenEncryptor = 令牌加密器
 
 /**
  * Production implementation backed by the hardware-backed AndroidKeyStore using AES-256 in GCM mode.

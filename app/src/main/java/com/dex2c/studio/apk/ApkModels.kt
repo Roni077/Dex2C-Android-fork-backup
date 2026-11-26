@@ -34,7 +34,7 @@ enum class RecentSourceFilter(val label: String) {
   APPS("Installed"),
 }
 
-data class 已安装应用项(
+data class InstalledAppItem(
   val packageName: String,
   val appLabel: String,
   val versionName: String,
@@ -47,9 +47,8 @@ data class 已安装应用项(
   val isSystemApp: Boolean = false,
   val lastUpdateTimeMillis: Long = 0L,
 )
-typealias InstalledAppItem = 已安装应用项
 
-data class 最近二进制项(
+data class RecentBinaryItem(
   val id: String,
   val displayName: String,
   val sourceType: BinarySourceType,
@@ -58,9 +57,8 @@ data class 最近二进制项(
   val byteSize: Long,
   val lastOpenedMillis: Long,
 )
-typealias RecentBinaryItem = 最近二进制项
 
-data class Apk暂存预览(
+data class ApkStagingPreview(
   val sourceLabel: String,
   val sourceRef: String,
   val sourceType: BinarySourceType,
@@ -77,4 +75,3 @@ data class Apk暂存预览(
   val isSingleDex: Boolean,
   val iconBitmap: Bitmap?,
 )
-typealias ApkStagingPreview = Apk暂存预览

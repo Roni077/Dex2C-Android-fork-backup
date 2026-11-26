@@ -15,11 +15,7 @@ import org.json.JSONObject
 
 private val Context.recentFilesDataStore by preferencesDataStore(name = "dex2c_recent_files")
 
-class 最近文件存储(private val context: Context) {
-
-  suspend fun 记录打开(item: RecentBinaryItem) = recordOpened(item)
-  suspend fun 移除项(id: String) = removeItem(id)
-  suspend fun 清空最近列表() = clearAll()
+class RecentFilesStore(private val context: Context) {
 
   private val recentKey = stringPreferencesKey("recent_binaries_json")
   private val lastBytecodeSummaryKey = stringPreferencesKey("last_bytecode_summary_json")
@@ -183,6 +179,4 @@ class 最近文件存储(private val context: Context) {
       .toString()
   }
 }
-
-typealias RecentFilesStore = 最近文件存储
 

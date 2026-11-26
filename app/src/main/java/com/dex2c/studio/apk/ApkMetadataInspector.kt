@@ -18,13 +18,7 @@ import java.nio.ByteOrder
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
-object Apk元数据检查器 {
-
-  fun 检查Uri(context: Context, uri: Uri, displayName: String): ApkStagingPreview =
-    inspectFromUri(context, uri, displayName)
-
-  fun 检查已安装应用(context: Context, app: 已安装应用项): ApkStagingPreview =
-    inspectFromInstalledApp(context, app)
+object ApkMetadataInspector {
 
   fun inspectFromUri(context: Context, uri: Uri, displayName: String): ApkStagingPreview {
     val totalSize = queryUriByteSize(context, uri)
@@ -647,5 +641,3 @@ object Apk元数据检查器 {
     }
   }
 }
-
-typealias ApkMetadataInspector = Apk元数据检查器

@@ -26,9 +26,12 @@
 }
 -keep class com.dex2c.studio.nativeengine.** { *; }
 
-# Preserve Dex2C application Chinese classes, methods, models, and data stores natively
--keep class com.dex2c.studio.** { *; }
--keepclassmembers class com.dex2c.studio.** { *; }
+# Preserve Dex2C application models, configurations, data stores and filters
+-keep class com.dex2c.studio.apk.** { *; }
+-keep class com.dex2c.studio.cloud.** { *; }
+-keep class com.dex2c.studio.data.** { *; }
+-keep class com.dex2c.studio.dex.** { *; }
+-keep class com.dex2c.studio.transpiler.** { *; }
 
 # Preserve standard Enum methods used across transpiler/cloud options
 -keepclassmembers enum * {
