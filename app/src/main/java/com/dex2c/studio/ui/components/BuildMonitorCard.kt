@@ -1,10 +1,12 @@
 package com.dex2c.studio.ui.components
 
+import android.graphics.Bitmap
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Download
@@ -52,6 +55,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -83,6 +88,7 @@ fun BuildMonitorCard(
   modifier: Modifier = Modifier,
   onRetryError: (() -> Unit)? = null,
   onInspectLogs: ((runId: Long) -> Unit)? = null,
+  appIcon: Bitmap? = null,
 ) {
   var tickerNowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
@@ -200,6 +206,7 @@ fun BuildMonitorCard(
             onOpenBrowserUrl = onOpenBrowserUrl,
             showCircularRing = false,
             iconOverride = Icons.Rounded.CloudUpload,
+            appIcon = appIcon,
           )
           Spacer(Modifier.height(10.dp))
           TransferProgressPanel(
@@ -257,6 +264,7 @@ fun BuildMonitorCard(
             onInspectLogs = snap?.runId?.let { rId -> { onInspectLogs?.invoke(rId) } },
             showCircularRing = false,
             iconOverride = Icons.Rounded.Download,
+            appIcon = appIcon,
           )
           Spacer(Modifier.height(10.dp))
           TransferProgressPanel(
@@ -271,22 +279,23 @@ fun BuildMonitorCard(
           )
           if (snap != null && snap.steps.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
-            StepProgressList(steps = snap.steps)
+            StepProgressList(steps = formatDisplaySteps(snap.steps, isSuccess = true))
           }
         }
 
         is CloudBuildRunState.Polling -> {
-          val stepProgress = CloudTimeUtil.computeStepProgress(cloudRunState.steps)
-          val doneSteps = cloudRunState.steps.count { it.status == "completed" }
-          val totalSteps = cloudRunState.steps.size
+          val displaySteps = formatDisplaySteps(cloudRunState.steps, isSuccess = false)
+          val stepProgress = CloudTimeUtil.computeStepProgress(displaySteps)
+          val doneSteps = displaySteps.count { it.status == "completed" }
+          val totalSteps = displaySteps.size
           val pct = stepProgress?.let { "${(it * 100).toInt()}%" } ?: "…"
           val sub =
             if (totalSteps > 0) "$doneSteps/$totalSteps" else cloudRunState.status.uppercase(Locale.US)
           val durationMs =
             cloudRunState.startedAtMillis?.let { (tickerNowMillis - it).coerceAtLeast(0L) } ?: 0L
           val activeStep =
-            cloudRunState.steps.firstOrNull { it.status == "in_progress" }?.name
-              ?: cloudRunState.steps.lastOrNull { it.status == "completed" }?.name
+            displaySteps.firstOrNull { it.status == "in_progress" }?.name
+              ?: displaySteps.lastOrNull { it.status == "completed" }?.name
               ?: "Waiting for Ubuntu runner…"
           val isReconnecting = !cloudRunState.reconnectingNote.isNullOrBlank()
 
@@ -305,23 +314,24 @@ fun BuildMonitorCard(
             onInspectLogs = { onInspectLogs?.invoke(cloudRunState.runId) },
           )
 
-          if (cloudRunState.steps.isNotEmpty()) {
+          if (displaySteps.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
-            StepProgressList(steps = cloudRunState.steps)
+            StepProgressList(steps = displaySteps)
           }
         }
 
         is CloudBuildRunState.Completed -> {
           val isSuccess = cloudRunState.conclusion == "success"
+          val displaySteps = formatDisplaySteps(cloudRunState.steps, isSuccess = isSuccess)
           val durationMs =
             if (cloudRunState.startedAtMillis != null && cloudRunState.completedAtMillis != null) {
               (cloudRunState.completedAtMillis - cloudRunState.startedAtMillis).coerceAtLeast(0L)
             } else {
               0L
             }
-          val doneSteps = cloudRunState.steps.count { it.status == "completed" }
-          val totalSteps = cloudRunState.steps.size
-          val ratio = if (isSuccess) 1f else (CloudTimeUtil.computeStepProgress(cloudRunState.steps) ?: 1f)
+          val doneSteps = displaySteps.count { it.status == "completed" }
+          val totalSteps = displaySteps.size
+          val ratio = if (isSuccess) 1f else (CloudTimeUtil.computeStepProgress(displaySteps) ?: 1f)
 
           MonitorGaugeBlock(
             progress = ratio,
@@ -340,9 +350,9 @@ fun BuildMonitorCard(
             onInspectLogs = if (!isSuccess) { { onInspectLogs?.invoke(cloudRunState.runId) } } else null,
           )
 
-          if (cloudRunState.steps.isNotEmpty()) {
+          if (displaySteps.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
-            StepProgressList(steps = cloudRunState.steps)
+            StepProgressList(steps = displaySteps)
           }
 
           Spacer(Modifier.height(12.dp))
@@ -374,11 +384,19 @@ fun BuildMonitorCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                   ) {
-                    Icon(
-                      Icons.Rounded.CloudUpload,
-                      contentDescription = null,
-                      tint = if (isLogOnlyArtifact) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                    )
+                    if (!isLogOnlyArtifact && appIcon != null) {
+                      Image(
+                        bitmap = appIcon.asImageBitmap(),
+                        contentDescription = "Target App Icon",
+                        modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)),
+                      )
+                    } else {
+                      Icon(
+                        if (!isLogOnlyArtifact) Icons.Rounded.Android else Icons.Rounded.CloudUpload,
+                        contentDescription = null,
+                        tint = if (isLogOnlyArtifact) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                      )
+                    }
                     Column(modifier = Modifier.weight(1f)) {
                       Text(
                         text = artifact.name,
@@ -402,7 +420,15 @@ fun BuildMonitorCard(
                       shape = RoundedCornerShape(20.dp),
                       modifier = Modifier.minimumInteractiveComponentSize().testTag("cloud_save_apk_btn"),
                     ) {
-                      Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                      if (!isLogOnlyArtifact && appIcon != null) {
+                        Image(
+                          bitmap = appIcon.asImageBitmap(),
+                          contentDescription = null,
+                          modifier = Modifier.size(16.dp).clip(RoundedCornerShape(4.dp)),
+                        )
+                      } else {
+                        Icon(Icons.Rounded.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                      }
                       Spacer(Modifier.width(6.dp))
                       Text(
                         stringResource(
@@ -466,6 +492,7 @@ private fun MonitorGaugeBlock(
   onInspectLogs: (() -> Unit)? = null,
   showCircularRing: Boolean = true,
   iconOverride: ImageVector? = null,
+  appIcon: Bitmap? = null,
 ) {
   val animatedProgress by
     animateFloatAsState(
@@ -532,8 +559,14 @@ private fun MonitorGaugeBlock(
             color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f),
             modifier = Modifier.size(76.dp),
           ) {
-            if (iconOverride != null) {
-              Box(contentAlignment = Alignment.Center) {
+            Box(contentAlignment = Alignment.Center) {
+              if (appIcon != null) {
+                Image(
+                  bitmap = appIcon.asImageBitmap(),
+                  contentDescription = "Target App Icon",
+                  modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)),
+                )
+              } else if (iconOverride != null) {
                 Icon(
                   imageVector = iconOverride,
                   contentDescription = null,
@@ -631,6 +664,26 @@ private fun MonitorGaugeBlock(
       }
     }
   }
+}
+
+fun formatDisplaySteps(steps: List<GitHubWorkflowStep>, isSuccess: Boolean): List<GitHubWorkflowStep> {
+  if (steps.isEmpty()) return emptyList()
+  val logStepIndex = steps.indexOfFirst { it.name.contains("upload dex2c build log", ignoreCase = true) }
+  if (logStepIndex < 0) return steps
+
+  if (isSuccess) {
+    // If build succeeded, hide the skipped build log upload step completely
+    return steps.filterIndexed { idx, _ -> idx != logStepIndex }
+  }
+
+  // If build failed, move "Upload Dex2C Build Log" to the very end of the list
+  if (logStepIndex < steps.lastIndex) {
+    val mutable = steps.toMutableList()
+    val logStep = mutable.removeAt(logStepIndex)
+    mutable.add(logStep)
+    return mutable
+  }
+  return steps
 }
 
 @Composable

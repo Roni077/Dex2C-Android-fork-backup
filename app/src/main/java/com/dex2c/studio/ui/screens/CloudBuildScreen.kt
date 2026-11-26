@@ -1,5 +1,6 @@
 package com.dex2c.studio.ui.screens
 
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -124,6 +125,7 @@ fun CloudBuildScreen(
   modifier: Modifier = Modifier,
   onRetryMonitor: (() -> Unit)? = null,
   onInspectLogs: ((Long) -> Unit)? = null,
+  appIcon: Bitmap? = null,
 ) {
   var lastAutoOpenedUserCode by rememberSaveable { mutableStateOf<String?>(null) }
   var activeStage by rememberSaveable {
@@ -560,6 +562,7 @@ fun CloudBuildScreen(
                     onOpenBrowserUrl = onOpenBrowserUrl,
                     onDownloadArtifact = onDownloadArtifact,
                     onInspectLogs = onInspectLogs,
+                    appIcon = appIcon,
                     modifier = Modifier.weight(1.15f),
                   )
                   RecentCloudRunsCard(
@@ -587,6 +590,7 @@ fun CloudBuildScreen(
                     onOpenBrowserUrl = onOpenBrowserUrl,
                     onDownloadArtifact = onDownloadArtifact,
                     onInspectLogs = onInspectLogs,
+                    appIcon = appIcon,
                   )
                   RecentCloudRunsCard(
                     cloudSettings = cloudSettings,

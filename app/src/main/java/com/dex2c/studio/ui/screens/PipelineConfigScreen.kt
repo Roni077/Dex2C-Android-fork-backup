@@ -121,6 +121,7 @@ fun PipelineConfigScreen(
   modifier: Modifier = Modifier,
   selectedMethodCount: Int = 0,
   onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit = {},
+  targetPackageName: String? = null,
 ) {
   var activeCategory by rememberSaveable { mutableStateOf(PipelineCategory.LOADER) }
 
@@ -274,6 +275,7 @@ fun PipelineConfigScreen(
                 fillAvailableHeight = true,
                 selectedMethodCount = selectedMethodCount,
                 onSyncSelectionToWildcardRules = onSyncSelectionToWildcardRules,
+                targetPackageName = targetPackageName,
               )
             }
           }
@@ -875,6 +877,7 @@ private fun FilterRulesCard(
   fillAvailableHeight: Boolean,
   selectedMethodCount: Int,
   onSyncSelectionToWildcardRules: (isBlacklist: Boolean) -> Unit,
+  targetPackageName: String? = null,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -898,6 +901,7 @@ private fun FilterRulesCard(
       fillAvailableHeight = fillAvailableHeight,
       showModuleNameField = true,
       onImportFilterTxt = onImportFilterTxt,
+      targetPackageName = targetPackageName,
       modifier =
         Modifier
           .padding(14.dp)

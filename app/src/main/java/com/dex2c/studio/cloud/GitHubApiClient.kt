@@ -366,12 +366,30 @@ class GitHubApiClient(
         if (!location.isNullOrBlank()) {
           val redirectReq = Request.Builder().url(location).get().build()
           httpClient.newCall(redirectReq).execute().use { rResp ->
-            return rResp.body?.string().orEmpty()
+            if (rResp.isSuccessful) {
+              val content = rResp.body?.string().orEmpty()
+              if (!isAwsS3XmlError(content)) {
+                return content
+              }
+            }
+            return ""
           }
         }
       }
-      return resp.body?.string().orEmpty()
+      if (resp.isSuccessful) {
+        val content = resp.body?.string().orEmpty()
+        if (!isAwsS3XmlError(content)) {
+          return content
+        }
+      }
+      return ""
     }
+  }
+
+  fun isAwsS3XmlError(content: String): Boolean {
+    val trimmed = content.trim()
+    return (trimmed.startsWith("<?xml") || trimmed.startsWith("<Error")) &&
+      (trimmed.contains("<Error>") || trimmed.contains("<Code>InvalidArgument</Code>") || trimmed.contains("Only one auth mechanism allowed"))
   }
 
   fun downloadRunLogsArchive(
@@ -404,6 +422,10 @@ class GitHubApiClient(
 
   fun extractPlainTextFromLogZip(zipBytes: ByteArray): String {
     if (zipBytes.isEmpty()) return ""
+    if (zipBytes.size < 2048) {
+      val snippet = runCatching { zipBytes.decodeToString() }.getOrDefault("")
+      if (isAwsS3XmlError(snippet)) return ""
+    }
     val entries = mutableListOf<Pair<String, String>>()
     runCatching {
       ZipInputStream(ByteArrayInputStream(zipBytes)).use { zis ->

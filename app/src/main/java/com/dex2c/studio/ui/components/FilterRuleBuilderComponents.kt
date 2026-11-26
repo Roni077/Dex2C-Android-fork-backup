@@ -27,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.AutoFixHigh
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Check
@@ -102,6 +103,7 @@ fun InteractiveFilterRuleBuilderPanel(
   onImportFilterTxt: (() -> Unit)? = null,
   onlyMatchingExplorerFilter: Boolean? = null,
   onToggleMatchingExplorerFilter: (() -> Unit)? = null,
+  targetPackageName: String? = null,
 ) {
   val lineCount = remember(config.filterRulesText) {
     config.filterRulesText.lineSequence().count { it.trim().isNotEmpty() && !it.trim().startsWith("#") }
@@ -197,29 +199,35 @@ fun InteractiveFilterRuleBuilderPanel(
       horizontalArrangement = Arrangement.spacedBy(6.dp),
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      APP_PACKAGE_PRESETS.forEach { preset ->
-        val isActive = config.filterRulesText.contains(preset.ruleLine)
-        FilterChip(
-          selected = isActive,
-          onClick = {
-            onUpdateConfig { cfg ->
-              cfg.copy(filterRulesText = FilterRuleEngine.toggleRuleLine(cfg.filterRulesText, preset.ruleLine))
-            }
-          },
-          leadingIcon = {
-            Icon(Icons.Rounded.AutoFixHigh, contentDescription = null, modifier = Modifier.size(14.dp))
-          },
-          label = {
-            Text(preset.label, style = MaterialTheme.typography.labelSmall)
-          },
-          modifier = Modifier.testTag("preset_${preset.id}"),
-        )
-      }
+      val effectiveTargetPkg = targetPackageName?.takeIf { it.isNotBlank() } ?: "com.dex2c.studio"
+      val dynamicRuleLine = "^L${effectiveTargetPkg.replace('.', '/')}/.*"
+      val isTargetActive = config.filterRulesText.contains(dynamicRuleLine)
+
+      FilterChip(
+        selected = isTargetActive,
+        onClick = {
+          onUpdateConfig { cfg ->
+            cfg.copy(filterRulesText = FilterRuleEngine.toggleRuleLine(cfg.filterRulesText, dynamicRuleLine))
+          }
+        },
+        leadingIcon = {
+          Icon(
+            imageVector = Icons.Rounded.Android,
+            contentDescription = "Target Android Package",
+            modifier = Modifier.size(15.dp),
+          )
+        },
+        label = {
+          Text("Target: $effectiveTargetPkg.*", style = MaterialTheme.typography.labelSmall)
+        },
+        modifier = Modifier.testTag("preset_target_package"),
+      )
     }
 
     FilterRustEditor(
       filterText = config.filterRulesText,
       onFilterTextChanged = { v -> onUpdateConfig { it.copy(filterRulesText = v) } },
+      wordWrap = true,
       modifier =
         Modifier
           .fillMaxWidth()

@@ -830,26 +830,6 @@ fun ClassesScreen(
             }
             showSelectionCheckboxes = false
           },
-          onSelectAll = {
-            if (onSelectAllClasses != null) {
-              onSelectAllClasses(classes)
-            } else {
-              onTogglePackageSelection(classes)
-            }
-          },
-          onDeselectAll = {
-            if (onDeselectAllClasses != null) {
-              onDeselectAllClasses(classes)
-            } else {
-              onTogglePackageSelection(emptyList())
-            }
-            showSelectionCheckboxes = false
-          },
-          onInvertSelection = {
-            if (onInvertClassSelection != null) {
-              onInvertClassSelection(classes)
-            }
-          },
           onDone = { showSelectionCheckboxes = false },
         )
       }

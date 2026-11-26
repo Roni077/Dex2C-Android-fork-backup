@@ -591,36 +591,6 @@ fun BatchActionBar(
           color = MaterialTheme.colorScheme.onSurface,
         )
 
-        if (onSelectAll != null) {
-          QuickRuleBadgeButton(
-            text = "Select All",
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            onClick = onSelectAll,
-            testTag = "batch_select_all_btn",
-          )
-        }
-
-        if (onDeselectAll != null) {
-          QuickRuleBadgeButton(
-            text = "Deselect",
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            onClick = onDeselectAll,
-            testTag = "batch_deselect_all_btn",
-          )
-        }
-
-        if (onInvertSelection != null) {
-          QuickRuleBadgeButton(
-            text = "Invert",
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-            onClick = onInvertSelection,
-            testTag = "batch_invert_selection_btn",
-          )
-        }
-
         QuickRuleBadgeButton(
           text = "Add to Filter",
           containerColor = MaterialTheme.colorScheme.primary,

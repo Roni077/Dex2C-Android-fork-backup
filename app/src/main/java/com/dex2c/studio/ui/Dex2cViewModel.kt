@@ -3,6 +3,8 @@ package com.dex2c.studio.ui
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.lifecycle.AndroidViewModel
@@ -106,6 +108,7 @@ sealed interface DexLoadState {
     val parsedDex: DexParsedFile,
     val loadedDexes: Map<String, DexParsedFile> = mapOf(parsedDex.entryName to parsedDex),
     val apkPackageName: String? = null,
+    val iconBitmap: Bitmap? = null,
   ) : DexLoadState {
     val mergedClasses: List<DexClassInfo> =
       if (loadedDexes.size <= 1) parsedDex.classes
@@ -245,6 +248,7 @@ data class CloudApkChoice(
   val byteSize: Long,
   val uri: Uri? = null,
   val filePath: String? = null,
+  val iconBitmap: Bitmap? = null,
 )
 
 class Dex2cViewModel @JvmOverloads constructor(
@@ -761,6 +765,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           byteSize = preview.totalByteSize,
           uri = activeSourceApkUri,
           filePath = activeSourceApkFilePath,
+          iconBitmap = preview.iconBitmap,
         )
     } else {
       activeSourceApkUri = null
@@ -798,7 +803,7 @@ class Dex2cViewModel @JvmOverloads constructor(
         SmaliClassDisassembler.trimCache(maxEntries = 1)
         val dexMap = linkedMapOf<String, DexParsedFile>()
         parsedList.forEach { dexMap[it.entryName] = it }
-        applyParsedDexes(label, preview.dexEntries, preview.dexByteMap, dexMap, preview.packageName)
+        applyParsedDexes(label, preview.dexEntries, preview.dexByteMap, dexMap, preview.packageName, preview.iconBitmap)
       } catch (t: Throwable) {
         _loadState.value = DexLoadState.Error(t.message ?: "Failed to parse selected DEX files.")
       }
@@ -920,6 +925,7 @@ class Dex2cViewModel @JvmOverloads constructor(
     byteMap: Map<String, ByteArray>,
     dexMap: Map<String, DexParsedFile>,
     apkPackageName: String? = null,
+    iconBitmap: Bitmap? = null,
   ) {
     currentSourceLabel = label
     dexByteCache = byteMap
@@ -940,7 +946,7 @@ class Dex2cViewModel @JvmOverloads constructor(
     val resolvedPkg =
       apkPackageName?.takeIf { it.isNotBlank() }
         ?: inferDominantDexPackageName(dexMap.values.flatMap { it.classes })
-    _loadState.value = DexLoadState.Ready(label, entries, primary.entryName, primary, dexMap, resolvedPkg)
+    _loadState.value = DexLoadState.Ready(label, entries, primary.entryName, primary, dexMap, resolvedPkg, iconBitmap)
     val overviewSummary =
       buildBytecodeOverviewSummary(
         sourceLabel = label,
@@ -2099,13 +2105,17 @@ class Dex2cViewModel @JvmOverloads constructor(
     val context = getApplication<Application>()
     val name = queryDisplayName(uri) ?: "target.apk"
     viewModelScope.launch {
-      val size =
+      val (size, icon) =
         withContext(Dispatchers.IO) {
-          runCatching {
+          val sz = runCatching {
             context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: 0L
           }.getOrDefault(0L)
+          val ic = runCatching {
+            ApkMetadataInspector.inspectFromUri(context, uri, name).iconBitmap
+          }.getOrNull()
+          sz to ic
         }
-      _cloudApkChoice.value = CloudApkChoice(label = name, byteSize = size.coerceAtLeast(0L), uri = uri)
+      _cloudApkChoice.value = CloudApkChoice(label = name, byteSize = size.coerceAtLeast(0L), uri = uri, iconBitmap = icon)
       _statusBanner.value = "Queued \"$name\" for Cloud Dex2C workflow."
     }
   }
@@ -2113,11 +2123,23 @@ class Dex2cViewModel @JvmOverloads constructor(
   fun useLiveApkForCloud() {
     val context = getApplication<Application>()
     val apkFile = File(context.applicationInfo.sourceDir)
+    val appIcon = runCatching {
+      val d = context.packageManager.getApplicationIcon(context.packageName)
+      if (d is BitmapDrawable) d.bitmap
+      else {
+        val b = Bitmap.createBitmap(d.intrinsicWidth.coerceAtLeast(1), d.intrinsicHeight.coerceAtLeast(1), Bitmap.Config.ARGB_8888)
+        val c = android.graphics.Canvas(b)
+        d.setBounds(0, 0, c.width, c.height)
+        d.draw(c)
+        b
+      }
+    }.getOrNull()
     _cloudApkChoice.value =
       CloudApkChoice(
         label = "Dex2C Studio (base.apk)",
         byteSize = apkFile.length(),
         filePath = apkFile.absolutePath,
+        iconBitmap = appIcon,
       )
     _statusBanner.value = "Selected live base.apk for Cloud Dex2C."
   }
@@ -3136,7 +3158,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           )
         }.getOrNull()
       }
-      if (!logContent.isNullOrBlank()) {
+      if (!logContent.isNullOrBlank() && !gitHubClient.isAwsS3XmlError(logContent)) {
         val sanitized = CloudLogSanitizer.sanitize(logContent)
         _workflowLogState.value = WorkflowLogViewerState(
           runId = runId,
@@ -3152,7 +3174,7 @@ class Dex2cViewModel @JvmOverloads constructor(
           conclusion = effectiveConclusion,
           logText = "",
           isLoading = false,
-          error = "No build logs could be fetched for Run #${effectiveRunNumber ?: runId}. Open Logs in browser or wait for job completion.",
+          error = "No build logs could be fetched for Run #${effectiveRunNumber ?: runId}. Remote log storage is finalizing or unavailable. Open Logs in browser or wait for job completion.",
         )
       }
     }

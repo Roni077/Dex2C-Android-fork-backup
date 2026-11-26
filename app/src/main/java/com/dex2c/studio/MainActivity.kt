@@ -773,6 +773,7 @@ fun Dex2cApp(
                 onSyncSelectionToWildcardRules = { isBlacklist ->
                   viewModel.syncSelectionToWildcardRules(isBlacklist)
                 },
+                targetPackageName = (loadState as? DexLoadState.Ready)?.resolvedPackageName,
               )
             }
 
@@ -815,6 +816,7 @@ fun Dex2cApp(
                 onAttachToRun = { viewModel.attachToCloudRun(it) },
                 onDownloadArtifact = { viewModel.downloadArtifactAndPromptSave(it) },
                 onInspectLogs = { runId -> viewModel.inspectWorkflowLog(runId) },
+                appIcon = cloudApkChoice?.iconBitmap ?: (loadState as? DexLoadState.Ready)?.iconBitmap,
               )
             }
 

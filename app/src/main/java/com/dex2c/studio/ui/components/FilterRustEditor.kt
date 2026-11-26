@@ -83,7 +83,7 @@ fun FilterRustEditor(
   syntaxTheme: SmaliSyntaxTheme = SmaliSyntaxTheme.APP_DEFAULT,
   fontSizeSp: Int = 12,
   showLineNumbers: Boolean = true,
-  wordWrap: Boolean = false,
+  wordWrap: Boolean = true,
 ) {
   val defaultPalette = LocalSyntaxPalette.current
   val resolvedPalette = remember(syntaxTheme, defaultPalette) {
@@ -109,8 +109,7 @@ fun FilterRustEditor(
   val hScroll = rememberScrollState()
 
   // Editor states
-  var searchQuery by remember { mutableStateOf("") }
-  var isSearchOpen by remember { mutableStateOf(false) }
+  val searchQuery = ""
   var editingLineIndex by remember { mutableStateOf<Int?>(null) }
   var isBulkEditOpen by remember { mutableStateOf(false) }
 
@@ -183,62 +182,8 @@ fun FilterRustEditor(
 
       Spacer(Modifier.weight(1f))
 
-      // Search toggle
-      IconButton(
-        onClick = {
-          isSearchOpen = !isSearchOpen
-          if (!isSearchOpen) searchQuery = ""
-        },
-        modifier = Modifier.size(28.dp).testTag("filter_search_toggle"),
-      ) {
-        Icon(
-          imageVector = Icons.Rounded.Search,
-          contentDescription = "Search rules",
-          tint = if (isSearchOpen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.size(16.dp),
-        )
-      }
-
-      // Undo button
+      // Direct / Bulk Edit button ONLY
       if (!isReadOnly) {
-        IconButton(
-          onClick = {
-            if (session.canUndo()) {
-              session.undo()
-              currentOnTextChanged(session.getFullText())
-            }
-          },
-          enabled = session.canUndo(),
-          modifier = Modifier.size(28.dp).testTag("filter_undo_button"),
-        ) {
-          Icon(
-            imageVector = Icons.AutoMirrored.Rounded.Undo,
-            contentDescription = "Undo",
-            tint = if (session.canUndo()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant,
-            modifier = Modifier.size(16.dp),
-          )
-        }
-
-        // Redo button
-        IconButton(
-          onClick = {
-            if (session.canRedo()) {
-              session.redo()
-              currentOnTextChanged(session.getFullText())
-            }
-          },
-          enabled = session.canRedo(),
-          modifier = Modifier.size(28.dp).testTag("filter_redo_button"),
-        ) {
-          Icon(
-            imageVector = Icons.AutoMirrored.Rounded.Redo,
-            contentDescription = "Redo",
-            tint = if (session.canRedo()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant,
-            modifier = Modifier.size(16.dp),
-          )
-        }
-
-        // Direct / Bulk Edit button
         IconButton(
           onClick = { isBulkEditOpen = true },
           modifier = Modifier.size(28.dp).testTag("filter_bulk_edit_button"),
@@ -250,34 +195,6 @@ fun FilterRustEditor(
             modifier = Modifier.size(16.dp),
           )
         }
-      }
-    }
-
-    // --- Search query bar ---
-    if (isSearchOpen) {
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
-          .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        OutlinedTextField(
-          value = searchQuery,
-          onValueChange = { searchQuery = it },
-          placeholder = { Text("Filter / search rules...", fontSize = 11.sp) },
-          singleLine = true,
-          shape = RoundedCornerShape(8.dp),
-          textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = JetBrainsMonoFontFamily),
-          modifier = Modifier.weight(1f).height(44.dp).testTag("filter_search_input"),
-          trailingIcon = {
-            if (searchQuery.isNotEmpty()) {
-              IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(20.dp)) {
-                Icon(Icons.Rounded.Close, contentDescription = "Clear", modifier = Modifier.size(14.dp))
-              }
-            }
-          },
-        )
       }
     }
 

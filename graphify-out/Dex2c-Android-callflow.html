@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Dex2c-Android — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 2940 nodes, 4859 edges, 218 communities. Commit: d0567be</p>
+<p class="subtitle">Generated from graphify knowledge graph: 2956 nodes, 4888 edges, 234 communities. Commit: 0b1d90a</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -88,9 +88,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2489 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>2498 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>71 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>78 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>25 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
@@ -148,7 +148,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>2489</td><td><code>15, 4, 1, 8, 59, 18, 149, 21, 153, 5, 0, 66, 136, 150, 152, 53, 19, 20, 48, 81, 76, 11, 155, 16, 44, 46, 112, 100, 14, 2, 25, 156, 157, 158, 82, 109, 114, 37, 23, 26, 74, 159, 161, 27, 29, 33, 65, 13, 162, 164, 30, 6, 70, 115, 138, 165, 166, 167, 168, 7, 72, 101, 116, 142, 170, 117, 171, 172, 94, 141, 17, 79, 121, 148, 160, 173, 28, 89, 120, 143, 175, 176, 177, 178, 32, 95, 98, 169, 24, 34, 64, 71, 80, 108, 137, 179, 180, 181, 182, 38, 39, 83, 99, 110, 154, 183, 185, 43, 47, 73, 111, 113, 119, 126, 139, 174, 186, 187, 189, 45, 97, 122, 123, 124, 125, 144, 145, 146, 184, 188, 190, 191, 192, 193, 194, 75, 195, 196, 217, 35, 51, 67, 103, 127, 197, 198, 199, 52, 107, 128, 129, 200, 201, 202, 204, 54, 55, 56, 57, 58, 130, 205, 206, 208, 209, 210, 211, 212, 213, 104</code></td></tr><tr><td>Graph Build</td><td>71</td><td><code>12, 163, 68, 69, 49, 207, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>25</td><td><code>87, 31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>137</td><td><code>22, 10, 50, 86, 40, 88, 106, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>9, 84</code></td></tr><tr><td>Serving API</td><td>11</td><td><code>203, 147</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 105</td><td>23</td><td><code>105</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 77</td><td>20</td><td><code>77</code></td></tr><tr><td>Community 140</td><td>15</td><td><code>140</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 102</td><td>12</td><td><code>102</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Other</td><td>46</td><td><code>90, 93, 118, 96, 151, 36, 42, 131, 132, 133, 134, 135, 214, 215, 216, 61, 63</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>2498</td><td><code>1, 59, 18, 21, 8, 66, 5, 100, 150, 152, 30, 112, 53, 11, 136, 20, 48, 81, 155, 16, 44, 46, 19, 2, 14, 25, 26, 109, 13, 15, 156, 76, 157, 158, 82, 114, 37, 74, 45, 0, 149, 161, 172, 27, 29, 33, 4, 116, 162, 23, 159, 164, 51, 70, 115, 138, 153, 165, 167, 168, 17, 65, 7, 72, 101, 142, 170, 117, 166, 169, 171, 184, 188, 34, 73, 94, 141, 79, 121, 160, 173, 190, 204, 28, 39, 89, 120, 143, 175, 176, 177, 178, 217, 218, 32, 80, 95, 98, 219, 220, 24, 64, 71, 108, 137, 179, 180, 181, 182, 38, 83, 110, 154, 183, 185, 221, 222, 223, 43, 47, 111, 113, 119, 125, 126, 139, 148, 186, 187, 189, 224, 225, 226, 227, 228, 97, 122, 123, 124, 144, 145, 146, 191, 192, 193, 194, 229, 75, 99, 195, 196, 230, 35, 67, 103, 127, 197, 198, 199, 231, 232, 233, 52, 107, 128, 129, 174, 200, 201, 202, 54, 55, 56, 57, 58, 6, 130, 205, 206, 208, 209, 210, 211, 212, 213, 104</code></td></tr><tr><td>Graph Build</td><td>78</td><td><code>12, 163, 68, 69, 49, 207, 78, 60, 62</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>25</td><td><code>87, 31</code></td></tr><tr><td>Outputs &amp; Docs</td><td>137</td><td><code>22, 10, 50, 86, 40, 88, 106, 92</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>9, 84</code></td></tr><tr><td>Serving API</td><td>11</td><td><code>203, 147</code></td></tr><tr><td>Security &amp; Global Graph</td><td>9</td><td><code>91</code></td></tr><tr><td>Community 105</td><td>23</td><td><code>105</code></td></tr><tr><td>Community 3</td><td>21</td><td><code>3</code></td></tr><tr><td>Community 77</td><td>20</td><td><code>77</code></td></tr><tr><td>Community 140</td><td>15</td><td><code>140</code></td></tr><tr><td>Community 85</td><td>13</td><td><code>85</code></td></tr><tr><td>Community 102</td><td>12</td><td><code>102</code></td></tr><tr><td>Community 41</td><td>11</td><td><code>41</code></td></tr><tr><td>Other</td><td>46</td><td><code>90, 93, 118, 96, 151, 36, 42, 131, 132, 133, 134, 135, 214, 215, 216, 61, 63</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -160,8 +160,8 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>2940 nodes · 4859 edges · 218 communities (148 shown, 70 thin omitted)</li>
-      <li>Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 749 edges (avg confidence: 0.8)</li>
+      <li>2956 nodes · 4888 edges · 234 communities (159 shown, 75 thin omitted)</li>
+      <li>Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 758 edges (avg confidence: 0.8)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `Dex2cViewModel` - 121 edges</li>
       <li>2. `Dex2cViewModel` - 116 edges</li>
@@ -172,12 +172,12 @@ flowchart LR
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around dex2c, studio, com, app, mostly in studio/ui/Dex2cViewModel.kt, studio/ui/Dex2c视图模型.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 2489 nodes and 4450 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around dex2c, studio, com, app, mostly in studio/ui/Dex2cViewModel.kt, studio/ui/Dex2c视图模型.kt, studio/transpiler/Dex2cTranspiler.kt. This section covers 2498 nodes and 4469 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (2489 nodes, 4450 edges)
+    %% Section: Extraction Pipeline (2498 nodes, 4469 edges)
     subgraph extract_pipeline_dex2c_studio_MainActivity_kt_92abd99d["dex2c/studio/MainActivity.kt"]
         studio_mainactivity_navdestinationitem_e24ab693("NavDestinationItem<br/><small>dex2c/studio/MainActivity.kt</small>")
         studio_mainactivity_dex2capp_fbfa3080("Dex2cApp()<br/><small>dex2c/studio/MainActivity.kt</small>")
@@ -210,7 +210,7 @@ flowchart LR
     studio_mainactivity_mainactivity_oncreate_17d29145 -->|calls| studio_mainactivity_dex2capp_fbfa3080
     studio_mainactivity_dex2capp_fbfa3080 -->|calls| studio_mainactivity_dex2cthemedsnackbarhost_5c79ace7
     studio_mainactivity_dex2capp_fbfa3080 -->|calls| studio_mainactivity_dex2cfloatingbottombar_4db61c9e
-    %% Omitted for readability: 2471 nodes, 0 edges
+    %% Omitted for readability: 2480 nodes, 0 edges
     class studio_mainactivity_navdestinationitem_e24ab693 klass;
     class studio_mainactivity_dex2capp_fbfa3080 function;
     class studio_mainactivity_localizedactivitycontext_2b1a1923 klass;
@@ -252,243 +252,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>descriptorToJavaName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>parseClassDescriptor()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small></td>
-  <td><code>AnnotationBadgeRow()</code><br><small style="color:var(--muted)">ui/components/DexMapAndMetaComponents.kt</small><br><code>descriptorToJavaType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>descriptorToSimpleName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br>+3 more</td>
-  <td>descriptorToJavaName() node in studio/dex/DexModels.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>`build monitor survives transient UnknownHostException during active poll and recovers to completed`()</code><br><small style="color:var(--muted)">dex2c/studio/ExampleRobolectricTest.kt</small><br><code>`github sign in completion automatically initializes private repo and commits workflow despite transient dns error`()</code><br><small style="color:var(--muted)">dex2c/studio/ExampleRobolectricTest.kt</small><br><code>addQuickClassRule()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br>+117 more</td>
+  <td>Dex2cViewModel node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>Dex2cTranspiler.kt</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>.openClassesFilterSheet()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>Dex2cTranspiler.kt node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.openClassesFilterSheet() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>arrayMeta()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>buildAndroidMk()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>buildApplicationMk()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+33 more</td>
-  <td>Dex2cTranspiler node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>.closeClassesFilterSheet()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.closeClassesFilterSheet() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>NativeRegRecord</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>emitMethodBody()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>NativeRegRecord node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>.openPicker()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>loadInstalledApps()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.openPicker() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>StreamedFileBuilder</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>close()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>finish()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+3 more</td>
-  <td>StreamedFileBuilder node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>.closePicker()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.closePicker() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>.close()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.setPickerTab()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>StreamedFileBuilder</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>finish()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.close() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>loadInstalledApps()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.setPickerTab() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>.finish()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.updateAppSearchQuery()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>close()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>StreamedFileBuilder</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">studio/transpiler/TranspilerModels.kt</small><br><code>streamLoaderSmaliStubFile()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>streamLoaderStubFile()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+1 more</td>
-  <td>.finish() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.updateAppSearchQuery() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>.transpileMethodToC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.loadInstalledApps()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>emitMethodBody()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.transpileMethodToC() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>openPicker()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>setPickerTab()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.loadInstalledApps() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>.transpileBundle()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.transpileBundle() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>selectStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.toggleStagedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>.transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.selectStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>descriptorToJavaName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>finish()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+2 more</td>
-  <td><code>buildAndroidMk()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>buildApplicationMk()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>buildCMake()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+10 more</td>
-  <td>.transpileBundleMultiDex() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>toggleStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectStagedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>.resolveBundleOutputDir()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.selectAllStagedDexEntries()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.resolveBundleOutputDir() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.selectAllStagedDexEntries() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>.emitJniOnLoadRegistration()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.selectPrimaryStagedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>escapeC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>jniCall()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.emitJniOnLoadRegistration() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectPrimaryStagedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>.emitMethodBody()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.dismissStagingPreview()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>append()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>descriptorToJavaName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+3 more</td>
-  <td><code>defaultReturnStmt()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>descriptorToJniType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+8 more</td>
-  <td>.emitMethodBody() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.dismissStagingPreview() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>.emitTryCatchDispatchIfApplicable()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.removeRecentItem()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitMethodBody()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>defaultReturnStmt()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>escapeC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>formatHex4u()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+2 more</td>
-  <td>.emitTryCatchDispatchIfApplicable() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.removeRecentItem() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>.emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.clearRecentHistory()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitMethodBody()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>defaultReturnStmt()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>descriptorToJniType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitArrayAccessInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+9 more</td>
-  <td>.emitInstructionC() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.clearRecentHistory() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.emitMathInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.switchDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>.emitMathInstruction() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>toggleLoadedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.switchDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>.inferArrayElementType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleLoadedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>emitArrayAccessInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.inferArrayElementType() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>switchDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><code>focusHeaderDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>markBundleDirty()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>.toggleLoadedDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>.emitArrayAccessInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.focusHeaderDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>inferArrayElementType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>arrayMeta()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>jniCall()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.emitArrayAccessInstruction() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small><br><code>toggleLoadedDexEntry()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.focusHeaderDexEntry() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>.emitFieldInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.updateSearchQuery()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>descriptorToJniType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>escapeC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>jniCall()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+1 more</td>
-  <td>.emitFieldInstruction() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.updateSearchQuery() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>.emitInvokeInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleHideFramework()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>descriptorToJniType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>escapeC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>jniCall()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+2 more</td>
-  <td>.emitInvokeInstruction() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toggleHideFramework() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>.jniCall()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleOnlyWithBytecode()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitArrayAccessInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitFieldInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+5 more</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.jniCall() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.toggleOnlyWithBytecode() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>.buildRuntimeHeader()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleOnlySelected()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.buildRuntimeHeader() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.toggleOnlySelected() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>.buildCMake()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleOnlyMatchingFilterRules()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.buildCMake() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.toggleOnlyMatchingFilterRules() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>.buildAndroidMk()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.setClassSortOrder()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.buildAndroidMk() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.setClassSortOrder() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>.buildApplicationMk()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.setClassTypeFilter()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>transpileBundleMultiDex()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.buildApplicationMk() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.setClassTypeFilter() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>.streamLoaderSmaliStubFile()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleHideInnerClasses()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-async">Async</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>finish()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>StreamedFileBuilder</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+1 more</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.streamLoaderSmaliStubFile() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.toggleHideInnerClasses() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>.streamLoaderStubFile()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>descriptorToJavaName()</code><br><small style="color:var(--muted)">studio/dex/DexModels.kt</small><br><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>finish()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br>+2 more</td>
-  <td><code>descriptorToJavaType()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.streamLoaderStubFile() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>.setMethodScopeFilter()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.setMethodScopeFilter() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>.arrayMeta()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.toggleNonEmptyPackagesOnly()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitArrayAccessInstruction()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><code>ArrayMeta</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td>.arrayMeta() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.toggleNonEmptyPackagesOnly() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>ArrayMeta</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>arrayMeta()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.setDexSourceFilter()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>ArrayMeta node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.setDexSourceFilter() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>.newArrayJniFunc()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>.resetExtraClassFilters()</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>Dex2cTranspiler</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small><br><code>emitInstructionC()</code><br><small style="color:var(--muted)">studio/transpiler/Dex2cTranspiler.kt</small></td>
+  <td><code>Dex2cViewModel</code><br><small style="color:var(--muted)">studio/ui/Dex2cViewModel.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>.newArrayJniFunc() node in studio/transpiler/Dex2cTranspiler.kt.</td>
+  <td>.resetExtraClassFilters() node in studio/ui/Dex2cViewModel.kt.</td>
 </tr>
 </table>
 
@@ -504,24 +504,24 @@ flowchart LR
 <tr><td><code>studio/nativeengine/编辑器原生引擎.kt</code></td><td>54 nodes</td></tr>
 <tr><td><code>studio/dex/DexModels.kt</code></td><td>52 nodes</td></tr>
 <tr><td><code>rust-engine/src/dex.rs</code></td><td>52 nodes</td></tr>
-<tr><td><code>studio/cloud/CloudModels.kt</code></td><td>38 nodes</td></tr>
+<tr><td><code>studio/cloud/GitHubApiClient.kt</code></td><td>39 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x1437, method x1159, contains x1105. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x1439, method x1165, contains x1107. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around app, assets, textmate, smali, mostly in smali/syntaxes/smali.tmLanguage.json, docs/walkthrough.md, textmate/themes/darcula.json. This section covers 71 nodes and 62 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around app, assets, textmate, smali, mostly in smali/syntaxes/smali.tmLanguage.json, docs/walkthrough.md, textmate/themes/darcula.json. This section covers 78 nodes and 72 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (71 nodes, 62 edges)
+    %% Section: Graph Build (78 nodes, 72 edges)
     subgraph build_graph_smali_syntaxes_smali_tmLanguage_json_e925a918["smali/syntaxes/smali.tmLanguage.json"]
         syntaxes_smali_tmlanguage_repository_feb0a433("repository<br/><small>smali/syntaxes/smali.tmLanguage.json</small>")
         app_src_main_assets_textmate_smali_syntaxes_smal_191f1135("smali.tmLanguage.json")
@@ -538,15 +538,15 @@ flowchart LR
         dex2c_android_metadata_requestframepermissions_5e1d6e1d("requestFramePermissions<br/><small>metadata.json</small>")
         dex2c_android_metadata_majorcapabilities_d6899d4a("majorCapabilities<br/><small>metadata.json</small>")
     end
+    subgraph build_graph_docs_walkthrough_md_66f7c0e2["docs/walkthrough.md"]
+        docs_walkthrough_verification_results_84ccd7ee("Verification Results<br/><small>docs/walkthrough.md</small>")
+        docs_walkthrough_changes_made_f58cec06("Changes Made<br/><small>docs/walkthrough.md</small>")
+    end
     subgraph build_graph_textmate_smali_syntaxes_json_92689ebc["textmate/smali/syntaxes.json"]
         app_src_main_assets_textmate_smali_syntaxes_json_ff37924a("syntaxes.json")
         smali_syntaxes_languages_202de7ff("languages<br/><small>textmate/smali/syntaxes.json</small>")
     end
-    subgraph build_graph_textmate_themes_darcula_json_53a96e21["textmate/themes/darcula.json"]
-        themes_darcula_colors_82013d71("colors<br/><small>textmate/themes/darcula.json</small>")
-        app_src_main_assets_textmate_themes_darcula_json_b26c55a4("darcula.json")
-    end
-    docs_walkthrough_verification_results_84ccd7ee("Verification Results<br/><small>docs/walkthrough.md</small>")
+    themes_darcula_colors_82013d71("colors<br/><small>textmate/themes/darcula.json</small>")
     themes_quietlight_colors_6617f51d("colors<br/><small>textmate/themes/quietlight.json</small>")
     metadata_json_fa75ead3 -->|contains| dex2c_android_metadata_name_d5f0bf85
     metadata_json_fa75ead3 -->|contains| dex2c_android_metadata_description_e8ada481
@@ -559,8 +559,7 @@ flowchart LR
     app_src_main_assets_textmate_smali_syntaxes_smal_191f1135 -->|contains| syntaxes_smali_tmlanguage_patterns_b2feaa16
     app_src_main_assets_textmate_smali_syntaxes_smal_191f1135 -->|contains| syntaxes_smali_tmlanguage_repository_feb0a433
     syntaxes_smali_tmlanguage_repository_feb0a433 -->|contains| syntaxes_smali_tmlanguage_repository_comments_87c0ae04
-    app_src_main_assets_textmate_themes_darcula_json_b26c55a4 -->|contains| themes_darcula_colors_82013d71
-    %% Omitted for readability: 53 nodes, 0 edges
+    %% Omitted for readability: 60 nodes, 0 edges
     class syntaxes_smali_tmlanguage_repository_feb0a433 function;
     class app_src_main_assets_textmate_smali_syntaxes_smal_191f1135 function;
     class syntaxes_smali_tmlanguage_schema_ff17c825 function;
@@ -573,11 +572,11 @@ flowchart LR
     class dex2c_android_metadata_description_e8ada481 function;
     class dex2c_android_metadata_requestframepermissions_5e1d6e1d function;
     class dex2c_android_metadata_majorcapabilities_d6899d4a function;
+    class docs_walkthrough_verification_results_84ccd7ee concept;
+    class docs_walkthrough_changes_made_f58cec06 concept;
     class app_src_main_assets_textmate_smali_syntaxes_json_ff37924a function;
     class smali_syntaxes_languages_202de7ff function;
     class themes_darcula_colors_82013d71 function;
-    class app_src_main_assets_textmate_themes_darcula_json_b26c55a4 function;
-    class docs_walkthrough_verification_results_84ccd7ee concept;
     class themes_quietlight_colors_6617f51d function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -818,11 +817,11 @@ flowchart LR
 </tr>
 <tr>
   <td>28</td>
-  <td><code>Walkthrough: Chinese Kotlin Filenames &amp; Real Source Code Chinese Modifications</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
+  <td><code>Walkthrough: Removal of Dictionaries &amp; Full Restoration to English Version</code><br><small style="color:var(--muted)">docs/walkthrough.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing Walkthrough: Chinese Kotlin Filenames &amp; Real Source Code Chinese Modifications.</td>
+  <td>Documentation node describing Walkthrough: Removal of Dictionaries &amp; Full Restoration to English Version.</td>
 </tr>
 <tr>
   <td>29</td>
@@ -848,7 +847,7 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>smali/syntaxes/smali.tmLanguage.json</code></td><td>26 nodes</td></tr>
-<tr><td><code>docs/walkthrough.md</code></td><td>12 nodes</td></tr>
+<tr><td><code>docs/walkthrough.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>textmate/themes/darcula.json</code></td><td>11 nodes</td></tr>
 <tr><td><code>textmate/themes/quietlight.json</code></td><td>11 nodes</td></tr>
 <tr><td><code>metadata.json</code></td><td>5 nodes</td></tr>
@@ -859,7 +858,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x62. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x72. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4070,18 +4069,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>2940</td></tr>
-      <tr><td>Edges</td><td>4859</td></tr>
+      <tr><td>Nodes</td><td>2956</td></tr>
+      <tr><td>Edges</td><td>4888</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>218</td></tr>
+      <tr><td>Communities</td><td>234</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>4110</td></tr>
-      <tr><td>INFERRED</td><td>749</td></tr>
+      <tr><td>EXTRACTED</td><td>4130</td></tr>
+      <tr><td>INFERRED</td><td>758</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -4089,7 +4088,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Dex2c-Android — Architecture Documentation</p>
-  <p>Generated: 2026-11-26 03:19 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-26 04:10 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
